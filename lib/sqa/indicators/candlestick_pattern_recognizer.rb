@@ -1,6 +1,6 @@
-# fin_tech/lib/fin_tech/candlestick_pattern_recognizer.rb
+# lib/sqa/indicators/candlestick_pattern_recognizer.rb
 
-module FinTech
+module SQA::Indicators
 
   # Recognizes common candlestick chart patterns in the given price data.
   #

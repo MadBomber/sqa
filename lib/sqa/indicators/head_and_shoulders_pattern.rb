@@ -1,6 +1,6 @@
-# fin_tech/lib/fin_tech/head_and_shoulders_pattern.rb
+# lib/sqa/indicators/head_and_shoulders_pattern.rb
 
-module FinTech
+module SQA::Indicators
 
   # Checks if a "head and shoulders" pattern is present in the given price data.
   #

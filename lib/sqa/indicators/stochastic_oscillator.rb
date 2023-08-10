@@ -1,6 +1,6 @@
-# fin_tech/lib/fin_tech/stochastic_oscillator.rb
+# lib/sqa/indicators/stochastic_oscillator.rb
 
-module FinTech
+module SQA::Indicators
 
   #######################################################################
   # Calculates the Stochastic Oscillator for a given set of price data.

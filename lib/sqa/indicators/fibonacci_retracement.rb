@@ -1,6 +1,6 @@
-# fin_tech/lib/fin_tech/fibonacci_retracement.rb
+# lib/sqa/indicators/fibonacci_retracement.rb
 
-module FinTech
+module SQA::Indicators
 
   #######################################################################
   # Calculates the Fibonacci Retracement levels for a given price range.

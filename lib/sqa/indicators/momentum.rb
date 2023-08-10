@@ -1,6 +1,6 @@
-# fin_tech/lib/fin_tech/momentum.rb
+# lib/sqa/indicators/momentum.rb
 
-module FinTech
+module SQA::Indicators
 
   #######################################################################
   # Calculates the momentum of a stock based on the rate of change (ROC).

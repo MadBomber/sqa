@@ -1,6 +1,6 @@
-# fin_tech/lib/fin_tech/rsi.rb
+# lib/sqa/indicators/rsi.rb
 
-module FinTech
+module SQA::Indicators
 
   #######################################################################
   # Relative Strength Index (RSI)

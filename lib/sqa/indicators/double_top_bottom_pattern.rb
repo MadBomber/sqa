@@ -1,6 +1,6 @@
-# fin_tech/lib/fin_tech/double_top_bottom_pattern.rb
+# lib/sqa/indicators/double_top_bottom_pattern.rb
 
-module FinTech
+module SQA::Indicators
 
   # Checks if a "double top" or "double bottom" pattern is present in the
   # given price data.

@@ -1,6 +1,6 @@
-# fin_tech/lib/fin_tech/simple_moving_average.rb
+# lib/sqa/indicators/simple_moving_average.rb
 
-module FinTech
+module SQA::Indicators
 
   #######################################################################
   # Simple Moving Average (SMA)

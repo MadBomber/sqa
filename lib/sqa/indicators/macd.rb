@@ -1,6 +1,6 @@
-# fin_tech/lib/fin_tech/macd.rb
+# lib/sqa/indicators/macd.rb
 
-module FinTech
+module SQA::Indicators
 
   #######################################################################
   # Moving Average Convergence Divergence (MACD)

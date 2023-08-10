@@ -1,6 +1,6 @@
-# fin_tech/lib/fin_tech/identify_wave_condition.rb
+# lib/sqa/indicators/identify_wave_condition.rb
 
-module FinTech
+module SQA::Indicators
 
   #######################################################################
   # Wave Theory: Wave theory, such as Elliott Wave Theory, suggests that

@@ -1,6 +1,6 @@
-# fin_tech/lib/fin_tech/classify_market_profile.rb
+# lib/sqa/indicators/classify_market_profile.rb
 
-module FinTech
+module SQA::Indicators
 
   #######################################################################
   # Classifies the market profile based on trading volume and price levels.

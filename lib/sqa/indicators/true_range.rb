@@ -1,6 +1,6 @@
-# fin_tech/lib/fin_tech/true_range.rb
+# lib/sqa/indicators/true_range.rb
 
-module FinTech
+module SQA::Indicators
 
   #######################################################################
   # Calculates the True Range (TR) for a given set of price data.

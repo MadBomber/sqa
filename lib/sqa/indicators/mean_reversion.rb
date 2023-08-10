@@ -1,6 +1,6 @@
-# fin_tech/lib/fin_tech/mean_reversion.rb
+# lib/sqa/indicators/mean_reversion.rb
 
-module FinTech
+module SQA::Indicators
 
   #######################################################################
   # Determines if a stock exhibits mean reversion behavior based on a given

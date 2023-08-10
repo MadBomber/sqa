@@ -1,6 +1,6 @@
-# fin_tech/lib/fin_tech/ema_analysis.rb
+# lib/sqa/indicators/ema_analysis.rb
 
-module FinTech
+module SQA::Indicators
 
   ##############################################################################
   # Calculates the Exponential Moving Average (EMA) and performs basic analysis.

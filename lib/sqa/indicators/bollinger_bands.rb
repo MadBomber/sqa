@@ -1,6 +1,6 @@
-# fin_tech/lib/fin_tech/bollinger_bands.rb
+# lib/sqa/indicators/bollinger_bands.rb
 
-module FinTech
+module SQA::Indicators
 
   #######################################################################
   # Bollinger Bands

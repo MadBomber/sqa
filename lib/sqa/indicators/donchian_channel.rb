@@ -1,6 +1,6 @@
-# fin_tech/lib/fin_tech/donchian_channel.rb
+# lib/sqa/indicators/donchian_channel.rb
 
-module FinTech
+module SQA::Indicators
 
   #######################################################################
   # Calculates the Donchian Channel for a given period and input data.
