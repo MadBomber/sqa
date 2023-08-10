@@ -1,0 +1,6 @@
+#!/usr/bin/env ruby
+
+require 'sqa'
+require 'sqa/cli'
+
+SQA::CLI.new.run
