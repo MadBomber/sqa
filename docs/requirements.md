@@ -15,3 +15,13 @@ So what is it that I want to do?
 * look at carious ways to support plugin components
 * learn something about options trading in risk mitigation for security trades
 
+## Making this thing an Application Framework
+
+* using ActiveRecord with initial models of Stock, Portfolio and Activity
+
+	- Portfolio has many stocks with FK: ticker
+	- Sotkc has many activities with FK: ticker
+	- Activity has unique constraint on (ticker, date)
+
+* using gem csv_importer to bring in data to load into the various tables
+* using sqlite3 because I have limited resources for rdbms
