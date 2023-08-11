@@ -12,19 +12,22 @@ Its a game.  Game theory tells us that there are winners and losers. Bookies at 
 
 Back to indicators.  Here is a list of the current indicators:
 
-* bollinger_bands.md
-* candlestick_pattern_recognizer.md
-* classify_market_profile.md
-* donchian_channel.md
-* double_top_bottom_pattern.md
-* ema_analysis.md
-* fibonacci_retracement.md
-* head_and_shoulders_pattern.md
-* identify_wave_condition.md
-* macd.md
-* mean_reversion.md
-* momentum.md
-* rsi.md
-* simple_moving_average.md
-* stochastic_oscillator.md
-* true_range.md
+
+
+* [Average True Range](average true range.md)
+* [Bollinger Bands](bollinger bands.md)
+* [Vandlestick Pattern Recognizer](candlestick pattern recognizer.md)
+* [Vlassify Market Profile](classify market profile.md)
+* [Donchian Channel](donchian channel.md)
+* [Double Top Bottom Pattern](double top bottom pattern.md)
+* [EMA Analysis](ema analysis.md)
+* [Fibonacci Retracement](fibonacci retracement.md)
+* [Head and Shoulders Pattern](head and shoulders pattern.md)
+* [Identify Wave Condition](identify wave condition.md)
+* [MACD](macd.md)
+* [Mean Reversion](mean reversion.md)
+* [Momentum](momentum.md)
+* [RSI](rsi.md)
+* [Simple Moving Average](simple moving average.md)
+* [Stochastic Oscillator](stochastic oscillator.md)
+* [True Range](true range.md)
