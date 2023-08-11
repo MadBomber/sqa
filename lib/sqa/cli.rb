@@ -1,5 +1,7 @@
 # lib/sqa/cli.rb
 
+require_relative 'stock'
+
 module SQA
 	class CLI
 		def initialize
@@ -7,6 +9,8 @@ module SQA
 		end
 
 		def run
+      stock = Stock.new('aapl')
+
 			puts <<~OUTPUT
 
 				... TBD ...
@@ -14,6 +18,10 @@ module SQA
 				sqa was called with the following options:
 
 				#{@args}
+
+        stock ...
+
+        #{stock}
 
 			OUTPUT
 		end

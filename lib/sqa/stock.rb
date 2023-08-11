@@ -1,7 +1,7 @@
 # lib/sqa/stock.rb
 
 require_relative 'indicators'
-require_relative 'datastore/csv'
+require_relative 'datastore'
 
 class SQA::Stock
   include SQA::Indicators
@@ -10,7 +10,7 @@ class SQA::Stock
   attr_accessor :data
   attr_accessor :ticker
 
-  def initialize(ticker, datastore = Datastore::CSV)
+  def initialize(ticker, datastore = SQA::Datastore::CSV)
     @ticker       = ticker
     @company_name = "Company Name"
     @data         = datastore.new(ticker)
