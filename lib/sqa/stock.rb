@@ -3,8 +3,11 @@
 require_relative 'indicators'
 require_relative 'datastore'
 
-class SQA::Stock
+class SQA::Stock < ActiveRecord::Base
   include SQA::Indicators
+
+  # has_many :activities using ticker as the foreign key
+  # primary id is ticker  it is unique
 
   attr_accessor :company_name
   attr_accessor :data
