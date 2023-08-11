@@ -15,6 +15,10 @@ class SQA::Stock
     @company_name = "Company Name"
     @data         = datastore.new(ticker)
   end
+
+  def to_s
+    "#{ticker} with #{@data.size} data points."
+  end
 end
 
 __END__

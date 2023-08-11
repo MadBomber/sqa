@@ -13,15 +13,9 @@ module SQA
 
 			puts <<~OUTPUT
 
-				... TBD ...
-
-				sqa was called with the following options:
-
-				#{@args}
-
-        stock ...
-
-        #{stock}
+        TBD
+        @args => #{@args}
+        stock => #{stock}
 
 			OUTPUT
 		end

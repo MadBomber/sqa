@@ -11,6 +11,8 @@ module SQA::Datastore
     def_delegators :@data, :first, :last, :size, :empty?, :[], :map, :select, :reject
 
     SOURCE_DOMAIN = "https://query1.finance.yahoo.com/v7/finance/download/"
+    # https://finance.yahoo.com/quote/AAPL/history?period1=345427200&period2=1691712000&interval=1d&filter=history&frequency=1d&includeAdjustedClose=true
+    # https://query1.finance.yahoo.com/v7/finance/download/AAPL?period1=345427200&period2=1691712000&interval=1d&events=history&includeAdjustedClose=true
 
     attr_accessor :ticker
     attr_accessor :data
