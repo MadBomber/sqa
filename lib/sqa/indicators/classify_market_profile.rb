@@ -2,14 +2,6 @@
 
 module SQA::Indicators
 
-  #######################################################################
-  # Classifies the market profile based on trading volume and price levels.
-  #
-  # Market Profile Analysis: Market profile analysis involves studying the
-  # distribution of trading volume and price levels over time. It helps
-  # identify areas of support and resistance and provides insights into market
-  # sentiment.
-  #
   # @param volume [Array] An array of trading volume data.
   # @param prices [Array] An array of price levels.
   # @param support_threshold [Float]  The threshold for considering a price level

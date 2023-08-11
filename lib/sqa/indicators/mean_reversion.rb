@@ -2,15 +2,6 @@
 
 module SQA::Indicators
 
-  #######################################################################
-  # Determines if a stock exhibits mean reversion behavior based on a given
-  # price series.
-  #
-  # Mean Reversion Strategies: Mean reversion strategies aim to capitalize on
-  # the tendency of prices to revert to their mean or average value. These
-  # strategies involve identifying overextended price movements and taking
-  # positions that anticipate a return to the mean.
-  #
   # @param prices [Array] An array of historical prices.
   # @param lookback_period [Integer] The number of periods to consider for calculating the mean.
   # @param deviation_threshold [Float]  The threshold for considering a
@@ -34,7 +25,7 @@ module SQA::Indicators
 
 
   def mr_mean(prices, lookback_period)
-    prices[-lookback_period..-1].sum / lookback_period.to_f
+    prices.last(lookback_period).sum / lookback_period.to_f
   end
 
 end

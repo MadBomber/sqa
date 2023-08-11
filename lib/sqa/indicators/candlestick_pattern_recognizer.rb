@@ -2,8 +2,6 @@
 
 module SQA::Indicators
 
-  # Recognizes common candlestick chart patterns in the given price data.
-  #
   # @param open_prices [Array] An array of opening prices.
   # @param high_prices [Array] An array of high prices.
   # @param low_prices [Array] An array of low prices.

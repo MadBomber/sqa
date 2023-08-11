@@ -2,13 +2,6 @@
 
 module SQA::Indicators
 
-  #######################################################################
-  # Calculates the Stochastic Oscillator for a given set of price data.
-  #
-  # Stochastic Oscillator: The Stochastic Oscillator compares a security's
-  # closing price to its price range over a specified period. It helps
-  # identify potential trend reversals and overbought/oversold conditions.
-  #
   # @param high_prices [Array] An array of high prices.
   # @param low_prices [Array] An array of low prices.
   # @param close_prices [Array] An array of closing prices.

@@ -2,8 +2,6 @@
 
 module SQA::Indicators
 
-  # Checks if a "head and shoulders" pattern is present in the given price data.
-  #
   # @param prices [Array] An array of price values.
   # @return [Boolean] True if the pattern is present, false otherwise.
   #

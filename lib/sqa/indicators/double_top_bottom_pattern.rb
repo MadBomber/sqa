@@ -2,9 +2,6 @@
 
 module SQA::Indicators
 
-  # Checks if a "double top" or "double bottom" pattern is present in the
-  # given price data.
-  #
   # @param prices [Array] An array of price values.
   # @return [String]  The pattern ("double top", "double bottom") if present,
   #                   "no pattern" otherwise.

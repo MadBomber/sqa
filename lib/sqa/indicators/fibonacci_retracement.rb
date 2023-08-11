@@ -2,13 +2,6 @@
 
 module SQA::Indicators
 
-  #######################################################################
-  # Calculates the Fibonacci Retracement levels for a given price range.
-  #
-  # Fibonacci Retracement: Fibonacci retracement uses Fibonacci ratios to
-  # identify potential support and resistance levels based on the price's
-  # previous significant moves.
-  #
   # @param start_price [Float] The starting price of the range.
   # @param end_price [Float] The ending price of the range.
   # @return [Array] An array of Fibonacci Retracement levels.
