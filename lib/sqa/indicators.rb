@@ -1,6 +1,6 @@
 # lib/sqa/indicators.rb
 
-module SQA::indicators
+module SQA::Indicators
 end
 
 Dir["indicators/*.rb"].each do |file|

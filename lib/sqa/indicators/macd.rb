@@ -16,7 +16,7 @@ module SQA::Indicators
 
     return [macd_line, signal_line]
   end
-  alias_method :macd. :moving_average_convergence_divergence
+  alias_method :macd, :moving_average_convergence_divergence
 
 end
 
