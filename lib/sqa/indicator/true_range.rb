@@ -13,21 +13,23 @@ class SQA::Indicator; class << self
   def true_range(
         high_prices,    # Array of high prices
         low_prices,     # Array of low prices
-        previous_closes # Array of previous closing prices
+        closing_prices  # Array of closing prices
       )
     true_ranges = []
 
     high_prices.each_with_index do |high, index|
-      low = low_prices[index]
-      previous_close = previous_closes[index]
+      if index > 0
+        low             = low_prices[index]
+        previous_close  = closing_prices[index - 1]
 
-      true_range = [
-        high  - low,
-        (high - previous_close).abs,
-        (low  - previous_close).abs
-      ].max
+        true_range = [
+          high  - low,
+          (high - previous_close).abs,
+          (low  - previous_close).abs
+        ].max
 
-      true_ranges << true_range
+        true_ranges << true_range
+      end
     end
 
     true_ranges # Array of True Range values

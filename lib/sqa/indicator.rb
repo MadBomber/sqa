@@ -6,6 +6,6 @@ end
 # setup a shortcut for the namespace
 SQAI = SQA::Indicator
 
-Dir["indicator/*.rb"].each do |file|
-  require_relative file
+Dir[__dir__ + "/indicator/*.rb"].each do |file|
+  load file
 end
