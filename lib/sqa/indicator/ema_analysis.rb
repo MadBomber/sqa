@@ -1,13 +1,11 @@
-# lib/sqa/indicators/ema_analysis.rb
+# lib/sqa/indicator/ema_analysis.rb
 
-module SQA::Indicators
+module SQA::Indicator; class << self
 
-  # @param prices [Array] An array of historical prices.
-  # @param period [Integer] The number of periods to consider for calculating
-  #                         the EMA.
-  # @return [Hash] A hash containing the EMA values and analysis results.
-  #
-  def ema_analysis(prices, period)
+  def ema_analysis(
+        prices, # Array of prices
+        period  # Integer number of entries to consider
+      )
     return {} if prices.empty? || period <= 0
 
     ema_values = []
@@ -23,9 +21,9 @@ module SQA::Indicators
     analysis = {}
 
     analysis[:ema_values] = ema_values
-    analysis[:trend]      = determine_trend(ema_values)
-    analysis[:support]    = determine_support(ema_values)
-    analysis[:resistance] = determine_resistance(ema_values)
+    analysis[:trend]      = ema_determine_trend(ema_values)
+    analysis[:support]    = ema_determine_support(ema_values)
+    analysis[:resistance] = ema_determine_resistance(ema_values)
 
     analysis
   end
@@ -34,7 +32,7 @@ module SQA::Indicators
   # @param ema_values [Array] An array of EMA values.
   # @return [Symbol] The trend: :up, :down, or :sideways.
   #
-  def determine_trend(ema_values)
+  private def ema_determine_trend(ema_values)
     return :sideways if ema_values.empty?
 
     last_ema      = ema_values.last
@@ -53,7 +51,7 @@ module SQA::Indicators
   # @param ema_values [Array] An array of EMA values.
   # @return [Float] The support level.
   #
-  def determine_support(ema_values)
+  private def ema_determine_support(ema_values)
     return 0.0 if ema_values.empty?
 
     ema_values.min
@@ -62,11 +60,11 @@ module SQA::Indicators
 
   # @param ema_values [Array] An array of EMA values.
   # @return [Float] The resistance level.
-  def determine_resistance(ema_values)
+  private def ema_determine_resistance(ema_values)
     return 0.0 if ema_values.empty?
 
     ema_values.max
   end
 
-end
+end; end
 

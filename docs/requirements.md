@@ -25,3 +25,16 @@ So what is it that I want to do?
 
 * using gem csv_importer to bring in data to load into the various tables
 * using sqlite3 because I have limited resources for rdbms
+
+## finance.yahoo.com API
+
+v7 is used to download historical data as CSV.  It requires a cookie.
+
+v8 gets some company info and stock prices in JSON. It might require a cookie as well
+
+Most reliable way of getting data is the scrape the website.  The gem financial_data_pull attempts to do it but it is too old.
+
+
+## Extract Indicators
+
+After sleeping on it, I think the original plan with the fin_tech gem is a better idea for how to package the indicators.  I'm going to keep the name FinTech for now while I think of something better.  These are indicators; but I want them to be class-level methods with established contracts in their API.
