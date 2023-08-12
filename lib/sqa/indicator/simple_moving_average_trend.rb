@@ -1,6 +1,6 @@
 # lib/sqa/indicator/simple_moving_average_trend.rb
 
-module SQA::Indicator; class << self
+class SQA::Indicator; class << self
 
   def simple_moving_average_trend(
         closing_prices,   # Array of closing prices

@@ -1,6 +1,6 @@
 # lib/sqa/indicator/identify_wave_condition.rb
 
-module SQA::Indicator; class << self
+class SQA::Indicator; class << self
 
   def identify_wave_condition?(
         prices,       # Array of prices

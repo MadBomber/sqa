@@ -1,6 +1,6 @@
 # lib/sqa/indicator/simple_moving_average.rb
 
-module SQA::Indicator; class << self
+class SQA::Indicator; class << self
 
   def simple_moving_average(
         prices, # Array of prices

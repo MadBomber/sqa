@@ -1,6 +1,6 @@
 # lib/sqa/indicator/donchian_channel.rb
 
-module SQA::Indicator; class << self
+class SQA::Indicator; class << self
 
   def donchian_channel(
         prices,   # Array of prices

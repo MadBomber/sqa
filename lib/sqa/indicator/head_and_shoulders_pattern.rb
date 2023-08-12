@@ -1,6 +1,6 @@
 # lib/sqa/indicator/head_and_shoulders_pattern.rb
 
-module SQA::Indicator; class << self
+class SQA::Indicator; class << self
 
 
   def head_and_shoulders_pattern?(

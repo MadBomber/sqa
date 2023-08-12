@@ -1,6 +1,6 @@
 # lib/sqa/indicator/double_top_bottom_pattern.rb
 
-module SQA::Indicator; class << self
+class SQA::Indicator; class << self
 
   def double_top_bottom_pattern(
         prices  # Array of prices

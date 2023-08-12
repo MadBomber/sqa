@@ -1,6 +1,6 @@
 # lib/sqa/indicator/stochastic_oscillator.rb
 
-module SQA::Indicator; class << self
+class SQA::Indicator; class << self
 
   # @param high_prices [Array]
   # @param low_prices [Array]

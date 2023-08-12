@@ -10,3 +10,4 @@ require 'pathname'
 
 require_relative "sqa/version"
 require_relative "sqa/errors"
+require_relative "sqa/indicator"

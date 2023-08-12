@@ -1,6 +1,6 @@
 # lib/sqa/indicator/ema_analysis.rb
 
-module SQA::Indicator; class << self
+class SQA::Indicator; class << self
 
   def ema_analysis(
         prices, # Array of prices

@@ -1,6 +1,6 @@
 # lib/sqa/indicator/candlestick_pattern_recognizer.rb
 
-module SQA::Indicator; class << self
+class SQA::Indicator; class << self
 
   def candlestick_pattern_recognizer(
         open_prices,  # Array day's ppen price

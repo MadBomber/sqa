@@ -1,6 +1,6 @@
 # lib/sqa/indicator/mean_reversion.rb
 
-module SQA::Indicator; class << self
+class SQA::Indicator; class << self
 
   # @param prices [Array]
   # @param lookback_period [Integer]

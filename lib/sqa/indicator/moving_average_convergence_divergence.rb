@@ -1,6 +1,6 @@
 # lib/sqa/indicator/moving_average_convergence_divergence.rb
 
-module SQA::Indicator; class << self
+class SQA::Indicator; class << self
 
   def moving_average_convergence_divergence(
         prices,

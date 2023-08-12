@@ -1,6 +1,6 @@
 # lib/sqa/indicator/fibonacci_retracement.rb
 
-module SQA::Indicator; class << self
+class SQA::Indicator; class << self
 
   def fibonacci_retracement(
         start_price,  # Float starting price of the range

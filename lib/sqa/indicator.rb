@@ -1,6 +1,6 @@
 # lib/sqa/indicators.rb
 
-module SQA::Indicator
+class SQA::Indicator
 end
 
 # setup a shortcut for the namespace

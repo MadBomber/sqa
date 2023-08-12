@@ -2,7 +2,7 @@
 
 # See Also: true_range
 
-module SQA::Indicator; class << self
+class SQA::Indicator; class << self
 
   def average_true_range(
         high_prices,  # Array of the day's high price

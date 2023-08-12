@@ -2,7 +2,7 @@
 
 # See Also: average_true_range
 
-module SQA::Indicator; class << self
+class SQA::Indicator; class << self
 
   # @param high_prices [Array]
   # @param low_prices [Array]

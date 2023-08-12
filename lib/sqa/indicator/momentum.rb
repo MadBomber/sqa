@@ -1,6 +1,6 @@
 # lib/sqa/indicator/momentum.rb
 
-module SQA::Indicator; class << self
+class SQA::Indicator; class << self
 
   # @param prices [Array]
   # @param period [Integer]

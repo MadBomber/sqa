@@ -1,6 +1,6 @@
 # lib/sqa/indicator/relative_strength_index.rb
 
-module SQA::Indicator; class << self
+class SQA::Indicator; class << self
 
   def relative_strength_index(
         prices,             # Array of prices

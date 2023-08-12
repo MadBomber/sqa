@@ -1,6 +1,6 @@
 # lib/sqa/indicator/classify_market_profile.rb
 
-module SQA::Indicator; class << self
+class SQA::Indicator; class << self
 
   def classify_market_profile(
         volumes,              # Array of volumes
