@@ -8,9 +8,12 @@ class SQA::Indicator; class << self
       )
     moving_averages = []
 
+    (0..period-2).to_a.each do |x|
+      moving_averages << prices[0..x].mean
+    end
+
     prices.each_cons(period) do |window|
-      moving_average   = window.sum / period.to_f
-      moving_averages << moving_average
+      moving_averages << window.mean
     end
 
     moving_averages # Array
