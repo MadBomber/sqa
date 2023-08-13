@@ -13,14 +13,27 @@ class SQA::Indicator; class << self
     true_ranges = true_range(high_prices, low_prices, close_prices)
     atr_values  = []
 
-    true_ranges.each_with_index do |true_range, index|
-      if index < period - 1
-        atr_values << nil
-      elsif index == period - 1
-        atr_values << true_ranges[0..index].sum / period.to_f
-      else
-        atr_values << (atr_values[index - 1] * (period - 1) + true_range) / period.to_f
-      end
+    # debug_me{[ :period, :true_ranges ]}
+
+    window_span = period - 1
+
+    true_ranges.size.times do |inx|
+      start_inx = inx - window_span
+      end_inx   = start_inx + window_span
+
+      start_inx = 0 if start_inx < 0
+
+      window    = true_ranges[start_inx..end_inx]
+
+      # debug_me{[
+      #   :inx,
+      #   :start_inx,
+      #   :end_inx,
+      #   :window,
+      #   "window.mean"
+      # ]}
+
+      atr_values << window.mean
     end
 
     atr_values # Array

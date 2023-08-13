@@ -5,6 +5,12 @@ end
 
 require 'csv'
 require 'date'
+
+require 'debug_me'
+include DebugMe
+
+require 'descriptive_statistics'
+
 require 'json'
 require 'pathname'
 
