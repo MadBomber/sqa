@@ -10,7 +10,8 @@ $data = Struct.new(
 					:volume,
 					:expected_tr,
 					:expected_atr,
-					:expected_sma
+					:expected_sma,
+					:expected_ema
 				).new
 
 $data.period        = 3
@@ -21,6 +22,7 @@ $data.expected_tr   = [       3.0,  4.0,  2.0,  5.0,  4.0,  2.0]
 $data.expected_atr  = [       3.0,  3.5,  3.0,  3.67, 3.67, 3.67]
 
 $data.volume        = (0..9).to_a
-$data.expected_sma  = [0.0, 0.5, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0]
+$data.expected_sma  = [0.0, 0.5, 1.0,  2.0,  3.0,  4.0,  5.0,  6.0,  7.0, 8.0]
+$data.expected_ema  = [0.0, 0.5, 1.25, 2.13, 3.06, 4.03, 5.02, 6.01, 7.0, 8.0]
 
 $data.freeze

@@ -3,8 +3,8 @@
 require           'minitest/autorun'
 require_relative  'test_helper'
 
-class AverageTrueRangeTest < Minitest::Test
-  def test_average_true_range
+class SimpleMovingAverageTest < Minitest::Test
+  def test_simple_moving_average
     result_sma  = SQA::Indicator.simple_moving_average(
                     $data.volume,
                     $data.period

@@ -5,16 +5,16 @@ class SQA::Indicator; class << self
   def simple_moving_average_trend(
         prices,           # Array of prices
         period,           # Integer number of entries to consider
-        delta = 0.0005    # Float defines a :nutria trend range.
+        delta = 1.0       # Float defines the angle range(+/-) for :neutral trend
       )
-    sma       = simple_moving_average(clprices, period)
+    sma       = simple_moving_average(prices, period)
     last_sma  = sma.last
     prev_sma  = sma.last(period).first
     angle     = Math.atan((last_sma - prev_sma) / period) * (180 / Math::PI)
 
-    trend = if angle > (0.0 + delta)
+    trend = if angle > delta
               :up
-            elsif angle < (0.0 - delta)
+            elsif angle < -delta
               :down
             else
               :neutral
