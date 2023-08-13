@@ -11,14 +11,16 @@ class SQA::Indicator; class << self
         prices, # Array of prices
         period  # Integer number of entries to consider
       )
-    return 0.0 if prices.length <= period
 
-    current_price = prices.last
-    past_price    = prices.last(period).first
-    change        = (current_price - past_price) / past_price.to_f
-    momentum      = change * 100.0
+    momentums = []
 
-    momentum  # Float expressed as a percentage change
+    prices.each_cons(period) do |window|
+      current_price = window.last.to_f
+      past_price    = window.first.to_f
+      momentums    << 10.0 * ( (current_price - past_price) / past_price)
+    end
+
+    momentums  # Array
   end
   alias_method :m, :momentum
 
