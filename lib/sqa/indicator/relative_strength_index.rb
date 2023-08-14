@@ -6,7 +6,7 @@ class SQA::Indicator; class << self
         prices,             # Array of prices
         period,             # Integer how many to consider at a time
         over_sold   = 30.0, # Float break over point in trend
-        over_boufht = 70.0  # Float break over point in trend
+        over_bought = 70.0  # Float break over point in trend
       )
     gains   = []
     losses  = []
