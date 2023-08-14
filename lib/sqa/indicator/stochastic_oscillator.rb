@@ -20,10 +20,10 @@ class SQA::Indicator; class << self
     k_values = []
     d_values = []
 
-    closing_prices.each_cons(period) do |closing_prices_subset|
+    closing_prices.each_cons(period) do |window|
       highest_high  = high_prices.max(period)
       lowest_low    = low_prices.min(period)
-      current_close = closing_prices_subset.last
+      current_close = window.last
       k_values     << (current_close - lowest_low) / (highest_high - lowest_low) * 100 # Calculate the k_value
     end
 
@@ -34,6 +34,35 @@ class SQA::Indicator; class << self
     [k_values, d_values]
   end
   alias_method :so, :stochastic_oscillator
+
+
+  def stochastic_oscillator2(
+        prices, # Array of prices
+        period  # Integer number of events to consider
+      )
+    k_values = []
+    d_values = []
+
+    prices.each_cons(period) do |window|
+      low           = window.min  # Lowest  price in the period
+      high          = window.max  # Highest price in the period
+      current_price = window.last # Current closing price
+
+      k_values << (current_price - low) * 100 / (high - low)
+    end
+
+    k_values.each_cons(period) do |window|
+      d_values << window.mean
+    end
+
+    {
+      k: k_values,
+      d: d_values
+    }
+  end
+  alias_method :so2, :stochastic_oscillator2
+
+
 
 end; end
 
