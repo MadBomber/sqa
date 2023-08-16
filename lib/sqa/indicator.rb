@@ -1,4 +1,4 @@
-# lib/sqa/indicators.rb
+# lib/sqa/indicator.rb
 
 class SQA::Indicator
 end

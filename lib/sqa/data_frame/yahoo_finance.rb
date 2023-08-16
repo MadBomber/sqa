@@ -3,8 +3,8 @@
 
 class SQA::DataFrame < Daru::DataFrame
   class YahooFinance
-    def self.from_csv(path_to_csv_file)
-      df = SQA::DataFrame.from_csv(path_to_csv_file)
+    def self.from_csv(ticker)
+      df = SQA::DataFrame.from_csv(ticker)
 
       new_names = {
         "Date"      => :timestamp,

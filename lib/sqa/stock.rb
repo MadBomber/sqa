@@ -1,26 +1,19 @@
 # lib/sqa/stock.rb
 
-require_relative 'indicators'
-require_relative 'datastore'
-
-class SQA::Stock < ActiveRecord::Base
-  include SQA::Indicators
-
-  # has_many :activities using ticker as the foreign key
-  # primary id is ticker  it is unique
-
+class SQA::Stock
   attr_accessor :company_name
-  attr_accessor :data
+  attr_accessor :df             # The DataFrane
   attr_accessor :ticker
 
-  def initialize(ticker, datastore = SQA::Datastore::CSV)
+  def initialize(ticker:, source: :yahoo_finance, type: :csv)
     @ticker       = ticker
     @company_name = "Company Name"
-    @data         = datastore.new(ticker)
+    klass         = "SQA::DataFrame::#{source.to_s.camelize}".constantize
+    @df           = klass.send("from_#{type.downcase}", ticker)
   end
 
   def to_s
-    "#{ticker} with #{@data.size} data points."
+    "#{ticker} with #{@df.size} data points from #{@df.timestamp.first} to #{@df.timestamp.last}"
   end
 end
 

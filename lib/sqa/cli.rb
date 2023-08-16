@@ -1,6 +1,6 @@
 # lib/sqa/cli.rb
 
-require_relative 'stock'
+require_relative '../sqa'
 
 module SQA
 	class CLI
