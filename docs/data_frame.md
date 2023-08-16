@@ -49,6 +49,61 @@ df.vectors["The Column Name"].last(14).to_a
   # This limits the size of the Array to just the last 14 entries in the DataFrame
 ```
 
+## Renaming the Columns
+
+You can rename the columns to be symbols.  Doing this allows you to use the column names as methods for accessing them in the DataFrame.
+
+```ruby
+old_names = df.vectors.to_a
+  #=> ["Date", "Open", "High", "Low", "Close", "Adj Close", "Volume"]
+
+new_names = {} # Hash where key is old name, value is new name
+  #=> {}
+
+df.vectors.each_entry {|old_name| new_names[old_name] = old_name.downcase.gsub(' ','_').to_sym}
+
+new_names
+  #=>
+{"Date"=>:date,
+ "Open"=>:open,
+ "High"=>:high,
+ "Low"=>:low,
+ "Close"=>:close,
+ "Adj Close"=>:adj_close,
+ "Volume"=>:volume}
+
+
+df.rename_vectors(new_names)
+  #=> #<Daru::Index(7): {date, open, high, low, close, adj_close, volume}>
+
+df.vectors
+  #=> #<Daru::Index(7): {date, open, high, low, close, adj_close, volume}>
+
+# Now you can use the symbolized column name as a method to select that column
+df.volume.last(14).volume
+  #=>
+#<Daru::Vector(14)>
+              volume
+     10741  45377800
+     10742  37283200
+     10743  47471900
+     10744  47460200
+     10745  48291400
+     10746  38824100
+     10747  35175100
+     10748  50389300
+     10749  61235200
+     10750 115799700
+     10751  97576100
+     10752  67823000
+     10753  60378500
+     10754  54628800
+```
+
+
+
+
+
 ## Stats on a DataFrame
 
 Daru provides some basic tools for the analysis of data stored in a DataFrame.  There are too many to cover at this time.  Here is a simple example:
