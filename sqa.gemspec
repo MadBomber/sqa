@@ -4,7 +4,7 @@ require_relative "lib/sqa/version"
 
 Gem::Specification.new do |spec|
   spec.name         = "sqa"
-  spec.version      = SQA::VERSION
+  spec.version      = SQA::Version::VERSION
   spec.authors      = ["Dewayne VanHoozer"]
   spec.email        = ["dvanhoozer@gmail.com"]
 

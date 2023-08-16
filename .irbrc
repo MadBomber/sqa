@@ -1,0 +1,3 @@
+# sqa/,urg
+
+require 'sqa'
