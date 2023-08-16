@@ -20,7 +20,7 @@ class SQA::Indicator; class << self
 
     {
       upper_band: upper_band, # Array
-      pwer_band:  lower_band  # Array
+      lower_band: lower_band  # Array
     }
   end
   alias_method :bb, :bollinger_bands

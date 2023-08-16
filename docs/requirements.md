@@ -38,3 +38,25 @@ Most reliable way of getting data is the scrape the website.  The gem financial_
 ## Extract Indicators
 
 After sleeping on it, I think the original plan with the fin_tech gem is a better idea for how to package the indicators.  I'm going to keep the name FinTech for now while I think of something better.  These are indicators; but I want them to be class-level methods with established contracts in their API.
+
+The indicators in lib/sqa/indicator are stand-alone class methods; but, its so handy to have them in this repo.  I will keep them here for a while
+
+## Configuration
+
+SQA::Config is managed by the gem "mixlib-config"  See the gem for full documentation.
+
+The TL;DR is:
+
+```ruby
+require 'sqa'
+# read a configuration file in yaml, toml, json, ruby
+# or just accept the defaults
+SQA::Config.from_file(path_to_file)
+
+# Initialize the environment
+SQA.init
+```
+
+## Strategy Framework
+
+Got the first ideas for handling strategies. in place.

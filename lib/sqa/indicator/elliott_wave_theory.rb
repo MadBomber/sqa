@@ -33,7 +33,7 @@ class SQA::Indicator; class << self
     waves.each do |wave|
       analysis << {
         wave:     wave,
-        oattern:  ewt_identify_pattern(wave)
+        pattern:  ewt_identify_pattern(wave)
       }
     end
 

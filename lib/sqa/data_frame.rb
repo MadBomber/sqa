@@ -4,8 +4,13 @@
 require_relative  'data_frame/yahoo_finance'
 
 class SQA::DataFrame < Daru::DataFrame
+  def self.path(filename)
+    SQA::Config.data_dir + filename
+  end
+
   def self.from_csv(ticker)
-    path_to_csv = SQA::Config.data_dir + "#{ticker.downcase}.csv"
-    super(path_to_csv)
+    df          = super(path("#{ticker.downcase}.csv"))
+    df[:ticker] = ticker
+    df
   end
 end
