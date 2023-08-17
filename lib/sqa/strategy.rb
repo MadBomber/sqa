@@ -20,7 +20,7 @@ class SQA::Strategy
   end
 end
 
-__EMD__
+__END__
 
 Example Usage
 =============

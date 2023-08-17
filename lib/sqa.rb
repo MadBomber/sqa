@@ -40,6 +40,7 @@ end
 require_relative "sqa/data_frame"
 require_relative "sqa/errors"
 require_relative "sqa/indicator"
+require_relative "sqa/strategy"
 require_relative "sqa/stock"
 require_relative "sqa/version"
 
