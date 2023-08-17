@@ -45,7 +45,7 @@ aapl = SQA::Stock.new('aapl')
 
 `aapl.df` is the Daru::DataFrame
 see the `daru` gem for how to manipulate the DataFrame
-The SQA::Indicator class methods use Arrays no the DataFrame
+The SQA::Indicator class methods use Arrays not the DataFrame
 Here is an example:
 
 
