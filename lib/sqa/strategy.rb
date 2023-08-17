@@ -18,48 +18,40 @@ class SQA::Strategy
     @strategies.each { |signal| result << signal.call(v) }
     result
   end
-end
 
-__END__
+  def auto_load(except: [:common], only: [])
+    dir_path  = Pathname.new(__dir__) + "strategy"
+    except    = Array(except).map{|f| f.to_s.downcase}
+    only      = Array(only).map{|f| f.to_s.downcase}
 
-Example Usage
-=============
+    debug_me{[
+      :dir_path,
+      "dir_path.exist?",
+      :except,
+      :only
+    ]}
 
-ss = SQA::Strategy.new
+    dir_path.children.each do |child|
+      next unless ".rb" == child.extname.downcase
 
-ss.add do |vector|
-  case rand(10)
-  when (8..)
-    :buy
-  when (..3)
-    :sell
-  else
-    :hold
+      basename = child.basename.to_s.split('.').first.downcase
+
+      next if except.include? basename
+      next if !only.empty?  && !only.include?(basename)
+
+      print "loading #{basename} ... "
+      load child
+      puts "done"
+    end
+
+    nil
+  end
+
+  def available
+    ObjectSpace.each_object(Class).select { |klass|
+      klass.to_s.start_with?("SQA::Strategy::")
+    }
   end
 end
 
 
-ss.add do |vector|
-  case rand(10)
-  when (8..)
-    :sell
-  when (..3)
-    :buy
-  else
-    :keep
-  end
-end
-
-def magic(vector)
-  0 == rand(2) ? :spend : :save
-end
-
-ss.add method(:magic)
-
-class MyClass
-  def self.my_method(vector)
-    vector.rsi[:rsi]
-  end
-end
-
-ss.add MyClass.method(:my_method)
