@@ -1,9 +1,9 @@
 # lib/sqa/strategry/mp.rb
 
-require_relative 'trade_against'
+require_relative 'common'
 
 class SQA::Strategy::MP
-	extend SQA::Strategy::TradeAgainst
+	extend SQA::Strategy::Common
 
 	def self.trade(vector)
 		mp = vector.market_profile=:mixed,

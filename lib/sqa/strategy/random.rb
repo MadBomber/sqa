@@ -5,12 +5,7 @@ require_relative 'common'
 class SQA::Strategy::Random
 	extend SQA::Strategy::Common
 
-	def self.coin_flip(vector)
-		0 == rand(2) ? :buy : :sell
-	end
-	alias_method :trade, :coin_flip
-
-	def self.thirds(vector)
+	def self.trade(vector)
 		case rand(9)
 		when (0..2)
 			:buy
@@ -21,4 +16,3 @@ class SQA::Strategy::Random
 		end
 	end
 end
-

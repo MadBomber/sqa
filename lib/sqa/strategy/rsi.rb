@@ -1,9 +1,9 @@
 # lib/sqa/strategry/rsi.rb
 
-require_relative 'trade_against'
+require_relative 'common'
 
 class SQA::Strategy::RSI
-	extend SQA::Strategy::TradeAgainst
+	extend SQA::Strategy::Common
 
 	def self.trade(vector)
 		rsi_trend = vector.rsi[:trend]

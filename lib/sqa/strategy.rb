@@ -7,9 +7,16 @@ class SQA::Strategy
     @strategies = []
   end
 
-  def add(a_proc=nil, &block)
-    @strategies << a_proc unless a_proc.nil?
-    @strategies << block  if a_proc.nil? && block_given?
+  def add(a_strategy)
+    raise SQA::BadParameterError unless [Class, Method].include? a_strategy.class
+
+    a_proc  = if Class == a_strategy.class
+                a_strategy.method(:trade)
+              else
+                a_strategy
+              end
+
+    @strategies << a_proc
   end
 
   def execute(v)
@@ -23,13 +30,6 @@ class SQA::Strategy
     dir_path  = Pathname.new(__dir__) + "strategy"
     except    = Array(except).map{|f| f.to_s.downcase}
     only      = Array(only).map{|f| f.to_s.downcase}
-
-    debug_me{[
-      :dir_path,
-      "dir_path.exist?",
-      :except,
-      :only
-    ]}
 
     dir_path.children.each do |child|
       next unless ".rb" == child.extname.downcase

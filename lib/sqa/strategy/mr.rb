@@ -1,9 +1,9 @@
 # lib/sqa/strategry/mr.rb
 
-require_relative 'trade_against'
+require_relative 'common'
 
 class SQA::Strategy::MR
-	extend SQA::Strategy::TradeAgainst
+	extend SQA::Strategy::Common
 
 	def self.trade(vector)
 		if vector.mr

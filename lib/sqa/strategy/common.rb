@@ -7,6 +7,8 @@
 class SQA::Strategy
 	module Common
 		def trade_against(vector)
+			return :hold unless respond_to? :trade
+
 			recommendation = trade(vector)
 
 			if :sell == recommendation
@@ -19,7 +21,10 @@ class SQA::Strategy
 		end
 
 		def desc
-			doc_path = Pathname.new __FILE__.gsub('.rb', '.md')
+			doc_filename 	= self.name.split('::').last.downcase + ".md"
+			doc_path 			= Pathname.new(__dir__) + doc_filename
+
+			debug_me{[ :doc_path ]}
 
 			if doc_path.exist?
 				doc = doc_path.read

@@ -1,9 +1,9 @@
 # lib/sqa/strategry/ema.rb
 
-require_relative 'trade_against'
+require_relative 'common'
 
 class SQA::Strategy::EMA
-	extend SQA::Strategy::TradeAgainst
+	extend SQA::Strategy::Common
 
 	def self.trade(vector)
 		ema_trend = vector.ema[:trend]

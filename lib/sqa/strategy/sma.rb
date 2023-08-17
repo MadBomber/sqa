@@ -1,9 +1,9 @@
 # lib/sqa/strategry/sma.rb
 
-require_relative 'trade_against'
+require_relative 'common'
 
 class SQA::Strategy::SMA
-	extend SQA::Strategy::TradeAgainst
+	extend SQA::Strategy::Common
 
 	def self.trade(vector)
 		sma_trend = vector.rsi[:trend]
