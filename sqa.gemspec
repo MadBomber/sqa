@@ -34,6 +34,17 @@ Gem::Specification.new do |spec|
   spec.executables    = %w[sqa]
   spec.require_paths  = %w[lib]
 
-  # Uncomment to register a new dependency of your gem
-  # spec.add_dependency "example-gem", "~> 1.0"
+  spec.add_dependency 'active_support'
+  spec.add_dependency 'daru'
+  spec.add_dependency 'descriptive_statistics'
+  spec.add_dependency 'gruff'
+  spec.add_dependency 'mixlib-config'
+  spec.add_dependency 'nenv'
+  spec.add_dependency 'version_gem'
+
+  spec.add_development_dependency 'amazing_print'
+  spec.add_development_dependency 'bundler'
+  spec.add_development_dependency 'debug_me'
+  spec.add_development_dependency 'minitest'
+  spec.add_development_dependency 'rake'
 end

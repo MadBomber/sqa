@@ -6,7 +6,7 @@ The BUY/SELL signals that it generates are part of a game.  **DO NOT USE** when 
 
 ## This is a Work in Progress
 
-I'm making use of lots of gems which are not part of the gemspec at this time.  I will be adding them as they make the final cut as to fitness for the intended function.  To see the current gems I'm using, or intend to use, see the main `sqa.rb` file's require statements.
+I'm making use of lots of gems which may not be part of the gemspec at this time.  I will be adding them as they make the final cut as to fitness for the intended function.  Some gems are configurable.  For example the default for the plotting library is `gruff`.  There are several available that the `daru` gem can use.
 
 ## Installation
 
@@ -17,6 +17,14 @@ Install the gem and add to the application's Gemfile by executing:
 If bundler is not being used to manage dependencies, install the gem by executing:
 
     gem install sqa
+
+## ShoutOut To `daru`
+
+**D**ata **A**nalysis in **RU**by
+
+http://github.com/v0dro/daru
+
+Its `DataFrame` class is a very interesting in memory data structure.
 
 ## Usage
 
@@ -40,6 +48,13 @@ The CSV files will be named by the stock's ticker symbol.  For example: AAPL.csv
 
 ```ruby
 require 'sqa'
+# TODO: See the documentation on configurable items
+# Omit to use defaults
+SQA::Config.from_file(path_to_config_file)
+
+# initialize framework from configuration values
+SQA.init
+
 aapl = SQA::Stock.new('aapl')
 ```
 

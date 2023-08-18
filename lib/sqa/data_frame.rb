@@ -13,4 +13,17 @@ class SQA::DataFrame < Daru::DataFrame
     df[:ticker] = ticker
     df
   end
+
+  def self.load(filename)
+    source  = path(filename)
+    type    = source.extname.downcase
+
+    if ".csv" == type
+      @df = Daru::DataFrame.from_csv(source)
+    elsif ".json" == type
+      @df = Daru::DataFrame.from_json(source)
+    else
+      raise SQA::BadParamenterError, "supports csv or json only"
+    end
+  end
 end
