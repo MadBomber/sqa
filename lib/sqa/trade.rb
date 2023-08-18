@@ -4,7 +4,9 @@
 class SQA::Trade
 	attr_accessor :df
 
-	def initialize(filename="trades.csv")
+	def initialize(
+				filename = SQA::Config.trades_filename
+			)
 		@df = SQA::DataFrame.load(filename)
 	end
 

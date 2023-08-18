@@ -36,18 +36,23 @@ module SQA
     extend Mixlib::Config
     config_strict_mode true
 
-    default :data_dir,  				HOME + "sqa_data"
-    default :plotting_library, 	:gruff
-    default :lazy_update,  			false
+    default :data_dir,  					HOME + "sqa_data"
+    default :plotting_library, 		:gruff  # TODO: use svg-graph
+    default :lazy_update,  				false
+    default :portfolio_filename,	"portfolio.csv"
+    default :trades_filename,    	"trades.csv"
 	end
 
 	def self.init
+		Config.data_dir 			= Pathname.new Config.data_dir.gsub('~', Nenv.home)
 		Daru.lazy_update 			= Config.lazy_update
 		Daru.plotting_library = Config.plotting_library
 
 		nil
 	end
 end
+
+# require_relative "patches/daru" # TODO: extract Daru::DataFrame in new gem sqa-data_frame
 
 require_relative "sqa/data_frame"
 require_relative "sqa/errors"
