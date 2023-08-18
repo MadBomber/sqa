@@ -8,22 +8,20 @@ class SQA::DataFrame < Daru::DataFrame
     SQA::Config.data_dir + filename
   end
 
-  def self.from_csv(ticker)
-    df          = super(path("#{ticker.downcase}.csv"))
-    df[:ticker] = ticker
-    df
-  end
-
-  def self.load(filename)
+  def self.load(filename, options={}, &block)
     source  = path(filename)
     type    = source.extname.downcase
 
     if ".csv" == type
-      @df = Daru::DataFrame.from_csv(source)
+     from_csv(source, options={}, &block)
     elsif ".json" == type
-      @df = Daru::DataFrame.from_json(source)
+      from_json(source, options={}, &block)
+    elsif %w[.txt .dat].include?(type)
+      from_plaintext(source, options={}, &block)
+    elsif ".xls" == type
+      from_excel(source, options={}, &block)
     else
-      raise SQA::BadParamenterError, "supports csv or json only"
+      raise SQA::BadParamenterError, "un-suppod file type: #{type}"
     end
   end
 end

@@ -3,9 +3,13 @@
 
 class SQA::DataFrame < Daru::DataFrame
   class YahooFinance
-    def self.from_csv(ticker)
-      df = SQA::DataFrame.from_csv(ticker)
+    def self.load(filename, options={}, &block)
+      df = SQA::DataFrame.load(filename, options={}, &block)
 
+      # ASSUMPTION: This is the column headers from Yahoo Finance for
+      # CSV files.  If the file type is something different from the
+      # same source, they may not be the same.
+      #
       new_names = {
         "Date"      => :timestamp,
         "Open"      => :open_price,

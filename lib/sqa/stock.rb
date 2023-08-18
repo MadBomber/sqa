@@ -6,10 +6,12 @@ class SQA::Stock
   attr_accessor :ticker
 
   def initialize(ticker:, source: :yahoo_finance, type: :csv)
-    @ticker       = ticker
+    @ticker       = ticker.downcase
     @company_name = "Company Name"
     klass         = "SQA::DataFrame::#{source.to_s.camelize}".constantize
-    @df           = klass.send("from_#{type.downcase}", ticker)
+    filename      = "#{@ticker}.#{type}"
+    @df           = klass.send(:load, filename)
+    @df[:ticker]  = ticker
   end
 
   def to_s
