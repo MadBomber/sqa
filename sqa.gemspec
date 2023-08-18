@@ -34,7 +34,7 @@ Gem::Specification.new do |spec|
   spec.executables    = %w[sqa]
   spec.require_paths  = %w[lib]
 
-  spec.add_dependency 'active_support'
+  spec.add_dependency 'activesupport'
   spec.add_dependency 'daru'
   spec.add_dependency 'descriptive_statistics'
   spec.add_dependency 'gruff'
