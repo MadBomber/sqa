@@ -37,6 +37,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'activesupport'
   spec.add_dependency 'daru'
   spec.add_dependency 'descriptive_statistics'
+  spec.add_dependency 'mixlib-cli'
   spec.add_dependency 'mixlib-config'
   spec.add_dependency 'nenv'
   spec.add_dependency 'version_gem'

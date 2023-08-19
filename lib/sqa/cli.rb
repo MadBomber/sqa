@@ -4,21 +4,35 @@ require_relative '../sqa'
 
 module SQA
 	class CLI
-		def initialize
-			@args = $ARGV.dup
-		end
+    include Mixlib::CLI
 
-		def run
-      stock = Stock.new('aapl')
+    option :config_file,
+      short:        "-c CONFIG",
+      long:         "--config CONFIG",
+      default:      "~/.sqa.rb",
+      description:  "The configuration file to use"
 
-			puts <<~OUTPUT
+    option :log_level,
+      short:        "-l LEVEL",
+      long:         "--log_level LEVEL",
+      description:  "Set the log level (debug, info, warn, error, fatal)",
+      required:     true,
+      in:           [:debug, :info, :warn, :error, :fatal],
+      proc:         Proc.new { |l| l.to_sym }
 
-        TBD
-        @args => #{@args}
-        stock => #{stock}
+    option :help,
+      short:        "-h",
+      long:         "--help",
+      description:  "Show this message",
+      on:           :tail,
+      boolean:      true,
+      show_options: true,
+      exit:         0
 
-			OUTPUT
-		end
+    def run(argv = ARGV)
+      parse_options(argv)
+      SQA::Config.merge!(config)
+    end
 	end
 end
 

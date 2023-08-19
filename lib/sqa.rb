@@ -5,6 +5,7 @@ require 'active_support/core_ext/string'
 require 'daru'
 require 'date'
 require 'descriptive_statistics'
+require 'mixlib/cli'
 require 'mixlib/config'
 require 'nenv'
 require 'pathname'
@@ -41,14 +42,29 @@ module SQA
     default :lazy_update,  				false
     default :portfolio_filename,	"portfolio.csv"
     default :trades_filename,    	"trades.csv"
+
+  	default :log_level, 	:info
+  	default :config_file, "~/.sqa.rb"
+
 	end
 
 	def self.init
-		Config.data_dir 			= Pathname.new Config.data_dir.gsub('~', Nenv.home)
+		SQA::CLI.new.run if defined? SQA::CLI
+
+		Config.config_file 		= Pathname.new homify(Config.config_file)
+
+		Config.from_file(Config.config_file)
+
+		Config.data_dir 			= Pathname.new homify(Config.data_dir)
+
 		Daru.lazy_update 			= Config.lazy_update
 		Daru.plotting_library = Config.plotting_library
 
 		nil
+	end
+
+	def self.homify(filepath)
+		filepath.gsub(/^~/, Nenv.home)
 	end
 end
 

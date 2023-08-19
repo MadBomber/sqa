@@ -3,4 +3,4 @@
 require 'sqa'
 require 'sqa/cli'
 
-SQA::CLI.new.run
+SQA.init

@@ -13,6 +13,8 @@ There will be Daru extensions and patches made to adapt it to the specific needs
 
 Frankly, Ruby has lost the battle to Python w/r/t data analysis.  The Python equivalent library to Daru is Pandas.  It is actively maintained.  There is a Ruby gem that uses PyCall to access Pandas but it is a few years out of date with open issues.
 
+I am considering extracting the Daru::DataFrame class into a new gem `sqa-Ddata_frame` so that I can more easily make upgrades and refactor the old thing.  It really could use a facelift and a better plugin strategy.  The lib/daru/data_frame.rb is over 3,000 lines long.  There is a lot of method documentation; but, I not really sure that all of those methods are really needed.  We could at least extract each of the methods out into its own file.
+
 ## Creating a DataFrame from a CSV File
 
 A common activity is to use financial websites such as https://finance.yahoo.com to download historical price data for a stock.
@@ -21,6 +23,10 @@ Here is how to create a DataFrame from a CSV file downloaded from Finance.yahoo.
 
 ```ruby
 df = Daru::DataFrame.from_csv('aapl.csv')
+
+# The SQA way uses the file's type to invoke the
+# correct method.
+df = SQA::DataFrame.load(filename)
 ```
 
 The Daru::DataFrame class can be created from many different sources including an ActiveRecord relation -- e.g. you can get you data from a database.
@@ -155,10 +161,4 @@ It's important to note that investing in stocks carries inherent risks, and seek
 puts df.ai("Yes; but, should I buy this stock now?")
 ```
 Consulting the magic eight ball cluster.... The future looks cloudy.  You should have bought it 14 days ago when I told you it was on its way up!  Do you ever listen to me?  No!  I slave over these numbers night and day.  I consult the best magic eight ball sources available.  What do I get for my efforts?  Nothing!
-
-
-
-
-
-
 
