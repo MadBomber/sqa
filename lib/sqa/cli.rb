@@ -6,11 +6,20 @@ module SQA
 	class CLI
     include Mixlib::CLI
 
-    option :config_file,
-      short:        "-c CONFIG",
-      long:         "--config CONFIG",
+    banner <<~BANNER
+
+      Simple Qualitive Analysis (SQA)
+
+      Usage:  sqa [options]
+
+      OPTIONS:
+    BANNER
+
+    option :config_filepath,
+      short:        "-c FILEPATH",
+      long:         "--config FILEPATH",
       default:      "~/.sqa.rb",
-      description:  "The configuration file to use"
+      description:  "The filepath to the configuration to use"
 
     option :log_level,
       short:        "-l LEVEL",
@@ -19,6 +28,18 @@ module SQA
       required:     true,
       in:           [:debug, :info, :warn, :error, :fatal],
       proc:         Proc.new { |l| l.to_sym }
+
+    option :portfolio_filename,
+      short:        "-p FIELNAME",
+      long:         "--portfolio FIELNAME",
+      default:      "portfolio.csv",
+      description:  "Set the filename of the portfolio"
+
+    option :trades_filename,
+      short:        "-t FIELNAME",
+      long:         "--trades FIELNAME",
+      default:      "trades.csv",
+      description:  "Set the filename into which trades are stored"
 
     option :help,
       short:        "-h",

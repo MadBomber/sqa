@@ -43,8 +43,10 @@ module SQA
     default :portfolio_filename,	"portfolio.csv"
     default :trades_filename,    	"trades.csv"
 
-  	default :log_level, 	:info
-  	default :config_file, "~/.sqa.rb"
+  	default :log_level, 					:info
+  	default :config_filepath, 		"~/.sqa.rb"
+  	default :portfolio_filename, 	"portfolio.csv"
+  	default :trades_filename, 		"trades.csv"
 
 	end
 
