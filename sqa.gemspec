@@ -4,7 +4,7 @@ require_relative "lib/sqa/version"
 
 Gem::Specification.new do |spec|
   spec.name         = "sqa"
-  spec.version      = SQA::Version::VERSION
+  spec.version      = SQA::Version::VERSION.to_s
   spec.authors      = ["Dewayne VanHoozer"]
   spec.email        = ["dvanhoozer@gmail.com"]
 
@@ -37,10 +37,16 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'activesupport'
   spec.add_dependency 'daru'
   spec.add_dependency 'descriptive_statistics'
-  spec.add_dependency 'mixlib-cli'
-  spec.add_dependency 'mixlib-config'
   spec.add_dependency 'nenv'
-  spec.add_dependency 'version_gem'
+  spec.add_dependency 'tty-config'
+  spec.add_dependency 'tty-logger'
+  spec.add_dependency 'tty-markdown'
+  spec.add_dependency 'tty-option'
+  spec.add_dependency 'tty-progressbar'
+  spec.add_dependency 'tty-prompt'
+  spec.add_dependency 'tty-reader'
+  spec.add_dependency 'tty-spinner'
+  spec.add_dependency 'tty-table'
 
   spec.add_development_dependency 'amazing_print'
   spec.add_development_dependency 'bundler'
