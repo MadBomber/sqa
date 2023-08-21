@@ -1,13 +1,12 @@
-# lib/sqa/command/analyze.rb
+# lib/sqa/command/analysis.rb
 
 module SQA::Command
-	class Analyze
+	class Analysis
 		def initialize
 
 		end
 	end
-
-end; end
+end
 
 __END__
 

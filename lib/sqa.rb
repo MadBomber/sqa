@@ -61,6 +61,7 @@ end
 # require_relative "patches/daru" # TODO: extract Daru::DataFrame in new gem sqa-data_frame
 
 require_relative "sqa/config"
+require_relative "sqa/command"
 require_relative "sqa/constants"
 require_relative "sqa/data_frame"
 require_relative "sqa/errors"

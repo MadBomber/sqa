@@ -11,6 +11,7 @@ module SQA
 
     usage do
       program "sqa"
+      command ""
 
       desc "Simple Qualitative Analysis (SQA)"
 

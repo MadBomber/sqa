@@ -5,4 +5,5 @@ module SQA
 	end
 end
 
-require_relative 'command/analyze'
+require_relative 'command/analysis'
+require_relative 'command/web'
