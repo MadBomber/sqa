@@ -2,10 +2,11 @@
 
 # The hierarchies of values should be:
 #   default
-#   envar ..... overrids default
+#   envar ..... overrides default
 #   config file ..... overrides envar
 #   command line parameters ...... overrides config file
 
+# TODO: Replace this with a Hashie class
 require 'tty-config'
 
 module SQA
@@ -46,7 +47,10 @@ module SQA
       config.autoload_env
     end
 
-
+    # TODO: It is awkard to have to do this
+    #       SQA::Config.config[:thing] to get the
+    #       value of thing ...
+    #       Consider replacing with Hashie::Dash
     def self.config
       @config ||= self.new.config
     end

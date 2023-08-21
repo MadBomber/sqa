@@ -15,23 +15,33 @@ end
 
 
 module SQA
-	def self.init
-		CLI.new.run if defined? CLI
+	class << self
+		@@config = nil
 
-		Config.config_file 		= Pathname.new homify(Config.config_file)
+		def init
+			Config.run
+			CLI.run 		if defined? CLI
 
-		Config.from_file(Config.config_file)
 
-		Config.data_dir 			= Pathname.new homify(Config.data_dir)
+			Config.config[:data_dir] = Pathname.new homify(Config.congif[:data_dir])
 
-		Daru.lazy_update 			= Config.lazy
-		Daru.plotting_library = Config.plotting_lib
+			Daru.lazy_update 			= Config.config[:lazy]
+			Daru.plotting_library = Config.config[:plot_lib]
 
-		nil
-	end
+			nil
+		end
 
-	def self.homify(filepath)
-		filepath.gsub(/^~/, Nenv.home)
+		def homify(filepath)
+			filepath.gsub(/^~/, Nenv.home)
+		end
+
+		def config
+			@@config
+		end
+
+		def config=(an_object)
+			@@config = an_object
+		end
 	end
 end
 
