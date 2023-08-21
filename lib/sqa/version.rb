@@ -4,9 +4,11 @@ require 'sem_version'
 require 'sem_version/core_ext'
 
 module SQA
-  module Version
-    VERSION = "0.0.7".to_version
-  end
+  VERSION = "0.0.7"
 
-  include Version
+  class << self
+    def version
+      @@version ||= VERSION.to_version
+    end
+  end
 end

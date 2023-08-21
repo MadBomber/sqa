@@ -6,58 +6,79 @@
 #   config file ..... overrides envar
 #   command line parameters ...... overrides config file
 
-# TODO: Replace this with a Hashie class
-require 'tty-config'
+require 'hashie'
 
 module SQA
-	class Config
-    attr_reader :config
+	class Config < Hashie::Dash
+    include Hashie::Extensions::Dash::PropertyTranslation
+    include Hashie::Extensions::Coercion
+    include Hashie::Extensions::Dash::PredefinedValues
 
-    def initialize
-      @config              = TTY::Config.new
-      @config.filename = "sqa"
-      @config.extname = ".yml"
-      @config.append_path Dir.pwd   # Look in the local directory first
-      @config.append_path Dir.home  # Then the home directory
+    property :config_file,  coerce: Pathname
+    property :data_dir,     default: HOME + "sqa_data", coerce: Pathname
 
-      set_defaults
+    # TODO: If no path is given, these files will be in
+    #       data directory, otherwise, use the given path
+    property :portfolio_filename, from: :portfolio, default: "portfolio.csv"
+    property :trades_filename,    from: :trades,    default: "trades.csv"
+
+    property :log_level,    default: :info,  coerce: Symbol, values: %i[debug info warn error fatal]
+
+    # TODO: need a custom proc since there is no Boolean class in Ruby
+    property :debug,        default: false  #, coerce: Boolean
+    property :verbose,      default: false  #, coerce: Boolean
+
+    # NOTE: Just here because it is a CLI option
+    property :help
+    property :version
+
+
+    # TODO: use svg-grap
+    property :plotting_library, from: :plot_lib,  default: :gruff, coerce: Symbol
+    property :lazy_update,      from: :lazy,      default: false
+
+
+    coerce_key :debug, ->(v) do
+      case v
+      when String
+        !!(v =~ /\A(true|t|yes|y|1)\z/i)
+      when Numeric
+        !v.to_i.zero?
+      else
+        v == true
+      end
+    end
+
+    coerce_key :verbose, ->(v) do
+      case v
+      when String
+        !!(v =~ /\A(true|t|yes|y|1)\z/i)
+      when Numeric
+        !v.to_i.zero?
+      else
+        v == true
+      end
+    end
+
+    ########################################################
+    def initialize(a_hash={})
+      super(a_hash)
       override_with_envars
     end
 
-
-    def set_defaults
-      @config.set( :config_file, value: "~/.sqa.rb" )
-      @config.set( :data_dir   , value: HOME + "sqa_data" )
-      @config.set( :debug      , value: false )
-      @config.set( :lazy       , value: false )
-      @config.set( :log_level  , value: :info )
-      @config.set( :plot_lib   , value: :gruff ) # TODO: use svg-grap
-      @config.set( :portfolio  , value: "portfolio.csv" )
-      @config.set( :trades     , value: "trades.csv" )
-      @config.set( :verbose    , value: false )
-      # @config.set( :version    , value: SQA::Version.to_s )
-    end
+    def debug?    = debug
+    def verbose?  = verbose
 
 
-    # SMELL:  Does this load from the envar everytime there
-    #         a fetch or just the first time?
-    def override_with_envars(prefix = "SQA")
-      config.env_prefix     = prefix.upcase
-      config.env_separator  = "_" # Used for nesting config names
-      config.autoload_env
-    end
-
-    # TODO: It is awkard to have to do this
-    #       SQA::Config.config[:thing] to get the
-    #       value of thing ...
-    #       Consider replacing with Hashie::Dash
-    def self.config
-      @config ||= self.new.config
-    end
-
-
-    def self.run
-      config
+    ########################################################
+    private
+    def override_with_envars(prefix = "SQA_")
+      keys.each do |key|
+        envar = ENV["#{prefix}#{key.to_s.upcase}"]
+        send("#{key}=", envar) unless envar.nil?
+      end
     end
 	end
 end
+
+SQA.config = SQA::Config.new

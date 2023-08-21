@@ -9,6 +9,9 @@ require 'descriptive_statistics'
 require 'nenv'
 require 'pathname'
 
+require_relative "sqa/version"
+
+
 unless defined?(HOME)
 	HOME = Pathname.new(Nenv.home)
 end
@@ -18,15 +21,25 @@ module SQA
 	class << self
 		@@config = nil
 
-		def init
-			Config.run
-			CLI.run 		if defined? CLI
+		def init(argv=ARGV)
+			if argv.is_a? String
+				argv = argv.split()
+			end
 
 
-			Config.config[:data_dir] = Pathname.new homify(Config.congif[:data_dir])
+			# Ran at SQA::Config elaboration time
+			# @@config = Config.new
 
-			Daru.lazy_update 			= Config.config[:lazy]
-			Daru.plotting_library = Config.config[:plot_lib]
+			CLI.run(argv) 		if defined? CLI
+
+			Daru.lazy_update 			= config.lazy_update
+			Daru.plotting_library = config.plotting_library
+
+			if config.debug? || config.verbose?
+				debug_me{[
+					:config
+				]}
+			end
 
 			nil
 		end
@@ -56,9 +69,3 @@ require_relative "sqa/portfolio"
 require_relative "sqa/strategy"
 require_relative "sqa/stock"
 require_relative "sqa/trade"
-require_relative "sqa/version"
-
-
-SQA::Version.class_eval do
-  extend VersionGem::Basic
-end
