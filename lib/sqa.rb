@@ -1,3 +1,4 @@
+# lib/sqa.rb
 # frozen_string_literal: true
 
 require 'active_support'
@@ -5,11 +6,11 @@ require 'active_support/core_ext/string'
 require 'daru'
 require 'date'
 require 'descriptive_statistics'
-require 'mixlib/cli'
-require 'mixlib/config'
 require 'nenv'
 require 'pathname'
-require "version_gem"
+
+require_relative "sqa/version"
+
 
 unless defined?(HOME)
 	HOME = Pathname.new(Nenv.home)
@@ -17,61 +18,51 @@ end
 
 
 module SQA
-	Signal = {
-		hold: 0,
-		buy: 	1,
-		sell: 2
-	}.freeze
+	class << self
+		@@config = nil
 
-	Trend = {
-		up: 	0,
-		down: 1
-	}.freeze
+		def init(argv=ARGV)
+			if argv.is_a? String
+				argv = argv.split()
+			end
 
-	Swing = {
-		valley: 0,
-		peak: 	1,
-	}.freeze
 
-	module Config
-    extend Mixlib::Config
-    config_strict_mode true
+			# Ran at SQA::Config elaboration time
+			# @@config = Config.new
 
-    default :data_dir,  					HOME + "sqa_data"
-    default :plotting_library, 		:gruff  # TODO: use svg-graph
-    default :lazy_update,  				false
-    default :portfolio_filename,	"portfolio.csv"
-    default :trades_filename,    	"trades.csv"
+			CLI.run(argv) 		if defined? CLI
 
-  	default :log_level, 					:info
-  	default :config_filepath, 		"~/.sqa.rb"
-  	default :portfolio_filename, 	"portfolio.csv"
-  	default :trades_filename, 		"trades.csv"
+			Daru.lazy_update 			= config.lazy_update
+			Daru.plotting_library = config.plotting_library
 
-	end
+			if config.debug? || config.verbose?
+				debug_me{[
+					:config
+				]}
+			end
 
-	def self.init
-		SQA::CLI.new.run if defined? SQA::CLI
+			nil
+		end
 
-		Config.config_file 		= Pathname.new homify(Config.config_file)
+		def homify(filepath)
+			filepath.gsub(/^~/, Nenv.home)
+		end
 
-		Config.from_file(Config.config_file)
+		def config
+			@@config
+		end
 
-		Config.data_dir 			= Pathname.new homify(Config.data_dir)
-
-		Daru.lazy_update 			= Config.lazy_update
-		Daru.plotting_library = Config.plotting_library
-
-		nil
-	end
-
-	def self.homify(filepath)
-		filepath.gsub(/^~/, Nenv.home)
+		def config=(an_object)
+			@@config = an_object
+		end
 	end
 end
 
 # require_relative "patches/daru" # TODO: extract Daru::DataFrame in new gem sqa-data_frame
 
+require_relative "sqa/config"
+require_relative "sqa/command"
+require_relative "sqa/constants"
 require_relative "sqa/data_frame"
 require_relative "sqa/errors"
 require_relative "sqa/indicator"
@@ -79,9 +70,3 @@ require_relative "sqa/portfolio"
 require_relative "sqa/strategy"
 require_relative "sqa/stock"
 require_relative "sqa/trade"
-require_relative "sqa/version"
-
-
-SQA::Version.class_eval do
-  extend VersionGem::Basic
-end
