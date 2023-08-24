@@ -8,53 +8,93 @@ module Daru
     module Vector
       module SvgGraphLibrary
         def plot opts={}
-          type = opts[:type] || :bar
-          size = opts[:size] || 500
-          case type
-          when :line, :bar, :pie, :scatter, :sidebar
-            plot = send("#{type}_plot", size)
-          # TODO: hist, box
-          # It turns out hist and box are not supported in SvgGraph yet
+          opts[:type]   ||= :line
+          opts[:size]   ||= 500   # SMELL: What is this?
+          opts[:height] ||= 720
+          opts[:width]  ||= 720
+          opts[:title]  ||= name || :vector
+
+          debug_me{[
+            :opts,
+            :self
+          ]}
+
+          if %i[line bar pie scatter sidebar].include? type
+            graph = send("#{type}_plot", opts)
           else
             raise ArgumentError, 'This type of plot is not supported.'
           end
-          yield plot if block_given?
-          plot
+
+          yield graph if block_given?
+
+          graph
         end
 
         private
 
-        def line_plot size
-          plot = SvgGraph::Line.new size
-          plot.labels = size.times.to_a.zip(index.to_a).to_h
-          plot.data name || :vector, to_a
-          plot
+        ####################################################
+        def line_plot opts={}
+          graph  = SVG::Graph::Line.new opts
+
+          graph.add_data(
+            data:   to_a,
+            title:  opts[:title]
+          )
+
+          graph
         end
 
-        def bar_plot size
-          plot = SvgGraph::Bar.new size
-          plot.labels = size.times.to_a.zip(index.to_a).to_h
-          plot.data name || :vector, to_a
-          plot
+
+        ####################################################
+        def bar_plot opts
+          graph  = SVG::Graph::Bar.new opts
+
+          graph.add_data(
+            data:   to_a,
+            title:  opts[:title]
+          )
+
+          graph
         end
 
-        def pie_plot size
-          plot = SvgGraph::Pie.new size
-          each_with_index { |data, index| plot.data index, data }
-          plot
+
+        ####################################################
+        def pie_plot opts
+          graph  = SVG::Graph::Pie.new opts
+
+          graph.add_data(
+            data:   to_a,
+            title:  opts[:title]
+          )
+
+          graph
         end
 
+
+        ####################################################
         def scatter_plot size
-          plot = SvgGraph::Scatter.new size
-          plot.data name || :vector, index.to_a, to_a
-          plot
+          graph  = SVG::Graph::Plot.new opts
+
+
+          graph.add_data(
+            data:   to_a.zip(index.to_a)
+            title:  opts[:title]
+          )
+
+          graph
         end
 
+
+        ####################################################
         def sidebar_plot size
-          plot = SvgGraph::SideBar.new size
-          plot.labels = {0 => (name.to_s || 'vector')}
-          each_with_index { |data, index| plot.data index, data }
-          plot
+          graph  = SVG::Graph::BarHorizontal.new opts
+
+          graph.add_data(
+            data:   to_a,
+            title:  opts[:title]
+          )
+
+          graph
         end
       end
     end

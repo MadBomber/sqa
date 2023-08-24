@@ -8,23 +8,28 @@ module Daru
     module DataFrame
       module SvgGraphLibrary
         def plot opts={}
-          type = opts[:type] || :bar
-          size = opts[:size] || 500
-          x = extract_x_vector opts[:x]
-          y = extract_y_vectors opts[:y]
-          type = process_type type, opts[:categorized]
-          case type
-          when :line, :bar, :scatter
-            plot = send("#{type}_plot", size, x, y)
-          when :scatter_categorized
-            plot = scatter_with_category(size, x, y, opts[:categorized])
-          # TODO: hist, box
-          # It turns out hist and box are not supported in SvgGraph yet
+          opts[:type] ||= :line
+          opts[:size] ||= 500
+
+          x     = extract_x_vector  opts[:x]
+          y     = extract_y_vectors opts[:y]
+
+          opts[:type]  = process_type opts[:type], opts[:categorized]
+
+          type = opts[:type]
+
+          if %o[line bar scatter].include? type
+            graph = send("#{type}_plot", size, x, y)
+
+          elsif :scatter_categorized == type
+            graph = scatter_with_category(size, x, y, opts[:categorized])
+
           else
             raise ArgumentError, 'This type of plot is not supported.'
           end
-          yield plot if block_given?
-          plot
+
+          yield graph if block_given?
+          graph
         end
 
         private
@@ -33,6 +38,7 @@ module Daru
           type == :scatter && categorized ? :scatter_categorized : type
         end
 
+        ##########################################################
         def line_plot size, x, y
           plot = SvgGraph::Line.new size
           plot.labels = size.times.to_a.zip(x).to_h
@@ -42,6 +48,7 @@ module Daru
           plot
         end
 
+        ##########################################################
         def bar_plot size, x, y
           plot = SvgGraph::Bar.new size
           plot.labels = size.times.to_a.zip(x).to_h
@@ -51,6 +58,7 @@ module Daru
           plot
         end
 
+        ##########################################################
         def scatter_plot size, x, y
           plot = SvgGraph::Scatter.new size
           y.each do |vec|
@@ -59,15 +67,18 @@ module Daru
           plot
         end
 
+        ##########################################################
         def scatter_with_category size, x, y, opts
-          x = Daru::Vector.new x
-          y = y.first
-          plot = SvgGraph::Scatter.new size
-          cat_dv = self[opts[:by]]
+          x       = Daru::Vector.new x
+          y       = y.first
+          plot    = SvgGraph::Scatter.new size
+          cat_dv  = self[opts[:by]]
+
           cat_dv.categories.each do |cat|
             bools = cat_dv.eq cat
             plot.data cat, x.where(bools).to_a, y.where(bools).to_a
           end
+
           plot
         end
 
