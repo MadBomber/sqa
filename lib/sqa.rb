@@ -55,6 +55,14 @@ module SQA
 		def config=(an_object)
 			@@config = an_object
 		end
+
+		def debug?
+			@@config.debug?
+		end
+
+		def verbose?
+			@@config.verbose?
+		end
 	end
 end
 

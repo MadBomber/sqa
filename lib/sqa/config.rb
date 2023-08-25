@@ -7,6 +7,10 @@
 #   command line parameters ...... overrides config file
 
 require 'hashie'
+require 'yaml'
+require 'json'
+require 'toml-rb'
+
 
 module SQA
 	class Config < Hashie::Dash
@@ -14,8 +18,8 @@ module SQA
     include Hashie::Extensions::Coercion
     include Hashie::Extensions::Dash::PredefinedValues
 
-    property :config_file,  coerce: Pathname
-    property :data_dir,     default: HOME + "sqa_data", coerce: Pathname
+    property :config_file   #,  default: Nenv.home + "/.sqa.yml"
+    property :data_dir,     default: Nenv.home + "/sqa_data"
 
     # TODO: If no path is given, these files will be in
     #       data directory, otherwise, use the given path
@@ -28,12 +32,7 @@ module SQA
     property :debug,        default: false  #, coerce: Boolean
     property :verbose,      default: false  #, coerce: Boolean
 
-    # NOTE: Just here because it is a CLI option
-    property :help
-    property :version
-
-
-    # TODO: use svg-grap
+    # TODO: use svggraph
     property :plotting_library, from: :plot_lib,  default: :gruff, coerce: Symbol
     property :lazy_update,      from: :lazy,      default: false
 
@@ -71,12 +70,107 @@ module SQA
 
 
     ########################################################
+    def from_file
+      return if config_file.nil?
+
+      if  File.exist?(config_file)    &&
+          File.file?(config_file)     &&
+          File.readable?(config_file)
+        type = File.extname(config_file).downcase
+      else
+        type = "invalid"
+      end
+
+      # TODO: arrange order in mostly often used
+
+      if ".json" == type
+        form_json
+
+      elsif %w[.yml .yaml].include?(type)
+        from_yaml
+
+      elsif ".toml" == type
+        from_toml
+
+      else
+        raise BadParameterError, "Invalid Config File: #{config_file}"
+      end
+    end
+
+    def dump_file
+      if config_file.nil?
+        raise BadParameterError, "No config file given"
+      end
+
+      if  File.exist?(config_file)    &&
+          File.file?(config_file)     &&
+          File.writable?(config_file)
+        type = File.extname(config_file).downcase
+      else
+        type = "invalid"
+      end
+
+      # TODO: arrange order in mostly often used
+
+      if ".json" == type
+        dump_json
+
+      elsif %w[.yml .yaml].include?(type)
+        dump_yaml
+
+      elsif ".toml" == type
+        dump_toml
+
+      else
+        raise BadParameterError, "Invalid Config File: #{config_file}"
+      end
+    end
+
+
+    ########################################################
     private
+
     def override_with_envars(prefix = "SQA_")
       keys.each do |key|
         envar = ENV["#{prefix}#{key.to_s.upcase}"]
         send("#{key}=", envar) unless envar.nil?
       end
+    end
+
+
+    #####################################
+    ## override values from a config file
+
+    def from_json
+      incoming  = ::JSON.load(File.open(config_file).read)
+      debug_me{[ :incoming ]}
+    end
+
+    def from_toml
+      incoming  = TomlRB.load_file(config_file)
+      debug_me{[ :incoming ]}
+    end
+
+    def from_yaml
+      incoming = ::YAML.load_file(config_file)
+      debug_me{[ :incoming ]}
+      merge! incoming
+    end
+
+
+    #####################################
+    ## dump values to a config file
+
+    def dump_json
+      File.open(config_file, "w") { |f| f.write to_json}
+    end
+
+    def dump_toml
+      File.open(config_file, "w") { |f| f.write TomlRB.dump(to_hash)}
+    end
+
+    def dump_yaml
+      File.open(config_file, "w") { |f| f.write to_yaml}
     end
 	end
 end
