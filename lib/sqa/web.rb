@@ -3,26 +3,21 @@
 require 'tty-option'
 
 
-module SQA::Command
-	class Web
-
+module SQA
+	class Web < CLI
     include TTY::Option
 
-    usage do
-      program "sqa"
+    command "web"
 
-      command "web"
+    desc "Run a web server"
 
-      desc "Run a web server"
+    example "Set working directory (-w)",
+            "  sqa web --port 4567 --data-dir /path/to/dir/ ubuntu pwd"
 
-      example "Set working directory (-w)",
-              "  sqa web --port 4567 --data-dir /path/to/dir/ ubuntu pwd"
-
-      example <<~EOS
-        Do Something
-          sqa web
-      EOS
-    end
+    example <<~EOS
+      Do Something
+        sqa web
+    EOS
 
     argument :image do
       required
@@ -36,16 +31,9 @@ module SQA::Command
     end
 
     flag :detach do
-      short "-d"
       long "--detach"
       desc "Run container in background and print container ID"
     end
-
-    # flag :help do
-    #   short "-h"
-    #   long "--help"
-    #   desc "Print usage"
-    # end
 
     option :name do
       required
@@ -61,12 +49,10 @@ module SQA::Command
     end
 
 
-
 		def initialize
-
+      # TODO: make it happen
 		end
 	end
-
 end
 
 __END__

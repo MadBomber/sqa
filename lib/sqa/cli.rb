@@ -4,19 +4,22 @@ require 'tty-option'
 
 require_relative '../sqa'
 
+# SMELL:  Architectyre has become confused between CLI and Command
+
+# TODO: Fix the mess between CLI and Command
+
 
 module SQA
 	class CLI
     include TTY::Option
 
-    usage do
-      program "sqa"
-      command ""
+    header "Stock Quantitative Analysis (SQA)"
+    footer "WARNING: This is a toy, a play thing, not intended for serious use."
 
-      desc "Simple Qualitative Analysis (SQA)"
+    program "sqa"
+    desc    "A collection of things"
 
-      example "sqa -c ~/.sqa.yml -p portfolio.csv -t trades.csv --data-dir ~/sqa_data"
-    end
+    example "sqa -c ~/.sqa.yml -p portfolio.csv -t trades.csv --data-dir ~/sqa_data"
 
 
     option :config_file do
@@ -84,55 +87,91 @@ module SQA
       desc    "Print verbosely"
     end
 
+    class << self
+      @@subclasses          = []
+      @@commands_available  = []
 
-    ##################################################
-    def self.run(argv = ARGV)
-      cli    = new
-      parser = cli.parse(argv)
-      params = parser.params
+      def names
+        '['+ @@commands_available.join('|')+']'
+      end
 
-      if params[:help]
-        print parser.help
-        exit(0)
+      def inherited(subclass)
+        super
+        @@subclasses          << subclass
+        @@commands_available  << subclass.command.join
+      end
 
-      elsif params.errors.any?
-        puts params.errors.summary
-        exit(1)
+      def command_descriptions
+        help_block = "Optional Command Available:"
 
-      elsif params[:version]
-        puts SQA.version
-        exit(0)
-
-      elsif params[:dump]
-        if params[:config_file].nil?
-          params[:config_file] = ".sqa.yml"
+        @@commands_available.size.times do |x|
+          klass = @@subclasses[x]
+          help_block << "\n  " + @@commands_available[x] + " - "
+          help_block << klass.desc.join
         end
 
-        SQA.config.config_file = params[:config_file]
-        `touch #{SQA.config.config_file}`
-        SQA.config.dump_file
-        exit(0)
-
-      elsif params[:config_file]
-        # Override the defaults <- envars <- config file content
-        SQA.config.config_file = params[:config_file]
-        SQA.config.from_file
+        help_block
       end
 
-      # Override the defaults <- envars <- config file <- cli parameters
-      SQA.config.merge!(remove_temps params.to_h)
 
-      if SQA.debug? || SQA.verbose?
-        debug_me("config after CLI parameters"){[
-          "SQA.config"
-        ]}
+      ##################################################
+      def run(argv = ARGV)
+        cli    = new
+        parser = cli.parse(argv)
+        params = parser.params
+
+        if params[:help]
+          print parser.help
+          exit(0)
+
+        elsif params.errors.any?
+          puts params.errors.summary
+          exit(1)
+
+        elsif params[:version]
+          puts SQA.version
+          exit(0)
+
+        elsif params[:dump]
+          if params[:config_file].nil?
+            params[:config_file] = ".sqa.yml"
+          end
+
+          SQA.config.config_file = params[:config_file]
+          `touch #{SQA.config.config_file}`
+          SQA.config.dump_file
+          exit(0)
+
+        elsif params[:config_file]
+          # Override the defaults <- envars <- config file content
+          SQA.config.config_file = params[:config_file]
+          SQA.config.from_file
+        end
+
+        # Override the defaults <- envars <- config file <- cli parameters
+        SQA.config.merge!(remove_temps params.to_h)
+
+        if SQA.debug? || SQA.verbose?
+          debug_me("config after CLI parameters"){[
+            "SQA.config"
+          ]}
+        end
       end
-    end
 
-    def self.remove_temps(a_hash)
-      temps = %i[ help version dump ]
-      debug_me{[ :a_hash ]}
-      a_hash.reject{|k, _| temps.include? k}
+      def remove_temps(a_hash)
+        temps = %i[ help version dump ]
+        debug_me{[ :a_hash ]}
+        a_hash.reject{|k, _| temps.include? k}
+      end
     end
 	end
 end
+
+require_relative 'analysis'
+require_relative 'web'
+
+# First Load TTY-Option's command content with all available commands
+# then these have access to the entire ObjectSpace ...
+SQA::CLI.command SQA::CLI.names
+SQA::CLI.example SQA::CLI.command_descriptions
+

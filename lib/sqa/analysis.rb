@@ -1,9 +1,16 @@
 # lib/sqa/command/analysis.rb
 
-module SQA::Command
-	class Analysis
-		def initialize
+module SQA
+	class Analysis < CLI
+    include TTY::Option
 
+    command "Analysis"
+
+    desc "Provide an Analysis of a Portfolio"
+
+
+		def initialize
+      # TODO: something
 		end
 	end
 end
