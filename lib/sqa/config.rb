@@ -110,8 +110,6 @@ module SQA
         type = "invalid"
       end
 
-      # TODO: arrange order in mostly often used
-
       if ".json" == type
         dump_json
 
@@ -161,17 +159,10 @@ module SQA
     #####################################
     ## dump values to a config file
 
-    def dump_json
-      File.open(config_file, "w") { |f| f.write to_json}
-    end
-
-    def dump_toml
-      File.open(config_file, "w") { |f| f.write TomlRB.dump(to_hash)}
-    end
-
-    def dump_yaml
-      File.open(config_file, "w") { |f| f.write to_yaml}
-    end
+    def as_hash   = to_h.reject{|k, _| :config_file == k}
+    def dump_json = File.open(config_file, "w") { |f| f.write JSON.pretty_generate(as_hash)}
+    def dump_toml = File.open(config_file, "w") { |f| f.write TomlRB.dump(as_hash)}
+    def dump_yaml = File.open(config_file, "w") { |f| f.write as_hash.to_yaml}
 	end
 end
 

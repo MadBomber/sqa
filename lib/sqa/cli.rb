@@ -57,9 +57,9 @@ module SQA
       desc    "Set the directory for the SQA data"
     end
 
-    flag :dump do
-      long "--dump-config"
-      desc "Dump the current configration"
+    flag :dump_config do
+      long "--dump-config path_to_file"
+      desc "Dump the current configuration"
     end
 
     flag :help do
@@ -132,12 +132,8 @@ module SQA
           puts SQA.version
           exit(0)
 
-        elsif params[:dump]
-          if params[:config_file].nil?
-            params[:config_file] = ".sqa.yml"
-          end
-
-          SQA.config.config_file = params[:config_file]
+        elsif params[:dump_config]
+          SQA.config.config_file  = params[:dump_config]
           `touch #{SQA.config.config_file}`
           SQA.config.dump_file
           exit(0)
