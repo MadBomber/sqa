@@ -1,7 +1,7 @@
 # ./test/fibonacci_retracement_test.rb
 
 require           'minitest/autorun'
-require_relative  'test_helper'
+require_relative  '../test_helper'
 
 class FibonacciRetracement_testTest < Minitest::Test
   def test_fibonacci_retracement

@@ -1,7 +1,7 @@
 # test/average_true_range_test.rb
 
 require           'minitest/autorun'
-require_relative  'test_helper'
+require_relative  '../test_helper'
 
 class AverageTrueRangeTest < Minitest::Test
   def test_average_true_range

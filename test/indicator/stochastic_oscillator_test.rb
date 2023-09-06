@@ -1,7 +1,7 @@
 # ./test/stochastic_oscillator_test.rb
 
 require           'minitest/autorun'
-require_relative  'test_helper'
+require_relative  '../test_helper'
 
 class StochasticOscillatorTest < Minitest::Test
   # def test_stochastic_oscillator

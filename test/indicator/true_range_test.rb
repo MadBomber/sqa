@@ -1,7 +1,7 @@
 # test/true_range_test.rb
 
 require           'minitest/autorun'
-require_relative  'test_helper'
+require_relative  '../test_helper'
 
 class TrueRangeTest < Minitest::Test
   def test_true_range

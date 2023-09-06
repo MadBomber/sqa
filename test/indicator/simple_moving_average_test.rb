@@ -1,7 +1,7 @@
 # ./test/simple_moving_average_test.rb
 
 require           'minitest/autorun'
-require_relative  'test_helper'
+require_relative  '../test_helper'
 
 class SimpleMovingAverageTest < Minitest::Test
   def test_simple_moving_average

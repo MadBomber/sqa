@@ -1,7 +1,7 @@
 # ./test/market_profile_test.rb
 
 require           'minitest/autorun'
-require_relative  'test_helper'
+require_relative  '../test_helper'
 
 class MarketProfileTest < Minitest::Test
   def test_market_profile
