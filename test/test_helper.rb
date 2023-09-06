@@ -1,6 +1,9 @@
 # ./test/test_helper.rb
 
-require '../lib/sqa'
+require 'sqa'
+
+require 'debug_me'
+include DebugMe
 
 $data = Struct.new(
 					:period,

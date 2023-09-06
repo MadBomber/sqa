@@ -11,7 +11,20 @@ class ElliottWaveTheoryTest < Minitest::Test
                     prices,
                   )
 
-    expected_ewt = []
+    expected_ewt = [
+      {
+        :wave=>[10, 15, 16],
+        :pattern=>:corrective_zigzag
+      },
+      {
+        :wave=>[14, 12],
+        :pattern=>:unknown
+      },
+      {
+        :wave=>[16, 20, 20, 18],
+        :pattern=>:unknown
+      }
+    ]
 
     assert_equal expected_ewt, result_ewt
   end

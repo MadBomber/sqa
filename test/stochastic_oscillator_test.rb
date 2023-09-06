@@ -25,10 +25,6 @@ class StochasticOscillatorTest < Minitest::Test
                     $data.period
                   )
 
-    debug_me{[
-      :result_so2
-    ]}
-
     expected_so2 = {
       k: [100.0,  66.67, 100.0,  100.0,   66.67],
       d: [                88.89,  88.89,  88.89]
