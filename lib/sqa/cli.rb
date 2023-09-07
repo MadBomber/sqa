@@ -156,7 +156,7 @@ module SQA
 
       def remove_temps(a_hash)
         temps = %i[ help version dump ]
-        debug_me{[ :a_hash ]}
+        # debug_me{[ :a_hash ]}
         a_hash.reject{|k, _| temps.include? k}
       end
     end

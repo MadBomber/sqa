@@ -30,7 +30,13 @@ module SQA
 			# Ran at SQA::Config elaboration time
 			# @@config = Config.new
 
-			CLI.run(argv) 		if defined? CLI
+			if defined? CLI
+				CLI.run(argv)
+			else
+				# There are no real command line parameters
+				# because the sqa gem is be required within
+				# the context of a larger program.
+			end
 
 			Daru.lazy_update 			= config.lazy_update
 			Daru.plotting_library = config.plotting_library

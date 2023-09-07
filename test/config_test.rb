@@ -11,6 +11,7 @@ class ConfigTest < Minitest::Test
 
   	expected = {
   		config_file:  			nil,
+      dump_config:        nil,
   		data_dir: "/Users/dewayne/sqa_data",
   		debug: 							false,
   		lazy_update: 				false,
@@ -25,8 +26,15 @@ class ConfigTest < Minitest::Test
   	assert_equal expected, SQA.config.to_h
   end
 
+
   def test_envar_override
     result = %x[ SQA_DATA_DIR=xyzzy ruby #{__dir__}/config_envar_override.rb ]
     assert_equal "xyzzy", result
+  end
+
+
+  def test_cli_override
+    result = %x[ SQA_DATA_DIR=xyzzy ruby #{__dir__}/config_cli_override.rb ]
+    assert_equal "magic", result
   end
 end

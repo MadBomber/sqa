@@ -18,7 +18,9 @@ module SQA
     include Hashie::Extensions::Coercion
     include Hashie::Extensions::Dash::PredefinedValues
 
-    property :config_file   #,  default: Nenv.home + "/.sqa.yml"
+    property :config_file   #,a String filepath for the current config overriden by cli options
+    property :dump_config   # a String filepath into which to dump the current config
+
     property :data_dir,     default: Nenv.home + "/sqa_data"
 
     # TODO: If no path is given, these files will be in
