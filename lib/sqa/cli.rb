@@ -57,7 +57,7 @@ module SQA
       desc    "Set the directory for the SQA data"
     end
 
-    flag :dump_config do
+    option :dump_config do
       long "--dump-config path_to_file"
       desc "Dump the current configuration"
     end

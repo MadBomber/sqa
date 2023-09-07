@@ -1,0 +1,9 @@
+data_dir = "/Users/dewayne/sqa_data"
+debug = false
+dump_config = nil
+lazy_update = false
+log_level = :info
+plotting_library = :gruff
+portfolio_filename = "portfolio.csv"
+trades_filename = "trades.csv"
+verbose = false

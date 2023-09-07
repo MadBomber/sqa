@@ -165,7 +165,15 @@ module SQA
     def dump_json = File.open(config_file, "w") { |f| f.write JSON.pretty_generate(as_hash)}
     def dump_toml = File.open(config_file, "w") { |f| f.write TomlRB.dump(as_hash)}
     def dump_yaml = File.open(config_file, "w") { |f| f.write as_hash.to_yaml}
-	end
+
+
+    #####################################
+    class << self
+      def reset
+        SQA.config = new
+      end
+    end
+  end
 end
 
-SQA.config = SQA::Config.new
+SQA::Config.reset

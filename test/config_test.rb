@@ -3,10 +3,12 @@
 
 require           'minitest/autorun'
 require_relative  'test_helper'
-
+require           'sqa/cli'
 
 class ConfigTest < Minitest::Test
   def test_default_config
+    SQA::Config.reset # reset config to defaults
+
   	SQA.init
 
   	expected = {
@@ -31,6 +33,25 @@ class ConfigTest < Minitest::Test
     result = %x[ SQA_DATA_DIR=xyzzy ruby #{__dir__}/config_envar_override.rb ]
     assert_equal "xyzzy", result
   end
+
+
+  def test_config_file_override
+    argv = "--config #{__dir__}/config_files/config_file_override.yml"
+    SQA.init(argv)
+
+    assert_equal "override_sqa_data",       SQA.config.data_dir
+    assert_equal "override_portfolio.csv",  SQA.config.portfolio_filename
+    assert_equal "override_trades.csv",     SQA.config.trades_filename
+  end
+
+
+  def test_cli_overrides_config_file
+    argv = "--data-dir magic_xyzzy --config #{__dir__}/config_files/config_file_override.yml"
+    SQA.init(argv)
+
+    assert_equal "magic_xyzzy",       SQA.config.data_dir
+  end
+
 
 
   def test_cli_override
