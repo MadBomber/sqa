@@ -1,7 +1,9 @@
 # sqa/test/config_test.rb
 
+
 require           'minitest/autorun'
 require_relative  'test_helper'
+
 
 class ConfigTest < Minitest::Test
   def test_default_config
@@ -21,5 +23,10 @@ class ConfigTest < Minitest::Test
 
   	assert SQA.config.is_a?(SQA::Config)
   	assert_equal expected, SQA.config.to_h
+  end
+
+  def test_envar_override
+    result = %x[ SQA_DATA_DIR=xyzzy ruby #{__dir__}/config_envar_override.rb ]
+    assert_equal "xyzzy", result
   end
 end
