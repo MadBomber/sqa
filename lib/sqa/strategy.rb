@@ -54,4 +54,12 @@ class SQA::Strategy
   end
 end
 
+require_relative 'strategy/common'
+require_relative 'strategy/consensus'
+require_relative 'strategy/ema'
+require_relative 'strategy/mp'
+require_relative 'strategy/mr'
+require_relative 'strategy/random'
+require_relative 'strategy/rsi'
+require_relative 'strategy/sma'
 

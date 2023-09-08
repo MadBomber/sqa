@@ -5,7 +5,7 @@ require_relative  'data_frame/yahoo_finance'
 
 class SQA::DataFrame < Daru::DataFrame
   def self.path(filename)
-    SQA::Config.data_dir + filename
+    Pathname.new SQA.config.data_dir + filename
   end
 
   def self.load(filename, options={}, &block)
