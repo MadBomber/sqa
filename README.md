@@ -8,6 +8,12 @@ The BUY/SELL signals that it generates are part of a game.  **DO NOT USE** when 
 
 I'm making use of lots of gems which may not be part of the gemspec at this time.  I will be adding them as they make the final cut as to fitness for the intended function.  Some gems are configurable.  For example the default for the plotting library is `gruff`.  There are several available that the `daru` gem can use.
 
+### DARU or RedAmber
+
+I'm just really using `daru` for its data frame object;  However, I just learned about the RedAmber data frame object in Ruby based off of Apache Arrow.  I'm going to look at that product since it is actively maintained.
+
+https://github.com/red-data-tools/red_amber
+
 ## Installation
 
 Install the gem and add to the application's Gemfile by executing:
