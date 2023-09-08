@@ -1,12 +1,12 @@
 PATH
   remote: .
   specs:
-    sqa (0.0.7)
+    sqa (0.0.9)
       activesupport
       daru
       descriptive_statistics
+      hashie
       nenv
-      tty-config
       tty-logger
       tty-markdown
       tty-option
@@ -25,30 +25,59 @@ GEM
       minitest (>= 5.1)
       tzinfo (~> 2.0)
     amazing_print (1.5.0)
+    citrus (3.0.2)
     concurrent-ruby (1.2.2)
+    csv (3.2.7)
     daru (0.3)
       packable (~> 1.3.13)
+    date (3.3.3)
     debug_me (1.1.0)
     descriptive_statistics (2.5.1)
+    faraday (2.7.10)
+      faraday-net_http (>= 2.0, < 3.1)
+      ruby2_keywords (>= 0.0.4)
+    faraday-net_http (3.0.2)
+    fin_tech (0.2.0)
+    hashie (5.0.0)
     i18n (1.14.1)
       concurrent-ruby (~> 1.0)
+    json (2.6.3)
     kramdown (2.4.0)
       rexml
     minitest (5.19.0)
+    mustermann (3.0.0)
+      ruby2_keywords (~> 0.0.1)
     nenv (0.3.0)
+    nokogiri (1.15.4-x86_64-darwin)
+      racc (~> 1.4)
     packable (1.3.18)
     pastel (0.8.0)
       tty-color (~> 0.5)
+    pathname (0.2.1)
+    racc (1.7.1)
+    rack (2.2.8)
+    rack-protection (3.1.0)
+      rack (~> 2.2, >= 2.2.4)
     rake (13.0.6)
     rexml (3.2.6)
     rouge (4.1.3)
+    ruby2_keywords (0.0.5)
+    sem_version (2.0.1)
+    sinatra (3.1.0)
+      mustermann (~> 3.0)
+      rack (~> 2.2, >= 2.2.4)
+      rack-protection (= 3.1.0)
+      tilt (~> 2.0)
     strings (0.2.1)
       strings-ansi (~> 0.2)
       unicode-display_width (>= 1.5, < 3.0)
       unicode_utils (~> 1.4)
     strings-ansi (0.2.0)
+    svg-graph (2.2.2)
+    tilt (2.2.0)
+    toml-rb (2.2.0)
+      citrus (~> 3.0, > 3.0)
     tty-color (0.6.0)
-    tty-config (0.6.0)
     tty-cursor (0.7.1)
     tty-logger (0.6.0)
       pastel (~> 0.8)
@@ -84,17 +113,38 @@ GEM
     unicode-display_width (2.4.2)
     unicode_utils (1.4.0)
     wisper (2.0.1)
+    yaml (0.2.1)
 
 PLATFORMS
   x86_64-darwin-17
 
 DEPENDENCIES
+  activesupport
   amazing_print
   bundler
+  csv
+  daru
+  date
   debug_me
+  descriptive_statistics
+  faraday
+  fin_tech
+  hashie
+  json
+  kramdown
   minitest
+  nenv
+  nokogiri
+  pathname
   rake (~> 13.0)
+  sem_version
+  sinatra
   sqa!
+  svg-graph
+  toml-rb
+  tty-option
+  tty-table
+  yaml
 
 BUNDLED WITH
    2.4.18
