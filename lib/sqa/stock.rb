@@ -10,7 +10,18 @@ class SQA::Stock
     @company_name = "Company Name"
     klass         = "SQA::DataFrame::#{source.to_s.camelize}".constantize
     filename      = "#{@ticker}.#{type}"
-    @df           = klass.send(:load, filename)
+
+    df1 = klass.send(:load, filename)
+    df2 = klass.recent(@ticker)
+    @df = klass.append(df1, df2)
+
+    begin
+      @df.to_csv(SQA::DataFrame.path filename)
+    rescue => e
+      debug_me('== ERROR =='){[
+        :e
+      ]}
+    end
     @df[:ticker]  = ticker
   end
 

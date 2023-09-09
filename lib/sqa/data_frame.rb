@@ -3,7 +3,37 @@
 
 require_relative  'data_frame/yahoo_finance'
 
+class Daru::DataFrame
+
+  def to_csv(path_to_file, opts={})
+    options = {
+      converters: :numeric
+    }.merge(opts)
+
+    writer = ::CSV.open(path_to_file, 'wb')
+
+    writer << vectors.to_a unless options[:headers] == false
+
+    each_row do |row|
+      writer << if options[:convert_comma]
+                  row.map { |v| v.to_s.tr('.', ',') }
+                else
+                  row.to_a
+                end
+    end
+
+    writer.close
+  end
+end
+
+
+
+
 class SQA::DataFrame < Daru::DataFrame
+
+
+  #################################################
+
   def self.path(filename)
     Pathname.new SQA.config.data_dir + filename
   end

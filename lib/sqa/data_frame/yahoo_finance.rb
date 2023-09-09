@@ -17,6 +17,8 @@ class SQA::DataFrame < Daru::DataFrame
                     :volume           # 6
                   ]
 
+
+    ################################################################
     def self.load(filename, options={}, &block)
       df = SQA::DataFrame.load(filename, options={}, &block)
 
@@ -64,6 +66,33 @@ class SQA::DataFrame < Daru::DataFrame
       end
 
       Daru::DataFrame.new(data)
+    end
+
+
+    # Append update_df rows to the base_df
+    #
+    # base_df is ascending on timestamp
+    # update_df is descending on timestamp
+    #
+    # base_df content came from CSV file downloaded
+    # from Yahoo Finance.
+    #
+    # update_df came from scraping the webpage
+    # at Yahoo Finance for the recent history.
+    #
+    # Returns a combined DataFrame.
+    #
+    def self.append(base_df, updates_df)
+      last_timestamp  = Date.parse base_df.timestamp.last
+      filtered_df     = updates_df.filter_rows { |row| Date.parse(row[:timestamp]) > last_timestamp }
+
+      last_inx = filtered_df.size - 1
+
+      (0..last_inx).each do |x|
+        base_df.add_row filtered_df.row[last_inx-x]
+      end
+
+      base_df
     end
   end
 end
