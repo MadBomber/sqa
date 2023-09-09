@@ -8,21 +8,24 @@ class SQA::Stock
   def initialize(ticker:, source: :yahoo_finance, type: :csv)
     @ticker       = ticker.downcase
     @company_name = "Company Name"
-    klass         = "SQA::DataFrame::#{source.to_s.camelize}".constantize
-    filename      = "#{@ticker}.#{type}"
+    @klass        = "SQA::DataFrame::#{source.to_s.camelize}".constantize
+    @type         = type
+    @filename     = "#{@ticker}.#{type}"
 
-    df1 = klass.send(:load, filename)
-    df2 = klass.recent(@ticker)
-    @df = klass.append(df1, df2)
+    update_the_dataframe
+  end
 
-    begin
-      @df.to_csv(SQA::DataFrame.path filename)
-    rescue => e
-      debug_me('== ERROR =='){[
-        :e
-      ]}
+
+  def update_the_dataframe
+    df1 = @klass.load(@filename)
+    df2 = @klass.recent(@ticker)
+    @df = @klass.append(df1, df2)
+
+    unless @df.size == df1.size
+      @df.send("to_#{@type}", SQA::DataFrame.path(@filename))
     end
-    @df[:ticker]  = ticker
+
+    @df[:ticker]  = @ticker
   end
 
   def to_s
