@@ -4,6 +4,7 @@ class SQA::Stock
   attr_accessor :company_name
   attr_accessor :df             # The DataFrane
   attr_accessor :ticker
+  attr_accessor :indicators
 
   def initialize(ticker:, source: :yahoo_finance, type: :csv)
     @ticker       = ticker.downcase
@@ -11,6 +12,7 @@ class SQA::Stock
     @klass        = "SQA::DataFrame::#{source.to_s.camelize}".constantize
     @type         = type
     @filename     = "#{@ticker}.#{type}"
+    @indicators   = OpenStruct.new
 
     update_the_dataframe
   end
