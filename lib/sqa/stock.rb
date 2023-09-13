@@ -21,10 +21,12 @@ class SQA::Stock
     df2 = @klass.recent(@ticker)
     @df = @klass.append(df1, df2)
 
-    unless @df.size == df1.size
+    if @df.nrows > df1.nrows
       @df.send("to_#{@type}", SQA::DataFrame.path(@filename))
     end
 
+    # Adding a ticker vector in case I want to do
+    # some multi-stock analysis in the same data frame.
     @df[:ticker]  = @ticker
   end
 

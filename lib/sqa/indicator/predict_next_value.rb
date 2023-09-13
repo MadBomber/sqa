@@ -60,4 +60,29 @@ class SQA::Indicator; class << self
     result
   end
 
+
+  def pnv3(prices, prediction_window)
+    predicted_prices  = []
+    known             = prices.last(prediction_window+2).dup
+
+    # Loop through the prediction window size
+    (1..prediction_window).each do |x|
+      current_price = known.last
+
+      # Calculate the percentage change between the current price and its previous price
+      percentage_change = (current_price - known[-1]) / known[-1] # .to_f
+
+      # Calculate the predicted price based on the percentage change
+      predicted_price = current_price + (current_price * percentage_change)
+      predicted_prices.unshift(predicted_price)
+
+      # Update the prices array for the next iteration
+      known.pop
+    end
+
+    predicted_prices
+  end
+
+
+
 end; end

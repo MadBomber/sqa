@@ -7,14 +7,14 @@ require 'nokogiri'
 class SQA::DataFrame < Daru::DataFrame
   class YahooFinance
     CONNECTION  = Faraday.new(url: 'https://finance.yahoo.com')
-    HEADERS     = %i[
-                    timestamp       # 0
-                    open_price      # 1
-                    high_price      # 2
-                    low_price       # 3
-                    close_price     # 4
-                    adj_close_price # 5
-                    volume          # 6
+    HEADERS     = [
+                    :timestamp,       # 0
+                    :open_price,      # 1
+                    :high_price,      # 2
+                    :low_price,       # 3
+                    :close_price,     # 4
+                    :adj_close_price, # 5
+                    :volume,          # 6
                   ]
 
       # The Yahoo Finance Headers are being remapped so that
@@ -64,8 +64,18 @@ class SQA::DataFrame < Daru::DataFrame
       data = []
 
       rows.each do |row|
-        cols = row.css('td').map{|c| c&.text}
+        cols = row.css('td').map{|c| c.children[0].text}
+
+        next unless 7 == cols.size
         next if cols[1]&.include?("Dividend")
+
+        if cols.any?(nil)
+          debug_me('== ERROR =='){[
+            :cols
+          ]}
+          next
+        end
+
         cols[0] = Date.parse(cols[0]).to_s
         cols[6] = cols[6].tr(',','').to_i
         (1..5).each {|x| cols[x] = cols[x].to_f}
