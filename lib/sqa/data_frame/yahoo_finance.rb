@@ -59,6 +59,9 @@ class SQA::DataFrame < Daru::DataFrame
       response  = CONNECTION.get("/quote/#{ticker.upcase}/history")
       doc       = Nokogiri::HTML(response.body)
       table     = doc.css('table').first
+
+      raise "NoDataError" if table.nil?
+
       rows      = table.css('tbody tr')
 
       data = []
