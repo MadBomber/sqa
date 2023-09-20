@@ -86,17 +86,23 @@ module SQA
       # TODO: arrange order in mostly often used
 
       if ".json" == type
-        form_json
+        incoming = form_json
 
       elsif %w[.yml .yaml].include?(type)
-        from_yaml
+        incoming = from_yaml
 
       elsif ".toml" == type
-        from_toml
+        incoming = from_toml
 
       else
         raise BadParameterError, "Invalid Config File: #{config_file}"
       end
+
+      if incoming.has_key? :data_dir
+        incoming[:data_dir] = incoming[:data_dir].gsub(/^~/, Nenv.home)
+      end
+
+      merge! incoming
     end
 
     def dump_file
@@ -142,19 +148,15 @@ module SQA
     ## override values from a config file
 
     def from_json
-      incoming  = ::JSON.load(File.open(config_file).read)
-      debug_me{[ :incoming ]}
+      ::JSON.load(File.open(config_file).read).symbolize_keys
     end
 
     def from_toml
-      incoming  = TomlRB.load_file(config_file)
-      debug_me{[ :incoming ]}
+      TomlRB.load_file(config_file).symbolize_keys
     end
 
     def from_yaml
-      incoming = ::YAML.load_file(config_file)
-      debug_me{[ :incoming ]}
-      merge! incoming
+      ::YAML.load_file(config_file).symbolize_keys
     end
 
 

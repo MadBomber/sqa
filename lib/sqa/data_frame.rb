@@ -35,7 +35,7 @@ class SQA::DataFrame < Daru::DataFrame
   #################################################
 
   def self.path(filename)
-    Pathname.new SQA.config.data_dir + filename
+    Pathname.new(SQA.config.data_dir) + filename
   end
 
   def self.load(filename, options={}, &block)
