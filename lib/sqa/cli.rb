@@ -140,6 +140,7 @@ module SQA
 
         elsif params[:config_file]
           # Override the defaults <- envars <- config file content
+          params[:config_file]   = SQA.homify params[:config_file]
           SQA.config.config_file = params[:config_file]
           SQA.config.from_file
         end

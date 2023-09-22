@@ -5,70 +5,61 @@
 #
 
 require 'faraday'
-require 'oj'
+require 'json'
 
 class SQA::DataFrame < Daru::DataFrame
   class AlphaVantage
     API_KEY     = Nenv.av_api_key
     CONNECTION  = Faraday.new(url: 'https://www.alphavantage.co')
-    HEADERS     = [ # Same as YahooFinance
-                    :timestamp,       # 0
-                    :open_price,      # 1
-                    :high_price,      # 2
-                    :low_price,       # 3
-                    :close_price,     # 4
-                    :adj_close_price, # 5
-                    :volume,          # 6
-                  ]
+    HEADERS     = YahooFinance::HEADERS
 
-      # The Alpha Vantage headers are being remapped so that
-      # they match those of the Yahoo Finance CSV file.
-      #
-      HEADER_MAPPING = {
-        "timestamp"       => HEADERS[0],
-        "open"            => HEADERS[1],
-        "high"            => HEADERS[2],
-        "low"             => HEADERS[3],
-        "close"           => HEADERS[4],
-        "adjusted_close"  => HEADERS[5],
-        "volume"          => HEADERS[6]
-      }
-
-      JSON_HEADER_MAPPING = {
-        "timestamp"       => HEADERS[0],
-        "open"            => HEADERS[1],
-        "high"            => HEADERS[2],
-        "low"             => HEADERS[3],
-        "close"           => HEADERS[4],
-        "adjusted_close"  => HEADERS[5],
-        "volume"          => HEADERS[6]
-      }
+    # The Alpha Vantage headers are being remapped so that
+    # they match those of the Yahoo Finance CSV file.
+    #
+    HEADER_MAPPING = {
+      "date"            => HEADERS[0],
+      "open"            => HEADERS[1],
+      "high"            => HEADERS[2],
+      "low"             => HEADERS[3],
+      "close"           => HEADERS[4],
+      "adjusted_close"  => HEADERS[5],
+      "volume"          => HEADERS[6]
+    }
 
 
     ################################################################
-    def self.load(filename, options={}, &block)
+    # Load a Dataframe from a csv file
+    def self.load(ticker)
+      filepath = SQA.data_dir + "#{ticker}.csv"
 
-      # TODO: If CSV file does not exists, get a full JSON dump from
-      #       Alpha Vantage, create the dataframe, then dump the
-      #       dataframe to a CSV file.
-      #
-      begin
-        df = SQA::DataFrame.load(filename, options={}, &block)
-      rescue => e
-        debug_me{[ :e ]}
-        # SMELL: what if its a bad ticker symbol?
+      if filepath.exist?
+        df = normalize_vector_names SQA::DataFrame.load(ticker, 'csv')
+      else
         df = recent(ticker, full: true)
-        df.to_csv
+        df.to_csv(filepath)
       end
 
-      headers = df.vectors
+      df
+    end
+
+
+    # Normalize the vector (aka column) names as
+    # symbols using the standard names set by
+    # Yahoo Finance ... since it was the first one
+    # not because its anything special.
+    #
+    def self.normalize_vector_names(df)
+      headers = df.vectors.to_a
 
       # convert vector names to symbols
-      # when they are strings.
+      # when they are strings.  They become stings
+      # when the data frame is saved to a CSV file
+      # and then loaded back in.
+
       if headers.first == HEADERS.first.to_s
         a_hash = {}
         HEADERS.each {|k| a_hash[k.to_s] = k}
-        df.rename_vectors(a_hash)
+        df.rename_vectors(a_hash) # renames from String to Symbol
       else
         df.rename_vectors(HEADER_MAPPING)
       end
@@ -82,33 +73,54 @@ class SQA::DataFrame < Daru::DataFrame
     # ticker String the security to retrieve
     # returns a DataFrame
     #
+    # NOTE: The function=TIME_SERIES_DAILY_ADJUSTED
+    #       is not a free API endpoint from Alpha Vantange.
+    #       So we are just using the free API endpoint
+    #       function=TIME_SERIES_DAILY
+    #       This means that we are not getting the
+    #       real adjusted closing price.  To sync
+    #       the columns with those from Yahoo Finance
+    #       we are duplicating the unadjusted clossing price
+    #       and adding that to the data frame as if it were
+    #       adjusted.
+    #
     def self.recent(ticker, full: false)
+      # NOTE: Using the CSV format because the JSON format has
+      #       really silly key values.  The column names for the
+      #       CSV format are much better.
       response  = CONNECTION.get(
-        "/query?function=TIME_SERIES_DAILY_ADJUSTED&symbol=#{ticker.upcase}&apikey=#{API_KEY}&datatype=json&outputsize=#{full ? 'full' : 'compact'}"
-      )
+        "/query?" +
+        "function=TIME_SERIES_DAILY&" +
+        "symbol=#{ticker.upcase}&" +
+        "apikey=#{API_KEY}&" +
+        "datatype=csv&" +
+        "outputsize=#{full ? 'full' : 'compact'}"
+      ).to_hash
 
-      data = []
+      unless 200 == response[:status]
+        raise "Bad Response: #{response[:status]}"
+      end
 
-      # rows.each do |row|
-      #   cols = row.css('td').map{|c| c.children[0].text}
+      raw           = response[:body].split
 
-      #   # next unless 7 == cols.size
-      #   # next if cols[1]&.include?("Dividend")
+      headers       = raw.shift.split(',')
+      headers[0]    = 'date'  # website returns "timestamp" but that
+                              # has an unintended side-effect when
+                              # the names are normalized.
 
-      #   if cols.any?(nil)
-      #     debug_me('== ERROR =='){[
-      #       :cols
-      #     ]}
-      #     next
-      #   end
+      close_inx     = headers.size - 2
+      adj_close_inx = close_inx + 1
 
-      #   cols[0] = Date.parse(cols[0]).to_s
-      #   cols[6] = cols[6].tr(',','').to_i
-      #   (1..5).each {|x| cols[x] = cols[x].to_f}
-      #   data << HEADERS.zip(cols).to_h
-      # end
+      headers.insert(adj_close_inx, 'adjusted_close')
 
-      Daru::DataFrame.new(data)
+      data    = raw.map do |e|
+                  e2 = e.split(',')
+                  e2.insert(adj_close_inx, e2[close_inx]) # duplicate the close price as a fake adj close price
+                  headers.zip(e2).to_h
+                end
+
+      # What oldest data first in the data frame
+      normalize_vector_names Daru::DataFrame.new(data.reverse)
     end
 
 
