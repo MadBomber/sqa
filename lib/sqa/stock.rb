@@ -7,8 +7,17 @@ class SQA::Stock
   attr_accessor :indicators
 
   def initialize(ticker:, source: :yahoo_finance, type: :csv)
+    raise "Invalid Ticker #{ticker}" unless SQA::Ticker.valid?(ticker)
+
+    # TODO: Change API on lookup to return array instead of hash
+    #       Could this also incorporate the validation process to
+    #       save an additiona hash lookup?
+
+    entry         = SQA::Ticker.lookup(ticker)
+
     @ticker       = ticker.downcase
-    @company_name = "Company Name"
+    @company_name = entry[:name]
+    @exchange     = entry[:exchange]
     @klass        = "SQA::DataFrame::#{source.to_s.camelize}".constantize
     @type         = type
     @filename     = "#{@ticker}.#{type}"
