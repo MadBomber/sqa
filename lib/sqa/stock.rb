@@ -6,7 +6,7 @@ class SQA::Stock
   attr_accessor :ticker
   attr_accessor :indicators
 
-  def initialize(ticker:, source: :yahoo_finance, type: :csv)
+  def initialize(ticker:, source: :alpha_vantage, type: :csv)
     raise "Invalid Ticker #{ticker}" unless SQA::Ticker.valid?(ticker)
 
     # TODO: Change API on lookup to return array instead of hash
@@ -28,30 +28,19 @@ class SQA::Stock
 
 
   def update_the_dataframe
-    begin
-      df1 = @klass.load(@filename)
-    rescue Errno::ENOENT # file does not exist
-      df1 = nil
-    end
-
+    df1 = @klass.load(@ticker, type)
     df2 = @klass.recent(@ticker)
 
-    return if 0 == df2.nrows # most likely an invalid ticker symbol
-
-    if df1.nil?
-      df1_nrows = 0
-      @df       = df2
-    else
-      df1_nrows = df1.nrows
-      @df       = @klass.append(df1, df2)
-    end
+    df1_nrows = df1.nrows
+    @df       = @klass.append(df1, df2)
 
     if @df.nrows > df1_nrows
-      @df.send("to_#{@type}", SQA::DataFrame.path(@filename))
+      @df.send("to_#{@type}", SQA.data_dir + "#{ticker}.csv")
     end
 
     # Adding a ticker vector in case I want to do
     # some multi-stock analysis in the same data frame.
+    # For example to see how one stock coorelates with another.
     @df[:ticker]  = @ticker
   end
 
@@ -59,7 +48,3 @@ class SQA::Stock
     "#{ticker} with #{@df.size} data points from #{@df.timestamp.first} to #{@df.timestamp.last}"
   end
 end
-
-__END__
-
-aapl = Stock.new('aapl', SQA::Datastore::CSV)
