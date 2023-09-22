@@ -10,6 +10,7 @@ require 'nenv'
 require 'pathname'
 
 require_relative "sqa/version"
+require_relative "sqa/errors"
 
 
 unless defined?(HOME)
@@ -70,7 +71,6 @@ end
 require_relative "sqa/config"
 require_relative "sqa/constants"
 require_relative "sqa/data_frame"
-require_relative "sqa/errors"
 require_relative "sqa/indicator"
 require_relative "sqa/portfolio"
 require_relative "sqa/strategy"

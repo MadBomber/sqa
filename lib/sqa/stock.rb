@@ -4,9 +4,14 @@ class SQA::Stock
   attr_accessor :company_name
   attr_accessor :df             # The DataFrane
   attr_accessor :ticker
+  attr_accessor :type           # type of data store (default is CSV)
   attr_accessor :indicators
 
-  def initialize(ticker:, source: :alpha_vantage, type: :csv)
+  def initialize(
+        ticker:,
+        source: :alpha_vantage,
+        type:   :csv
+      )
     raise "Invalid Ticker #{ticker}" unless SQA::Ticker.valid?(ticker)
 
     # TODO: Change API on lookup to return array instead of hash
@@ -20,7 +25,6 @@ class SQA::Stock
     @exchange     = entry[:exchange]
     @klass        = "SQA::DataFrame::#{source.to_s.camelize}".constantize
     @type         = type
-    @filename     = "#{@ticker}.#{type}"
     @indicators   = OpenStruct.new
 
     update_the_dataframe

@@ -37,16 +37,16 @@ class SQA::DataFrame < Daru::DataFrame
   def self.load(ticker, type="csv", options={}, &block)
     source  = SQA.data_dir + "#{ticker}.#{type}"
 
-    if "csv" == type
+    if :csv == type
      from_csv(source, options={}, &block)
-    elsif "json" == type
+    elsif :json == type
       from_json(source, options={}, &block)
-    elsif %w[txt dat].include?(type)
+    elsif %i[txt dat].include?(type)
       from_plaintext(source, options={}, &block)
-    elsif "xls" == type
+    elsif :xls == type
       from_excel(source, options={}, &block)
     else
-      raise SQA::BadParamenterError, "un-supported file type: #{type}"
+      raise SQA::BadParameterError, "un-supported file type: #{type}"
     end
   end
 end

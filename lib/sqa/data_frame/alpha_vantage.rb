@@ -29,14 +29,14 @@ class SQA::DataFrame < Daru::DataFrame
 
     ################################################################
     # Load a Dataframe from a csv file
-    def self.load(ticker)
-      filepath = SQA.data_dir + "#{ticker}.csv"
+    def self.load(ticker, type="csv")
+      filepath = SQA.data_dir + "#{ticker}.#{type}"
 
       if filepath.exist?
-        df = normalize_vector_names SQA::DataFrame.load(ticker, 'csv')
+        df = normalize_vector_names SQA::DataFrame.load(ticker, type)
       else
         df = recent(ticker, full: true)
-        df.to_csv(filepath)
+        df.send("to_#{type}",filepath)
       end
 
       df
@@ -115,6 +115,8 @@ class SQA::DataFrame < Daru::DataFrame
 
       data    = raw.map do |e|
                   e2 = e.split(',')
+                  e2[1..-2] = e2[1..-2].map(&:to_f) # converting open, high, low, close
+                  e2[-1]    = e2[-1].to_i           # converting volumn
                   e2.insert(adj_close_inx, e2[close_inx]) # duplicate the close price as a fake adj close price
                   headers.zip(e2).to_h
                 end
