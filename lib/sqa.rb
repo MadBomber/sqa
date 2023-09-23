@@ -3,6 +3,7 @@
 
 require 'active_support'
 require 'active_support/core_ext/string'
+require 'amazing_print'
 require 'daru'
 require 'date'
 require 'descriptive_statistics'
@@ -22,6 +23,9 @@ module SQA
 	class << self
 		@@config = nil
 
+		# Initializes the SQA modules
+		# returns the configuration
+		#
 		def init(argv=ARGV)
 			if argv.is_a? String
 				argv = argv.split()
@@ -44,13 +48,7 @@ module SQA
 			Daru.lazy_update 			= config.lazy_update
 			Daru.plotting_library = config.plotting_library
 
-			if config.debug? || config.verbose?
-				debug_me{[
-					:config
-				]}
-			end
-
-			nil
+			config
 		end
 
 		def debug?() 						= @@config.debug?

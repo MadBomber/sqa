@@ -4,7 +4,7 @@ require 'sem_version'
 require 'sem_version/core_ext'
 
 module SQA
-  VERSION = "0.0.13"
+  VERSION = "0.0.14"
 
   class << self
     def version
