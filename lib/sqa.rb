@@ -7,6 +7,7 @@ require 'amazing_print'
 require 'daru'
 require 'date'
 require 'descriptive_statistics'
+require 'hashie'
 require 'nenv'
 require 'pathname'
 

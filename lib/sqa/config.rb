@@ -6,7 +6,7 @@
 #   config file ..... overrides envar
 #   command line parameters ...... overrides config file
 
-require 'hashie'
+require 'hashie' # /extensions/dash/predefined_values'
 require 'yaml'
 require 'json'
 require 'toml-rb'

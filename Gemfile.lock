@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    sqa (0.0.9)
+    sqa (0.0.14)
       activesupport
       daru
       descriptive_statistics

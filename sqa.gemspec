@@ -37,7 +37,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'activesupport'
   spec.add_dependency 'daru'
   spec.add_dependency 'descriptive_statistics'
-  spec.add_dependency 'hashie'
+  spec.add_dependency 'hashie'  # , "~>4.1" # "~>5.0.0"
   spec.add_dependency 'nenv'
   spec.add_dependency 'tty-logger'
   spec.add_dependency 'tty-markdown'
