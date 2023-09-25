@@ -1,8 +1,6 @@
 # lib/sqa/data_frame/yahoo_finance.rb
 # frozen_string_literal: true
 
-require 'faraday'
-require 'nokogiri'
 
 class SQA::DataFrame < Daru::DataFrame
   class YahooFinance

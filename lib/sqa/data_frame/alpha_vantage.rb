@@ -4,8 +4,6 @@
 # Using the Alpha Vantage JSON interface
 #
 
-require 'faraday'
-require 'json'
 
 class SQA::DataFrame < Daru::DataFrame
   class AlphaVantage

@@ -1,78 +1,57 @@
 # lib/sqa.rb
 # frozen_string_literal: true
 
-require 'active_support'
-require 'active_support/core_ext/string'
-require 'amazing_print'
-require 'daru'
+# TODO: Create a new gem for the dumbstockapi website
+
+#############################################
+## Standard Libraries
+
 require 'date'
+require 'pathname'
+
+unless defined?(HOME)
+	HOME = Pathname.new(ENV['HOME'])
+end
+
+#############################################
+## Additional Libraries
+
+require 'active_support/core_ext/string'
+require 'alphavantage' 	# TODO: add rate limiter to it
+require 'amazing_print'
+require 'daru' 					# TODO: Replace this gem with something better
 require 'descriptive_statistics'
+require 'faraday'
 require 'hashie'
 require 'nenv'
-require 'pathname'
+require 'sem_version'
+require 'sem_version/core_ext'
+require 'tty-option'
+require 'tty-table'
+
+
+#############################################
+## SQA soecufuc code
 
 require_relative "sqa/version"
 require_relative "sqa/errors"
 
-
-unless defined?(HOME)
-	HOME = Pathname.new(Nenv.home)
-end
-
-
-module SQA
-	class << self
-		@@config = nil
-
-		# Initializes the SQA modules
-		# returns the configuration
-		#
-		def init(argv=ARGV)
-			if argv.is_a? String
-				argv = argv.split()
-			end
-
-
-			# Ran at SQA::Config elaboration time
-			# @@config = Config.new
-
-			if defined? CLI
-				CLI.run(argv)
-			else
-				# There are no real command line parameters
-				# because the sqa gem is being required within
-				# the context of a larger program.
-			end
-
-			config.data_dir = homify(config.data_dir)
-
-			Daru.lazy_update 			= config.lazy_update
-			Daru.plotting_library = config.plotting_library
-
-			config
-		end
-
-		def debug?() 						= @@config.debug?
-		def verbose?() 					= @@config.verbose?
-
-		def homify(filepath) 		= filepath.gsub(/^~/, Nenv.home)
-		def data_dir() 					= Pathname.new(config.data_dir)
-		def config()            = @@config
-
-		def config=(an_object)
-			@@config = an_object
-		end
-	end
-end
+require_relative 'sqa/init.rb'
 
 # require_relative "patches/daru" # TODO: extract Daru::DataFrame in new gem sqa-data_frame
 
+# TODO: Some of these components make direct calls to the
+# 			Alpha Vantage API.  Convert them to use the
+# 			alphavantage gem.
+
 require_relative "sqa/config"
-require_relative "sqa/constants"
-require_relative "sqa/data_frame"
+require_relative "sqa/constants" 	# SMELL: more app than gem
+require_relative "sqa/data_frame" # TODO: drop the daru gem
 require_relative "sqa/indicator"
 require_relative "sqa/portfolio"
 require_relative "sqa/strategy"
 require_relative "sqa/stock"
 require_relative "sqa/ticker"
-require_relative "sqa/trade"
+require_relative "sqa/trade" # SMELL: Not really a core gem; more of an application thing
+
+

@@ -6,17 +6,18 @@
 #   config file ..... overrides envar
 #   command line parameters ...... overrides config file
 
-require 'hashie' # /extensions/dash/predefined_values'
-require 'yaml'
-require 'json'
-require 'toml-rb'
-
 
 module SQA
 	class Config < Hashie::Dash
     include Hashie::Extensions::Dash::PropertyTranslation
     include Hashie::Extensions::Coercion
-    include Hashie::Extensions::Dash::PredefinedValues
+
+    # FIXME:  Getting undefined error PredefinedValues
+    #         I'm thinking that Ruby is dropping it from the ObjectSpace
+    #         Looks like it is only used for the log level.  Should
+    #         able to work around that.
+    #
+    # include Hashie::Extensions::Dash::PredefinedValues
 
     property :config_file   #,a String filepath for the current config overriden by cli options
     property :dump_config   # a String filepath into which to dump the current config

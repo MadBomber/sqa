@@ -1,6 +1,5 @@
 # lib/sqa/cli.rb
 
-require 'tty-option'
 
 require_relative '../sqa'
 

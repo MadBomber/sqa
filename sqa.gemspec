@@ -35,17 +35,14 @@ Gem::Specification.new do |spec|
   spec.require_paths  = %w[lib]
 
   spec.add_dependency 'activesupport'
+  spec.add_dependency 'alphavantage' # requires hashie v4.1
   spec.add_dependency 'daru'
   spec.add_dependency 'descriptive_statistics'
-  spec.add_dependency 'hashie'  # , "~>4.1" # "~>5.0.0"
+  spec.add_dependency 'faraday'
+  spec.add_dependency 'hashie', '~>4.1.0' # Latest version is 5.0.0
   spec.add_dependency 'nenv'
-  spec.add_dependency 'tty-logger'
-  spec.add_dependency 'tty-markdown'
+  spec.add_dependency 'sem_version'
   spec.add_dependency 'tty-option'
-  spec.add_dependency 'tty-progressbar'
-  spec.add_dependency 'tty-prompt'
-  spec.add_dependency 'tty-reader'
-  spec.add_dependency 'tty-spinner'
   spec.add_dependency 'tty-table'
 
   spec.add_development_dependency 'amazing_print'

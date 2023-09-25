@@ -1,8 +1,5 @@
 # lib/sqa/stock.rb
 
-require 'active_support/core_ext/string' # for String#underscore
-require 'hashie' # for Hashie::Mash
-
 
 # SMELL:  SQA::Stock is now pretty coupled to the Alpha Vantage
 #         API service.  Should that stuff be extracted into a
@@ -101,13 +98,13 @@ class SQA::Stock
     def top
       return @@top unless @@top.nil?
 
-      mash = Hashie::Mash.new(
-        JSON.parse(
-          CONNECTION.get(
-            "/query?function=TOP_GAINERS_LOSERS&apikey=#{Nenv.av_api_key}"
-          ).to_hash[:body]
-        )
-      )
+      a_hash  = JSON.parse(
+                  CONNECTION.get(
+                    "/query?function=TOP_GAINERS_LOSERS&apikey=#{Nenv.av_api_key}"
+                  ).to_hash[:body]
+                )
+
+      mash = Hashie::Mash.new(a_hash)
 
       keys = mash.top_gainers.first.keys
 

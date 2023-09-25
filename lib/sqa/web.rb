@@ -1,6 +1,6 @@
 # lib/sqa/command/web.rb
 
-require 'tty-option'
+# require 'tty-option'
 
 
 module SQA
