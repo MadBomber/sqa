@@ -65,7 +65,7 @@ class SQA::Stock
     return @overview unless @overview.nil?
 
     temp = JSON.parse(
-      CONNECTION.get("/query?function=OVERVIEW&symbol=#{@ticker.upcase}&apikey=#{Nenv.av_api_key}")
+      CONNECTION.get("/query?function=OVERVIEW&symbol=#{@ticker.upcase}&apikey=#{SQA.av.key}")
         .to_hash[:body]
     )
 
@@ -100,7 +100,7 @@ class SQA::Stock
 
       a_hash  = JSON.parse(
                   CONNECTION.get(
-                    "/query?function=TOP_GAINERS_LOSERS&apikey=#{Nenv.av_api_key}"
+                    "/query?function=TOP_GAINERS_LOSERS&apikey=#{SQA.av.key}"
                   ).to_hash[:body]
                 )
 

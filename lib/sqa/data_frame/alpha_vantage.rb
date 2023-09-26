@@ -7,7 +7,6 @@
 
 class SQA::DataFrame < Daru::DataFrame
   class AlphaVantage
-    API_KEY     = Nenv.av_api_key
     CONNECTION  = Faraday.new(url: 'https://www.alphavantage.co')
     HEADERS     = YahooFinance::HEADERS
 
@@ -90,7 +89,7 @@ class SQA::DataFrame < Daru::DataFrame
         "/query?" +
         "function=TIME_SERIES_DAILY&" +
         "symbol=#{ticker.upcase}&" +
-        "apikey=#{API_KEY}&" +
+        "apikey=#{SQA.av.key}&" +
         "datatype=csv&" +
         "outputsize=#{full ? 'full' : 'compact'}"
       ).to_hash

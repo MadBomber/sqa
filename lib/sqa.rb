@@ -29,6 +29,7 @@ require 'sem_version/core_ext'
 require 'tty-option'
 require 'tty-table'
 
+require 'api_key_manager' # FIXME: currently from lib/ruby
 
 #############################################
 ## SQA soecufuc code

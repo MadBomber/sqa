@@ -2,7 +2,12 @@
 
 module SQA
 	class << self
-		@@config = nil
+		@@config 	= nil
+		@@av 			= ApiKeyManager::Rate.new(
+									ENV['AV_API_KEYS'],
+									ENV['AV_RATE_CNT'] ||  5,
+									ENV['AV_RATE_PER'] || 60
+								)
 
 		# Initializes the SQA modules
 		# returns the configuration
@@ -31,6 +36,8 @@ module SQA
 
 			config
 		end
+
+		def av() 								= @@av
 
 		def debug?() 						= @@config.debug?
 		def verbose?() 					= @@config.verbose?
