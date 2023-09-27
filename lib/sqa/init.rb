@@ -4,9 +4,10 @@ module SQA
 	class << self
 		@@config 	= nil
 		@@av 			= ApiKeyManager::Rate.new(
-									ENV['AV_API_KEYS'],
-									ENV['AV_RATE_CNT'] ||  5,
-									ENV['AV_RATE_PER'] || 60
+									api_keys: 		ENV['AV_API_KEYS'],
+									delay: 				true,
+									rate_count: 	ENV['AV_RATE_CNT'] ||  5,
+									rate_period: 	ENV['AV_RATE_PER'] || 60
 								)
 
 		# Initializes the SQA modules
