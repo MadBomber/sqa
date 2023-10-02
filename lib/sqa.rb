@@ -17,7 +17,8 @@ end
 ## Additional Libraries
 
 require 'active_support/core_ext/string'
-require 'alphavantage' 	# TODO: add rate limiter to it
+require 'alphavantage' 	# TODO: add rate limiter to it; ** PR submitted! **
+require 'api_key_manager'
 require 'amazing_print'
 require 'daru' 					# TODO: Replace this gem with something better
 require 'descriptive_statistics'
@@ -29,7 +30,6 @@ require 'sem_version/core_ext'
 require 'tty-option'
 require 'tty-table'
 
-require 'api_key_manager' # FIXME: currently from lib/ruby
 
 #############################################
 ## SQA soecufuc code

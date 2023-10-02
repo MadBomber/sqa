@@ -3,7 +3,7 @@
 module SQA
 	class << self
 		@@config 	= nil
-		@@av 			= ApiKeyManager::Rate.new(
+		@@av 			= ApiKeyManager::RateLimited.new(
 									api_keys: 		ENV['AV_API_KEYS'],
 									delay: 				true,
 									rate_count: 	ENV['AV_RATE_CNT'] ||  5,

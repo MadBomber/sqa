@@ -1,6 +1,9 @@
 # lib/sqa/data_frame.rb
 # frozen_string_literal: true
 
+# TODO: Consider replacing Daru::Dataframe with
+#       rover which is used by prophet.
+
 require_relative  'data_frame/yahoo_finance'
 require_relative  'data_frame/alpha_vantage'
 
