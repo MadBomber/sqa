@@ -4,37 +4,37 @@
 # TODO: Consider replacing Daru::Dataframe with
 #       rover which is used by prophet.
 
-require_relative  'data_frame/yahoo_finance'
-require_relative  'data_frame/alpha_vantage'
+# require_relative  'data_frame/yahoo_finance'
+# require_relative  'data_frame/alpha_vantage'
 
-class Daru::DataFrame
+# class Daru::DataFrame
 
-  def to_csv(path_to_file, opts={})
-    options = {
-      headers:    true,
-      converters: :numeric
-    }.merge(opts)
+#   def to_csv(path_to_file, opts={})
+#     options = {
+#       headers:    true,
+#       converters: :numeric
+#     }.merge(opts)
 
-    writer = ::CSV.open(path_to_file, 'wb')
+#     writer = ::CSV.open(path_to_file, 'wb')
 
-    writer << vectors.to_a if options[:headers]
+#     writer << vectors.to_a if options[:headers]
 
-    each_row do |row|
-      writer << if options[:convert_comma]
-                  row.map { |v| v.to_s.tr('.', ',') }
-                else
-                  row.to_a
-                end
-    end
+#     each_row do |row|
+#       writer << if options[:convert_comma]
+#                   row.map { |v| v.to_s.tr('.', ',') }
+#                 else
+#                   row.to_a
+#                 end
+#     end
 
-    writer.close
-  end
-end
-
-
+#     writer.close
+#   end
+# end
 
 
-class SQA::DataFrame < Daru::DataFrame
+
+
+class SQA::DataFrame < Rover
 
   #################################################
   def self.load(ticker, type="csv", options={}, &block)

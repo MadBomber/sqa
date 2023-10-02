@@ -2,7 +2,7 @@
 # frozen_string_literal: true
 
 
-class SQA::DataFrame < Daru::DataFrame
+class SQA::DataFrame < Rover
   class YahooFinance
     CONNECTION  = Faraday.new(url: 'https://finance.yahoo.com')
     HEADERS     = [
@@ -83,7 +83,7 @@ class SQA::DataFrame < Daru::DataFrame
         data << HEADERS.zip(cols).to_h
       end
 
-      Daru::DataFrame.new(data)
+      SQA::DataFrame.new(data)
     end
 
 

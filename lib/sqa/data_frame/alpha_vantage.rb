@@ -5,7 +5,7 @@
 #
 
 
-class SQA::DataFrame < Daru::DataFrame
+class SQA::DataFrame < Rover
   class AlphaVantage
     CONNECTION  = Faraday.new(url: 'https://www.alphavantage.co')
     HEADERS     = YahooFinance::HEADERS
@@ -118,8 +118,8 @@ class SQA::DataFrame < Daru::DataFrame
                   headers.zip(e2).to_h
                 end
 
-      # What oldest data first in the data frame
-      normalize_vector_names Daru::DataFrame.new(data.reverse)
+      # Want oldest data first in the data frame
+      normalize_vector_names SQA::DataFrame.new(data.reverse)
     end
 
 

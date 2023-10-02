@@ -20,11 +20,11 @@ require 'active_support/core_ext/string'
 require 'alphavantage' 	# TODO: add rate limiter to it; ** PR submitted! **
 require 'api_key_manager'
 require 'amazing_print'
-require 'daru' 					# TODO: Replace this gem with something better
 require 'descriptive_statistics'
 require 'faraday'
 require 'hashie'
 require 'nenv'
+require 'rover'
 require 'sem_version'
 require 'sem_version/core_ext'
 require 'tty-option'
@@ -39,7 +39,6 @@ require_relative "sqa/errors"
 
 require_relative 'sqa/init.rb'
 
-# require_relative "patches/daru" # TODO: extract Daru::DataFrame in new gem sqa-data_frame
 
 # TODO: Some of these components make direct calls to the
 # 			Alpha Vantage API.  Convert them to use the
@@ -47,7 +46,7 @@ require_relative 'sqa/init.rb'
 
 require_relative "sqa/config"
 require_relative "sqa/constants" 	# SMELL: more app than gem
-require_relative "sqa/data_frame" # TODO: drop the daru gem
+require_relative "sqa/data_frame"
 require_relative "sqa/indicator"
 require_relative "sqa/portfolio"
 require_relative "sqa/strategy"

@@ -6,13 +6,22 @@ The BUY/SELL signals that it generates are part of a game.  **DO NOT USE** when 
 
 ## This is a Work in Progress
 
-I'm making use of lots of gems which may not be part of the gemspec at this time.  I will be adding them as they make the final cut as to fitness for the intended function.  Some gems are configurable.  For example the default for the plotting library is `gruff`.  There are several available that the `daru` gem can use.
+I'm making use of lots of gems which may not be part of the gemspec at this time.  I will be adding them as they make the final cut as to fitness for the intended function.
 
-### DARU or RedAmber
+### DARU or RedAmber or Rover
 
-I'm just really using `daru` for its data frame object;  However, I just learned about the RedAmber data frame object in Ruby based off of Apache Arrow.  I'm going to look at that product since it is actively maintained.
+As of v0.0.16 Daru has been dropped in favor of Rover primarily Rover is used by the Prophet gem.
 
-https://github.com/red-data-tools/red_amber
+* http://rubygems.org/gems/rover
+* https://github.com/red-data-tools/red_amber
+
+### Time Series Forecasting
+
+Forecasting, predicting the future, its all a black art.  Mathematically there are ways to take a peek into the future based upon the past; however, there is no guarantee that the future will ever look like the past.  Flip a perfect coin.  What are the odds that it will come up heads?  1 out of 2.  50% right?  Now flip that same coin 100 times.  Each time the coin comes up heads.  What are the odds of of coming up heads in the next flip?  Its still 1 out of 2.  50% because the perfect coin has no memory.  What if it did have memory?  Maybe its a bitcoin? :)  You can push an analogy too far.
+
+Some of the gems that specialize in time series forecasting are:
+
+* https://github.com/ankane/prophet-ruby
 
 ## Installation
 
@@ -23,14 +32,6 @@ Install the gem and add to the application's Gemfile by executing:
 If bundler is not being used to manage dependencies, install the gem by executing:
 
     gem install sqa
-
-## ShoutOut To `daru`
-
-**D**ata **A**nalysis in **RU**by
-
-http://github.com/v0dro/daru
-
-Its `DataFrame` class is a very interesting in memory data structure.
 
 ## Usage
 
@@ -64,8 +65,8 @@ SQA.init
 aapl = SQA::Stock.new('aapl')
 ```
 
-`aapl.df` is the Daru::DataFrame
-see the `daru` gem for how to manipulate the DataFrame
+`aapl.df` is the SQA::DataFrame
+see the `rover` gem for how to manipulate the DataFrame
 The SQA::Indicator class methods use Arrays not the DataFrame
 Here is an example:
 

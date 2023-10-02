@@ -1,19 +1,15 @@
 # DataFrame (DF)
 
-A common way to handling data is good.  Having multiple ways to import and export datasets is good.  Originally SQA::Datastore was intended to provide this functionality but creating that capability took away from the key focs of this project.
+TODO: Review the Ruby code to make sure that it still works.
 
-Daru was chosen to fill the gap.  The Daru::Vector and Daru::DataFrane classes offer a good abstraction with multiple import and export formats.
+A common way to handling data is good.  Having multiple ways to import and export datasets is good.  Originally SQA::Datastore was intended to provide this functionality but creating that capability took away from the key focus of this project.
 
-Daru is part of the SciRuby collection.  Both Daru and SciRuby are a little out of date.
+Rpver was chosen )as of v0.0.16) to fill the gap - replacing Daru.
 
-* https://github.com/SciRuby/daru
-* https://github.com/SciRuby
+There may be Rover extensions and patches made to adapt it to the specific needs of SQA.
 
-There will be Daru extensions and patches made to adapt it to the specific needs of SQA.
+Frankly, Ruby has lost the battle to Python w/r/t data analysis.
 
-Frankly, Ruby has lost the battle to Python w/r/t data analysis.  The Python equivalent library to Daru is Pandas.  It is actively maintained.  There is a Ruby gem that uses PyCall to access Pandas but it is a few years out of date with open issues.
-
-I am considering extracting the Daru::DataFrame class into a new gem `sqa-Ddata_frame` so that I can more easily make upgrades and refactor the old thing.  It really could use a facelift and a better plugin strategy.  The lib/daru/data_frame.rb is over 3,000 lines long.  There is a lot of method documentation; but, I not really sure that all of those methods are really needed.  We could at least extract each of the methods out into its own file.
 
 ## Creating a DataFrame from a CSV File
 
@@ -22,18 +18,14 @@ A common activity is to use financial websites such as https://finance.yahoo.com
 Here is how to create a DataFrame from a CSV file downloaded from Finance.yahoo.com ...
 
 ```ruby
-df = Daru::DataFrame.from_csv('aapl.csv')
-
-# The SQA way uses the file's type to invoke the
-# correct method.
-df = SQA::DataFrame.load(filename)
+df = SQA::DataFrame.load('aapl.csv')
 ```
 
-The Daru::DataFrame class can be created from many different sources including an ActiveRecord relation -- e.g. you can get you data from a database.
+The SQA::DataFrame object can be created from many different sources including an ActiveRecord relation -- e.g. you can get you data from a database.
 
 ## Using a DataFrame
 
-The column names for a DataFrame are String objects.  To get an Array of the column names do this:
+The column names for a DataFrame are String or Symbol objects.  To get an Array of the column names do this:
 
 ```ruby
 df.vectors.to_a
@@ -48,7 +40,7 @@ df.vectors["The Column Name"].to_a
 
 ```
 
-You can of course use the `last()` method to constrain your Array to only those entries that make sense during your analysis.  Daru::DataFrame supposts both the `first` and `last` methods as well.  You can use them to avoid using any more memory in your Array than is needed.
+You can of course use the `last()` method to constrain your Array to only those entries that make sense during your analysis.  SQA::DataFrame supports both the `first` and `last` methods as well.  You can use them to avoid using any more memory in your Array than is needed.
 
 ```ruby
 df.vectors["The Column Name"].last(14).to_a
@@ -80,62 +72,12 @@ new_names
 
 
 df.rename_vectors(new_names)
-  #=> #<Daru::Index(7): {date, open, high, low, close, adj_close, volume}>
 
 df.vectors
-  #=> #<Daru::Index(7): {date, open, high, low, close, adj_close, volume}>
 
 # Now you can use the symbolized column name as a method to select that column
 df.volume.last(14).volume
-  #=>
-#<Daru::Vector(14)>
-              volume
-     10741  45377800
-     10742  37283200
-     10743  47471900
-     10744  47460200
-     10745  48291400
-     10746  38824100
-     10747  35175100
-     10748  50389300
-     10749  61235200
-     10750 115799700
-     10751  97576100
-     10752  67823000
-     10753  60378500
-     10754  54628800
 ```
-
-
-
-
-
-## Stats on a DataFrame
-
-Daru provides some basic tools for the analysis of data stored in a DataFrame.  There are too many to cover at this time.  Here is a simple example:
-
-```ruby
-df.last(14)['Adj Close'].minmax
-  #=> [177.970001, 196.449997]
-
-# You cab cgabge the order of operations ...
-df['Adj Close'].last(14).minmax
-  #=> [177.970001, 196.449997]
-
-# Get a summary report ...
-puts df['Adj Close'].last(14).minmax
-```
-<pre>
-= Adj Close
-  n :14
-  non-missing:14
-  median: 192.66500100000002
-  mean: 188.7521
-  std.dev.: 7.4488
-  std.err.: 1.9908
-  skew: -0.4783
-  kurtosis: -1.7267
-</pre>
 
 ## Bacon in the Sky
 

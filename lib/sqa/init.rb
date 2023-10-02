@@ -32,9 +32,6 @@ module SQA
 
 			config.data_dir = homify(config.data_dir)
 
-			Daru.lazy_update 			= config.lazy_update
-			Daru.plotting_library = config.plotting_library
-
 			config
 		end
 
