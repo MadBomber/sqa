@@ -2,7 +2,7 @@
 # frozen_string_literal: true
 
 
-class SQA::DataFrame < Rover
+class SQA::DataFrame < Rover::DataFrame
   class YahooFinance
     CONNECTION  = Faraday.new(url: 'https://finance.yahoo.com')
     HEADERS     = [

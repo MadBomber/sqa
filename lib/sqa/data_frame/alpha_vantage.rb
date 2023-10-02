@@ -5,7 +5,7 @@
 #
 
 
-class SQA::DataFrame < Rover
+class SQA::DataFrame < Rover::DataFrame
   class AlphaVantage
     CONNECTION  = Faraday.new(url: 'https://www.alphavantage.co')
     HEADERS     = YahooFinance::HEADERS

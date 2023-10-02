@@ -34,10 +34,10 @@
 
 
 
-class SQA::DataFrame < Rover
+class SQA::DataFrame < Rover::DataFrame
 
   #################################################
-  def self.load(ticker, type="csv", options={}, &block)
+  def self.load(ticker, type=:csv, options={}, &block)
     source  = SQA.data_dir + "#{ticker}.#{type}"
 
     if :csv == type
