@@ -40,7 +40,8 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'faraday'
   spec.add_dependency 'hashie', '~>4.1.0' # Latest version is 5.0.0
   spec.add_dependency 'nenv'
-  spec.add_dependency 'rover'
+  spec.add_dependency 'prophet'
+  spec.add_dependency 'rover-df'
   spec.add_dependency 'sem_version'
   spec.add_dependency 'tty-option'
   spec.add_dependency 'tty-table'
