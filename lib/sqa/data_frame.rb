@@ -62,7 +62,7 @@ class SQA::DataFrame < Rover::DataFrame
 
 
   def self.from_csv(source, options={})
-    Rover.read_csv(source, options)
+    Rover.read_csv(source)  #, options)
   end
 
 
