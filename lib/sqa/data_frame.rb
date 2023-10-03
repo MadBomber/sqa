@@ -53,6 +53,14 @@ class Rover::DataFrame
 
     rename(a_hash)
   end
+
+
+  # create accessor method like Hashie
+  def method_missing(method_name)
+    define_method method_name do
+      self[method_name]
+    end
+  end
 end
 
 
