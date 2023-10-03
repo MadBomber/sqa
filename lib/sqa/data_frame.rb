@@ -32,11 +32,12 @@ require_relative  'data_frame/alpha_vantage'
 # end
 
 
+class Rober::DataFrame
+  alias_method :rename_vectors, :rename
+emd
 
 
 class SQA::DataFrame < Rover::DataFrame
-
-  alias_method :rename_vectors, :rename
 
   #################################################
   def self.load(ticker, type=:csv, options={}, &block)
