@@ -8,11 +8,12 @@ The BUY/SELL signals that it generates are part of a game.  **DO NOT USE** when 
 
 I'm making use of lots of gems which may not be part of the gemspec at this time.  I will be adding them as they make the final cut as to fitness for the intended function.
 
-### DARU or RedAmber or Rover
+### DARU or RedAmber or Rover or Polars
 
 As of v0.0.16 Daru has been dropped in favor of Rover primarily Rover is used by the Prophet gem.
 
 * http://rubygems.org/gems/rover
+* https://github.com/ankane/polars-ruby
 * https://github.com/red-data-tools/red_amber
 
 ### Time Series Forecasting

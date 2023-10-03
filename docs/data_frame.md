@@ -2,6 +2,9 @@
 
 TODO: Review the Ruby code to make sure that it still works.
 
+FIXME: Still trying to make up moind of final DataFrame component.  Now thinking about
+       Polars - https://github.com/ankane/polars-ruby
+
 A common way to handling data is good.  Having multiple ways to import and export datasets is good.  Originally SQA::Datastore was intended to provide this functionality but creating that capability took away from the key focus of this project.
 
 Rpver was chosen )as of v0.0.16) to fill the gap - replacing Daru.
