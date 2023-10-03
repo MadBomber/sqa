@@ -39,7 +39,7 @@ class SQA::Stock
 
 
   def update_the_dataframe
-    df1 = @klass.load(@ticker, type)
+    df1 = SQA::DataFrame.load(@ticker, type)
     df2 = @klass.recent(@ticker)
 
     df1_nrows = df1.nrows
