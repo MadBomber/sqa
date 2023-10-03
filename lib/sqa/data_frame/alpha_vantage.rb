@@ -81,7 +81,7 @@ class SQA::DataFrame < Rover::DataFrame
     # Returns a combined DataFrame.
     #
     def self.append(base_df, updates_df)
-      last_timestamp  = Date.parse base_df.timestamp.last
+      last_timestamp  = Date.parse base_df.timestamp.to_a.last
       filtered_df     = updates_df.filter_rows { |row| Date.parse(row[:timestamp]) > last_timestamp }
 
       last_inx = filtered_df.size - 1
