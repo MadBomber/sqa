@@ -56,10 +56,16 @@ class Rover::DataFrame
 
 
   # create accessor method like Hashie
-  def method_missing(method_name)
-    define_method method_name do
-      self[method_name]
-    end
+  def method_missing(method_name, *args)
+    super unless keys.include?(method_name)
+
+    debug_me{[ :method_name, "method_name.class" ]}
+
+    instance_eval <<~METHOD
+      def method_name
+        self[method_name.to_sym]
+      end
+    METHOD
   end
 end
 
