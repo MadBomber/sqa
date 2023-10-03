@@ -33,6 +33,12 @@ require 'tty-table'
 
 
 #############################################
+## Patch 3rd part gems
+
+require_relative 'patches/rover-data_frame'
+
+
+#############################################
 ## SQA soecufuc code
 
 require_relative "sqa/version"

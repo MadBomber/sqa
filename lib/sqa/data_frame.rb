@@ -1,76 +1,32 @@
 # lib/sqa/data_frame.rb
 # frozen_string_literal: true
 
-# TODO: Consider replacing Daru::Dataframe with
-#       rover which is used by prophet.
+# This is an attempt to make some of the customer code
+# 3rd part df agnostic.
+#
+# TODO: Think about some kind of plugin feature to allow
+#       application to choose its own data frame package.
+#
+SQADF = Rover
+
 
 require_relative  'data_frame/yahoo_finance'
 require_relative  'data_frame/alpha_vantage'
 
-# class Daru::DataFrame
 
-#   def to_csv(path_to_file, opts={})
-#     options = {
-#       headers:    true,
-#       converters: :numeric
-#     }.merge(opts)
-
-#     writer = ::CSV.open(path_to_file, 'wb')
-
-#     writer << vectors.to_a if options[:headers]
-
-#     each_row do |row|
-#       writer << if options[:convert_comma]
-#                   row.map { |v| v.to_s.tr('.', ',') }
-#                 else
-#                   row.to_a
-#                 end
-#     end
-
-#     writer.close
-#   end
-# end
-
-
-class Rover::DataFrame
-
-  alias_method :nrows, :size
-
-  def rename_vectors(a_hash)
-    old_keys = keys.sort
-    new_keys = a_hash.values.sort
-
-    return if old_keys == new_keys
-
-    if old_keys == new_keys.map(&:to_s)
-      # Change the mapping from string to symbol
-      a_hash2 = {}
-      new_keys.each do |v_sym|
-        a_hash2[v_sym.to_s] = v_sym
-      end
-      a_hash = a_hash2
-    end
-
-    rename(a_hash)
-  end
-
-
-  # create accessor method like Hashie
-  def method_missing(method_name, *args)
-    super unless keys.include?(method_name)
-
-    debug_me{[ :method_name, "method_name.class" ]}
-
-    instance_eval <<~METHOD
-      def method_name
-        self[method_name.to_sym]
-      end
-    METHOD
+class SQADF::DataFrame
+  if "Rover" == SQADF.name
+    alias_method :nrows,          :size
+    alias_method :rename_vectors, :rename
+  elsif "Polars" == SQADF.name
+    alias_method :nrows,          :height
+    alias_method :first,          :head
+    alias_method :last,           :tail
   end
 end
 
 
-class SQA::DataFrame < Rover::DataFrame
+class SQA::DataFrame < SQADF::DataFrame
 
   #################################################
   def self.load(ticker, type=:csv, options={}, &block)
@@ -106,3 +62,4 @@ class SQA::DataFrame < Rover::DataFrame
     Rover.read_parquet(source, options)
   end
 end
+

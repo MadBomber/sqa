@@ -2,51 +2,13 @@
 # frozen_string_literal: true
 
 
-class SQA::DataFrame < Rover::DataFrame
+class SQA::DataFrame < SQADF::DataFrame
   class YahooFinance
     CONNECTION  = Faraday.new(url: 'https://finance.yahoo.com')
-    HEADERS     = [
-                    :timestamp,       # 0
-                    :open_price,      # 1
-                    :high_price,      # 2
-                    :low_price,       # 3
-                    :close_price,     # 4
-                    :adj_close_price, # 5
-                    :volume,          # 6
-                  ]
 
-      # The Yahoo Finance Headers are being remapped so that
-      # the header can be used as a method name to access the
-      # vector.
-      #
-      HEADER_MAPPING = {
-        "Date"      => HEADERS[0],
-        "Open"      => HEADERS[1],
-        "High"      => HEADERS[2],
-        "Low"       => HEADERS[3],
-        "Close"     => HEADERS[4],
-        "Adj Close" => HEADERS[5],
-        "Volume"    => HEADERS[6]
-      }
 
     ################################################################
-    def self.load(filename, options={}, &block)
-      df = SQA::DataFrame.load(filename, options={}, &block)
-
-      headers = df.vectors
-
-      if headers.first == HEADERS.first.to_s
-        a_hash = {}
-        HEADERS.each {|k| a_hash[k.to_s] = k}
-        df.rename_vectors(a_hash)
-      else
-        df.rename_vectors(HEADER_MAPPING)
-      end
-
-      df
-    end
-
-
+    #
     # Scrape the Yahoo Finance website to get recent
     # historical prices for a specific ticker
     #

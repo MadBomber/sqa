@@ -8,63 +8,10 @@
 class SQA::DataFrame < Rover::DataFrame
   class AlphaVantage
     CONNECTION  = Faraday.new(url: 'https://www.alphavantage.co')
-    HEADERS     = YahooFinance::HEADERS
-
-    # The Alpha Vantage headers are being remapped so that
-    # they match those of the Yahoo Finance CSV file.
-    #
-    HEADER_MAPPING = {
-      "date"            => HEADERS[0],
-      "open"            => HEADERS[1],
-      "high"            => HEADERS[2],
-      "low"             => HEADERS[3],
-      "close"           => HEADERS[4],
-      "adjusted_close"  => HEADERS[5],
-      "volume"          => HEADERS[6]
-    }
 
 
     ################################################################
-    # Load a Dataframe from a csv file
-    def self.load(ticker, type="csv")
-      filepath = SQA.data_dir + "#{ticker}.#{type}"
-
-      if filepath.exist?
-        df = normalize_vector_names SQA::DataFrame.load(ticker, type)
-      else
-        df = recent(ticker, full: true)
-        df.send("to_#{type}",filepath)
-      end
-
-      df
-    end
-
-
-    # Normalize the vector (aka column) names as
-    # symbols using the standard names set by
-    # Yahoo Finance ... since it was the first one
-    # not because its anything special.
     #
-    def self.normalize_vector_names(df)
-      headers = df.vectors.to_a
-
-      # convert vector names to symbols
-      # when they are strings.  They become stings
-      # when the data frame is saved to a CSV file
-      # and then loaded back in.
-
-      if headers.first == HEADERS.first.to_s
-        a_hash = {}
-        HEADERS.each {|k| a_hash[k.to_s] = k}
-        df.rename_vectors(a_hash) # renames from String to Symbol
-      else
-        df.rename_vectors(HEADER_MAPPING)
-      end
-
-      df
-    end
-
-
     # Get recent data from JSON API
     #
     # ticker String the security to retrieve
@@ -101,14 +48,11 @@ class SQA::DataFrame < Rover::DataFrame
       raw           = response[:body].split
 
       headers       = raw.shift.split(',')
-      headers[0]    = 'date'  # website returns "timestamp" but that
-                              # has an unintended side-effect when
-                              # the names are normalized.
 
       close_inx     = headers.size - 2
       adj_close_inx = close_inx + 1
 
-      headers.insert(adj_close_inx, 'adjusted_close')
+      headers.insert(adj_close_inx, 'Adj Close')
 
       data    = raw.map do |e|
                   e2 = e.split(',')
@@ -119,7 +63,7 @@ class SQA::DataFrame < Rover::DataFrame
                 end
 
       # Want oldest data first in the data frame
-      normalize_vector_names SQA::DataFrame.new(data.reverse)
+      SQA::DataFrame.new(data.reverse)
     end
 
 
