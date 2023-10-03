@@ -32,9 +32,25 @@ require_relative  'data_frame/alpha_vantage'
 # end
 
 
-class Rober::DataFrame
-  alias_method :rename_vectors, :rename
-emd
+class Rover::DataFrame
+  def rename_vectors(a_hash)
+    return if keys.sort == a_hash.values.sort
+    debug_me{[
+      "keys.sort",
+      "a_hash.values.sort"
+    ]}
+
+    if keys.sort.first == a_hash.values.sort.first.to_s
+      a_hash2 = {}
+      a_hash.values.each do |v_sym|
+        a_hash2[v_sym.to_s] = v_sym
+      end
+      a_hash = a_hash2
+    end
+
+    rename(a_hash)
+  end
+end
 
 
 class SQA::DataFrame < Rover::DataFrame
