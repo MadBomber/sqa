@@ -82,15 +82,17 @@ class SQA::DataFrame < Rover::DataFrame
     #
     def self.append(base_df, updates_df)
       last_timestamp  = Date.parse base_df.timestamp.to_a.last
-      filtered_df     = updates_df.filter_rows { |row| Date.parse(row[:timestamp]) > last_timestamp }
 
-      last_inx = filtered_df.size - 1
-
-      (0..last_inx).each do |x|
-        base_df.add_row filtered_df.row[last_inx-x]
+      data = []
+      updates_df.each_row do |row|
+        if Date.parse(row[:timestamp]) > last_timestamp
+          data << row
+        end
       end
 
-      base_df
+      filtered_df = SQA::DataFrame.new(data)
+
+      base_df.concat(filtered_df)
     end
   end
 end
