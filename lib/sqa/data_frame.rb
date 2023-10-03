@@ -36,6 +36,8 @@ require_relative  'data_frame/alpha_vantage'
 
 class SQA::DataFrame < Rover::DataFrame
 
+  alias_method :rename_vectors, :rename
+
   #################################################
   def self.load(ticker, type=:csv, options={}, &block)
     if ticker.is_a?(Pathname)
@@ -62,7 +64,7 @@ class SQA::DataFrame < Rover::DataFrame
 
 
   def self.from_csv(source, options={})
-    Rover.read_csv(source)  #, options)
+    Rover.read_csv(source)
   end
 
 
