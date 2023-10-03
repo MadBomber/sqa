@@ -9,7 +9,7 @@ class Rover::DataFrame
   def initialize(*args)
     old_initialize(*args)
 
-    normalize_keys unless keys.all?{|k| k.is_a?(Symbole)
+    normalize_keys unless keys.all?{|k| k.is_a?(Symbol)}
     create_accessor_methods
   end
 
