@@ -13,6 +13,13 @@ class Rover::DataFrame
     create_accessor_methods
   end
 
+
+  alias_method :old_to_csv, :to_csv
+  def to_csv(a_path)
+    buffer = old_to_csv
+    a_path.write buffer
+  end
+
   private
 
   def normalize_keys
