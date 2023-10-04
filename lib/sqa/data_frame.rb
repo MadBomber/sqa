@@ -28,6 +28,13 @@ end
 
 class SQA::DataFrame < SQADF::DataFrame
 
+  # Rover does not write CSV files
+  def to_csv(a_path)
+    buffer = super()
+    a_path.write buffer
+  end
+
+
   #################################################
   def self.load(ticker, type=:csv, options={}, &block)
     if ticker.is_a?(Pathname)
