@@ -1,10 +1,10 @@
 PATH
   remote: .
   specs:
-    sqa (0.0.15)
+    sqa (0.0.17)
       activesupport
       alphavantage
-      daru
+      api_key_manager
       descriptive_statistics
       faraday
       hashie (~> 4.1.0)
@@ -25,9 +25,8 @@ GEM
       faraday (~> 1.4)
       hashie (~> 4.1)
     amazing_print (1.5.0)
+    api_key_manager (0.1.0)
     concurrent-ruby (1.2.2)
-    daru (0.3)
-      packable (~> 1.3.13)
     debug_me (1.1.0)
     descriptive_statistics (2.5.1)
     faraday (1.10.3)
@@ -59,7 +58,6 @@ GEM
     minitest (5.19.0)
     multipart-post (2.3.0)
     nenv (0.3.0)
-    packable (1.3.18)
     pastel (0.8.0)
       tty-color (~> 0.5)
     rake (13.0.6)
