@@ -5,7 +5,7 @@
 #
 
 
-class SQA::DataFrame < Daru::DataFrame
+class SQA::DataFrame
   class AlphaVantage
     CONNECTION  = Faraday.new(url: 'https://www.alphavantage.co')
     HEADERS     = YahooFinance::HEADERS
@@ -25,45 +25,6 @@ class SQA::DataFrame < Daru::DataFrame
 
 
     ################################################################
-    # Load a Dataframe from a csv file
-    def self.load(ticker, type="csv")
-      filepath = SQA.data_dir + "#{ticker}.#{type}"
-
-      if filepath.exist?
-        df = normalize_vector_names SQA::DataFrame.load(ticker, type)
-      else
-        df = recent(ticker, full: true)
-        df.send("to_#{type}",filepath)
-      end
-
-      df
-    end
-
-
-    # Normalize the vector (aka column) names as
-    # symbols using the standard names set by
-    # Yahoo Finance ... since it was the first one
-    # not because its anything special.
-    #
-    def self.normalize_vector_names(df)
-      headers = df.vectors.to_a
-
-      # convert vector names to symbols
-      # when they are strings.  They become stings
-      # when the data frame is saved to a CSV file
-      # and then loaded back in.
-
-      if headers.first == HEADERS.first.to_s
-        a_hash = {}
-        HEADERS.each {|k| a_hash[k.to_s] = k}
-        df.rename_vectors(a_hash) # renames from String to Symbol
-      else
-        df.rename_vectors(HEADER_MAPPING)
-      end
-
-      df
-    end
-
 
     # Get recent data from JSON API
     #
@@ -110,7 +71,7 @@ class SQA::DataFrame < Daru::DataFrame
 
       headers.insert(adj_close_inx, 'adjusted_close')
 
-      data    = raw.map do |e|
+      aofh    = raw.map do |e|
                   e2 = e.split(',')
                   e2[1..-2] = e2[1..-2].map(&:to_f) # converting open, high, low, close
                   e2[-1]    = e2[-1].to_i           # converting volumn
@@ -118,35 +79,7 @@ class SQA::DataFrame < Daru::DataFrame
                   headers.zip(e2).to_h
                 end
 
-      # What oldest data first in the data frame
-      normalize_vector_names Daru::DataFrame.new(data.reverse)
-    end
-
-
-    # Append update_df rows to the base_df
-    #
-    # base_df is ascending on timestamp
-    # update_df is descending on timestamp
-    #
-    # base_df content came from CSV file downloaded
-    # from Yahoo Finance.
-    #
-    # update_df came from scraping the webpage
-    # at Yahoo Finance for the recent history.
-    #
-    # Returns a combined DataFrame.
-    #
-    def self.append(base_df, updates_df)
-      last_timestamp  = Date.parse base_df.timestamp.last
-      filtered_df     = updates_df.filter_rows { |row| Date.parse(row[:timestamp]) > last_timestamp }
-
-      last_inx = filtered_df.size - 1
-
-      (0..last_inx).each do |x|
-        base_df.add_row filtered_df.row[last_inx-x]
-      end
-
-      base_df
+      aofh
     end
   end
 end

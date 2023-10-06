@@ -2,7 +2,7 @@ PATH
   remote: .
   specs:
     sqa (0.0.17)
-      activesupport
+      activesupport (= 7.0.6)
       alphavantage
       api_key_manager
       descriptive_statistics
@@ -16,7 +16,7 @@ PATH
 GEM
   remote: https://rubygems.org/
   specs:
-    activesupport (7.0.7)
+    activesupport (7.0.6)
       concurrent-ruby (~> 1.0, >= 1.0.2)
       i18n (>= 1.6, < 2)
       minitest (>= 5.1)
