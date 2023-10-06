@@ -1,70 +1,54 @@
 # lib/sqa/data_frame.rb
 # frozen_string_literal: true
 
-require_relative  'data_frame/yahoo_finance'
-require_relative  'data_frame/alpha_vantage'
+require 'forwardable'
+
+require_relative 'data_frame/yahoo_finance'
+require_relative 'data_frame/alpha_vantage'
 
 class SQA::DataFrame
+  extend Forwardable
+
   attr_accessor :data
 
   def initialize(a_hash)
     @data = Hashie::Mash.new(a_hash)
   end
 
-  def to_csv(path_to_file)
-    writer = ::CSV.open(path_to_file, 'wb')
-
-    writer << keys
-
-    (0..suze-1).each do |x|
-      writer << row(x)
-    end
-
-    writer.close
-  end
-
+  def_delegator :@data, :to_csv, :to_csv
 
   def to_json(path_to_file)
     raise NotImplemented
   end
 
-
-  # aofh -- Array of Hashes
   def to_aofh
     raise NotImplemented
   end
 
-
-  # hofa -- Hash of Arrays
-  def to_hofa
-    @data.to_h
-  end
+  def_delegator :@data, :to_h, :to_hofa
   alias_method :to_h, :to_hofa
 
-
-  # All columns are the same length
-  def size
-    @data.first.values.size
-  end
-  alias_method :nrows,  :size
+  def_delegator :@data, :size
+  alias_method :nrows, :size
   alias_method :length, :size
 
-
-  def keys
-    @data.keys
-  end
+  def_delegator :@data, :keys
   alias_method :vectors, :keys
   alias_method :columns, :keys
 
+  def_delegator :@data, :values, :values
+  def_delegator :@data, :[], :[]
+  def_delegator :@data, :[]=, :[]=
 
   def rows
     result = []
-    (0..size-1).each do |x|
+    (0..size - 1).each do |x|
       entry = row(x)
+      result << entry
     end
+    result
   end
   alias_method :to_a, :rows
-
 
   def row(x)
     raise SQA::BadParameterError if x < 0 || x >= size
@@ -73,10 +57,8 @@ class SQA::DataFrame
     keys.each do |key|
       entry << @data[key][x]
     end
-
     entry
   end
-
 
   #################################################
   def self.load(ticker, type="csv", options={}, &block)
@@ -95,11 +77,9 @@ class SQA::DataFrame
     raise NotImplemented
   end
 
-
   def from_json_file(source)
     raise NotImplemented
   end
-
 
   # aofh -- Array of Hashes
   # hofa == Hash of Arrays
@@ -108,7 +88,7 @@ class SQA::DataFrame
 
     keys = aofh.first.keys
 
-    keys.each |key|
+    keys.each do |key|
       result[key] = []
     end
 
@@ -121,7 +101,7 @@ class SQA::DataFrame
     result
   end
 
-
   # TODO: Add the normalize key methods
-
 end
+
+
