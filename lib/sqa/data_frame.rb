@@ -124,6 +124,22 @@ class SQA::DataFrame
   alias_method :rename_vectors, :rename
 
 
+  # Map the values of the vectors into different objects
+  # types is a Hash where the key is the vector name and
+  #   the value is a proc
+  #
+  # For Example:
+  # {
+  #   price: -> (v) {v.to_f.round(3)}
+  # }
+  #
+  def coerce_vectors(transformers)
+    transformers.each_pair do |key, transformer|
+      @data[key].map!{|v| transformer.call(v)}
+    end
+  end
+
+
   def method_missing(method_name, *args, &block)
     if @data.respond_to?(method_name)
       self.class.send(:define_method, method_name) do |*method_args, &method_block|
@@ -157,21 +173,22 @@ class SQA::DataFrame
     #       YAML by default.  Maybe this method should
     #       make use of @data = Data.load(source)
     #
-    def load(ticker, type=:csv, options={}, &block)
-      if ticker.is_a?(Pathname)
-        source  = ticker
-        type    = ticker.extname[1..].to_sym
-      else
-        source  = SQA.data_dir + "#{ticker}.#{type}"
+    def load(source:, transformers:{})
+      file_type = source.extname[1..].downcase.to_sym
+
+      df  = if :csv == file_type
+              from_csv_file(source)
+            elsif :json == file_type
+              from_json_file(source)
+            else
+              raise BadParameterError, "unsupported file type: #{file_type}"
+            end
+
+      unless transformers.empty?
+        df.coerce_vectors(transformers)
       end
 
-      if :csv == type
-        from_csv_file(source)
-      elsif :json == type
-        from_json_file(source)
-      else
-        raise BadParameterError, "un-supported file type: #{type}"
-      end
+      df
     end
 
 
