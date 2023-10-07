@@ -23,6 +23,14 @@ class SQA::DataFrame
       "volume"          => HEADERS[6]
     }
 
+    TRANSFORMERS  = {
+      HEADERS[1] => -> (v) { v.to_f.round(3) },
+      HEADERS[2] => -> (v) { v.to_f.round(3) },
+      HEADERS[3] => -> (v) { v.to_f.round(3) },
+      HEADERS[4] => -> (v) { v.to_f.round(3) },
+      HEADERS[5] => -> (v) { v.to_f.round(3) },
+      HEADERS[6] => -> (v) { v.to_i }
+    }
 
     ################################################################
 
@@ -42,7 +50,8 @@ class SQA::DataFrame
     #       and adding that to the data frame as if it were
     #       adjusted.
     #
-    def self.recent(ticker, full: false)
+    def self.recent(ticker, full: false, from_date: nil)
+
       # NOTE: Using the CSV format because the JSON format has
       #       really silly key values.  The column names for the
       #       CSV format are much better.
@@ -60,11 +69,12 @@ class SQA::DataFrame
       end
 
       raw           = response[:body].split
-
       headers       = raw.shift.split(',')
+
       headers[0]    = 'date'  # website returns "timestamp" but that
                               # has an unintended side-effect when
                               # the names are normalized.
+                              # SMELL: IS THIS STILL TRUE?
 
       close_inx     = headers.size - 2
       adj_close_inx = close_inx + 1
@@ -79,7 +89,20 @@ class SQA::DataFrame
                   headers.zip(e2).to_h
                 end
 
-      aofh
+      if from_date
+        aofh.reject!{|e| Date.parse(e['date']) < from_date}
+      end
+
+      return nil if aofh.empty?
+
+      # ensure tha the data frame is
+      # always sorted oldest to newest.
+
+      if aofh.first['date'] > aofh.last['date']
+        aofh.reverse!
+      end
+
+      SQA::DataFrame.from_aofh(aofh, mapping: HEADER_MAPPING, transformers: TRANSFORMERS)
     end
   end
 end

@@ -27,16 +27,23 @@ class SQA::DataFrame
   end
 
 
-  def_delegator :@data, :to_csv, :to_csv
+  def to_csv(path_to_file)
+    CSV.open(path_to_file, 'w') do |csv|
+      csv << keys
+      size.times do |x|
+        csv << row(x)
+      end
+    end
+  end
 
 
   def to_json(path_to_file)
-    raise NotImplemented
+    NotImplemented.raise
   end
 
 
   def to_aofh
-    raise NotImplemented
+    NotImplemented.raise
   end
 
 
@@ -103,8 +110,12 @@ class SQA::DataFrame
   end
 
 
-  def append(df)
-    raise NotImplemented
+  def append(new_df)
+    raise(BadParameterError, "Key mismatch") if keys != new_df.keys
+
+    keys.each do |key|
+      @data[key] += new_df[key]
+    end
   end
   alias_method :concat, :append
 
@@ -153,11 +164,6 @@ class SQA::DataFrame
 
 
   def respond_to_missing?(method_name, include_private = false)
-    debug_me('TWO'){[
-      :method_name,
-      "method_name.class"
-    ]}
-
     @data.respond_to?(method_name) || super
   end
 
@@ -173,13 +179,13 @@ class SQA::DataFrame
     #       YAML by default.  Maybe this method should
     #       make use of @data = Data.load(source)
     #
-    def load(source:, transformers:{})
+    def load(source:, mapping: {}, transformers:{})
       file_type = source.extname[1..].downcase.to_sym
 
       df  = if :csv == file_type
-              from_csv_file(source)
+              from_csv_file(source, mapping: mapping, transformers: transformers)
             elsif :json == file_type
-              from_json_file(source)
+              from_json_file(source, mapping: mapping, transformers: transformers)
             else
               raise BadParameterError, "unsupported file type: #{file_type}"
             end
@@ -192,32 +198,38 @@ class SQA::DataFrame
     end
 
 
-    def from_aofh(aofh)
-      new(aofh_to_hofa(aofh))
+    def from_aofh(aofh, mapping: {}, transformers: {})
+      new(
+        aofh_to_hofa(
+          aofh,
+          mapping: mapping,
+          transformers: transformers
+        )
+      )
     end
 
 
-    def from_csv_file(source)
+    def from_csv_file(source, mapping: {}, transformers: {})
       aofh = []
 
       CSV.foreach(source, headers: true) do |row|
         aofh << row.to_h
       end
 
-      from_aofh(aofh)
+      from_aofh(aofh, mapping: mapping, transformers: transformers)
     end
 
 
-    def from_json_file(source)
+    def from_json_file(source, mapping: {}, transformers: {})
       aofh = JSON.parse(source.read)
 
-      from_aofh(aofh)
+      from_aofh(aofh, mapping: mapping, transformers: transformers)
     end
 
 
     # aofh -- Array of Hashes
     # hofa -- Hash of Arrays
-    def aofh_to_hofa(aofh)
+    def aofh_to_hofa(aofh, mapping: {}, transformers: {})
       hofa = {}
       keys = aofh.first.keys
 
@@ -232,13 +244,12 @@ class SQA::DataFrame
       end
 
       # SMELL: This might be necessary
-      normalize_keys(hofa)
-
-      # hofa
+      normalize_keys(hofa, adapter_mapping: mapping)
     end
 
 
-    def normalize_keys(hofa)
+    def normalize_keys(hofa, adapter_mapping: {})
+      hofa    = rename(adapter_mapping, hofa)
       mapping = generate_mapping(hofa.keys)
       rename(mapping, hofa)
     end
