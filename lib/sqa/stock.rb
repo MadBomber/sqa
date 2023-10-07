@@ -32,8 +32,7 @@ class SQA::Stock
     @data.indicators    = { xyzzy: "Magic" }
     @data.type          = type # SMELL:  Is this needed?
 
-    _merge_overview
-
+    merge_overview
     update_the_dataframe
   end
 
@@ -80,11 +79,15 @@ class SQA::Stock
   alias_method :inspect, :to_s
 
 
-  def _merge_overview
+  def merge_overview
     temp = JSON.parse(
       CONNECTION.get("/query?function=OVERVIEW&symbol=#{ticker.upcase}&apikey=#{SQA.av.key}")
         .to_hash[:body]
     )
+
+    if temp.has_key? "Information"
+      ApiError.raise(temp["Information"])
+    end
 
     # TODO: CamelCase hash keys look common in Alpha Vantage
     #       JSON; look at making a special Hashie-based class
