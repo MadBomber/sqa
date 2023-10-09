@@ -36,9 +36,9 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'activesupport', '7.0.6'
   spec.add_dependency 'alphavantage' # requires hashie v4.1; bad wrapper library
   spec.add_dependency 'api_key_manager'
-  spec.add_dependency 'descriptive_statistics'
   spec.add_dependency 'faraday'
   spec.add_dependency 'hashie', '~>4.1.0' # Latest version is 5.0.0
+  spec.add_dependency 'lite-statistics'
   spec.add_dependency 'nenv'
   spec.add_dependency 'sem_version'
   spec.add_dependency 'tty-option'

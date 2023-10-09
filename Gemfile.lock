@@ -1,13 +1,13 @@
 PATH
   remote: .
   specs:
-    sqa (0.0.17)
+    sqa (0.0.18)
       activesupport (= 7.0.6)
       alphavantage
       api_key_manager
-      descriptive_statistics
       faraday
       hashie (~> 4.1.0)
+      lite-statistics
       nenv
       sem_version
       tty-option
@@ -28,7 +28,6 @@ GEM
     api_key_manager (0.1.0)
     concurrent-ruby (1.2.2)
     debug_me (1.1.0)
-    descriptive_statistics (2.5.1)
     faraday (1.10.3)
       faraday-em_http (~> 1.0)
       faraday-em_synchrony (~> 1.0)
@@ -55,6 +54,9 @@ GEM
     hashie (4.1.0)
     i18n (1.14.1)
       concurrent-ruby (~> 1.0)
+    lite-memoize (1.1.1)
+    lite-statistics (2.0.0)
+      lite-memoize
     minitest (5.19.0)
     multipart-post (2.3.0)
     nenv (0.3.0)

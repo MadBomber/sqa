@@ -20,9 +20,10 @@ require 'active_support/core_ext/string'
 require 'alphavantage' 	# TODO: add rate limiter to it; ** PR submitted! **
 require 'api_key_manager'
 require 'amazing_print'
-require 'descriptive_statistics'
 require 'faraday'
 require 'hashie'
+require 'lite/statistics'
+require 'lite/statistics/monkey_patches' # patch to Enumerable
 require 'nenv'
 require 'sem_version'
 require 'sem_version/core_ext'

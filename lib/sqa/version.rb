@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module SQA
-  VERSION = "0.0.17"
+  VERSION = "0.0.18"
 
   class << self
     def version
