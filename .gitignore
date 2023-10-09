@@ -1,4 +1,6 @@
+.DS_Store
 .irbrc
+temp.*
 /.bundle/
 /.yardoc
 /_yardoc/

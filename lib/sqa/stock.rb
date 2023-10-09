@@ -13,54 +13,90 @@ class SQA::Stock
   attr_accessor :data # General Info      -- SQA::DataFrame::Data
   attr_accessor :df   # Historical Prices -- SQA::DataFrame::Data
 
+  attr_accessor :klass        # class of historical and current prices
+  attr_accessor :transformers # procs for changing column values from String to Numeric
+
   def initialize(
         ticker:,
-        source: :alpha_vantage,
-        type:   :csv
+        source: :alpha_vantage
       )
 
-    @data = SQA::DataFrame::Data.new(
-              SQA::Ticker.lookup(ticker)
-            )
+    @ticker     = ticker.downcase
+    @source     = source
 
-    raise "Invalid Ticker #{ticker}" if @data.empty?
+    raise "Invalid Ticker #{ticker}" unless SQA::Ticker.valid?(ticker)
 
-    @data.ticker        = ticker.downcase
-    @data.source        = source
-    @data.klass         = "SQA::DataFrame::#{source.to_s.camelize}".constantize
-    @data.transformers  = "SQA::DataFrame::#{source.to_s.camelize}::TRANSFORMERS".constantize
-    @data.indicators    = { xyzzy: "Magic" }
-    @data.type          = type # SMELL:  Is this needed?
+    @data_path  = SQA.data_dir + "#{@ticker}.json"
+    @df_path    = SQA.data_dir + "#{@ticker}.csv"
 
-    merge_overview
+    @klass         = "SQA::DataFrame::#{@source.to_s.camelize}".constantize
+    @transformers  = "SQA::DataFrame::#{@source.to_s.camelize}::TRANSFORMERS".constantize
+
+    if @data_path.exist?
+      load
+    else
+      create
+      update
+      save
+    end
+
     update_the_dataframe
   end
+
+
+  def load
+    @data = SQA::DataFrame::Data.new(
+              JSON.parse(@data_path.read)
+            )
+  end
+
+
+  def create
+    @data =
+      SQA::DataFrame::Data.new(
+        {
+          ticker:       @ticker,
+          source:       @source,
+          indicators:   { xyzzy: "Magic" },
+        }
+      )
+  end
+
+
+  def update
+    merge_overview
+  end
+
+
+  def save
+    @data_path.write @data.to_json
+  end
+
 
   def_delegator :@data, :ticker,      :ticker
   def_delegator :@data, :name,        :name
   def_delegator :@data, :exchange,    :exchange
   def_delegator :@data, :source,      :source
-  def_delegator :@data, :klass,       :klass
   def_delegator :@data, :indicators,  :indicators
   def_delegator :@data, :indicators=, :indicators=
   def_delegator :@data, :overview,    :overview
-  def_delegator :@data, :type,        :type
 
 
 
   def update_the_dataframe
-    file_path = SQA.data_dir + "#{ticker}.#{type}"
-
-    if file_path.exist?
-      @df     = SQA::DataFrame.load(source: file_path, transformers: data.transformers)
+    if @df_path.exist?
+      @df     = SQA::DataFrame.load(
+        source:       @df_path,
+        transformers: @transformers
+      )
     else
-      @df     = klass.recent(ticker, full: true)
-      @df.send("to_#{type}", file_path)
+      @df     = klass.recent(@ticker, full: true)
+      @df.to_csv(@df_path)
       return
     end
 
     from_date = Date.parse(@df.timestamp.last) + 1
-    df2       = klass.recent(ticker, from_date: from_date)
+    df2       = klass.recent(@ticker, from_date: from_date)
 
     return if df2.nil?  # CSV file is up to date.
 
@@ -68,7 +104,7 @@ class SQA::Stock
     @df.append(df2)
 
     if @df.nrows > df_nrows
-      @df.send("to_#{type}", file_path)
+      @df.to_csv(file_path)
     end
   end
 
