@@ -6,68 +6,124 @@
 #         separate class and injected by the requiring program?
 
 class SQA::Stock
+  extend Forwardable
+
   CONNECTION = Faraday.new(url: "https://www.alphavantage.co")
 
-  attr_accessor :company_name
-  attr_accessor :df             # The DataFrane
-  attr_accessor :ticker
-  attr_accessor :type           # type of data store (default is CSV)
-  attr_accessor :indicators
+  attr_accessor :data # General Info      -- SQA::DataFrame::Data
+  attr_accessor :df   # Historical Prices -- SQA::DataFrame::Data
+
+  attr_accessor :klass        # class of historical and current prices
+  attr_accessor :transformers # procs for changing column values from String to Numeric
 
   def initialize(
         ticker:,
-        source: :alpha_vantage,
-        type:   :csv
+        source: :alpha_vantage
       )
+
+    @ticker     = ticker.downcase
+    @source     = source
+
     raise "Invalid Ticker #{ticker}" unless SQA::Ticker.valid?(ticker)
 
-    # TODO: Change API on lookup to return array instead of hash
-    #       Could this also incorporate the validation process to
-    #       save an additiona hash lookup?
+    @data_path  = SQA.data_dir + "#{@ticker}.json"
+    @df_path    = SQA.data_dir + "#{@ticker}.csv"
 
-    entry         = SQA::Ticker.lookup(ticker)
+    @klass         = "SQA::DataFrame::#{@source.to_s.camelize}".constantize
+    @transformers  = "SQA::DataFrame::#{@source.to_s.camelize}::TRANSFORMERS".constantize
 
-    @ticker       = ticker.downcase
-    @company_name = entry[:name]
-    @exchange     = entry[:exchange]
-    @klass        = "SQA::DataFrame::#{source.to_s.camelize}".constantize
-    @type         = type
-    @indicators   = OpenStruct.new
+    if @data_path.exist?
+      load
+    else
+      create
+      update
+      save
+    end
 
     update_the_dataframe
   end
 
 
+  def load
+    @data = SQA::DataFrame::Data.new(
+              JSON.parse(@data_path.read)
+            )
+  end
+
+
+  def create
+    @data =
+      SQA::DataFrame::Data.new(
+        {
+          ticker:       @ticker,
+          source:       @source,
+          indicators:   { xyzzy: "Magic" },
+        }
+      )
+  end
+
+
+  def update
+    merge_overview
+  end
+
+
+  def save
+    @data_path.write @data.to_json
+  end
+
+
+  def_delegator :@data, :ticker,      :ticker
+  def_delegator :@data, :name,        :name
+  def_delegator :@data, :exchange,    :exchange
+  def_delegator :@data, :source,      :source
+  def_delegator :@data, :indicators,  :indicators
+  def_delegator :@data, :indicators=, :indicators=
+  def_delegator :@data, :overview,    :overview
+
+
+
   def update_the_dataframe
-    df1 = @klass.load(@ticker, type)
-    df2 = @klass.recent(@ticker)
-
-    df1_nrows = df1.nrows
-    @df       = @klass.append(df1, df2)
-
-    if @df.nrows > df1_nrows
-      @df.send("to_#{@type}", SQA.data_dir + "#{ticker}.csv")
+    if @df_path.exist?
+      @df     = SQA::DataFrame.load(
+        source:       @df_path,
+        transformers: @transformers
+      )
+    else
+      @df     = klass.recent(@ticker, full: true)
+      @df.to_csv(@df_path)
+      return
     end
 
-    # Adding a ticker vector in case I want to do
-    # some multi-stock analysis in the same data frame.
-    # For example to see how one stock coorelates with another.
-    @df[:ticker]  = @ticker
+    from_date = Date.parse(@df.timestamp.last) + 1
+    df2       = klass.recent(@ticker, from_date: from_date)
+
+    return if df2.nil?  # CSV file is up to date.
+
+    df_nrows  = @df.nrows
+    @df.append(df2)
+
+    if @df.nrows > df_nrows
+      @df.to_csv(file_path)
+    end
   end
+
 
   def to_s
     "#{ticker} with #{@df.size} data points from #{@df.timestamp.first} to #{@df.timestamp.last}"
   end
+  alias_method :inspect, :to_s
 
-  # TODO: Turn this into a class Stock::Overview
-  #       which is a sub-class of Hashie::Dash
-  def overview
-    return @overview unless @overview.nil?
 
+  def merge_overview
     temp = JSON.parse(
-      CONNECTION.get("/query?function=OVERVIEW&symbol=#{@ticker.upcase}&apikey=#{SQA.av.key}")
+      CONNECTION.get("/query?function=OVERVIEW&symbol=#{ticker.upcase}&apikey=#{SQA.av.key}")
         .to_hash[:body]
     )
+
+    if temp.has_key? "Information"
+      ApiError.raise(temp["Information"])
+    end
 
     # TODO: CamelCase hash keys look common in Alpha Vantage
     #       JSON; look at making a special Hashie-based class
@@ -75,14 +131,18 @@ class SQA::Stock
 
     temp2 = {}
 
-    string_values = %w[ address asset_type cik country currency description dividend_date ex_dividend_date exchange fiscal_year_end industry latest_quarter name sector symbol ]
+    string_values = %w[ address asset_type cik country currency
+                        description dividend_date ex_dividend_date
+                        exchange fiscal_year_end industry latest_quarter
+                        name sector symbol
+                      ]
 
     temp.keys.each do |k|
       new_k         = k.underscore
       temp2[new_k]  = string_values.include?(new_k) ? temp[k] : temp[k].to_f
     end
 
-    @overview = Hashie::Mash.new temp2
+    @data.overview = temp2
   end
 
 

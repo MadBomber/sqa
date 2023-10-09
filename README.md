@@ -1,3 +1,7 @@
+**Replacing Daru** with Hashie::Mash
+
+This is branch hashie_df
+
 # SQA - Simple Qualitative Analysis
 
 This is a very simplistic set of tools for running technical analysis on a stock portfolio.  Simplistic means it is not reliable nor intended for any kind of financial use.  Think of it as a training tool.  I do.  Its helping me understand why I need professional help from people who know what they are doing.

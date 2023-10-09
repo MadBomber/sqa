@@ -8,7 +8,7 @@ class SQA::Strategy
   end
 
   def add(a_strategy)
-    raise SQA::BadParameterError unless [Class, Method].include? a_strategy.class
+    raise BadParameterError unless [Class, Method].include? a_strategy.class
 
     a_proc  = if Class == a_strategy.class
                 a_strategy.method(:trade)

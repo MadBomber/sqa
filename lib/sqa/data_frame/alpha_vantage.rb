@@ -5,7 +5,7 @@
 #
 
 
-class SQA::DataFrame < Daru::DataFrame
+class SQA::DataFrame
   class AlphaVantage
     CONNECTION  = Faraday.new(url: 'https://www.alphavantage.co')
     HEADERS     = YahooFinance::HEADERS
@@ -23,47 +23,16 @@ class SQA::DataFrame < Daru::DataFrame
       "volume"          => HEADERS[6]
     }
 
+    TRANSFORMERS  = {
+      HEADERS[1] => -> (v) { v.to_f.round(3) },
+      HEADERS[2] => -> (v) { v.to_f.round(3) },
+      HEADERS[3] => -> (v) { v.to_f.round(3) },
+      HEADERS[4] => -> (v) { v.to_f.round(3) },
+      HEADERS[5] => -> (v) { v.to_f.round(3) },
+      HEADERS[6] => -> (v) { v.to_i }
+    }
 
     ################################################################
-    # Load a Dataframe from a csv file
-    def self.load(ticker, type="csv")
-      filepath = SQA.data_dir + "#{ticker}.#{type}"
-
-      if filepath.exist?
-        df = normalize_vector_names SQA::DataFrame.load(ticker, type)
-      else
-        df = recent(ticker, full: true)
-        df.send("to_#{type}",filepath)
-      end
-
-      df
-    end
-
-
-    # Normalize the vector (aka column) names as
-    # symbols using the standard names set by
-    # Yahoo Finance ... since it was the first one
-    # not because its anything special.
-    #
-    def self.normalize_vector_names(df)
-      headers = df.vectors.to_a
-
-      # convert vector names to symbols
-      # when they are strings.  They become stings
-      # when the data frame is saved to a CSV file
-      # and then loaded back in.
-
-      if headers.first == HEADERS.first.to_s
-        a_hash = {}
-        HEADERS.each {|k| a_hash[k.to_s] = k}
-        df.rename_vectors(a_hash) # renames from String to Symbol
-      else
-        df.rename_vectors(HEADER_MAPPING)
-      end
-
-      df
-    end
-
 
     # Get recent data from JSON API
     #
@@ -81,7 +50,8 @@ class SQA::DataFrame < Daru::DataFrame
     #       and adding that to the data frame as if it were
     #       adjusted.
     #
-    def self.recent(ticker, full: false)
+    def self.recent(ticker, full: false, from_date: nil)
+
       # NOTE: Using the CSV format because the JSON format has
       #       really silly key values.  The column names for the
       #       CSV format are much better.
@@ -99,18 +69,19 @@ class SQA::DataFrame < Daru::DataFrame
       end
 
       raw           = response[:body].split
-
       headers       = raw.shift.split(',')
+
       headers[0]    = 'date'  # website returns "timestamp" but that
                               # has an unintended side-effect when
                               # the names are normalized.
+                              # SMELL: IS THIS STILL TRUE?
 
       close_inx     = headers.size - 2
       adj_close_inx = close_inx + 1
 
       headers.insert(adj_close_inx, 'adjusted_close')
 
-      data    = raw.map do |e|
+      aofh    = raw.map do |e|
                   e2 = e.split(',')
                   e2[1..-2] = e2[1..-2].map(&:to_f) # converting open, high, low, close
                   e2[-1]    = e2[-1].to_i           # converting volumn
@@ -118,35 +89,20 @@ class SQA::DataFrame < Daru::DataFrame
                   headers.zip(e2).to_h
                 end
 
-      # What oldest data first in the data frame
-      normalize_vector_names Daru::DataFrame.new(data.reverse)
-    end
-
-
-    # Append update_df rows to the base_df
-    #
-    # base_df is ascending on timestamp
-    # update_df is descending on timestamp
-    #
-    # base_df content came from CSV file downloaded
-    # from Yahoo Finance.
-    #
-    # update_df came from scraping the webpage
-    # at Yahoo Finance for the recent history.
-    #
-    # Returns a combined DataFrame.
-    #
-    def self.append(base_df, updates_df)
-      last_timestamp  = Date.parse base_df.timestamp.last
-      filtered_df     = updates_df.filter_rows { |row| Date.parse(row[:timestamp]) > last_timestamp }
-
-      last_inx = filtered_df.size - 1
-
-      (0..last_inx).each do |x|
-        base_df.add_row filtered_df.row[last_inx-x]
+      if from_date
+        aofh.reject!{|e| Date.parse(e['date']) < from_date}
       end
 
-      base_df
+      return nil if aofh.empty?
+
+      # ensure tha the data frame is
+      # always sorted oldest to newest.
+
+      if aofh.first['date'] > aofh.last['date']
+        aofh.reverse!
+      end
+
+      SQA::DataFrame.from_aofh(aofh, mapping: HEADER_MAPPING, transformers: TRANSFORMERS)
     end
   end
 end
