@@ -104,7 +104,7 @@ class SQA::Stock
     @df.append(df2)
 
     if @df.nrows > df_nrows
-      @df.to_csv(file_path)
+      @df.to_csv(@df_path)
     end
   end
 
