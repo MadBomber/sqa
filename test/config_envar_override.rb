@@ -12,4 +12,4 @@
 require_relative  'test_helper'
 
 SQA.init
-STDOUT.print SQA.config.data_dir
+STDOUT.puts SQA.config.data_dir

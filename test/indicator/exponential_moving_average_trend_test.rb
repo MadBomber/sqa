@@ -1,6 +1,6 @@
 # ./test/exponential_moving_average_trend_test.rb.rb
 
-require           'minitest/autorun'
+
 require_relative  '../test_helper'
 
 class ExponentialMovingAverageTrendTest < Minitest::Test

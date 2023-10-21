@@ -1,6 +1,6 @@
 # ./test/peaks_and_valleys_test.rb
 
-require           'minitest/autorun'
+
 require_relative  '../test_helper'
 
 class PeaksAndValleysTest < Minitest::Test

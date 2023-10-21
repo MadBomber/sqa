@@ -1,6 +1,6 @@
 # ./test/elliott_wave_theory_test.rb
 
-require           'minitest/autorun'
+
 require_relative  '../test_helper'
 
 class ElliottWaveTheoryTest < Minitest::Test

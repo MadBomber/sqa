@@ -1,8 +1,10 @@
 # ./test/test_helper.rb
 
-$LOAD_PATH.unshift(File.expand_path('../lib', __dir__))
+$LOAD_PATH.unshift File.expand_path("../../lib", __FILE__)
 
 require 'sqa'
+require 'minitest/autorun'
+
 
 require 'debug_me'
 include DebugMe

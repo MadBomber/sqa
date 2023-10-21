@@ -1,7 +1,6 @@
 # sqa/test/config_test.rb
 
 
-require           'minitest/autorun'
 require_relative  'test_helper'
 require           'sqa/cli'
 
@@ -12,9 +11,7 @@ class ConfigTest < Minitest::Test
   	SQA.init
 
   	expected = {
-  		config_file:  			nil,
-      dump_config:        nil,
-  		data_dir: "/Users/dewayne/sqa_data",
+  		data_dir:           "/Users/dewayne/sqa_data",
   		debug: 							false,
   		lazy_update: 				false,
   		log_level: 					:info,
@@ -30,7 +27,7 @@ class ConfigTest < Minitest::Test
 
 
   def test_envar_override
-    result = %x[ SQA_DATA_DIR=xyzzy ruby #{__dir__}/config_envar_override.rb ]
+    result = %x[ SQA_DATA_DIR=xyzzy ruby #{__dir__}/config_envar_override.rb ].split("\n").first
     assert_equal "xyzzy", result
   end
 
@@ -55,7 +52,8 @@ class ConfigTest < Minitest::Test
 
 
   def test_cli_override
-    result = %x[ SQA_DATA_DIR=xyzzy ruby #{__dir__}/config_cli_override.rb ]
+    result = %x[ SQA_DATA_DIR=xyzzy ruby #{__dir__}/config_cli_override.rb ].split("\n").first
+
     assert_equal "magic", result
   end
 end

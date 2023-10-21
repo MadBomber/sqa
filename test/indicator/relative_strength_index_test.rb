@@ -1,6 +1,5 @@
 # ./test/relative_strength_index_test.rb
 
-require           'minitest/autorun'
 require_relative  '../test_helper'
 
 class RelativeStrengthIndexTest < Minitest::Test

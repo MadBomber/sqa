@@ -16,4 +16,4 @@ require_relative  'test_helper'
 require 					"sqa/cli"
 
 SQA.init "--data-dir magic"
-STDOUT.print SQA.config.data_dir
+STDOUT.puts SQA.config.data_dir

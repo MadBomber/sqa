@@ -1,6 +1,5 @@
 # ./test/momentum_test.rb
 
-require           'minitest/autorun'
 require_relative  '../test_helper'
 
 class MomentumTest < Minitest::Test
