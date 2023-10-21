@@ -31,6 +31,12 @@ require 'tty-table'
 
 
 #############################################
+## Apply core class monkey patches
+
+require_relative "patches/string.rb"
+
+
+#############################################
 ## SQA soecufuc code
 
 require_relative "sqa/version"

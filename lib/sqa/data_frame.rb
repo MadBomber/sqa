@@ -172,8 +172,8 @@ class SQA::DataFrame
   #################################################
   class << self
 
-    def append(base_df, other_df)
-      base_df.append(other_df)
+    def concat(base_df, other_df)
+      base_df.concat!(other_df)
     end
 
 
@@ -193,7 +193,7 @@ class SQA::DataFrame
             end
 
       unless transformers.empty?
-        df.coerce_vectors(transformers)
+        df.coerce_vectors!(transformers)
       end
 
       df
