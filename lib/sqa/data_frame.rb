@@ -74,9 +74,11 @@ class SQA::DataFrame
   def_delegator :@data, :[]=, :[]=
 
 
+  # same as values.transpose
+  # TODO: do benchmark to see if the transpose method if faster
   def rows
     result = []
-    (0..size - 1).each do |x|
+    size.times do |x|
       entry = row(x)
       result << entry
     end
@@ -110,14 +112,14 @@ class SQA::DataFrame
   end
 
 
-  def append(new_df)
+  def append!(new_df)
     raise(BadParameterError, "Key mismatch") if keys != new_df.keys
 
     keys.each do |key|
       @data[key] += new_df[key]
     end
   end
-  alias_method :concat, :append
+  alias_method :concat!, :append!
 
 
   # Creates a new instance with new keys
@@ -144,7 +146,7 @@ class SQA::DataFrame
   #   price: -> (v) {v.to_f.round(3)}
   # }
   #
-  def coerce_vectors(transformers)
+  def coerce_vectors!(transformers)
     transformers.each_pair do |key, transformer|
       @data[key].map!{|v| transformer.call(v)}
     end
