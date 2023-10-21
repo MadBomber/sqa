@@ -16,8 +16,7 @@ end
 #############################################
 ## Additional Libraries
 
-require 'active_support/core_ext/string'
-require 'alphavantage' 	# TODO: add rate limiter to it; ** PR submitted! **
+require 'alphavantage'
 require 'api_key_manager'
 require 'amazing_print'
 require 'faraday'
@@ -46,7 +45,7 @@ require_relative 'sqa/init.rb'
 
 require_relative "sqa/config"
 require_relative "sqa/constants" 	# SMELL: more app than gem
-require_relative "sqa/data_frame" # TODO: drop the daru gem
+require_relative "sqa/data_frame"
 require_relative "sqa/indicator"
 require_relative "sqa/portfolio"
 require_relative "sqa/strategy"

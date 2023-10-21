@@ -1,8 +1,7 @@
 PATH
   remote: .
   specs:
-    sqa (0.0.18)
-      activesupport (= 7.0.6)
+    sqa (0.0.19)
       alphavantage
       api_key_manager
       faraday
@@ -16,17 +15,11 @@ PATH
 GEM
   remote: https://rubygems.org/
   specs:
-    activesupport (7.0.6)
-      concurrent-ruby (~> 1.0, >= 1.0.2)
-      i18n (>= 1.6, < 2)
-      minitest (>= 5.1)
-      tzinfo (~> 2.0)
     alphavantage (1.2.0)
       faraday (~> 1.4)
       hashie (~> 4.1)
     amazing_print (1.5.0)
     api_key_manager (0.1.0)
-    concurrent-ruby (1.2.2)
     debug_me (1.1.0)
     faraday (1.10.3)
       faraday-em_http (~> 1.0)
@@ -52,12 +45,10 @@ GEM
     faraday-rack (1.0.0)
     faraday-retry (1.0.3)
     hashie (4.1.0)
-    i18n (1.14.1)
-      concurrent-ruby (~> 1.0)
     lite-memoize (1.1.1)
     lite-statistics (2.0.0)
       lite-memoize
-    minitest (5.19.0)
+    minitest (5.20.0)
     multipart-post (2.3.0)
     nenv (0.3.0)
     pastel (0.8.0)
@@ -77,9 +68,7 @@ GEM
       pastel (~> 0.8)
       strings (~> 0.2.0)
       tty-screen (~> 0.8)
-    tzinfo (2.0.6)
-      concurrent-ruby (~> 1.0)
-    unicode-display_width (2.4.2)
+    unicode-display_width (2.5.0)
     unicode_utils (1.4.0)
 
 PLATFORMS
@@ -94,4 +83,4 @@ DEPENDENCIES
   sqa!
 
 BUNDLED WITH
-   2.4.18
+   2.4.21
