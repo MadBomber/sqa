@@ -22,9 +22,49 @@ class SQA::DataFrame
   attr_accessor :data
 
   # Expects a Hash of Arrays (hofa)
-  def initialize(a_hash={})
-    @data = Data.new(a_hash)
+  # mapping: and transformers: are optional
+  # mapping is a Hash { old_key => new_key }
+  # transformers is also a Hash { key => Proc}
+  def initialize(
+      aofh_or_hofa= {}, # Array of Hashes or hash of array or hash
+      mapping:      {}, # { old_key => new_key }
+      transformers: {}  # { key => Proc }
+    )
+
+    if aofh_or_hofa.is_a? Hash
+      initialize_hofa(aofh_or_hofa, mapping: mapping)
+
+    elsif aofh_or_hofa.is_a?(Array)     &&
+          aofh_or_hofa.first.is_a?(Hash)
+      initialize_aofh(aofh_or_hofa)
+
+    else
+      raise BadParameterError, "Expecting Hash or Array of Hashes got: #{aofh_or_hofa.class}"
+    end
+
+    coerce_vectors!(transformers) unless transformers.empty?
   end
+
+
+  def initialize_aofh(aofh, mapping:, transformers:)
+    hofa  = self.class.aofh_to_hofa(
+                  aofh_or_hofa,
+                  mapping:      mapping
+                )
+
+    initialize_hofa(hofa, mapping: mapping)
+  end
+
+
+  def initialize_hofa(hofa, mapping:)
+    hofa  = self.class.normalize_keys(
+              hofa,
+              adapter_mapping: mapping
+            ) unless mapping.empty?
+
+    @data = Data.new(hofa)
+  end
+
 
 
   def to_csv(path_to_file)

@@ -4,11 +4,14 @@ require_relative  'test_helper'
 
 class DataFrameTest < Minitest::Test
   def setup
-    @df = SQA::DataFrame.new({
+    # Normal: Hash of Arrays without key mapping and transformers
+    @hofa = {
       'Column1' => [1, 2, 3],
       'Column2' => [4, 5, 6],
       'Column3' => [7, 8, 9]
-    })
+    }
+
+    @df = SQA::DataFrame.new(@hofa)
   end
 
 
@@ -19,16 +22,75 @@ class DataFrameTest < Minitest::Test
 	end
 
 
-  def test_creation
+  def test_empty_data_frame
+    df = SQA::DataFrame.new
+    assert df.empty?
+  end
+
+
+  def test_creation_normal_hofa_no_mapping_no_transformers
     assert_instance_of SQA::DataFrame, @df
     assert_equal 3, @df.ncols
     assert_equal 3, @df.nrows
   end
 
 
-  def test_empty_data_frame
-  	df = SQA::DataFrame.new
-  	assert df.empty?
+  def test_creation_normal_hofa_with_mapping_no_transformers
+    mapping = {
+      'Column1' => :one,
+      'Column2' => :two,
+      'Column3' => :three
+    }
+
+    df = SQA::DataFrame.new(@hofa, mapping: mapping)
+
+    assert_instance_of SQA::DataFrame, df
+    assert_equal 3, df.ncols
+    assert_equal 3, df.nrows
+
+    assert_equal [:one, :two, :three], df.keys
+  end
+
+
+
+  def test_creation_normal_hofa_no_mapping_with_transformers
+    transformers = {
+      Column1: -> (v) {v + 100}
+    }
+
+    df = SQA::DataFrame.new(@hofa, transformers: transformers)
+
+    assert_instance_of SQA::DataFrame, df
+    assert_equal 3, df.ncols
+    assert_equal 3, df.nrows
+
+    assert_equal [101, 102, 103], df.Column1.to_a # to_a converts from Hashie::Array to Array
+  end
+
+
+  def test_creation_normal_hofa_with_mapping_with_transformers
+    mapping = {
+      'Column1' => :one,
+      'Column2' => :two,
+      'Column3' => :three
+    }
+
+    transformers = {
+      one: -> (v) {v + 100}
+    }
+
+    df = SQA::DataFrame.new(
+            @hofa,
+            mapping:      mapping,
+            transformers: transformers
+          )
+
+    assert_instance_of SQA::DataFrame, df
+    assert_equal 3, df.ncols
+    assert_equal 3, df.nrows
+
+    assert_equal [:one, :two, :three], df.keys
+    assert_equal [101, 102, 103], df.one.to_a # to_a converts from Hashie::Array to Array
   end
 
 
