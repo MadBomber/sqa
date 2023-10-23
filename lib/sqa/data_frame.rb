@@ -36,7 +36,7 @@ class SQA::DataFrame
 
     elsif aofh_or_hofa.is_a?(Array)     &&
           aofh_or_hofa.first.is_a?(Hash)
-      initialize_aofh(aofh_or_hofa)
+      initialize_aofh(aofh_or_hofa, mapping: mapping)
 
     else
       raise BadParameterError, "Expecting Hash or Array of Hashes got: #{aofh_or_hofa.class}"
@@ -46,9 +46,9 @@ class SQA::DataFrame
   end
 
 
-  def initialize_aofh(aofh, mapping:, transformers:)
+  def initialize_aofh(aofh, mapping:)
     hofa  = self.class.aofh_to_hofa(
-                  aofh_or_hofa,
+                  aofh,
                   mapping:      mapping
                 )
 
@@ -242,11 +242,9 @@ class SQA::DataFrame
 
     def from_aofh(aofh, mapping: {}, transformers: {})
       new(
-        aofh_to_hofa(
-          aofh,
-          mapping: mapping,
-          transformers: transformers
-        )
+        aofh,
+        mapping: mapping,
+        transformers: transformers
       )
     end
 
