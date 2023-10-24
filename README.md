@@ -6,7 +6,7 @@ The BUY/SELL signals that it generates should not be taken seriously.  **DO NOT 
 
 ## This is a Work in Progress
 
-I am experimenting with different gems to support various functionality.  Sometimes they do not work out well.  For example I've gone through two different gems to implement the data frame capability.  Neither did what I wanted so I ended up creating my own data frame class based upon the old tried and true Hashie library.
+I am experimenting with different gems to support various functionality.  Sometimes they do not work out well.  For example I've gone through two different gems to implement the data frame capability.  Neither did what I wanted so I ended up creating my own data frame class based upon the old tried and true [Hashie](https://github.com/intridea/hashie) library.
 
 
 ## Installation
@@ -21,7 +21,14 @@ If bundler is not being used to manage dependencies, install the gem by executin
 
 ### Semantic Versioning
 
+`sqa` uses the [sem_version](https://github.com/canton7/sem_version) gem to provide a semantic version object.  Sure its old; but, so am I.  Doesn't mean we can't do the job.
+
 ```ruby
+# On the command line:
+sqa --version
+
+# or inside your program:
+
 SQA.version # returns SemVersion object
 exit(1) unless SQA.version >= SemVersion("1.0.0")
 ```
@@ -77,6 +84,9 @@ sqa --data-dir ~/Documents/sqa_data --dump-config ~/.sqa.yml
 
 By default `SQA` looks for a configuration file named `.sqa.yml` in the current directory.  If it does not find one there it looks in the home directory.  You can use the `--config` CLI option to specify a path to your custom config file name.
 
+You can have multiple configurations and multiple data directories.
+
+You can also have one data directory and multiple portfolio and trades files within that single directory.
 
 ### AlphaVantage
 
@@ -84,6 +94,20 @@ By default `SQA` looks for a configuration file named `.sqa.yml` in the current 
 
 [https://www.alphavantage.co/](https://www.alphavantage.co/)
 
+Put your API key in the system environment variable `AV_API_KEY`
+
+TODO why is it not part of the configuration?  ought to be.
+
+
+### TradingView
+
+**Not currently implemented** but seriously considering using [TradingView](http://tradingview.com) capabilities.  If I do choose to use these capabilities you will need your own API key or account or something.
+
+Put your API key in the system environment variable `TV_API_KEY`
+
+TODO why is it not part of the configuration?  ought to be.
+
+I kinda like their Terms of Use.  I've started crafting an [SQA Terms of Use](docs/terms_of_use.md) document based on theirs.  I specifically like sections 7 and 8.
 
 ## Playing in IRB
 
@@ -98,11 +122,11 @@ Historical price data is kept in the `SQA.data_dir` in a CSV file whose name is 
 
 #### Get Historical Prices
 
-Go to https::/finance.yahoo.com and down some historical price data for your favorite stocks.  Put those CSV files into the `SQA.data_dir`.
+Go to [https::/finance.yahoo.com](https::/finance.yahoo.com) and down some historical price data for your favorite stocks.  Put those CSV files into the `SQA.data_dir`.
 
 You may need to create a `portfolio.csv` file or you may not.  TODO
 
-The CSV files will be named by the stock's ticker symbol.  For example: `aapl.csv`
+The CSV files will be named by the stock's ticker symbol as lower case.  For example: `aapl.csv`
 
 ### Playing in the IRB - Setup
 
@@ -113,6 +137,9 @@ require 'sqa/cli'
 # You can pass a set of CLI options in a String
 SQA.init "-c ~/.sqa.yml"
 
+# If you have an API key for AlphaVantage you can create a new
+# CSV file, or update an existing one.  Your key MUST be
+# in the system environment variable AV_API_KEY
 aapl = SQA::Stock.new(ticker: 'aapl', source: :alpha_vantage)
 #=> aapl with 1207 data points from 2019-01-02 to 2023-10-17
 ```
@@ -229,7 +256,7 @@ ss.add SQA::Strategy::RSI
 
 # This is an Array with each "trade" method
 # that is defined in each strategy added
-ap ss.strategies
+ap ss.strategies #=>∑
 [
     [0] SQA::Strategy::Random#trade(vector),
     [1] SQA::Strategy::RSI#trade(vector)

@@ -1,0 +1,4 @@
+label: "## Table of Contents"
+patterns:
+  - "docs/terms_of_use.md"
+root_dir: "."
