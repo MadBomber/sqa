@@ -26,30 +26,39 @@ class SQA::DataFrame
   # mapping is a Hash { old_key => new_key }
   # transformers is also a Hash { key => Proc}
   def initialize(
-      aofh_or_hofa= {}, # Array of Hashes or hash of array or hash
+      raw_data=     {}, # Array of Hashes or hash of array or hash
       mapping:      {}, # { old_key => new_key }
       transformers: {}  # { key => Proc }
     )
 
-    if aofh_or_hofa.is_a? Hash
-      initialize_hofa(aofh_or_hofa, mapping: mapping)
+    if raw_data.is_a? Hash
+      initialize_hofa(raw_data, mapping: mapping)
 
-    elsif aofh_or_hofa.is_a?(Array)     &&
-          aofh_or_hofa.first.is_a?(Hash)
-      initialize_aofh(aofh_or_hofa, mapping: mapping)
+    elsif raw_data.is_a?(Array)     &&
+          raw_data.first.is_a?(Hash)
+      initialize_aofh(raw_data, mapping: mapping)
 
     else
       raise BadParameterError, "Expecting Hash or Array of Hashes got: #{aofh_or_hofa.class}"
     end
 
-    coerce_vectors!(transformers) unless transformers.empty?
+    coerce_vectors!(transformers) if good_data? && !(transformers.nil? || transformers.empty?)
+  end
+
+
+  def good_data?
+    return false if @data.empty? || @data.values.all?{|v| v.nil? || v.empty?}
+
+    true
   end
 
 
   def initialize_aofh(aofh, mapping:)
-    hofa  = self.class.aofh_to_hofa(
+    klass = self.class
+
+    hofa  = klass.aofh_to_hofa(
                   aofh,
-                  mapping:      mapping
+                  mapping:  mapping
                 )
 
     initialize_hofa(hofa, mapping: mapping)
@@ -57,7 +66,8 @@ class SQA::DataFrame
 
 
   def initialize_hofa(hofa, mapping:)
-    hofa  = self.class.normalize_keys(
+    klass = self.class
+    hofa  = klass.normalize_keys(
               hofa,
               adapter_mapping: mapping
             ) unless mapping.empty?
@@ -283,7 +293,7 @@ class SQA::DataFrame
         end
       end
 
-      # SMELL: This might be necessary
+      # SMELL: This might not be necessary
       normalize_keys(hofa, adapter_mapping: mapping)
     end
 
@@ -291,13 +301,14 @@ class SQA::DataFrame
     def normalize_keys(hofa, adapter_mapping: {})
       hofa    = rename(adapter_mapping, hofa)
       mapping = generate_mapping(hofa.keys)
+
       rename(mapping, hofa)
     end
 
 
     def rename(mapping, hofa)
       mapping.each_pair do |old_key, new_key|
-        hofa[new_key] = hofa.delete(old_key)
+        hofa[new_key] = hofa.delete(old_key) if hofa.has_key?(old_key)
       end
 
       hofa

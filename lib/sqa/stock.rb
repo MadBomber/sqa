@@ -101,7 +101,7 @@ class SQA::Stock
     return if df2.nil?  # CSV file is up to date.
 
     df_nrows  = @df.nrows
-    @df.append(df2)
+    @df.append!(df2)
 
     if @df.nrows > df_nrows
       @df.to_csv(@df_path)
