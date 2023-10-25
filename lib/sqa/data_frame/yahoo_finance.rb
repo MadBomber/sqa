@@ -1,6 +1,12 @@
 # lib/sqa/data_frame/yahoo_finance.rb
 # frozen_string_literal: true
 
+=begin
+  The website financial.yahoo.com no longer supports an API.
+  To get recent stock historical price updates you have
+  to scrape the webpage.
+=end
+
 
 class SQA::DataFrame
   class YahooFinance
