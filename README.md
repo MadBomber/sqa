@@ -4,6 +4,33 @@ This is a very simplistic set of tools for running technical analysis (quantitat
 
 The BUY/SELL signals that it generates should not be taken seriously.  **DO NOT USE** this library when real money is at stake.  If you lose your shirt playing in the stock market don't come crying to me.  I think playing in the market is like playing in the street.  You are going to get run over.
 
+<!-- Tocer[start]: Auto-generated, don't remove. -->
+
+## Table of Contents
+
+  - [This is a Work in Progress](#this-is-a-work-in-progress)
+  - [Installation](#installation)
+  - [Semantic Versioning](#semantic-versioning)
+  - [Usage](#usage)
+    - [Setup a Config File](#setup-a-config-file)
+    - [AlphaVantage](#alphavantage)
+    - [TradingView](#tradingview)
+    - [Yahoo Finance](#yahoo-finance)
+  - [Playing in IRB](#playing-in-irb)
+    - [With Stocks and Indicators](#with-stocks-and-indicators)
+      - [Get Historical Prices](#get-historical-prices)
+    - [Playing in the IRB - Setup](#playing-in-the-irb---setup)
+    - [Playing in the IRB - Statistics](#playing-in-the-irb---statistics)
+    - [Playing in the IRB - Indicators](#playing-in-the-irb---indicators)
+    - [Playing in the IRB - Strategies](#playing-in-the-irb---strategies)
+  - [Included Program Examples](#included-program-examples)
+    - [Analysis](#analysis)
+    - [Web](#web)
+  - [Contributing](#contributing)
+  - [License](#license)
+
+<!-- Tocer[finish]: Auto-generated, don't remove. -->
+
 ## This is a Work in Progress
 
 I am experimenting with different gems to support various functionality.  Sometimes they do not work out well.  For example I've gone through two different gems to implement the data frame capability.  Neither did what I wanted so I ended up creating my own data frame class based upon the old tried and true [Hashie](https://github.com/intridea/hashie) library.
@@ -19,7 +46,7 @@ If bundler is not being used to manage dependencies, install the gem by executin
 
     gem install sqa
 
-### Semantic Versioning
+## Semantic Versioning
 
 `sqa` uses the [sem_version](https://github.com/canton7/sem_version) gem to provide a semantic version object.  Sure its old; but, so am I.  Doesn't mean we can't do the job.
 
@@ -31,6 +58,10 @@ sqa --version
 
 SQA.version # returns SemVersion object
 exit(1) unless SQA.version >= SemVersion("1.0.0")
+
+# Okay, you're right, you could put that kind of version
+# constraint in a Gemfile and let bundler handle the
+# dependencies for you.
 ```
 
 ## Usage
@@ -72,6 +103,9 @@ Examples:
 
 WARNING: This is a toy, a play thing, not intended for serious use.
 ```
+
+More about the two included programs `analysis` and `web` later.
+
 ### Setup a Config File
 
 You will need to create a directory to store the `sqa` data and a configuration file.  You can start by doing this:
@@ -96,7 +130,7 @@ You can also have one data directory and multiple portfolio and trades files wit
 
 Put your API key in the system environment variable `AV_API_KEY`
 
-TODO why is it not part of the configuration?  ought to be.
+<!-- TODO: why is it not part of the configuration?  ought to be. -->
 
 
 ### TradingView
@@ -105,9 +139,22 @@ TODO why is it not part of the configuration?  ought to be.
 
 Put your API key in the system environment variable `TV_API_KEY`
 
-TODO why is it not part of the configuration?  ought to be.
+<!-- TODO: why is it not part of the configuration?  ought to be. -->
 
 I kinda like their Terms of Use.  I've started crafting an [SQA Terms of Use](docs/terms_of_use.md) document based on theirs.  I specifically like sections 7 and 8.
+
+### Yahoo Finance
+
+The finance.yahoo.com website no longer supports an API.  To get information from this website you must scrape it.  That is how historical / receint stock prices are being obtained in the DataFrame::YahooFinance class.  I do not like doing this and do not necessarily recommend using YahooFinance as a source for stock price data.
+
+In the SQA::Stock class the default source is AlphaVantage which has its own limitations.
+
+This is not to say that finance.yahoo.com has no use.  In fact is is the perfect place to go to manually download CSV files of historical stock price data.  When you do that through your browser, the CSV file will be placed in your default downloads directory.
+
+To use this downed file within the SQA environment it must be moved into your `SQA.`data_dir` with a filename that is all lowercase.  The filename must be the stock's symbol with a `.csv` extension.  For example if you downloaded the entire historical stock price data for Apple Computer (AAPL) the filename in the SQA.data_dir should be "aapl.csv"
+
+You can manually go to the Yahoo Finance website at [https://finance.yahoo.com/quote/AAPL/history?p=AAPL](https://finance.yahoo.com/quote/AAPL/history?p=AAPL)
+
 
 ## Playing in IRB
 
@@ -124,7 +171,9 @@ Historical price data is kept in the `SQA.data_dir` in a CSV file whose name is 
 
 Go to [https::/finance.yahoo.com](https::/finance.yahoo.com) and down some historical price data for your favorite stocks.  Put those CSV files into the `SQA.data_dir`.
 
-You may need to create a `portfolio.csv` file or you may not.  TODO
+You may need to create a `portfolio.csv` file or you may not.
+
+<!-- TODO: Add a section on how to create a portfolio fCSV file -->
 
 The CSV files will be named by the stock's ticker symbol as lower case.  For example: `aapl.csv`
 
@@ -274,6 +323,24 @@ Currently the strategies are executed sequentially so the results can easily be 
 Any specific strategy may not work on every stock. Using the historical data, it is possible to see which strategy works better for a specific stock.  **Of course the statistical motto is that historical performance is not a fail-proof indicator for future performance.**
 
 The strategies that come with the `SQA::Strategy` class are examples only.  Its expected that you will come up with your own.  If you do, consider sharing them.
+
+## Included Program Examples
+
+<!-- TODO: What is the name of these things?  From the help text they are called commands.  They are treated in the code base as a class under the SQA module.  Its easy to change the CLI help text to call these programs rather than commands. -->
+
+There are at least two included programs that make use of the `SQA` library.
+
+<!-- TODO: These kinds of things need to be in their own repository. -->
+
+<!-- TODO: Need to complete the API for invoking one of these "programs" from the sqa cli. -->
+
+### Analysis
+
+Does an analysis of a portfollio of stocks.
+
+### Web
+
+Provides a browser-based interface to some stuff.
 
 ## Contributing
 
