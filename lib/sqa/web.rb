@@ -4,7 +4,7 @@
 
 
 module SQA
-	class Web < CLI
+	class Web < CLI # SMELL: getting params over-written
     include TTY::Option
 
     command "web"
@@ -43,7 +43,8 @@ module SQA
 
     option :port do
       arity one_or_more
-      long    "--port integer"
+      long    "--port int"
+      convert :int
       default 4567
       desc    "The port where the web app will run"
     end
@@ -52,12 +53,59 @@ module SQA
 		def initialize
       # TODO: make it happen
 		end
+
+
+    def self.run!
+      puts <<~EOS
+        ###############################
+        ## Running the Web Interface ##
+        ###############################
+      EOS
+    end
 	end
 end
 
 __END__
 
+require 'sinatra/base'
 
+module SQA
+  class Web < Sinatra::Base
+    set :port, SQA.config.port || 4567
+
+    get '/' do
+      "Welcome to SQA Web Interface!"
+    end
+
+
+    get '/stocks/:ticker' do
+      ticker  = params[:ticker]
+      stock   = SQA::Stock.new(ticker: ticker, source: :alpha_vantage)
+
+      "Stock: #{stock.data.name}, Ticker: #{stock.data.ticker}"
+    end
+
+
+    get '/stocks/:ticker/indicators/:indicator' do
+      ticker    = params[:ticker]
+      indicator = params[:indicator]
+      stock     = SQA::Stock.new(ticker: ticker, source: :alpha_vantage)
+
+      indicator_value = SQA::Indicator.send(indicator, stock.df.adj_close_price, 14)
+
+      "Indicator #{indicator} for Stock #{ticker} is #{indicator_value}"
+    end
+
+    # TODO: Add more routes as needed to expose more functionality
+
+    # start the server if ruby file executed directly
+    run! if app_file == $0
+  end
+end
+
+
+
+###################################################
 #!/usr/bin/env ruby
 # experiments/sinatra_examples/svg_viewer.rb
 # builds on md_viewer.rb

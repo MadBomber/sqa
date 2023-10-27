@@ -20,6 +20,7 @@ module SQA
 
     example "sqa -c ~/.sqa.yml -p portfolio.csv -t trades.csv --data-dir ~/sqa_data"
 
+    argument(:command) { optional }
 
     option :config_file do
       short "-c string"
@@ -87,6 +88,9 @@ module SQA
     end
 
     class << self
+      # TODO: change the way the command classes
+      #       class_names = SQA::Command.constants.select { |c| Class === SQA::Command.const_get(c) }
+
       @@subclasses          = []
       @@commands_available  = []
 
@@ -116,7 +120,7 @@ module SQA
       ##################################################
       def run(argv = ARGV)
         cli    = new
-        parser = cli.parse(argv)
+        parser = cli.parse(argv, check_invalid_params: false)
         params = parser.params
 
         if params[:help]
@@ -144,15 +148,52 @@ module SQA
           SQA.config.from_file
         end
 
+        unless params[:command].nil?
+          unless @@commands_available.include? params[:command]
+            raise "Bad command: '#{params[:command]}'  Should be one of: #{@@commands_available.join(', ')}"
+          end
+
+          params[:command] = "SQA::#{params[:command].camelcase}".constantize
+        end
+
+        if params[:command] && !params.remaining.empty?
+          argv        = params.remaining
+          cmd         = new
+          cmd_parser  = cmd.parse(argv)
+          cmd_params  = cmd_parser.params
+
+          debug_me('== BEFORE =='){[
+            :params,
+            :cmd_params
+          ]}
+
+          params.merge!(cmd_params.to_h)
+
+          debug_me('== after =='){[
+            :params,
+            :cmd_params
+          ]}
+        end
+
+
         # Override the defaults <- envars <- config file <- cli parameters
         SQA.config.merge!(remove_temps params.to_h)
 
-        if SQA.debug? || SQA.verbose?
+        # if SQA.debug? || SQA.verbose?
           debug_me("config after CLI parameters"){[
-            "SQA.config"
+            "SQA.config",
+            :params,
+            "params.keys",
+            "params.remaining",
+            "params[:command]"
           ]}
+        # end
+
+        if SQA.config.command
+          SQA.config.command.run!
         end
       end
+
 
       def remove_temps(a_hash)
         temps = %i[ help version dump ]

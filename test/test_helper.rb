@@ -5,6 +5,8 @@ $LOAD_PATH.unshift File.expand_path("../../lib", __FILE__)
 require 'sqa'
 require 'minitest/autorun'
 
+require 'simplecov'
+SimpleCov.start
 
 require 'debug_me'
 include DebugMe

@@ -47,6 +47,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'bundler'
   spec.add_development_dependency 'debug_me'
   spec.add_development_dependency 'minitest'
-  spec.add_development_dependency 'tocer'
   spec.add_development_dependency 'rake'
+  spec.add_development_dependency 'simplecov'
+  spec.add_development_dependency 'tocer'
 end

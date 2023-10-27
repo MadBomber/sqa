@@ -13,6 +13,18 @@ unless defined?(HOME)
 	HOME = Pathname.new(ENV['HOME'])
 end
 
+# TODO: do we want to move the debug_me gem out of the
+# 			development dependencies into the required?
+#
+if defined?(DebugMe)
+	unless respond_to?(:debug_me)
+		include DebugMe
+	end
+else
+	require 'debug_me'
+	include DebugMe
+end
+
 #############################################
 ## Additional Libraries
 

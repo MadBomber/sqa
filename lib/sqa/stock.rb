@@ -16,6 +16,11 @@ class SQA::Stock
   attr_accessor :klass        # class of historical and current prices
   attr_accessor :transformers # procs for changing column values from String to Numeric
 
+  # Holds the SQA::Strategy class name which seems to work
+  # the best for this stock.
+  attr_accessor :strategy  # TODO: make part of the @data object
+
+
   def initialize(
         ticker:,
         source: :alpha_vantage
@@ -144,6 +149,30 @@ class SQA::Stock
 
     @data.overview = temp2
   end
+
+
+  def associate_best_strategy(strategies)
+    best_strategy = nil
+    best_accuracy = 0
+
+    strategies.each do |strategy|
+      accuracy = evaluate_strategy(strategy)
+
+      if accuracy > best_accuracy
+        best_strategy = strategy
+        best_accuracy = accuracy
+      end
+    end
+
+    self.strategy = best_strategy
+  end
+
+
+  def evaluate_strategy(strategy)
+    # TODO: Implement this method to evaluate the accuracy of the strategy
+    #       on the historical data of this stock.
+  end
+
 
 
   #############################################

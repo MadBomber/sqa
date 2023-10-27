@@ -1,8 +1,34 @@
 # SQA - Simple Qualitative Analysis
 
+[![Badges?](https://img.shields.io/badge/Badge-We%20don't%20need%20no%20stinkin'%20badges!-red)](https://www.youtube.com/watch?v=VqomZQMZQCQ)
+
 This is a very simplistic set of tools for running technical analysis (quantitative and qualitative) on a stock portfolio.  Simplistic means it is not reliable nor intended for any kind of mission-critical financial use.  Think of it as a training tool.  I do.  Its helping me understand why I need professional help from people who know what they are doing.
 
 The BUY/SELL signals that it generates should not be taken seriously.  **DO NOT USE** this library when real money is at stake.  If you lose your shirt playing in the stock market don't come crying to me.  I think playing in the market is like playing in the street.  You are going to get run over.
+
+<!-- TODO: Consider these gems ...
+
+This one is most likely out of date:
+    yahoofinance-ruby: This gem provides a simple Ruby interface to Yahoo Finance's historical quote data. If you're looking to add more data sources to your project, this could be a useful addition. yahoofinance-ruby
+
+Worth Looking at:
+    ruby-technical-analysis: This gem provides various technical analysis calculations. It includes over 60 technical analysis functions and indicators like RSI, EMA, SMA, Bollinger Bands, MACD, and more. ruby-technical-analysis
+
+Maybe later if I want to add an ability to make a live trade from within the SQA context...
+    ib-ruby: This gem provides a Ruby interface to Interactive Brokers' Trader Workstation (TWS) API, allowing you to build algorithmic trading strategies in Ruby. ib-ruby
+
+Definitely looking for a plotting package.
+    plottable: If you're looking to add more visualization capabilities to your project, this gem could be useful. It provides a simple and flexible API for creating plots and charts in Ruby. plottable
+
+Currently using CSV files; maybe switch to an RDBMS ...
+    activerecord-import: If you're dealing with large amounts of data, this gem could help improve performance. It adds methods to ActiveRecord for bulk inserting data into the database. activerecord-import
+
+Could spawn off separate agents for each stock within a portfolio for analysis ...
+    parallel: This gem can help improve performance by allowing you to run code in parallel. This could be useful if you're running complex calculations on large datasets. parallel
+
+-->
+
+
 
 <!-- Tocer[start]: Auto-generated, don't remove. -->
 
@@ -341,6 +367,42 @@ Does an analysis of a portfollio of stocks.
 ### Web
 
 Provides a browser-based interface to some stuff.
+
+## Predicted FAQ
+
+    What is the purpose of the SQA project? The madbomber/sqa project is a set of tools for running technical analysis on a stock portfolio. It's intended as a learning tool to help understand stock market analysis. It's not intended for real-world trading or financial use.
+
+    How do I install and use SQA? You can install the gem by running gem install sqa or adding gem 'sqa' to your Gemfile and running bundle install. The project can be used from the command line or as a library in your own application. More details can be found in the README.md file.
+
+    What technical indicators does SQA support? The project includes a variety of technical indicators such as Average True Range, Bollinger Bands, Candlestick Patterns, Donchian Channel, Double Top Double Bottom Pattern, Exponential Moving Average, Fibonacci Retracement, Head and Shoulders Pattern, Elliott Wave Theory, Market Profile Analysis, Mean Reversion, Momentum, Moving Average Convergence Divergence, Peaks and Valleys, Predict Next Value, Relative Strength Index, Simple Moving Average, and Stochastic Oscillator.
+
+    What data sources does SQA support? The project supports data from AlphaVantage and Yahoo Finance. You will need an API key for AlphaVantage to use this functionality.
+
+    What are the risks of using SQA for real-world trading? The madbomber/sqa project is intended as a learning tool and is not reliable for any kind of mission-critical financial use. The BUY/SELL signals that it generates should not be taken seriously. If you lose money in the stock market as a result of using this library, the project is not responsible.
+
+    Can I contribute to the SQA project? Yes, contributions are welcome. You can submit bug reports and pull requests on the GitHub repository.
+
+    What license does SQA use? The project is available as open source under the terms of the MIT License.
+
+    What is the current state of the project? The project is a work in progress. The developer is experimenting with different gems to support various functionalities. Some features may not be fully implemented or may need further refinement.
+
+
+## Other Similar Projects
+
+There are several other (prehaps more mature) projects and libraries that provide similar capabilities to the SQA. Here are a few examples:
+
+    TA-Lib (Technical Analysis Library): This is a popular open-source software library that provides tools for technical analysis of financial markets. It includes over 150 functions for various types of analysis including pattern recognition, moving averages, oscillators, and more. It's available in several programming languages including Python, Java, Perl, and more. TA-Lib
+
+    Pandas TA: This is a Python library that provides comprehensive functionalities for technical analysis. It's an extension of the popular data analysis library Pandas and includes a wide range of financial indicators. Pandas TA
+
+    Backtrader: This is a Python library for backtesting trading strategies. It supports a wide range of trading concepts including trading calendars, multiple data feeds, and order execution types. Backtrader
+
+    PyAlgoTrade: This is another Python library for backtesting stock trading strategies. It supports Yahoo! Finance, Google Finance, and others as data sources, and has a focus on simplicity and flexibility. PyAlgoTrade
+
+    QuantLib: This is a comprehensive software framework for quantitative finance, it provides tools for many aspects of quantitative finance including trading and risk management, financial instruments, mathematics, numerical methods, and model calibration. QuantLib
+
+    zipline: This is a Python library for algorithmic trading. It allows strategy testing and supports live-trading and backtesting, and includes a number of financial computations to aid in trading decisions. zipline
+
 
 ## Contributing
 

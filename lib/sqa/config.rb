@@ -19,7 +19,8 @@ module SQA
     #
     # include Hashie::Extensions::Dash::PredefinedValues
 
-    property :config_file   #,a String filepath for the current config overriden by cli options
+    property :command       # a String currently, nil, analysis or web
+    property :config_file   # a String filepath for the current config overriden by cli options
     property :dump_config   # a String filepath into which to dump the current config
 
     property :data_dir,     default: Nenv.home + "/sqa_data"
