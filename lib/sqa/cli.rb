@@ -109,7 +109,7 @@ module SQA
         help_block = "Optional Command Available:"
 
         @@commands_available.size.times do |x|
-          klass = @@subclasses[x]
+          klass = @@command_classes[x]
           help_block << "\n  " + @@commands_available[x] + " - "
           help_block << klass.desc.join
         end
@@ -118,6 +118,14 @@ module SQA
       end
 
 
+      def command_help(command_string)
+        argv        = ["--help"]
+        klass       = "SQA::Command::#{command_string.camelcase}".constantize
+        cmd         = klass.new
+        cmd_parser  = cmd.parse(argv)
+
+        print cmd_parser.help
+      end
 
 
       ##################################################
@@ -125,14 +133,19 @@ module SQA
         initialize_class_variables
 
         cli    = new
-        parser = cli.parse(argv, check_invalid_params: false)
+        parser = cli.parse(argv) #, check_invalid_params: false)
         params = parser.params
 
         if params[:help]
-          print parser.help
+          if params[:command]
+            command_help(params[:command])
+          else
+            print parser.help
+          end
+
           exit(0)
 
-        elsif params.errors.any?
+        elsif params.errors.any? && !params[:command]
           puts params.errors.summary
           exit(1)
 
@@ -161,7 +174,7 @@ module SQA
           params[:command] = "SQA::Command::#{params[:command].camelcase}".constantize
         end
 
-        if params[:command] && !params.remaining.empty?
+        if params[:command] # && !params.remaining.empty?
           argv        = params.remaining
           cmd         = params[:command].new
 
@@ -213,6 +226,7 @@ end
 
 # First Load TTY-Option's command content with all available commands
 # then these have access to the entire ObjectSpace ...
+SQA::CLI.initialize_class_variables
 SQA::CLI.command SQA::CLI.names
 SQA::CLI.example SQA::CLI.command_descriptions
 

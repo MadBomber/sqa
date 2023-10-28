@@ -55,6 +55,11 @@ module SQA::Command
 
     # params is Object from TTY-Option parser
     def self.run!(params)
+
+      debug_me('WEB'){[
+        :params
+      ]}
+
       if params.errors.any?
         STDERR.puts
         STDERR.puts params.errors.summary
