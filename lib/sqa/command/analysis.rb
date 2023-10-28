@@ -1,10 +1,10 @@
-# lib/sqa/command/analysis.rb
+# sqa/lib/sqa/command/analysis.rb
 
-module SQA
-	class Analysis < CLI
+module SQA::Command
+	class Analysis
     include TTY::Option
 
-    command "Analysis"
+    command "analysis"
 
     desc "Provide an Analysis of a Portfolio"
 
@@ -12,6 +12,28 @@ module SQA
 		def initialize
       # TODO: something
 		end
+
+    def self.run!(params)
+      if params.errors.any?
+        STDERR.puts
+        STDERR.puts params.errors.summary
+        STDERR.puts
+        return
+      end
+
+      puts <<~EOS
+        ##################################
+        ## Running the Analysis Command ##
+        ##################################
+      EOS
+
+      debug_me('ANALYSIS'){[
+        "SQA.config",
+        :params,
+        "params.to_h",
+        "params.merge(SWA.config.to_h)"
+      ]}
+    end
 	end
 end
 

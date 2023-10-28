@@ -1,10 +1,7 @@
-# lib/sqa/command/web.rb
+# sqa/lib/sqa/command/web.rb
 
-# require 'tty-option'
-
-
-module SQA
-	class Web < CLI # SMELL: getting params over-written
+module SQA::Command
+	class Web
     include TTY::Option
 
     command "web"
@@ -35,14 +32,15 @@ module SQA
       desc "Run container in background and print container ID"
     end
 
-    option :name do
+
+    option :xyzzy do
       required
-      long "--name string"
-      desc "Assign a name to the container"
+      long "--xyzzy string"
+      desc "Assign a name to the xyzzy"
     end
 
+
     option :port do
-      arity one_or_more
       long    "--port int"
       convert :int
       default 4567
@@ -55,12 +53,27 @@ module SQA
 		end
 
 
-    def self.run!
+    # params is Object from TTY-Option parser
+    def self.run!(params)
+      if params.errors.any?
+        STDERR.puts
+        STDERR.puts params.errors.summary
+        STDERR.puts
+        return
+      end
+
       puts <<~EOS
         ###############################
         ## Running the Web Interface ##
         ###############################
       EOS
+
+      debug_me('WEB'){[
+        "SQA.config",
+        :params,
+        "params.to_h",
+        "params.to_h.merge(SQA.config.to_h)"
+      ]}
     end
 	end
 end

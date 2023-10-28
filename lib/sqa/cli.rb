@@ -36,8 +36,8 @@ module SQA
     end
 
     option :portfolio do
-      short   "-p string"
-      long    "--portfolio string"
+      short   "-s string"
+      long    "--stocks_filename string"
       # default SQA.config.portfolio_filename
       desc    "Set the filename of the portfolio"
     end
@@ -88,21 +88,22 @@ module SQA
     end
 
     class << self
-      # TODO: change the way the command classes
-      #       class_names = SQA::Command.constants.select { |c| Class === SQA::Command.const_get(c) }
-
-      @@subclasses          = []
+      @@command_classes     = []
       @@commands_available  = []
+
+      def initialize_class_variables
+        @@command_classes = SQA::Command.constants
+                              .select { |c| Class === SQA::Command.const_get(c) }
+                              .map{ |c| "SQA::Command::#{c}".constantize}
+
+        @@commands_available  = @@command_classes.map{ |k| k.command.join }
+      end
+
 
       def names
         '['+ @@commands_available.join('|')+']'
       end
 
-      def inherited(subclass)
-        super
-        @@subclasses          << subclass
-        @@commands_available  << subclass.command.join
-      end
 
       def command_descriptions
         help_block = "Optional Command Available:"
@@ -117,8 +118,12 @@ module SQA
       end
 
 
+
+
       ##################################################
       def run(argv = ARGV)
+        initialize_class_variables
+
         cli    = new
         parser = cli.parse(argv, check_invalid_params: false)
         params = parser.params
@@ -153,24 +158,22 @@ module SQA
             raise "Bad command: '#{params[:command]}'  Should be one of: #{@@commands_available.join(', ')}"
           end
 
-          params[:command] = "SQA::#{params[:command].camelcase}".constantize
+          params[:command] = "SQA::Command::#{params[:command].camelcase}".constantize
         end
 
         if params[:command] && !params.remaining.empty?
           argv        = params.remaining
-          cmd         = new
+          cmd         = params[:command].new
+
+          debug_me("COMMAND"){[
+            :argv,
+            :cmd
+          ]}
+
           cmd_parser  = cmd.parse(argv)
           cmd_params  = cmd_parser.params
 
-          debug_me('== BEFORE =='){[
-            :params,
-            :cmd_params
-          ]}
-
-          params.merge!(cmd_params.to_h)
-
-          debug_me('== after =='){[
-            :params,
+          debug_me('after cmd parse'){[
             :cmd_params
           ]}
         end
@@ -179,33 +182,34 @@ module SQA
         # Override the defaults <- envars <- config file <- cli parameters
         SQA.config.merge!(remove_temps params.to_h)
 
-        # if SQA.debug? || SQA.verbose?
-          debug_me("config after CLI parameters"){[
+        if SQA.debug? || SQA.verbose?
+          debug_me("== CLI =="){[
             "SQA.config",
             :params,
             "params.keys",
             "params.remaining",
             "params[:command]"
           ]}
-        # end
+        end
 
         if SQA.config.command
-          SQA.config.command.run!
+          debug_me "running command"
+          SQA.config.command.run!(cmd_params)
+          debug_me "back from running command"
         end
       end
 
 
       def remove_temps(a_hash)
         temps = %i[ help version dump ]
-        # debug_me{[ :a_hash ]}
         a_hash.reject{|k, _| temps.include? k}
       end
     end
 	end
 end
 
-require_relative 'analysis'
-require_relative 'web'
+# require_relative 'analysis'
+# require_relative 'web'
 
 # First Load TTY-Option's command content with all available commands
 # then these have access to the entire ObjectSpace ...

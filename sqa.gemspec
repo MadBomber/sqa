@@ -39,6 +39,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'hashie', '~>4.1.0' # Latest version is 5.0.0
   spec.add_dependency 'lite-statistics'
   spec.add_dependency 'nenv'
+  spec.add_dependency 'require_all'
   spec.add_dependency 'sem_version'
   spec.add_dependency 'tty-option'
   spec.add_dependency 'tty-table'
