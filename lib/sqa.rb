@@ -31,26 +31,31 @@ end
 require 'alphavantage'
 require 'api_key_manager'
 require 'amazing_print'
+require 'dry-cli'
 require 'faraday'
 require 'hashie'
 require 'lite/statistics'
 require 'lite/statistics/monkey_patches' # patch to Enumerable
 require 'nenv'
-require 'require_all'
 require 'sem_version'
 require 'sem_version/core_ext'
-require 'tty-option'
 require 'tty-table'
 
 
 #############################################
 ## Apply core class monkey patches
 
+# Using these monkey patches to remove need for
+# ActiveSupport
 require_relative "patches/string.rb"
+
+# Adds the global_header, global_footer, header, and footer
+# class methods to enhance the HELP/Usage functionality
+require_relative "patches/dry-cli.rb"
 
 
 #############################################
-## SQA soecufuc code
+## SQA specific code
 
 require_relative "sqa/version"
 require_relative "sqa/errors"
@@ -63,7 +68,6 @@ require_relative 'sqa/init.rb'
 # 			alphavantage gem.
 
 require_relative "sqa/config"
-require_relative "sqa/command"
 require_relative "sqa/constants" 	# SMELL: more app than gem
 require_relative "sqa/data_frame"
 require_relative "sqa/indicator"

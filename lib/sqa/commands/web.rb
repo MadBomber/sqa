@@ -1,87 +1,76 @@
-# sqa/lib/sqa/command/web.rb
+# sqa/lib/sqa/commands/web.rb
 
-module SQA::Command
-	class Web
-    include TTY::Option
+class Commands::Web < Commands::Base
+  VERSION = "0.0.1-web"
 
-    command "web"
+  Command.register "web", self
+  Command.register "web version", PrintVersion.new(VERSION), aliases: %w[--version]
 
-    desc "Run a web server"
+  desc "Start a web application"
 
-    example "Set working directory (-w)",
-            "  sqa web --port 4567 --data-dir /path/to/dir/ ubuntu pwd"
+  option :image,
+    required: true,
+    type:     :string,
+    desc:     "The name of the image to use"
 
-    example <<~EOS
-      Do Something
-        sqa web
+
+  option :restart
+    aliases:  %w[ --restart ],
+    type:     :string,
+    default:  "no",
+    values:   %w[ no on-failure always unless-stopped ],
+    desc:     "Restart policy to apply when a container exits"
+
+
+  option :detach,
+    aliases:  %w[ --detach ],
+    type:     :boolean,
+    default:  false,
+    desc:     "Run container in background and print container ID"
+
+
+  option :port,
+    aliases:  %w[ -p --port ],
+    type:     :integer,
+    default:  4567,
+    desc:     "The port where the web app will run"
+
+
+	def initialize
+    # TODO: make it happen
+	end
+
+
+  # params is Object from the ARGV parser
+  def call(params)
+
+    debug_me('WEB'){[
+      :params
+    ]}
+
+    if params.errors.any?
+      STDERR.puts
+      STDERR.puts params.errors.summary
+      STDERR.puts
+      return
+    end
+
+    puts <<~EOS
+      ###############################
+      ## Running the Web Interface ##
+      ###############################
     EOS
 
-    argument :image do
-      required
-      desc "The name of the image to use"
-    end
-
-    keyword :restart do
-      default "no"
-      permit %w[no on-failure always unless-stopped]
-      desc "Restart policy to apply when a container exits"
-    end
-
-    flag :detach do
-      long "--detach"
-      desc "Run container in background and print container ID"
-    end
-
-
-    option :xyzzy do
-      required
-      long "--xyzzy string"
-      desc "Assign a name to the xyzzy"
-    end
-
-
-    option :port do
-      long    "--port int"
-      convert :int
-      default 4567
-      desc    "The port where the web app will run"
-    end
-
-
-		def initialize
-      # TODO: make it happen
-		end
-
-
-    # params is Object from TTY-Option parser
-    def self.run!(params)
-
-      debug_me('WEB'){[
-        :params
-      ]}
-
-      if params.errors.any?
-        STDERR.puts
-        STDERR.puts params.errors.summary
-        STDERR.puts
-        return
-      end
-
-      puts <<~EOS
-        ###############################
-        ## Running the Web Interface ##
-        ###############################
-      EOS
-
-      debug_me('WEB'){[
-        "SQA.config",
-        :params,
-        "params.to_h",
-        "params.to_h.merge(SQA.config.to_h)"
-      ]}
-    end
-	end
+    debug_me('WEB'){[
+      "SQA.config",
+      :params,
+      "params.to_h",
+      "params.to_h.merge(SQA.config.to_h)"
+    ]}
+  end
 end
+
+
 
 __END__
 

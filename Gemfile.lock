@@ -4,13 +4,13 @@ PATH
     sqa (0.0.23)
       alphavantage
       api_key_manager
+      dry-cli
       faraday
       hashie (~> 4.1.0)
       lite-statistics
       nenv
       require_all
       sem_version
-      tty-option
       tty-table
 
 GEM
@@ -30,6 +30,7 @@ GEM
     core (0.1.5)
     debug_me (1.1.0)
     docile (1.4.0)
+    dry-cli (1.0.0)
     dry-configurable (1.1.0)
       dry-core (~> 1.0, < 2)
       zeitwerk (~> 2.6)
@@ -156,7 +157,6 @@ GEM
       refinements (~> 11.0)
       zeitwerk (~> 2.6)
     tty-color (0.6.0)
-    tty-option (0.3.0)
     tty-screen (0.8.1)
     tty-table (0.12.0)
       pastel (~> 0.8)

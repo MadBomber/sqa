@@ -1,40 +1,39 @@
-# sqa/lib/sqa/command/analysis.rb
+# sqa/lib/sqa/commands/analysis.rb
 
-module SQA::Command
-	class Analysis
-    include TTY::Option
+class Commands::Analysis < Commands::Base
+  VERSION = "0.0.1-analysis"
 
-    command "analysis"
+  Command.register "analysis", self
+  Command.register "analysis version", PrintVersion.new(VERSION), aliases: %w[--version]
 
-    desc "Provide an Analysis of a Portfolio"
+  desc "Provide an Analysis of a Portfolio"
 
 
-		def initialize
-      # TODO: something
-		end
-
-    def self.run!(params)
-      if params.errors.any?
-        STDERR.puts
-        STDERR.puts params.errors.summary
-        STDERR.puts
-        return
-      end
-
-      puts <<~EOS
-        ##################################
-        ## Running the Analysis Command ##
-        ##################################
-      EOS
-
-      debug_me('ANALYSIS'){[
-        "SQA.config",
-        :params,
-        "params.to_h",
-        "params.merge(SWA.config.to_h)"
-      ]}
-    end
+	def initialize
+    # TODO: something
 	end
+
+  def call(params)
+    if params.errors.any?
+      STDERR.puts
+      STDERR.puts params.errors.summary
+      STDERR.puts
+      return
+    end
+
+    puts <<~EOS
+      ##################################
+      ## Running the Analysis Command ##
+      ##################################
+    EOS
+
+    debug_me('ANALYSIS'){[
+      "SQA.config",
+      :params,
+      "params.to_h",
+      "params.merge(SWA.config.to_h)"
+    ]}
+  end
 end
 
 __END__
