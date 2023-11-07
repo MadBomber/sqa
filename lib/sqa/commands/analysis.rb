@@ -3,8 +3,8 @@
 class Commands::Analysis < Commands::Base
   VERSION = "0.0.1-analysis"
 
-  Command.register "analysis", self
-  Command.register "analysis version", PrintVersion.new(VERSION), aliases: %w[--version]
+  Commands.register "analysis", self
+  Commands.register "analysis version", PrintVersion.new(VERSION), aliases: %w[--version]
 
   desc "Provide an Analysis of a Portfolio"
 
@@ -14,12 +14,7 @@ class Commands::Analysis < Commands::Base
 	end
 
   def call(params)
-    if params.errors.any?
-      STDERR.puts
-      STDERR.puts params.errors.summary
-      STDERR.puts
-      return
-    end
+    config = super
 
     puts <<~EOS
       ##################################
@@ -29,9 +24,9 @@ class Commands::Analysis < Commands::Base
 
     debug_me('ANALYSIS'){[
       "SQA.config",
+      :config,
       :params,
       "params.to_h",
-      "params.merge(SWA.config.to_h)"
     ]}
   end
 end

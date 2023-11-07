@@ -3,8 +3,8 @@
 class Commands::Web < Commands::Base
   VERSION = "0.0.1-web"
 
-  Command.register "web", self
-  Command.register "web version", PrintVersion.new(VERSION), aliases: %w[--version]
+  Commands.register "web", self
+  Commands.register "web version", PrintVersion.new(VERSION), aliases: %w[--version]
 
   desc "Start a web application"
 
@@ -14,7 +14,7 @@ class Commands::Web < Commands::Base
     desc:     "The name of the image to use"
 
 
-  option :restart
+  option :restart,
     aliases:  %w[ --restart ],
     type:     :string,
     default:  "no",
@@ -43,17 +43,7 @@ class Commands::Web < Commands::Base
 
   # params is Object from the ARGV parser
   def call(params)
-
-    debug_me('WEB'){[
-      :params
-    ]}
-
-    if params.errors.any?
-      STDERR.puts
-      STDERR.puts params.errors.summary
-      STDERR.puts
-      return
-    end
+    config = super
 
     puts <<~EOS
       ###############################
@@ -63,9 +53,9 @@ class Commands::Web < Commands::Base
 
     debug_me('WEB'){[
       "SQA.config",
+      :config,
       :params,
       "params.to_h",
-      "params.to_h.merge(SQA.config.to_h)"
     ]}
   end
 end

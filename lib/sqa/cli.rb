@@ -1,13 +1,15 @@
 # lib/sqa/cli.rb
 
-require 'dry-cli'
+require 'dry/cli'
 
 require_relative '../sqa'
 require_relative 'commands'
 
 module SQA::CLI
-  def run!
-    Dry::CLI.new(SQA::CLI::Command).call
+  class << self
+    def run!
+      Dry::CLI.new(SQA::Commands).call
+    end
   end
 end
 

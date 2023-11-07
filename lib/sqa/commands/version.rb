@@ -2,7 +2,7 @@
 
 
 class Commands::Version < Commands::Base
-  Command.register "version", self, aliases: %w[--version]
+  Commands.register "version", self, aliases: %w[--version]
 
   desc "Print version"
 
@@ -19,7 +19,6 @@ class Commands::Version < Commands::Base
     exit(0)
   end
 end
-end
 
 # Create a short-cut to the class
-PrintVersion = Command::Version
+PrintVersion = Commands::Version

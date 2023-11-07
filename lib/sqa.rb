@@ -31,7 +31,7 @@ end
 require 'alphavantage'
 require 'api_key_manager'
 require 'amazing_print'
-require 'dry-cli'
+require 'dry/cli'
 require 'faraday'
 require 'hashie'
 require 'lite/statistics'

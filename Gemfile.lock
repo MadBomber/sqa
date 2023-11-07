@@ -9,7 +9,6 @@ PATH
       hashie (~> 4.1.0)
       lite-statistics
       nenv
-      require_all
       sem_version
       tty-table
 
@@ -111,7 +110,6 @@ GEM
       tty-color (~> 0.5)
     rake (13.0.6)
     refinements (11.1.0)
-    require_all (3.0.0)
     ruby2_keywords (0.0.5)
     runcom (10.2.0)
       refinements (~> 11.0)
