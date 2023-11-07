@@ -11,7 +11,6 @@ Commands = SQA::Commands
 load_these_first = [
   # TODO: will need the overloaded help here as well
   "#{__dir__}/commands/base.rb",
-  "#{__dir__}/commands/version.rb",
 ].each { |file| require_relative file }
 
 Dir.glob("#{__dir__}/commands/*.rb")

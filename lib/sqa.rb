@@ -25,6 +25,8 @@ else
 	include DebugMe
 end
 
+$DEBUG_ME = true
+
 #############################################
 ## Additional Libraries
 

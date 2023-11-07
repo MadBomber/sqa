@@ -4,7 +4,6 @@ class Commands::Analysis < Commands::Base
   VERSION = "0.0.1-analysis"
 
   Commands.register "analysis", self
-  Commands.register "analysis version", PrintVersion.new(VERSION), aliases: %w[--version]
 
   desc "Provide an Analysis of a Portfolio"
 

@@ -4,7 +4,6 @@ class Commands::Web < Commands::Base
   VERSION = "0.0.1-web"
 
   Commands.register "web", self
-  Commands.register "web version", PrintVersion.new(VERSION), aliases: %w[--version]
 
   desc "Start a web application"
 

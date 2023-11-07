@@ -9,6 +9,8 @@
 # available to all commands.
 
 class Commands::Base < Dry::CLI::Command
+  IGNORE_OPTIONS = %i[ version restart detach port ]
+
   global_header <<~EOS
 
     SQA - Stock Quantitative Analysis
@@ -105,19 +107,22 @@ class Commands::Base < Dry::CLI::Command
 
   # All command class call methods should start with
   # super so that this method is invoked.
+  #
+  # params is a Hash
 
   def call(params)
     debug_me(tag:"== Base call ==", levels: 4){[
+      "params.class",
       :params
     ]}
 
-    show_errors(params.errors, exit_code: 1)  if params.errors.any?
-    show_versions_and_exit                    if params.has_key?(:version)
+    # show_errors(params.errors, exit_code: 1)  if params.errors.any?
+    show_versions_and_exit                    if params[:version]
 
     SQA.config.from_config(:config_file)          if params.has_key?(:config_file)
     SQA.config.dump_config(params[:dump_config])  if params.has_key?(:dump_config)
 
-    SQA.config.merge!(params)
+    update_config(params)
   end
 
   ################################################
@@ -136,14 +141,6 @@ class Commands::Base < Dry::CLI::Command
 
 
   def show_versions_and_exit
-    # TODO: decide on where to start
-
-    kallers = caller
-
-    debug_me{[
-      :kallers
-    ]}
-
     self.class.ancestors.each do |ancestor|
       next unless ancestor.const_defined?(:VERSION)
       puts "#{ancestor}: #{ancestor::VERSION}"
@@ -152,5 +149,10 @@ class Commands::Base < Dry::CLI::Command
     puts "SQA: #{SQA::VERSION}" if SQA.const_defined?(:VERSION)
 
     exit(0)
+  end
+
+  def update_config(params)
+    my_hash = params.reject { |key, _| IGNORE_OPTIONS.include?(key) }
+    SQA.config.merge!(my_hash)
   end
 end
