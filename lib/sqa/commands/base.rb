@@ -100,11 +100,25 @@ class Commands::Base < Dry::CLI::Command
   # params is a Hash from Dry::CLI where keys are Symbol
 
   def call(params)
-    show_versions_and_exit                        if params[:version]
-    SQA.config.from_config(:config_file)          unless params[:config_file].empty?
-    SQA.config.dump_config(params[:dump_config])  unless params[:dump_config].empty?
+    show_versions_and_exit if params[:version]
+
+    unless params[:config_file].nil? || params[:config_file].empty?
+      debug_me("== HERE =="){[
+        "params[:config_file]"
+      ]}
+      SQA.config.config_file = params[:config_file]
+      SQA.config.from_file
+    end
 
     update_config(params)
+
+    unless params[:dump_config].nil? || params[:dump_config].empty?
+      debug_me
+      SQA.config.config_file = params[:dump_config]
+      SQA.config.dump_file
+    end
+
+    SQA.config
   end
 
   ################################################

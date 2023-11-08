@@ -6,6 +6,8 @@
 #   config file ..... overrides envar
 #   command line parameters ...... overrides config file
 
+require 'yaml'
+require 'toml-rb'
 
 module SQA
   # class Config < Hashie::Trash
@@ -81,6 +83,10 @@ module SQA
 
     ########################################################
     def from_file
+      debug_me("== from_file =="){[
+        :config_file
+      ]}
+
       return if config_file.nil?
 
       if  File.exist?(config_file)    &&
@@ -114,17 +120,18 @@ module SQA
     end
 
     def dump_file
+      debug_me("== dump_file =="){[
+        :config_file
+      ]}
+
       if config_file.nil?
         raise BadParameterError, "No config file given"
       end
 
-      if  File.exist?(config_file)    &&
-          File.file?(config_file)     &&
-          File.writable?(config_file)
-        type = File.extname(config_file).downcase
-      else
-        type = "invalid"
-      end
+      `touch #{config_file}`
+      # unless  File.exist?(config_file)
+
+      type = File.extname(config_file).downcase
 
       if ".json" == type
         dump_json
@@ -136,7 +143,7 @@ module SQA
         dump_toml
 
       else
-        raise BadParameterError, "Invalid Config File: #{config_file}"
+        raise BadParameterError, "Invalid Config File Type: #{config_file}"
       end
     end
 
