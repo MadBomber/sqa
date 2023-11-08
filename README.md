@@ -35,6 +35,7 @@ Could spawn off separate agents for each stock within a portfolio for analysis .
 ## Table of Contents
 
   - [This is a Work in Progress](#this-is-a-work-in-progress)
+  - [Recent Changes](#recent-changes)
   - [Installation](#installation)
   - [Semantic Versioning](#semantic-versioning)
   - [Usage](#usage)
@@ -52,6 +53,8 @@ Could spawn off separate agents for each stock within a portfolio for analysis .
   - [Included Program Examples](#included-program-examples)
     - [Analysis](#analysis)
     - [Web](#web)
+  - [Predicted FAQ](#predicted-faq)
+  - [Other Similar Projects](#other-similar-projects)
   - [Contributing](#contributing)
   - [License](#license)
 
@@ -61,6 +64,9 @@ Could spawn off separate agents for each stock within a portfolio for analysis .
 
 I am experimenting with different gems to support various functionality.  Sometimes they do not work out well.  For example I've gone through two different gems to implement the data frame capability.  Neither did what I wanted so I ended up creating my own data frame class based upon the old tried and true [Hashie](https://github.com/intridea/hashie) library.
 
+## Recent Changes
+
+* 0.0.24 - Replaced tty-option with dry-cli
 
 ## Installation
 
@@ -209,6 +215,8 @@ The CSV files will be named by the stock's ticker symbol as lower case.  For exa
 require 'sqa'
 require 'sqa/cli'
 
+# TODO: Is this still true after the dry-cli integration?
+#
 # You can pass a set of CLI options in a String
 SQA.init "-c ~/.sqa.yml"
 
