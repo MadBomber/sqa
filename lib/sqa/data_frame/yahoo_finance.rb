@@ -78,3 +78,4 @@ class SQA::DataFrame
     end
   end
 end
+

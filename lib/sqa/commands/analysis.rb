@@ -1,40 +1,26 @@
-# sqa/lib/sqa/command/analysis.rb
+# sqa/lib/sqa/commands/analysis.rb
 
-module SQA::Command
-	class Analysis
-    include TTY::Option
+class Commands::Analysis < Commands::Base
+  VERSION = "0.0.1-analysis"
 
-    command "analysis"
+  Commands.register "analysis", self
 
-    desc "Provide an Analysis of a Portfolio"
+  desc "Provide an Analysis of a Portfolio"
 
 
-		def initialize
-      # TODO: something
-		end
-
-    def self.run!(params)
-      if params.errors.any?
-        STDERR.puts
-        STDERR.puts params.errors.summary
-        STDERR.puts
-        return
-      end
-
-      puts <<~EOS
-        ##################################
-        ## Running the Analysis Command ##
-        ##################################
-      EOS
-
-      debug_me('ANALYSIS'){[
-        "SQA.config",
-        :params,
-        "params.to_h",
-        "params.merge(SWA.config.to_h)"
-      ]}
-    end
+	def initialize
+    # TODO: something
 	end
+
+  def call(params)
+    config = super
+
+    puts <<~EOS
+      ##################################
+      ## Running the Analysis Command ##
+      ##################################
+    EOS
+  end
 end
 
 __END__
@@ -291,11 +277,6 @@ tickers.each do |ticker|
 
   values << row
 end
-
-# debug_me{[
-#   :result
-# ]}
-
 
 the_table = TTY::Table.new(headers, values)
 

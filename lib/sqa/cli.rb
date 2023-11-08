@@ -1,157 +1,40 @@
 # lib/sqa/cli.rb
 
+require 'dry/cli'
 
 require_relative '../sqa'
+require_relative 'commands'
 
-# SMELL:  Architectyre has become confused between CLI and Command
-
-# TODO: Fix the mess between CLI and Command
-
-
-module SQA
-	class CLI
-    include TTY::Option
-
-    header "Stock Quantitative Analysis (SQA)"
-    footer "WARNING: This is a toy, a play thing, not intended for serious use."
-
-    program "sqa"
-    desc    "A collection of things"
-
-    example "sqa -c ~/.sqa.yml -p portfolio.csv -t trades.csv --data-dir ~/sqa_data"
-
-    argument(:command) { optional }
-
-    option :config_file do
-      short "-c string"
-      long  "--config string"
-      desc  "Path to the config file"
+module SQA::CLI
+  class << self
+    def run!
+      Dry::CLI.new(SQA::Commands).call
     end
-
-    option :log_level do
-      short   "-l string"
-      long    "--log_level string"
-      # default SQA.config.log_level
-      desc    "Set the log level (debug, info, warn, error, fatal)"
-    end
-
-    option :portfolio do
-      short   "-s string"
-      long    "--stocks_filename string"
-      # default SQA.config.portfolio_filename
-      desc    "Set the filename of the portfolio"
-    end
+  end
+end
 
 
-    option :trades do
-      short   "-t string"
-      long    "--trades string"
-      # default SQA.config.trades_filename
-      desc    "Set the filename into which trades are stored"
-    end
 
 
-    option :data_dir do
-      long    "--data-dir string"
-      # default SQA.config.data_dir
-      desc    "Set the directory for the SQA data"
-    end
+__END__
 
-    option :dump_config do
-      long "--dump-config path_to_file"
-      desc "Dump the current configuration"
-    end
 
-    flag :help do
-      short "-h"
-      long "--help"
-      desc "Print usage"
-    end
 
-    flag :version do
-      long "--version"
-      desc "Print version"
-    end
 
-    flag :debug do
-      short   "-d"
-      long    "--debug"
-      # default SQA.config.debug
-      desc    "Turn on debugging output"
-    end
+    # header "Stock Quantitative Analysis (SQA)"
+    # footer "WARNING: This is a toy, a play thing, not intended for serious use."
 
-    flag :verbose do
-      short   "-v"
-      long    "--verbose"
-      # default SQA.config.debug
-      desc    "Print verbosely"
-    end
+    # program "sqa"
+    # desc    "A collection of things"
+
+
+
 
     class << self
-      @@command_classes     = []
-      @@commands_available  = []
-
-      def initialize_class_variables
-        @@command_classes = SQA::Command.constants
-                              .select { |c| Class === SQA::Command.const_get(c) }
-                              .map{ |c| "SQA::Command::#{c}".constantize}
-
-        @@commands_available  = @@command_classes.map{ |k| k.command.join }
-      end
-
-
-      def names
-        '['+ @@commands_available.join('|')+']'
-      end
-
-
-      def command_descriptions
-        help_block = "Optional Command Available:"
-
-        @@commands_available.size.times do |x|
-          klass = @@command_classes[x]
-          help_block << "\n  " + @@commands_available[x] + " - "
-          help_block << klass.desc.join
-        end
-
-        help_block
-      end
-
-
-      def command_help(command_string)
-        argv        = ["--help"]
-        klass       = "SQA::Command::#{command_string.camelcase}".constantize
-        cmd         = klass.new
-        cmd_parser  = cmd.parse(argv)
-
-        print cmd_parser.help
-      end
-
 
       ##################################################
       def run(argv = ARGV)
-        initialize_class_variables
 
-        cli    = new
-        parser = cli.parse(argv) #, check_invalid_params: false)
-        params = parser.params
-
-        if params[:help]
-          if params[:command]
-            command_help(params[:command])
-          else
-            print parser.help
-          end
-
-          exit(0)
-
-        elsif params.errors.any? && !params[:command]
-          puts params.errors.summary
-          exit(1)
-
-        elsif params[:version]
-          puts SQA.version
-          exit(0)
 
         elsif params[:dump_config]
           SQA.config.config_file  = params[:dump_config]
@@ -166,67 +49,14 @@ module SQA
           SQA.config.from_file
         end
 
-        unless params[:command].nil?
-          unless @@commands_available.include? params[:command]
-            raise "Bad command: '#{params[:command]}'  Should be one of: #{@@commands_available.join(', ')}"
-          end
-
-          params[:command] = "SQA::Command::#{params[:command].camelcase}".constantize
-        end
-
-        if params[:command] # && !params.remaining.empty?
-          argv        = params.remaining
-          cmd         = params[:command].new
-
-          debug_me("COMMAND"){[
-            :argv,
-            :cmd
-          ]}
-
-          cmd_parser  = cmd.parse(argv)
-          cmd_params  = cmd_parser.params
-
-          debug_me('after cmd parse'){[
-            :cmd_params
-          ]}
-        end
 
 
         # Override the defaults <- envars <- config file <- cli parameters
         SQA.config.merge!(remove_temps params.to_h)
 
-        if SQA.debug? || SQA.verbose?
-          debug_me("== CLI =="){[
-            "SQA.config",
-            :params,
-            "params.keys",
-            "params.remaining",
-            "params[:command]"
-          ]}
-        end
 
-        if SQA.config.command
-          debug_me "running command"
-          SQA.config.command.run!(cmd_params)
-          debug_me "back from running command"
-        end
-      end
-
-
-      def remove_temps(a_hash)
-        temps = %i[ help version dump ]
-        a_hash.reject{|k, _| temps.include? k}
       end
     end
 	end
 end
-
-# require_relative 'analysis'
-# require_relative 'web'
-
-# First Load TTY-Option's command content with all available commands
-# then these have access to the entire ObjectSpace ...
-SQA::CLI.initialize_class_variables
-SQA::CLI.command SQA::CLI.names
-SQA::CLI.example SQA::CLI.command_descriptions
 

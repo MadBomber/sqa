@@ -23,7 +23,7 @@ module SQA
 			# @@config = Config.new
 
 			if defined? CLI
-				CLI.run(argv)
+				CLI.run!    # TODO: how to parse a fake argv?  (argv)
 			else
 				# There are no real command line parameters
 				# because the sqa gem is being required within
