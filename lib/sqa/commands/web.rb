@@ -52,13 +52,6 @@ class Commands::Web < Commands::Base
       ## Running the Web Interface ##
       ###############################
     EOS
-
-    debug_me('WEB'){[
-      "SQA.config",
-      :config,
-      :params,
-      "params.to_h",
-    ]}
   end
 end
 

@@ -83,10 +83,6 @@ module SQA
 
     ########################################################
     def from_file
-      debug_me("== from_file =="){[
-        :config_file
-      ]}
-
       return if config_file.nil?
 
       if  File.exist?(config_file)    &&
@@ -120,10 +116,6 @@ module SQA
     end
 
     def dump_file
-      debug_me("== dump_file =="){[
-        :config_file
-      ]}
-
       if config_file.nil?
         raise BadParameterError, "No config file given"
       end

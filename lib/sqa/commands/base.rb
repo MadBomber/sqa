@@ -103,9 +103,6 @@ class Commands::Base < Dry::CLI::Command
     show_versions_and_exit if params[:version]
 
     unless params[:config_file].nil? || params[:config_file].empty?
-      debug_me("== HERE =="){[
-        "params[:config_file]"
-      ]}
       SQA.config.config_file = params[:config_file]
       SQA.config.from_file
     end
@@ -113,7 +110,6 @@ class Commands::Base < Dry::CLI::Command
     update_config(params)
 
     unless params[:dump_config].nil? || params[:dump_config].empty?
-      debug_me
       SQA.config.config_file = params[:dump_config]
       SQA.config.dump_file
     end

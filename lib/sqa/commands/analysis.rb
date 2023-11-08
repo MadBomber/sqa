@@ -20,13 +20,6 @@ class Commands::Analysis < Commands::Base
       ## Running the Analysis Command ##
       ##################################
     EOS
-
-    debug_me('ANALYSIS'){[
-      "SQA.config",
-      :config,
-      :params,
-      "params.to_h",
-    ]}
   end
 end
 
@@ -284,11 +277,6 @@ tickers.each do |ticker|
 
   values << row
 end
-
-# debug_me{[
-#   :result
-# ]}
-
 
 the_table = TTY::Table.new(headers, values)
 

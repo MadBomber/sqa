@@ -24,8 +24,6 @@ class SQA::Strategy
 			doc_filename 	= self.name.split('::').last.downcase + ".md"
 			doc_path 			= Pathname.new(__dir__) + doc_filename
 
-			debug_me{[ :doc_path ]}
-
 			if doc_path.exist?
 				doc = doc_path.read
 			else

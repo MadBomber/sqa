@@ -13,8 +13,6 @@ class SQA::Indicator; class << self
     true_ranges = true_range(high_prices, low_prices, close_prices)
     atr_values  = []
 
-    # debug_me{[ :period, :true_ranges ]}
-
     window_span = period - 1
 
     true_ranges.size.times do |inx|
@@ -24,14 +22,6 @@ class SQA::Indicator; class << self
       start_inx = 0 if start_inx < 0
 
       window    = true_ranges[start_inx..end_inx]
-
-      # debug_me{[
-      #   :inx,
-      #   :start_inx,
-      #   :end_inx,
-      #   :window,
-      #   "window.mean"
-      # ]}
 
       atr_values << window.mean
     end
