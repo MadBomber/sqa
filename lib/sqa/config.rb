@@ -8,8 +8,14 @@
 
 
 module SQA
+  # class Config < Hashie::Trash
+  #   include Hashie::Extensions::IgnoreUndeclared
+  #   include Hashie::Extensions::Coercion
+
+
 	class Config < Hashie::Dash
     include Hashie::Extensions::Dash::PropertyTranslation
+    include Hashie::Extensions::MethodAccess
     include Hashie::Extensions::Coercion
 
     # FIXME:  Getting undefined error PredefinedValues
@@ -131,6 +137,13 @@ module SQA
 
       else
         raise BadParameterError, "Invalid Config File: #{config_file}"
+      end
+    end
+
+    # Method to dynamically extend properties from external sources (e.g., plugins)
+    def inject_additional_properties
+      SQA::PluginManager.registered_properties.each do |prop, options|
+        self.class.property(prop, options)
       end
     end
 

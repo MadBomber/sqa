@@ -9,7 +9,9 @@
 # available to all commands.
 
 class Commands::Base < Dry::CLI::Command
-  IGNORE_OPTIONS = %i[ version restart detach port ]
+  # keys from Dry::Cli options which we do not want in the
+  # config object.
+  IGNORE_OPTIONS = %i[ version ]
 
   global_header <<~EOS
 
@@ -34,14 +36,12 @@ class Commands::Base < Dry::CLI::Command
   option :debug,
     required: false,
     type:     :boolean,
-    # default:  false,
     desc:     'Print debug information',
     aliases:  %w[-d --debug]
 
   option :verbose,
     required: false,
     type:     :boolean,
-    # default:  false,
     desc:     'Print verbose information',
     aliases:  %w[-v --verbose]
 
@@ -54,18 +54,15 @@ class Commands::Base < Dry::CLI::Command
     aliases:  %w[--version]
 
 
-
   option :config_file,
     required: false,
     type:     :string,
-    # default:  Nenv.sqa_config_filename || SQA.config.config_filename,
     desc:     "Path to the config file"
 
 
   option :log_level,
     required: false,
     type:     :string,
-    # default:  Nenv.sqa_log_level || SQA.config.log_level,
     values:   %w[debug info warn error fatal ],
     desc:     "Set the log level"
 
@@ -74,7 +71,6 @@ class Commands::Base < Dry::CLI::Command
     required: false,
     aliases:  %w[ --portfolio --folio --file -f ],
     type:     :string,
-    # default:  Nenv.sqa_portfollio_filename || SQA.config.portfolio_filename,
     desc:     "Set the filename of the portfolio"
 
 
@@ -82,7 +78,6 @@ class Commands::Base < Dry::CLI::Command
     required: false,
     aliases:  %w[ --trades ],
     type:     :string,
-    # default:  Nenv.sqa_trades_filename || SQA.config.trades_filename,
     desc:     "Set the filename into which trades are stored"
 
 
@@ -90,55 +85,30 @@ class Commands::Base < Dry::CLI::Command
     required: false,
     aliases:  %w[ --data-dir --data --dir ],
     type:     :string,
-    # default:  Nenv.sqa_data_dir || SQA.config.data_dir,
     desc:     "Set the directory for the SQA data"
 
 
-  # TODO: This will have to be a command or maybe not
-  #       maybe we can trap the parameters after the parse
-  #       to update the SQA.config object.  At that time
-  #       if the option :dump_
   option :dump_config,
     required: false,
     type:     :string,
-    # default:  "",
     desc:     "Dump the current configuration to a file"
 
 
   # All command class call methods should start with
   # super so that this method is invoked.
   #
-  # params is a Hash
+  # params is a Hash from Dry::CLI where keys are Symbol
 
   def call(params)
-    debug_me(tag:"== Base call ==", levels: 4){[
-      "params.class",
-      :params
-    ]}
-
-    # show_errors(params.errors, exit_code: 1)  if params.errors.any?
-    show_versions_and_exit                    if params[:version]
-
-    SQA.config.from_config(:config_file)          if params.has_key?(:config_file)
-    SQA.config.dump_config(params[:dump_config])  if params.has_key?(:dump_config)
+    show_versions_and_exit                        if params[:version]
+    SQA.config.from_config(:config_file)          unless params[:config_file].empty?
+    SQA.config.dump_config(params[:dump_config])  unless params[:dump_config].empty?
 
     update_config(params)
   end
 
   ################################################
   private
-
-  # errors is an Object from Dry::CLI
-  # If exit_code is NOT nil, then this method
-  # will not return.
-
-  def show_errors(errors, exit_code: 1)
-    STDERR.puts "\nThe following ERRORS were found:"
-    STDERR.puts errors.summary
-    STDERR.puts
-    exit(exit_code) unless exist_code.nil?
-  end
-
 
   def show_versions_and_exit
     self.class.ancestors.each do |ancestor|
@@ -152,6 +122,7 @@ class Commands::Base < Dry::CLI::Command
   end
 
   def update_config(params)
+    SQA.config.inject_additional_properties
     my_hash = params.reject { |key, _| IGNORE_OPTIONS.include?(key) }
     SQA.config.merge!(my_hash)
   end

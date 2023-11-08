@@ -12,6 +12,7 @@ class Commands::Web < Commands::Base
     type:     :string,
     desc:     "The name of the image to use"
 
+  SQA::PluginManager.new_property(:restart, default: 'no', coerce: String)
 
   option :restart,
     aliases:  %w[ --restart ],
@@ -20,6 +21,7 @@ class Commands::Web < Commands::Base
     values:   %w[ no on-failure always unless-stopped ],
     desc:     "Restart policy to apply when a container exits"
 
+  SQA::PluginManager.new_property(:detach, default: 'no', coerce: String)
 
   option :detach,
     aliases:  %w[ --detach ],
@@ -27,6 +29,7 @@ class Commands::Web < Commands::Base
     default:  false,
     desc:     "Run container in background and print container ID"
 
+  SQA::PluginManager.new_property(:port, default: 4567, coerce: Integer)
 
   option :port,
     aliases:  %w[ -p --port ],
