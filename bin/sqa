@@ -1,6 +1,11 @@
 #!/usr/bin/env ruby
 
-require 'sqa'
-require 'sqa/cli'
 
-SQA.init
+if ARGV == ["--version"]
+	require 'sqa/version'
+	puts SQA::VERSION
+else
+	require 'sqa'
+	require 'sqa/cli'
+	SQA.init
+end
