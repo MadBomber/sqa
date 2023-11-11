@@ -10,7 +10,7 @@ class SQA::Indicator; class << self
     ema_values = []
     ema_values << prices.first
 
-    multiplier = (2.0 / (period + 1))
+    multiplier = (2.0 / (period + 1))  # aka "alpha"
 
     (1...prices.length).each do |x|
       ema = (prices[x] - ema_values.last) * multiplier + ema_values.last
