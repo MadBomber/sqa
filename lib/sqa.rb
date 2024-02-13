@@ -30,7 +30,7 @@ $DEBUG_ME = true
 #############################################
 ## Additional Libraries
 
-require 'alphavantage'
+# require 'alphavantage'
 require 'api_key_manager'
 require 'amazing_print'
 require 'dry/cli'
@@ -54,6 +54,12 @@ require_relative "patches/string.rb"
 # Adds the global_header, global_footer, header, and footer
 # class methods to enhance the HELP/Usage functionality
 require_relative "patches/dry-cli.rb"
+
+
+#############################################
+## API wrappers for External Websites
+
+requre_relative "api/alpha_vantage_api"
 
 
 #############################################
