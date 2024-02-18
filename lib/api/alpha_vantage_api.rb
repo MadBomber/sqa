@@ -20,15 +20,15 @@ class AlphaVantageAPI
     @connection = Faraday.new(url: BASE_URL)
   end
 
-  def query(  function:, 
-              symbol:       nil, 
-              interval:     nil, 
-              time_period:  nil, 
-              series_type:  nil, 
-              market:       nil, 
-              **extra
-            )
-    
+  def query(  function:,
+      symbol:       nil,
+      interval:     nil,
+      time_period:  nil,
+      series_type:  nil,
+      market:       nil,
+      **extra
+    )
+
     response = @connection.get do |req|
       req.params['apikey']      = @api_key
       req.params['function']    = function
@@ -37,6 +37,7 @@ class AlphaVantageAPI
       req.params['time_period'] = time_period if time_period
       req.params['series_type'] = series_type if series_type
       req.params['market']      = market      if market
+
       extra.each { |key, value| req.params[key.to_s] = value if value }
     end
 
@@ -44,7 +45,6 @@ class AlphaVantageAPI
   rescue Faraday::Error => e
     { error: "Failed to retrieve data: #{e.message}" }
   end
-
 
   def ad(symbol:, interval:)
     query(function: 'AD', symbol: symbol, interval: interval)
@@ -73,8 +73,6 @@ class AlphaVantageAPI
   def aroon(symbol:, interval:, time_period:)
     query(function: 'AROON', symbol: symbol, interval: interval, time_period: time_period)
   end
-
-  # Repeat similar methods for other functions based on the provided URLs parameters. 
 
   def balance_sheet(symbol:)
     query(function: 'BALANCE_SHEET', symbol: symbol)
@@ -260,7 +258,7 @@ class AlphaVantageAPI
   def top_gainers_losers
     query(function: 'TOP_GAINERS_LOSERS')
   end
-  
+
   def treasury_yield(interval:, maturity:)
     query(function: 'TREASURY_YIELD', interval: interval, maturity: maturity)
   end
@@ -277,192 +275,188 @@ class AlphaVantageAPI
     query(function: 'WTI', interval: interval)
   end
 
-
-  def digital_currency_daily(symbol, market, datatype = 'json')
+  def digital_currency_daily(symbol:, market:, datatype: 'json')
     query(function: 'DIGITAL_CURRENCY_DAILY', symbol: symbol, market: market, datatype: datatype)
   end
 
-  def fx_daily(from_symbol, to_symbol, outputsize = nil, datatype = 'json')
+  def fx_daily(from_symbol:, to_symbol:, outputsize: nil, datatype: 'json')
     query(function: 'FX_DAILY', from_symbol: from_symbol, to_symbol: to_symbol, outputsize: outputsize, datatype: datatype)
   end
 
-  def global_quote(symbol, datatype = 'json')
+  def global_quote(symbol:, datatype: 'json')
     query(function: 'GLOBAL_QUOTE', symbol: symbol, datatype: datatype)
   end
 
-  def time_series_daily_adjusted(symbol, outputsize = nil, datatype = 'json')
+  def time_series_daily_adjusted(symbol:, outputsize: nil, datatype: 'json')
     query(function: 'TIME_SERIES_DAILY_ADJUSTED', symbol: symbol, outputsize: outputsize, datatype: datatype)
   end
 
-  def macd(symbol, interval, series_type, fastperiod = nil, slowperiod = nil, signalperiod = nil, datatype = 'json')
+  def macd(symbol:, interval:, series_type:, fastperiod: nil, slowperiod: nil, signalperiod: nil, datatype: 'json')
     query(function: 'MACD', symbol: symbol, interval: interval, series_type: series_type, fastperiod: fastperiod, slowperiod: slowperiod, signalperiod: signalperiod, datatype: datatype)
   end
 
 
-  def fx_intraday(from_symbol, to_symbol, interval, outputsize = nil, datatype = 'json')
+  def fx_intraday(from_symbol:, to_symbol:, interval:, outputsize: nil, datatype: 'json')
     query(function: 'FX_INTRADAY', from_symbol: from_symbol, to_symbol: to_symbol, interval: interval, outputsize: outputsize, datatype: datatype)
   end
 
-  def digital_currency_monthly(symbol, market, datatype = 'json')
+  def digital_currency_monthly(symbol:, market:, datatype: 'json')
     query(function: 'DIGITAL_CURRENCY_MONTHLY', symbol: symbol, market: market, datatype: datatype)
   end
 
-  def digital_currency_weekly(symbol, market, datatype = 'json')
+  def digital_currency_weekly(symbol:, market:, datatype: 'json')
     query(function: 'DIGITAL_CURRENCY_WEEKLY', symbol: symbol, market: market, datatype: datatype)
   end
 
-  def time_series_intraday(symbol, interval, outputsize = nil, datatype = 'json')
+  def time_series_intraday(symbol:, interval:, outputsize: nil, datatype: 'json')
     query(function: 'TIME_SERIES_INTRADAY', symbol: symbol, interval: interval, outputsize: outputsize, datatype: datatype)
   end
 
-  def time_series_monthly(symbol, datatype = 'json')
+  def time_series_monthly(symbol:, datatype: 'json')
     query(function: 'TIME_SERIES_MONTHLY', symbol: symbol, datatype: datatype)
   end
 
-  def time_series_weekly(symbol, datatype = 'json')
+  def time_series_weekly(symbol:, datatype: 'json')
     query(function: 'TIME_SERIES_WEEKLY', symbol: symbol, datatype: datatype)
   end
 
-  def macd_ext(symbol, interval, series_type, fastperiod = nil, slowperiod = nil, signalperiod = nil, matype = nil, datatype = 'json')
+  def macd_ext(symbol:, interval:, series_type:, fastperiod: nil, slowperiod: nil, signalperiod: nil, matype: nil, datatype: 'json')
     query(function: 'MACDEXT', symbol: symbol, interval: interval, series_type: series_type, fastperiod: fastperiod, slowperiod: slowperiod, signalperiod: signalperiod, matype: matype, datatype: datatype)
   end
 
-  def macd(symbol, interval, series_type, time_period, datatype = 'json')
+  def macd(symbol:, interval:, series_type:, time_period:, datatype: 'json')
     query(function: 'MACD', symbol: symbol, interval: interval, series_type: series_type, time_period: time_period, datatype: datatype)
   end
 
-  def rsi(symbol, interval, time_period, series_type, datatype = 'json')
+  def rsi(symbol:, interval:, time_period:, series_type:, datatype: 'json')
     query(function: 'RSI', symbol: symbol, interval: interval, time_period: time_period, series_type: series_type, datatype: datatype)
   end
 
-
-  def fx_monthly(from_symbol, to_symbol, datatype = 'json')
+  def fx_monthly(from_symbol:, to_symbol:, datatype: 'json')
     query(function: 'FX_MONTHLY', from_symbol: from_symbol, to_symbol: to_symbol, datatype: datatype)
   end
 
-  def fx_weekly(from_symbol, to_symbol, datatype = 'json')
+  def fx_weekly(from_symbol:, to_symbol:, datatype: 'json')
     query(function: 'FX_WEEKLY', from_symbol: from_symbol, to_symbol: to_symbol, datatype: datatype)
   end
 
-  def mama(symbol, interval, series_type, fastlimit, slowlimit, datatype = 'json')
+  def mama(symbol:, interval:, series_type:, fastlimit:, slowlimit:, datatype: 'json')
     query(function: 'MAMA', symbol: symbol, interval: interval, series_type: series_type, fastlimit: fastlimit, slowlimit: slowlimit, datatype: datatype)
   end
 
-  def mfi(symbol, interval, time_period, datatype = 'json')
+  def mfi(symbol:, interval:, time_period:, datatype: 'json')
     query(function: 'MFI', symbol: symbol, interval: interval, time_period: time_period, datatype: datatype)
   end
 
-  def midpoint(symbol, interval, time_period, series_type, datatype = 'json')
+  def midpoint(symbol:, interval:, time_period:, series_type:, datatype: 'json')
     query(function: 'MIDPOINT', symbol: symbol, interval: interval, time_period: time_period, series_type: series_type, datatype: datatype)
   end
 
-  def midprice(symbol, interval, time_period, datatype = 'json')
+  def midprice(symbol:, interval:, time_period:, datatype: 'json')
     query(function: 'MIDPRICE', symbol: symbol, interval: interval, time_period: time_period, datatype: datatype)
   end
 
-  def minus_di(symbol, interval, time_period, datatype = 'json')
+  def minus_di(symbol:, interval:, time_period:, datatype: 'json')
     query(function: 'MINUS_DI', symbol: symbol, interval: interval, time_period: time_period, datatype: datatype)
   end
 
-  def minus_dm(symbol, interval, time_period, datatype = 'json')
+  def minus_dm(symbol:, interval:, time_period:, datatype: 'json')
     query(function: 'MINUS_DM', symbol: symbol, interval: interval, time_period: time_period, datatype: datatype)
   end
 
-  def mom(symbol, interval, time_period, series_type, datatype = 'json')
+  def mom(symbol:, interval:, time_period:, series_type:, datatype: 'json')
     query(function: 'MOM', symbol: symbol, interval: interval, time_period: time_period, series_type: series_type, datatype: datatype)
   end
 
-  def natr(symbol, interval, time_period, datatype = 'json')
+  def natr(symbol:, interval:, time_period:, datatype: 'json')
     query(function: 'NATR', symbol: symbol, interval: interval, time_period: time_period, datatype: datatype)
   end
 
-  def obv(symbol, interval, datatype = 'json')
+  def obv(symbol:, interval:, datatype: 'json')
     query(function: 'OBV', symbol: symbol, interval: interval, datatype: datatype)
   end
 
-  def overview(symbol, datatype = 'json')
+  def overview(symbol:, datatype: 'json')
     query(function: 'OVERVIEW', symbol: symbol, datatype: datatype)
   end
 
-  def plus_di(symbol, interval, time_period, datatype = 'json')
+  def plus_di(symbol:, interval:, time_period:, datatype: 'json')
     query(function: 'PLUS_DI', symbol: symbol, interval: interval, time_period: time_period, datatype: datatype)
   end
 
-  def plus_dm(symbol, interval, time_period, datatype = 'json')
+  def plus_dm(symbol:, interval:, time_period:, datatype: 'json')
     query(function: 'PLUS_DM', symbol: symbol, interval: interval, time_period: time_period, datatype: datatype)
   end
 
-  def ppo(symbol, interval, series_type, fastperiod, slowperiod=nil, matype=nil, datatype = 'json')
+  def ppo(symbol:, interval:, series_type:, fastperiod:, slowperiod=nil:, matype=nil:, datatype: 'json')
     query(function: 'PPO', symbol: symbol, interval: interval, series_type: series_type, fastperiod: fastperiod, slowperiod: slowperiod, matype: matype, datatype: datatype)
   end
 
-  def roc(symbol, interval, time_period, series_type, datatype = 'json')
+  def roc(symbol:, interval:, time_period:, series_type:, datatype: 'json')
     query(function: 'ROC', symbol: symbol, interval: interval, time_period: time_period, series_type: series_type, datatype: datatype)
   end
 
-  def rocr(symbol, interval, time_period, series_type, datatype = 'json')
+  def rocr(symbol:, interval:, time_period:, series_type:, datatype: 'json')
     query(function: 'ROCR', symbol: symbol, interval: interval, time_period: time_period, series_type: series_type, datatype: datatype)
   end
 
-  def stoch(symbol, interval, fastkperiod=nil, slowkperiod=nil, slowdperiod=nil, slowkmatype=nil, slowdmatype=nil, datatype = 'json')
+  def stoch(symbol:, interval:, fastkperiod=nil:, slowkperiod=nil:, slowdperiod=nil:, slowkmatype=nil:, slowdmatype=nil:, datatype: 'json')
     query(function: 'STOCH', symbol: symbol, interval: interval, fastkperiod: fastkperiod, slowkperiod: slowkperiod, slowdperiod: slowdperiod, slowkmatype: slowkmatype, slowdmatype: slowdmatype, datatype: datatype)
   end
 
-  def sar(symbol, interval, acceleration, maximum, datatype = 'json')
+  def sar(symbol:, interval:, acceleration:, maximum:, datatype: 'json')
     query(function: 'SAR', symbol: symbol, interval: interval, acceleration: acceleration, maximum: maximum, datatype: datatype)
   end
 
-  def sma(symbol, interval, time_period, series_type, datatype = 'json')
+  def sma(symbol:, interval:, time_period:, series_type:, datatype: 'json')
     query(function: 'SMA', symbol: symbol, interval: interval, time_period: time_period, series_type: series_type, datatype: datatype)
   end
 
-  def stochf(symbol, interval, fastkperiod = nil, fastdperiod = nil, fastdmatype = nil, datatype = 'json')
+  def stochf(symbol:, interval:, fastkperiod: nil, fastdperiod: nil, fastdmatype: nil, datatype: 'json')
     query(function: 'STOCHF', symbol: symbol, interval: interval, fastkperiod: fastkperiod, fastdperiod: fastdperiod, fastdmatype: fastdmatype, datatype: datatype)
   end
 
-  def t3(symbol, interval, time_period, series_type, datatype = 'json')
+  def t3(symbol:, interval:, time_period:, series_type:, datatype: 'json')
     query(function: 'T3', symbol: symbol, interval: interval, time_period: time_period, series_type: series_type, datatype: datatype)
   end
 
-  def tema(symbol, interval, time_period, series_type, datatype = 'json')
+  def tema(symbol:, interval:, time_period:, series_type:, datatype: 'json')
     query(function: 'TEMA', symbol: symbol, interval: interval, time_period: time_period, series_type: series_type, datatype: datatype)
   end
 
-  def time_series_monthly_adjusted(symbol, datatype = 'json')
+  def time_series_monthly_adjusted(symbol:, datatype: 'json')
     query(function: 'TIME_SERIES_MONTHLY_ADJUSTED', symbol: symbol, datatype: datatype)
   end
 
-  def time_series_weekly_adjusted(symbol, datatype = 'json')
+  def time_series_weekly_adjusted(symbol:, datatype: 'json')
     query(function: 'TIME_SERIES_WEEKLY_ADJUSTED', symbol: symbol, datatype: datatype)
   end
 
-  def trange(symbol, interval, datatype = 'json')
+  def trange(symbol:, interval:, datatype: 'json')
     query(function: 'TRANGE', symbol: symbol, interval: interval, datatype: datatype)
   end
 
-  def trima(symbol, interval, time_period, series_type, datatype = 'json')
+  def trima(symbol:, interval:, time_period:, series_type:, datatype: 'json')
     query(function: 'TRIMA', symbol: symbol, interval: interval, time_period: time_period, series_type: series_type, datatype: datatype)
   end
 
-  def trix(symbol, interval, time_period, series_type, datatype = 'json')
+  def trix(symbol:, interval:, time_period:, series_type:, datatype: 'json')
     query(function: 'TRIX', symbol: symbol, interval: interval, time_period: time_period, series_type: series_type, datatype: datatype)
   end
 
-  def ultosc(symbol, interval, timeperiod1 = nil, timeperiod2 = nil, timeperiod3 = nil, datatype = 'json')
+  def ultosc(symbol:, interval:, timeperiod1: nil, timeperiod2: nil, timeperiod3: nil, datatype: 'json')
     query(function: 'ULTOSC', symbol: symbol, interval: interval, timeperiod1: timeperiod1, timeperiod2: timeperiod2, timeperiod3: timeperiod3, datatype: datatype)
   end
 
-  def vwap(symbol, interval, datatype = 'json')
+  def vwap(symbol:, interval:, datatype: 'json')
     query(function: 'VWAP', symbol: symbol, interval: interval, datatype: datatype)
   end
 
-  def willr(symbol, interval, time_period, datatype = 'json')
+  def willr(symbol:, interval:, time_period:, datatype: 'json')
     query(function: 'WILLR', symbol: symbol, interval: interval, time_period: time_period, datatype: datatype)
   end
 
-  def wma(symbol, interval, time_period, series_type, datatype = 'json')
+  def wma(symbol:, interval:, time_period:, series_type:, datatype: 'json')
     query(function: 'WMA', symbol: symbol, interval: interval, time_period: time_period, series_type: series_type, datatype: datatype)
   end
-
-
 end
