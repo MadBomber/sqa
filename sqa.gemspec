@@ -9,11 +9,15 @@ Gem::Specification.new do |spec|
   spec.email        = ["dvanhoozer@gmail.com"]
 
   spec.summary      = "sqa - Stock Qualitative Analysis"
-  spec.description  = "Simplistic playpen (e.g. not for serious use) for doing technical analysis of stock prices."
+  spec.description  = <<~DESC
+    Simplistic playpen (e.g. not for serious use) for doing 
+    technical analysis of stock prices.  Under Construction.
+  DESC
+
   spec.homepage     = "https://github.com/MadBomber/sqa"
   spec.license      = "MIT"
 
-  spec.required_ruby_version = ">= 2.7"
+  spec.required_ruby_version = ">= 3.2"
 
   spec.metadata["allowed_push_host"] = "https://rubygems.org"
 
@@ -27,20 +31,20 @@ Gem::Specification.new do |spec|
     `git ls-files -z`.split("\x0").reject do |f|
       (File.expand_path(f) == __FILE__) ||
         f.start_with?(*%w[bin/ test/ spec/ features/ .git .circleci appveyor Gemfile])
-    end
+    end + ['.semver']
   end
+
   spec.bindir         = "bin"
   spec.executables    = %w[sqa]
   spec.require_paths  = %w[lib]
 
   # spec.add_dependency 'alphavantage' # requires hashie v4.1; bad wrapper library
   spec.add_dependency 'api_key_manager'
-  spec.add_dependency 'dry-cli'
   spec.add_dependency 'faraday'
   spec.add_dependency 'hashie', '~>4.1.0' # Latest version is 5.0.0
   spec.add_dependency 'lite-statistics'
   spec.add_dependency 'nenv'
-  spec.add_dependency 'sem_version'
+  spec.add_dependency 'semver2'
   spec.add_dependency 'tty-table'
 
   spec.add_development_dependency 'amazing_print'

@@ -1,11 +1,9 @@
 # frozen_string_literal: true
 
-module SQA
-  VERSION = "0.0.25"
+require 'semver'
 
-  class << self
-    def version
-      @@version ||= VERSION.to_version
-    end
-  end
+module SQA
+  # .semver is located at the gem's root directory
+  version_file_path = File.join(__dir__, '..', '..')
+  VERSION = SemVer.find(version_file_path).to_s[1..]
 end
