@@ -388,7 +388,7 @@ class AlphaVantageAPI
     query(function: 'PLUS_DM', symbol: symbol, interval: interval, time_period: time_period, datatype: datatype)
   end
 
-  def ppo(symbol:, interval:, series_type:, fastperiod:, slowperiod=nil:, matype=nil:, datatype: 'json')
+  def ppo(symbol:, interval:, series_type:, fastperiod:, slowperiod: nil, matype: nil, datatype: 'json')
     query(function: 'PPO', symbol: symbol, interval: interval, series_type: series_type, fastperiod: fastperiod, slowperiod: slowperiod, matype: matype, datatype: datatype)
   end
 
@@ -400,7 +400,7 @@ class AlphaVantageAPI
     query(function: 'ROCR', symbol: symbol, interval: interval, time_period: time_period, series_type: series_type, datatype: datatype)
   end
 
-  def stoch(symbol:, interval:, fastkperiod=nil:, slowkperiod=nil:, slowdperiod=nil:, slowkmatype=nil:, slowdmatype=nil:, datatype: 'json')
+  def stoch(symbol:, interval:, fastkperiod: nil, slowkperiod: nil, slowdperiod: nil, slowkmatype: nil, slowdmatype: nil, datatype: 'json')
     query(function: 'STOCH', symbol: symbol, interval: interval, fastkperiod: fastkperiod, slowkperiod: slowkperiod, slowdperiod: slowdperiod, slowkmatype: slowkmatype, slowdmatype: slowdmatype, datatype: datatype)
   end
 

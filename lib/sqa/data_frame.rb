@@ -2,6 +2,7 @@
 # frozen_string_literal: true
 
 require 'forwardable'
+require 'csv'
 
 require_relative 'data_frame/yahoo_finance'
 require_relative 'data_frame/alpha_vantage'
@@ -271,7 +272,11 @@ class SQA::DataFrame
 
 
     def from_json_file(source, mapping: {}, transformers: {})
-      aofh = JSON.parse(source.read)
+      if source.is_a?(String)
+        aofh = JSON.parse(source)
+      else
+        aofh = JSON.parse(source.read)
+      end
 
       from_aofh(aofh, mapping: mapping, transformers: transformers)
     end

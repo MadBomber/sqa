@@ -219,62 +219,140 @@ class DataFrameTest < Minitest::Test
 
 
   def test_class_concat
-  	skip
+    hofa  = @df.to_hash
+    df1   = SQA::DataFrame.new(hofa)
+    df2   = SQA::DataFrame.new(hofa)
+
+    expected_columns = %i[ column1 column2 column3 ]
+
+    result_df = SQA::DataFrame.concat(df1, df2)
+
+    assert_equal expected_columns, result_df
+    assert_equal [1, 2, 3, 1, 2, 3], result_df['Column1'].to_a
+    assert_equal [4, 5, 6, 4, 5, 6], result_df['Column2'].to_a
+    assert_equal [7, 8, 9, 7, 8, 9], result_df['Column3'].to_a
   end
 
 
   def test_class_load
-  	skip
+    Tempfile.create(['test', '.csv']) do |f|
+      f.write("Column1,Column2\n1,2\n3,4")
+      f.rewind
+      df = SQA::DataFrame.load(source: Pathname.new(f.path))
+
+      assert_instance_of SQA::DataFrame, df
+      assert_equal [['1', '2'], ['3', '4']], df.rows
+    end
   end
 
 
   def test_class_from_aofh
-  	skip
+    aofh = [{'Column1' => 1, 'Column2' => 2}, {'Column1' => 3, 'Column2' => 4}]
+    df = SQA::DataFrame.from_aofh(aofh)
+
+    assert_instance_of SQA::DataFrame, df
+    assert_equal 2, df.nrows
+    assert_equal [1, 3], df.column1.to_a
+    assert_equal [2, 4], df.column2.to_a
   end
 
 
   def test_class_from_csv_file
-  	skip
+    Tempfile.create(['test', '.csv']) do |f|
+      f.write("Column1,Column2\n5,6\n7,8")
+      f.rewind
+      df = SQA::DataFrame.from_csv_file(f.path)
+
+      assert_instance_of SQA::DataFrame, df
+      assert_equal [['5', '6'], ['7', '8']], df.rows
+    end
   end
 
 
   def test_class_from_json_file
-  	skip
+    Tempfile.create(['test', '.json']) do |f|
+      f.write('[{"Column1": 9, "Column2": 10}, {"Column1": 11, "Column2": 12}]')
+      f.rewind
+      df = SQA::DataFrame.from_json_file(f)
+
+      assert_instance_of SQA::DataFrame, df
+      assert_equal [[9, 10], [11, 12]], df.rows.map { |row| row.map(&:to_i) }
+    end
   end
 
 
   def test_class_aofh_to_hofa
-  	skip
+    aofh    = [{'Column1' => 'A', 'Column2' => 'B'}, {'Column1' => 'C', 'Column2' => 'D'}]
+    result  = SQA::DataFrame.aofh_to_hofa(aofh)
+
+    expected  = {
+      column1: ['A', 'C'], 
+      column2: ['B', 'D']
+    }
+    
+    assert_equal expected, result
   end
 
 
   def test_class_normalize_keys
-  	skip
+    # skip "bad business logic or misunderstood requirement"
+    hofa  = {
+      'Some Column'     => [1, 2], 
+      ' AnotherColumn'  => [3, 4]}
+    normalized_hofa = SQA::DataFrame.normalize_keys(hofa)
+
+    expected_keys = [:some_column, :anothercolumn]
+    
+    assert_equal expected_keys, normalized_hofa.keys
   end
 
 
   def test_class_rename
-  	skip
+    mapping = {
+      column1: :NewName1, 
+      column2: :NewName2
+    }
+
+    hofa    = {
+      'Column1' => [1, 2], 
+      'Column2' => [3, 4]
+    }
+
+    renamed_hofa = SQA::DataFrame.rename(mapping, hofa)
+
+    assert_equal [:NewName1, :NewName2], renamed_hofa.keys
   end
 
 
   def test_class_generate_mapping
-  	skip
+    keys = ['Test Column', 'AnotherColumn']
+    mapping = SQA::DataFrame.generate_mapping(keys)
+
+    expected  = { 
+      'Test Column'   => :test_column, 
+      'AnotherColumn' => :another_column 
+    }
+
+    assert_equal(expected, mapping)
   end
 
 
   def test_class_underscore_key
-  	skip
+    # skip "bad test ?"
+    assert_equal :a_test_key, SQA::DataFrame.underscore_key("A Test Key")
+    assert_equal :another_test, SQA::DataFrame.underscore_key("AnotherTest")
   end
 
 
   def test_class_sanitize_key
-  	skip
+    # skip "bug lets the ! through"
+    assert_equal "A_Clean_Key", SQA::DataFrame.sanitize_key("A Clean Key!")
+    assert_equal "Numbers_123_Are_OK", SQA::DataFrame.sanitize_key("Numbers 123 Are OK!")
   end
 
 
   def test_class_is_date?
-  	skip
+    assert SQA::DataFrame.is_date?("2023-04-01")
+    refute SQA::DataFrame.is_date?("NotADate")
   end
-
 end

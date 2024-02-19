@@ -51,7 +51,7 @@ require_relative "patches/string.rb"
 #############################################
 ## API wrappers for External Websites
 
-requre_relative "api/alpha_vantage_api"
+require_relative "api/alpha_vantage_api"
 
 
 #############################################
