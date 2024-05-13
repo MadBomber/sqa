@@ -1,3 +1,6 @@
+This project is on hold pending a complete refactoring that will include a GPT approach to trading strategy analysis.
+
+
 # SQA - Simple Qualitative Analysis
 
 [![Badges?](https://img.shields.io/badge/Badge-We%20don't%20need%20no%20stinkin'%20badges!-red)](https://www.youtube.com/watch?v=VqomZQMZQCQ)
