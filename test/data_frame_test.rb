@@ -15,6 +15,17 @@ class DataFrameTest < Minitest::Test
   end
 
 
+  def test_data
+    debug_me{[
+      "@hofa",
+      "'======'",
+      "@df",
+      "'======'",
+      "@df.to_hash"
+    ]}
+  end
+
+
 	def test_classes_defined
 		assert defined?(SQA)
 		assert defined?(SQA::DataFrame)
@@ -37,9 +48,9 @@ class DataFrameTest < Minitest::Test
 
   def test_creation_normal_hofa_with_mapping_no_transformers
     mapping = {
-      'Column1' => :one,
-      'Column2' => :two,
-      'Column3' => :three
+      'Column1' => 'one',
+      'Column2' => 'two',
+      'Column3' => 'three'
     }
 
     df = SQA::DataFrame.new(@hofa, mapping: mapping)
@@ -113,7 +124,7 @@ class DataFrameTest < Minitest::Test
 
 
   def test_column_names
-  	columns = %i[ Column1 Column2 Column3 ]
+  	columns = %i[ column1 column2 column3 ]
     assert_equal columns, @df.vectors
     assert_equal columns, @df.keys
   end
@@ -130,7 +141,7 @@ class DataFrameTest < Minitest::Test
 
     csv_contents = CSV.read(file.path)
 
-    assert_equal ['Column1', 'Column2', 'Column3'], csv_contents.first
+    assert_equal ['column1', 'column2', 'column3'], csv_contents.first
     assert_equal ['1', '4', '7'], csv_contents[1]
     assert_equal ['3', '6', '9'], csv_contents.last
   end
@@ -187,9 +198,9 @@ class DataFrameTest < Minitest::Test
 
 	def test_rename
 		mapping = {
-			Column1: :one,
-			Column2: :two,
-			Column3: :three
+			column1: :one,
+			column2: :two,
+			column3: :three
 		}
 
 		df = @df.rename(mapping)
@@ -217,9 +228,27 @@ class DataFrameTest < Minitest::Test
 	## Class Methods Tests ##
 	#########################
 
+  def test_new
+    hofa  = {
+      'C1' => [1, 2, 3],
+      'C2' => [4, 5, 6]
+    }
+
+    expected_keys = %i[ c1 c2 ]
+
+    df = SQA::DataFrame.new(hofa)
+
+    assert_equal expected_keys, df.keys
+  end
+
 
   def test_class_concat
     hofa  = @df.to_hash
+
+    # debug_me{[
+    #   "hofa.keys"
+    # ]}
+
     df1   = SQA::DataFrame.new(hofa)
     df2   = SQA::DataFrame.new(hofa)
 
@@ -228,9 +257,9 @@ class DataFrameTest < Minitest::Test
     result_df = SQA::DataFrame.concat(df1, df2)
 
     assert_equal expected_columns, result_df
-    assert_equal [1, 2, 3, 1, 2, 3], result_df['Column1'].to_a
-    assert_equal [4, 5, 6, 4, 5, 6], result_df['Column2'].to_a
-    assert_equal [7, 8, 9, 7, 8, 9], result_df['Column3'].to_a
+    assert_equal [1, 2, 3, 1, 2, 3], result_df[:column1]
+    assert_equal [4, 5, 6, 4, 5, 6], result_df[:column2]
+    assert_equal [7, 8, 9, 7, 8, 9], result_df[:column3]
   end
 
 
@@ -301,7 +330,7 @@ class DataFrameTest < Minitest::Test
       ' AnotherColumn'  => [3, 4]}
     normalized_hofa = SQA::DataFrame.normalize_keys(hofa)
 
-    expected_keys = [:some_column, :anothercolumn]
+    expected_keys = [:some_column, :another_column]
     
     assert_equal expected_keys, normalized_hofa.keys
   end
@@ -309,8 +338,8 @@ class DataFrameTest < Minitest::Test
 
   def test_class_rename
     mapping = {
-      column1: :NewName1, 
-      column2: :NewName2
+      "Column1" => :NewName1, 
+      "Column2" => :NewName2
     }
 
     hofa    = {
@@ -346,8 +375,8 @@ class DataFrameTest < Minitest::Test
 
   def test_class_sanitize_key
     # skip "bug lets the ! through"
-    assert_equal "A_Clean_Key", SQA::DataFrame.sanitize_key("A Clean Key!")
-    assert_equal "Numbers_123_Are_OK", SQA::DataFrame.sanitize_key("Numbers 123 Are OK!")
+    assert_equal :a_clean_key,        SQA::DataFrame.sanitize_key("A Clean Key!")
+    assert_equal :numbers_123_are_ok, SQA::DataFrame.sanitize_key("Numbers 123 Are OK!")
   end
 
 

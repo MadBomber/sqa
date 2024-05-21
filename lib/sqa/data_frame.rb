@@ -71,22 +71,36 @@ class SQA::DataFrame
     hofa  = klass.normalize_keys(
               hofa,
               adapter_mapping: mapping
-            ) unless mapping.empty?
+            ) # unless mapping.empty?
+
+    # debug_me('== BEFORE =='){[
+    #   "hofa.keys"
+    # ]}
 
     @data = Data.new(hofa)
+
+
+    # debug_me('== AFTER =='){[
+    #   "@data.keys"
+    # ]}
+
   end
 
 
 
   def to_csv(path_to_file)
     CSV.open(path_to_file, 'w') do |csv|
-      csv << keys
+      csv << keys.map{|k| titlecase(k)}
       size.times do |x|
         csv << row(x)
       end
     end
   end
 
+  # TODO: fix this or add String monkey patch
+  def titlecase(a_string)
+    a_string.tr('_',' ')
+  end
 
   def to_json(path_to_file)
     NotImplemented.raise
@@ -304,7 +318,7 @@ class SQA::DataFrame
 
 
     def normalize_keys(hofa, adapter_mapping: {})
-      hofa    = rename(adapter_mapping, hofa)
+      hofa    = rename(adapter_mapping, hofa) unless adapter_mapping.empty?
       mapping = generate_mapping(hofa.keys)
 
       rename(mapping, hofa)
@@ -324,7 +338,7 @@ class SQA::DataFrame
       mapping = {}
 
       keys.each do |key|
-        mapping[key] = underscore_key(sanitize_key(key)) unless key.is_a?(Symbol)
+        mapping[key] = underscore_key(key) 
       end
 
       mapping
@@ -333,19 +347,16 @@ class SQA::DataFrame
 
     # returns a snake_case Symbol
     def underscore_key(key)
-      key.to_s.gsub(/::/, '/').
+      key.to_s.
       gsub(/([A-Z]+)([A-Z][a-z])/,'\1_\2').
       gsub(/([a-z\d])([A-Z])/,'\1_\2').
-      tr("-", "_").
+      gsub(/[^a-zA-Z0-9]/, ' ').
+      squeeze(' ').
+      strip.
+      tr(' ', '_').
       downcase.to_sym
     end
-
-
-    # removes punctuation and specal characters,
-    # replaces space with underscore.
-    def sanitize_key(key)
-      key.tr('.():/','').gsub(/^\d+.?\s/, "").tr(' ','_')
-    end
+    alias_method :sanitize_key, :underscore_key
 
 
     # returns true if key is in a date format
