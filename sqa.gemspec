@@ -39,6 +39,7 @@ Gem::Specification.new do |spec|
   spec.require_paths  = %w[lib]
 
   # spec.add_dependency 'alphavantage' # requires hashie v4.1; bad wrapper library
+  spec.add_dependency 'ai_client'
   spec.add_dependency 'api_key_manager'
   spec.add_dependency 'faraday'
   spec.add_dependency 'hashie', '~>4.1.0' # Latest version is 5.0.0
