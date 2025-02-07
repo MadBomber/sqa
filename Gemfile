@@ -2,5 +2,9 @@
 
 source "https://rubygems.org"
 
-# Specify your gem's dependencies in sqa.gemspec
 gemspec
+
+gem 'polars-df'
+gem 'toml-rb'
+gem 'csv'
+gem 'rspec'

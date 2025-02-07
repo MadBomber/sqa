@@ -1,0 +1,25 @@
+# sqa/_notes.txt
+
+Reminders about what I had been thinking about.
+
+
+--- 2023-09-08 23:22:02 -0500
+	released v0.0.10
+
+	
+	
+	
+
+--- 2024-02-28 17:02:27 -0600
+    look into the VIX - stock volativity index - aka fear index. has a 30 day forward window.
+
+  
+
+
+
+--- 2024-03-02 18:52:28 -0600
+    linera regression using polars dataframe https://thoughtbot.com/blog/linear-regression-using-dataframes-in-ruby
+
+  https://thoughtbot.com/blog/linear-regression-using-dataframes-in-ruby
+
+

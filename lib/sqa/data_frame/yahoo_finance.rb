@@ -1,12 +1,13 @@
 # lib/sqa/data_frame/yahoo_finance.rb
 # frozen_string_literal: true
 
+require 'polars'
+
 =begin
   The website financial.yahoo.com no longer supports an API.
   To get recent stock historical price updates you have
   to scrape the webpage.
 =end
-
 
 class SQA::DataFrame
   class YahooFinance
@@ -21,60 +22,50 @@ class SQA::DataFrame
                     :volume,          # 6
                   ]
 
-      # The Yahoo Finance Headers are being remapped so that
-      # the header can be used as a method name to access the
-      # vector.
-      #
-      HEADER_MAPPING = {
-        "Date"      => HEADERS[0],
-        "Open"      => HEADERS[1],
-        "High"      => HEADERS[2],
-        "Low"       => HEADERS[3],
-        "Close"     => HEADERS[4],
-        "Adj Close" => HEADERS[5],
-        "Volume"    => HEADERS[6]
-      }
+    HEADER_MAPPING = {
+      "Date"      => HEADERS[0],
+      "Open"      => HEADERS[1],
+      "High"      => HEADERS[2],
+      "Low"       => HEADERS[3],
+      "Close"     => HEADERS[4],
+      "Adj Close" => HEADERS[5],
+      "Volume"    => HEADERS[6]
+    }
 
     ################################################################
 
-
     # Scrape the Yahoo Finance website to get recent
     # historical prices for a specific ticker
-    #
-    # ticker String the security to retrieve
-    # returns a DataFrame
-    #
+    # returns a Polars DataFrame
     def self.recent(ticker)
-      response  = CONNECTION.get("/quote/#{ticker.upcase}/history")
-      doc       = Nokogiri::HTML(response.body)
-      table     = doc.css('table').first
+      response = CONNECTION.get("/quote/#{ticker.upcase}/history")
+      doc = Nokogiri::HTML(response.body)
+      table = doc.css('table').first
 
       raise "NoDataError" if table.nil?
 
-      rows      = table.css('tbody tr')
+      rows = table.css('tbody tr')
 
-      aofh = []
+      data = rows.map do |row|
+        cols = row.css('td').map { |c| c.children[0].text }
 
-      rows.each do |row|
-        cols = row.css('td').map{|c| c.children[0].text}
-
-        next unless 7 == cols.size
+        next unless cols.size == 7
         next if cols[1]&.include?("Dividend")
+        next if cols.any?(nil)
 
-        if cols.any?(nil)
-          debug_me('== ERROR =='){[
-            :cols
-          ]}
-          next
-        end
+        {
+          "Date"      => Date.parse(cols[0]).to_s,
+          "Open"      => cols[1].to_f,
+          "High"      => cols[2].to_f,
+          "Low"       => cols[3].to_f,
+          "Close"     => cols[4].to_f,
+          "Adj Close" => cols[5].to_f,
+          "Volume"    => cols[6].tr(',', '').to_i
+        }
+      end.compact
 
-        cols[0] = Date.parse(cols[0]).to_s
-        cols[6] = cols[6].tr(',','').to_i
-        (1..5).each {|x| cols[x] = cols[x].to_f}
-        aofh << HEADERS.zip(cols).to_h
-      end
-
-      aofh
+      # Utilize Polars DataFrame for the Yahoo Finance data
+      Polars::DataFrame.new(data)
     end
   end
 end
