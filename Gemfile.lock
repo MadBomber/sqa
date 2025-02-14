@@ -92,6 +92,10 @@ GEM
       dry-inflector (~> 1.0)
       dry-logic (~> 1.4)
       zeitwerk (~> 2.6)
+    eps (0.6.0)
+      lightgbm (>= 0.1.7)
+      matrix
+      nokogiri
     etcher (3.1.0)
       cogger (~> 1.0)
       core (~> 2.0)
@@ -128,6 +132,8 @@ GEM
     infusible (4.2.0)
       marameters (~> 4.1)
     json (2.7.2)
+    lightgbm (0.4.0)
+      ffi
     lite-memoize (1.1.1)
     lite-statistics (2.0.0)
       lite-memoize
@@ -138,11 +144,16 @@ GEM
     marameters (4.2.0)
       refinements (~> 13.0)
       zeitwerk (~> 2.7)
+    matrix (0.4.2)
     minitest (5.25.1)
     multipart-post (2.4.1)
     nenv (0.3.0)
     net-http (0.4.1)
       uri
+    nokogiri (1.18.2-arm64-darwin)
+      racc (~> 1.4)
+    nokogiri (1.18.2-x86_64-darwin)
+      racc (~> 1.4)
     omniai (1.8.2)
       event_stream_parser
       http
@@ -177,8 +188,17 @@ GEM
       bigdecimal
     public_suffix (6.0.1)
     racc (1.8.1)
+    raix (0.5)
+      activesupport (>= 6.0)
+      open_router (~> 0.2)
+      ruby-openai (~> 7.0)
     rake (13.2.1)
     refinements (13.1.0)
+    regent (0.3.4)
+      faraday (~> 2.12)
+      pastel (~> 0.8.0)
+      tty-spinner (~> 0.9.3)
+      zeitwerk (~> 2.7)
     rspec (3.13.0)
       rspec-core (~> 3.13.0)
       rspec-expectations (~> 3.13.0)
@@ -192,6 +212,10 @@ GEM
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.13.0)
     rspec-support (3.13.2)
+    ruby-openai (7.4.0)
+      event_stream_parser (>= 0.3.0, < 2.0.0)
+      faraday (>= 1)
+      faraday-multipart (>= 1)
     runcom (12.1.0)
       refinements (~> 13.0)
       xdg (~> 9.0)
@@ -242,7 +266,10 @@ GEM
       refinements (~> 13.0)
       zeitwerk (~> 2.7)
     tty-color (0.6.0)
+    tty-cursor (0.7.1)
     tty-screen (0.8.2)
+    tty-spinner (0.9.3)
+      tty-cursor (~> 0.7)
     tty-table (0.12.0)
       pastel (~> 0.8)
       strings (~> 0.2.0)
@@ -263,13 +290,17 @@ PLATFORMS
   x86_64-darwin-17
 
 DEPENDENCIES
+  ai_client
   amazing_print
   bundler
   csv
   debug_me
+  eps
   minitest
   polars-df
+  raix
   rake
+  regent
   rspec
   simplecov
   sqa!
