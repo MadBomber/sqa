@@ -10,7 +10,7 @@ Gem::Specification.new do |spec|
 
   spec.summary      = "sqa - Stock Qualitative Analysis"
   spec.description  = <<~DESC
-    Simplistic playpen (e.g. not for serious use) for doing 
+    Simplistic playpen (e.g. not for serious use) for doing
     technical analysis of stock prices.  Under Construction.
   DESC
 
@@ -38,14 +38,15 @@ Gem::Specification.new do |spec|
   spec.executables    = %w[sqa]
   spec.require_paths  = %w[lib]
 
-  # spec.add_dependency 'alphavantage' # requires hashie v4.1; bad wrapper library
-  spec.add_dependency 'ai_client'
+  spec.add_dependency 'alphavantage' # requires hashie v4.1; bad wrapper library
   spec.add_dependency 'api_key_manager'
   spec.add_dependency 'faraday'
-  spec.add_dependency 'hashie', '~>4.1.0' # Latest version is 5.0.0
+  spec.add_dependency 'hashie'
   spec.add_dependency 'lite-statistics'
   spec.add_dependency 'nenv'
-  spec.add_dependency 'semver2'
+  spec.add_dependency 'ruby_llm'
+  spec.add_dependency 'ruby_llm-mcp'
+  spec.add_dependency 'shared_tools'
   spec.add_dependency 'tty-table'
 
   spec.add_development_dependency 'amazing_print'
