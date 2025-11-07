@@ -1,4 +1,6 @@
-This project is on hold pending a complete refactoring that will include a GPT approach to trading strategy analysis.  Its been about a year since I touched this project.  In that time I created the [aia](https://github.com/MadBomber/aia) gem for accessing generative AI from the command line.  I also wrote the [ai_client](https://github.com/MadBomber/ai_client) gem to embed within a project for accessing generative AI technology.  I will be picking this project back up soon.
+TODO: replace semver with versionaire
+
+> This project is on hold pending a complete refactoring that will include a GPT approach to trading strategy analysis.  Its been about a year since I touched this project.  In that time I created the [aia](https://github.com/MadBomber/aia) gem for accessing generative AI from the command line.  I also wrote the [ai_client](https://github.com/MadBomber/ai_client) gem to embed within a project for accessing generative AI technology.  I will be picking this project back up soon.
 
 
 # SQA - Simple Qualitative Analysis
