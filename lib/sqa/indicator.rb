@@ -1,11 +1,8 @@
 # lib/sqa/indicator.rb
+# frozen_string_literal: true
 
-class SQA::Indicator
-end
+require 'sqa/tai'
 
-# setup a shortcut for the namespace
-SQAI = SQA::Indicator
-
-Dir[__dir__ + "/indicator/*.rb"].each do |file|
-  load file
-end
+# Use SQA::TAI directly for all technical analysis indicators
+# SQAI is a shortcut alias for SQA::TAI
+SQAI = SQA::TAI
