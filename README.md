@@ -1,5 +1,8 @@
 TODO: replace semver with versionaire
 
+> This project is on hold pending a complete refactoring that will include a GPT approach to trading strategy analysis.  Its been about a year since I touched this project.  In that time I created the [aia](https://github.com/MadBomber/aia) gem for accessing generative AI from the command line.  I also wrote the [ai_client](https://github.com/MadBomber/ai_client) gem to embed within a project for accessing generative AI technology.  I will be picking this project back up soon.
+
+
 # SQA - Simple Qualitative Analysis
 
 [![Badges?](https://img.shields.io/badge/Badge-We%20don't%20need%20no%20stinkin'%20badges!-red)](https://www.youtube.com/watch?v=VqomZQMZQCQ)
