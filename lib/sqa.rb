@@ -30,7 +30,6 @@ $DEBUG_ME = true
 #############################################
 ## Additional Libraries
 
-require 'api_key_manager'
 require 'amazing_print'
 require 'faraday'
 require 'hashie'

@@ -35,7 +35,7 @@ Gem::Specification.new do |spec|
   end
 
   spec.bindir         = "bin"
-  spec.executables    = %w[sqa]
+  spec.executables    = %w[sqa-console]
   spec.require_paths  = %w[lib]
 
   spec.add_dependency 'alphavantage' # requires hashie v4.1; bad wrapper library

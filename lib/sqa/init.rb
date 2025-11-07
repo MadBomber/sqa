@@ -2,13 +2,8 @@
 
 module SQA
 	class << self
-		@@config 	= nil
-		@@av 			= ApiKeyManager::RateLimited.new(
-									api_keys: 		ENV['AV_API_KEYS'],
-									delay: 				true,
-									rate_count: 	ENV['AV_RATE_CNT'] ||  5,
-									rate_period: 	ENV['AV_RATE_PER'] || 60
-								)
+		@@config = nil
+		@@av_api_key = ENV['AV_API_KEY'] || ENV['ALPHAVANTAGE_API_KEY']
 
 		# Initializes the SQA modules
 		# returns the configuration
@@ -35,7 +30,19 @@ module SQA
 			config
 		end
 
-		def av() 								= @@av
+		def av_api_key
+			@@av_api_key || raise('Alpha Vantage API key not set. Set AV_API_KEY or ALPHAVANTAGE_API_KEY environment variable.')
+		end
+
+		# Legacy accessor for backward compatibility
+		def av
+			self
+		end
+
+		# For compatibility with old SQA.av.key usage
+		def key
+			av_api_key
+		end
 
 		def debug?() 						= @@config.debug?
 		def verbose?() 					= @@config.verbose?
