@@ -8,7 +8,7 @@ Gem::Specification.new do |spec|
   spec.authors      = ["Dewayne VanHoozer"]
   spec.email        = ["dvanhoozer@gmail.com"]
 
-  spec.summary      = "sqa - Stock Qualitative Analysis"
+  spec.summary      = "sqa - Simple Qualitative Analysis"
   spec.description  = <<~DESC
     Simplistic playpen (e.g. not for serious use) for doing
     technical analysis of stock prices.  Under Construction.
@@ -39,15 +39,22 @@ Gem::Specification.new do |spec|
   spec.require_paths  = %w[lib]
 
   spec.add_dependency 'alphavantage' # requires hashie v4.1; bad wrapper library
-  spec.add_dependency 'api_key_manager'
   spec.add_dependency 'faraday'
   spec.add_dependency 'hashie'
+  spec.add_dependency 'kbs'
   spec.add_dependency 'lite-statistics'
   spec.add_dependency 'nenv'
   spec.add_dependency 'ruby_llm'
   spec.add_dependency 'ruby_llm-mcp'
   spec.add_dependency 'shared_tools'
+  spec.add_dependency 'sqa-tai'
   spec.add_dependency 'tty-table'
+  spec.add_dependency 'eps'
+  spec.add_dependency 'polars-df'
+  spec.add_dependency 'toml-rb'
+  spec.add_dependency 'regent'
+
+
 
   spec.add_development_dependency 'amazing_print'
   spec.add_development_dependency 'bundler'
