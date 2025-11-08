@@ -630,7 +630,7 @@ module SQA
           on indicator, { state: state }
         end
 
-        send(:then) do
+        perform do
           assert(:signal, {
             action: :buy,
             confidence: :high,

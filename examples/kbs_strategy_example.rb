@@ -76,7 +76,7 @@ custom_strategy.add_rule :aggressive_buy do
   on :rsi, { level: :oversold }
   on :stochastic, { zone: :oversold }
   on :bollinger, { position: :below }
-  send(:then) do
+  perform do
     assert(:signal, {
       action: :buy,
       confidence: :high,
@@ -89,7 +89,7 @@ end
 custom_strategy.add_rule :conservative_sell do
   on :rsi, { level: :overbought }
   on :trend, { short_term: :down }
-  send(:then) do
+  perform do
     assert(:signal, {
       action: :sell,
       confidence: :medium,
@@ -102,7 +102,7 @@ end
 custom_strategy.add_rule :volume_breakout do
   on :trend, { short_term: :up, strength: :strong }
   on :volume, { level: :high }
-  send(:then) do
+  perform do
     assert(:signal, {
       action: :buy,
       confidence: :high,
@@ -168,7 +168,7 @@ interactive_strategy.add_rule :golden_opportunity do
   without :rsi, { level: :overbought }
 
   # Action
-  send(:then) do
+  perform do
     assert(:signal, {
       action: :buy,
       confidence: :high,
@@ -186,7 +186,7 @@ interactive_strategy.add_rule :disaster_warning do
   on :macd, { crossover: :bearish }
   on :trend, { short_term: :down }
 
-  send(:then) do
+  perform do
     assert(:signal, {
       action: :sell,
       confidence: :high,
