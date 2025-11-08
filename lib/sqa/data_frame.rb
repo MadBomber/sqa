@@ -84,6 +84,38 @@ class SQA::DataFrame
     @data.width
   end
 
+  # FPL Analysis - Calculate Future Period Loss/Profit
+  #
+  # @param column [String, Symbol] Column name containing prices (default: "adj_close_price")
+  # @param fpop [Integer] Future Period of Performance (days to look ahead)
+  # @return [Array<Array<Float, Float>>] Array of [min_delta, max_delta] pairs
+  #
+  # @example
+  #   stock = SQA::Stock.new(ticker: 'AAPL')
+  #   fpl_data = stock.df.fpl(fpop: 10)
+  #
+  def fpl(column: "adj_close_price", fpop: 14)
+    prices = @data[column.to_s].to_a
+    SQA::FPOP.fpl(prices, fpop: fpop)
+  end
+
+  # FPL Analysis with risk metrics and classification
+  #
+  # @param column [String, Symbol] Column name containing prices (default: "adj_close_price")
+  # @param fpop [Integer] Future Period of Performance
+  # @return [Array<Hash>] Array of analysis hashes
+  #
+  # @example
+  #   analysis = stock.df.fpl_analysis(fpop: 10)
+  #   analysis.first[:direction]  # => :UP, :DOWN, :UNCERTAIN, or :FLAT
+  #   analysis.first[:magnitude]  # => Average expected movement percentage
+  #   analysis.first[:risk]       # => Volatility range
+  #
+  def fpl_analysis(column: "adj_close_price", fpop: 14)
+    prices = @data[column.to_s].to_a
+    SQA::FPOP.fpl_analysis(prices, fpop: fpop)
+  end
+
   def self.is_date?(value)
     value.is_a?(String) && !/\d{4}-\d{2}-\d{2}/.match(value).nil?
   end
