@@ -62,4 +62,8 @@ require_relative 'strategy/mr'
 require_relative 'strategy/random'
 require_relative 'strategy/rsi'
 require_relative 'strategy/sma'
+require_relative 'strategy/bollinger_bands'
+require_relative 'strategy/macd'
+require_relative 'strategy/stochastic'
+require_relative 'strategy/volume_breakout'
 
