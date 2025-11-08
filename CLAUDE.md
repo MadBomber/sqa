@@ -61,6 +61,11 @@ sqa-console        # Launch IRB with SQA library loaded
 - **SQA::MarketRegime**: Bull/bear/sideways market detection with volatility analysis (176 lines)
 - **SQA::SeasonalAnalyzer**: Calendar-dependent pattern discovery (monthly/quarterly) (185 lines)
 - **SQA::SectorAnalyzer**: Cross-stock analysis with KBS blackboards per sector (242 lines)
+- **SQA::RiskManager**: Comprehensive risk management with VaR, CVaR, position sizing (566 lines)
+- **SQA::PortfolioOptimizer**: Multi-objective portfolio optimization and rebalancing (389 lines)
+- **SQA::Ensemble**: Strategy combination with voting and meta-learning (358 lines)
+- **SQA::MultiTimeframe**: Multi-timeframe analysis and trend alignment (398 lines)
+- **SQA::PatternMatcher**: Pattern similarity search with forecasting (567 lines)
 
 ### Data Flow
 
@@ -136,6 +141,41 @@ sqa-console        # Launch IRB with SQA library loaded
 3. `PatternContext.valid_for?(date, regime, sector)` runtime validation
 4. `walk_forward_validate()` prevents overfitting with out-of-sample testing
 5. Patterns know when they should and shouldn't be used
+
+**Risk Management:**
+1. `SQA::RiskManager.var(returns, confidence: 0.95)` calculates Value at Risk
+2. `SQA::RiskManager.cvar(returns)` for Conditional VaR (Expected Shortfall)
+3. Position sizing: `kelly_criterion()`, `fixed_fractional()`, `percent_volatility()`
+4. Risk metrics: `sharpe_ratio()`, `sortino_ratio()`, `calmar_ratio()`
+5. `max_drawdown()` and `monte_carlo_simulation()` for risk assessment
+
+**Portfolio Optimization:**
+1. `SQA::PortfolioOptimizer.maximum_sharpe(returns_matrix)` finds optimal weights
+2. `minimum_variance()` and `risk_parity()` for conservative allocations
+3. `efficient_frontier()` generates risk/return curve
+4. `multi_objective()` optimizes multiple goals simultaneously
+5. `rebalance()` calculates trades needed to reach target allocation
+
+**Ensemble Strategies:**
+1. `SQA::Ensemble.new(strategies: [...], voting_method: :majority)` combines strategies
+2. Voting methods: `:majority`, `:weighted`, `:unanimous`, `:confidence`
+3. `update_weight()` adjusts based on performance
+4. `rotate()` selects best strategy for current market conditions
+5. `backtest_comparison()` evaluates ensemble vs individuals
+
+**Multi-Timeframe Analysis:**
+1. `SQA::MultiTimeframe.new(stock: stock)` converts daily → weekly → monthly
+2. `trend_alignment()` checks if all timeframes agree
+3. `signal()` combines higher timeframe trend with lower timeframe timing
+4. `support_resistance()` finds levels that appear across multiple timeframes
+5. `detect_divergence()` identifies price/indicator disagreement
+
+**Pattern Similarity Search:**
+1. `SQA::PatternMatcher.find_similar(lookback: 10)` finds historical matches
+2. Methods: `:euclidean`, `:dtw` (Dynamic Time Warping), `:correlation`
+3. `forecast()` predicts future moves based on similar past patterns
+4. `detect_chart_pattern()` finds double tops/bottoms, head & shoulders, triangles
+5. `cluster_patterns()` groups similar patterns with k-means
 
 ### Key Design Patterns
 - **Plugin Architecture**: Strategies are pluggable modules
@@ -259,12 +299,17 @@ lib/
     │   ├── alpha_vantage.rb        # Alpha Vantage data adapter
     │   └── yahoo_finance.rb        # Yahoo Finance scraper
     ├── errors.rb                   # Error classes
+    ├── ensemble.rb                 # ✨ NEW: Strategy combination and voting (358 lines)
     ├── fpop.rb                     # ✨ NEW: Future Period Loss/Profit analysis (243 lines)
     ├── gp.rb                       # ✨ NEW: Genetic programming (259 lines, COMPLETE)
     ├── indicator.rb                # Delegates to sqa-tai gem
     ├── init.rb                     # Module initialization
     ├── market_regime.rb            # ✨ NEW: Market regime detection (176 lines)
+    ├── multi_timeframe.rb          # ✨ NEW: Multi-timeframe analysis (398 lines)
+    ├── pattern_matcher.rb          # ✨ NEW: Pattern similarity search (567 lines)
     ├── portfolio.rb                # ✨ NEW: Portfolio management (265 lines, COMPLETE)
+    ├── portfolio_optimizer.rb      # ✨ NEW: Portfolio optimization (389 lines)
+    ├── risk_manager.rb             # ✨ NEW: Risk management (566 lines)
     ├── seasonal_analyzer.rb        # ✨ NEW: Seasonal pattern discovery (185 lines)
     ├── sector_analyzer.rb          # ✨ NEW: Sector analysis with KBS (242 lines)
     ├── stock.rb                    # Stock class with data management
@@ -290,6 +335,7 @@ lib/
 
 examples/
 ├── README.md                       # ✨ NEW: Comprehensive examples guide
+├── advanced_features_example.rb    # ✨ NEW: All advanced features demo (396 lines)
 ├── fpop_analysis_example.rb        # ✨ NEW: FPL analysis utilities (191 lines)
 ├── genetic_programming_example.rb  # ✨ NEW: GP parameter evolution
 ├── kbs_strategy_example.rb         # ✨ NEW: RETE rule-based trading
@@ -299,12 +345,17 @@ examples/
 
 test/
 ├── backtest_test.rb                # ✨ NEW: Backtest tests
+├── ensemble_test.rb                # ✨ NEW: Ensemble methods tests (109 lines, 12 tests)
 ├── fpop_test.rb                    # ✨ NEW: FPL analysis tests (154 lines)
 ├── gp_test.rb                      # ✨ NEW: Genetic programming tests
 ├── market_regime_test.rb           # ✨ NEW: Market regime tests (165 lines)
+├── multi_timeframe_test.rb         # ✨ NEW: Multi-timeframe tests (77 lines, 7 tests)
 ├── pattern_context_test.rb         # ✨ NEW: Pattern context tests (177 lines)
 ├── pattern_context_integration_test.rb  # ✨ NEW: Integration tests (342 lines)
+├── pattern_matcher_test.rb         # ✨ NEW: Pattern matching tests (155 lines, 15 tests)
 ├── portfolio_test.rb               # ✨ NEW: Portfolio tests
+├── portfolio_optimizer_test.rb     # ✨ NEW: Portfolio optimization tests (122 lines, 10 tests)
+├── risk_manager_test.rb            # ✨ NEW: Risk management tests (183 lines, 22 tests)
 ├── seasonal_analyzer_test.rb       # ✨ NEW: Seasonal analysis tests (203 lines)
 ├── sector_analyzer_test.rb         # ✨ NEW: Sector analysis tests (162 lines)
 ├── stream_test.rb                  # ✨ NEW: Stream processor tests
@@ -316,10 +367,14 @@ test/
 
 **Line Counts:**
 - Core: ~2,000 lines (DataFrame, Stock, Strategy framework)
-- Advanced: ~3,150 lines (Portfolio, Backtest, GP, KBS, Stream, Generator, FPOP, Pattern Context)
-- Tests: ~2,000 lines (including Pattern Context integration tests)
-- Examples: ~1,850 lines (including FPL and Pattern Context examples)
-- Total: ~9,000 lines
+- Advanced Features: ~5,428 lines (13 advanced modules)
+  * Pattern Context System: 1,089 lines (FPOP, MarketRegime, SeasonalAnalyzer, SectorAnalyzer)
+  * Trading Infrastructure: 867 lines (Portfolio, Backtest, Stream)
+  * Intelligence: 1,403 lines (GP, KBS, StrategyGenerator)
+  * New Advanced Features: 2,278 lines (RiskManager, PortfolioOptimizer, Ensemble, MultiTimeframe, PatternMatcher)
+- Tests: ~2,650 lines (17 test files, 132+ tests)
+- Examples: ~2,250 lines (8 comprehensive examples)
+- Total: ~12,328 lines
 
 ## Common Gotchas
 
@@ -462,6 +517,100 @@ valid = pattern.context.valid_for?(
   regime: :bull,
   sector: :technology
 )
+```
+
+### Risk Management
+```ruby
+# Value at Risk
+returns = prices.each_cons(2).map { |a, b| (b - a) / a }
+var_95 = SQA::RiskManager.var(returns, confidence: 0.95, method: :historical)
+cvar_95 = SQA::RiskManager.cvar(returns, confidence: 0.95)
+
+# Position sizing
+position = SQA::RiskManager.kelly_criterion(
+  win_rate: 0.60,
+  avg_win: 0.10,
+  avg_loss: 0.05,
+  capital: 10_000
+)
+
+# Risk metrics
+sharpe = SQA::RiskManager.sharpe_ratio(returns)
+sortino = SQA::RiskManager.sortino_ratio(returns)
+dd = SQA::RiskManager.max_drawdown(prices)
+```
+
+### Portfolio Optimization
+```ruby
+# Multiple stocks returns
+returns_matrix = stocks.map do |stock|
+  stock.df["adj_close_price"].to_a.each_cons(2).map { |a, b| (b - a) / a }
+end
+
+# Maximum Sharpe
+max_sharpe = SQA::PortfolioOptimizer.maximum_sharpe(returns_matrix)
+# => { weights: [0.4, 0.3, 0.3], sharpe: 1.5, return: 0.12, volatility: 0.15 }
+
+# Minimum variance
+min_var = SQA::PortfolioOptimizer.minimum_variance(returns_matrix)
+
+# Multi-objective
+multi = SQA::PortfolioOptimizer.multi_objective(
+  returns_matrix,
+  objectives: { maximize_return: 0.4, minimize_volatility: 0.3, minimize_drawdown: 0.3 }
+)
+```
+
+### Ensemble Strategies
+```ruby
+# Create ensemble
+ensemble = SQA::Ensemble.new(
+  strategies: [SQA::Strategy::RSI, SQA::Strategy::MACD],
+  voting_method: :majority
+)
+
+# Get ensemble signal
+signal = ensemble.signal(vector)  # => :buy, :sell, or :hold
+
+# Rotate based on market
+selected = ensemble.rotate(stock)
+```
+
+### Multi-Timeframe Analysis
+```ruby
+# Create analyzer
+mta = SQA::MultiTimeframe.new(stock: stock)
+
+# Check trend alignment
+alignment = mta.trend_alignment
+# => { daily: :up, weekly: :up, monthly: :up, aligned: true, direction: :bullish }
+
+# Multi-timeframe signal
+signal = mta.signal(
+  strategy_class: SQA::Strategy::RSI,
+  higher_timeframe: :weekly,
+  lower_timeframe: :daily
+)
+
+# Find strong support/resistance
+levels = mta.support_resistance(tolerance: 0.02)
+```
+
+### Pattern Similarity Search
+```ruby
+# Create matcher
+matcher = SQA::PatternMatcher.new(stock: stock)
+
+# Find similar patterns
+similar = matcher.find_similar(lookback: 10, num_matches: 5, method: :euclidean)
+# => [{ distance: 0.05, future_return: 0.12, pattern: [...] }, ...]
+
+# Forecast based on similar patterns
+forecast = matcher.forecast(lookback: 10, forecast_periods: 5)
+# => { forecast_price: 155.0, forecast_return: 0.03, confidence_interval_95: [150, 160] }
+
+# Detect chart patterns
+patterns = matcher.detect_chart_pattern(:double_top)
 ```
 
 ## Quick Reference
