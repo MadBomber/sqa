@@ -37,9 +37,10 @@ module SQA
     # Represents a profitable trade opportunity discovered in historical data
     class ProfitablePoint
       attr_accessor :entry_index, :entry_price, :exit_index, :exit_price,
-                    :gain_percent, :holding_days, :indicators
+                    :gain_percent, :holding_days, :indicators,
+                    :fpl_min_delta, :fpl_max_delta, :fpl_risk, :fpl_direction, :fpl_magnitude
 
-      def initialize(entry_index:, entry_price:, exit_index:, exit_price:)
+      def initialize(entry_index:, entry_price:, exit_index:, exit_price:, fpl_data: nil)
         @entry_index = entry_index
         @entry_price = entry_price
         @exit_index = exit_index
@@ -47,10 +48,20 @@ module SQA
         @gain_percent = ((exit_price - entry_price) / entry_price * 100.0)
         @holding_days = exit_index - entry_index
         @indicators = {}
+
+        # FPL quality metrics
+        if fpl_data
+          @fpl_min_delta = fpl_data[:min_delta]
+          @fpl_max_delta = fpl_data[:max_delta]
+          @fpl_risk = fpl_data[:risk]
+          @fpl_direction = fpl_data[:direction]
+          @fpl_magnitude = fpl_data[:magnitude]
+        end
       end
 
       def to_s
-        "ProfitablePoint(gain=#{gain_percent.round(2)}%, days=#{holding_days}, entry=#{entry_index})"
+        fpl_info = fpl_direction ? " dir=#{fpl_direction} risk=#{fpl_risk.round(2)}%" : ""
+        "ProfitablePoint(gain=#{gain_percent.round(2)}%, days=#{holding_days}, entry=#{entry_index}#{fpl_info})"
       end
     end
 
@@ -74,14 +85,17 @@ module SQA
     end
 
     attr_reader :stock, :profitable_points, :patterns, :min_gain_percent,
-                :fpop, :min_loss_percent, :indicators_config, :inflection_window
+                :fpop, :min_loss_percent, :indicators_config, :inflection_window,
+                :max_fpl_risk, :required_fpl_directions
 
-    def initialize(stock:, min_gain_percent: 10.0, min_loss_percent: nil, fpop: 10, inflection_window: 3)
+    def initialize(stock:, min_gain_percent: 10.0, min_loss_percent: nil, fpop: 10, inflection_window: 3, max_fpl_risk: nil, required_fpl_directions: nil)
       @stock = stock
       @min_gain_percent = min_gain_percent
       @min_loss_percent = min_loss_percent || -min_gain_percent  # Symmetric loss threshold
       @fpop = fpop  # Future Period of Performance
       @inflection_window = inflection_window  # Window for detecting local min/max
+      @max_fpl_risk = max_fpl_risk  # Optional: Filter by max acceptable risk (volatility)
+      @required_fpl_directions = required_fpl_directions  # Optional: [:UP, :DOWN, :UNCERTAIN, :FLAT]
       @profitable_points = []
       @patterns = []
 
@@ -201,17 +215,37 @@ module SQA
 
       prices = @stock.df["adj_close_price"].to_a
 
-      # Step 1a: Detect inflection points (local minima and maxima)
+      # Step 1a: Calculate FPL analysis for all points
+      fpl_analysis = SQA::FPOP.fpl_analysis(prices, fpop: @fpop)
+
+      # Step 1b: Detect inflection points (local minima and maxima)
       inflection_points = detect_inflection_points(prices)
       puts "  Found #{inflection_points.size} inflection points"
 
-      # Step 1b: Check which inflection points lead to profitable moves
+      # Step 1c: Check which inflection points lead to profitable moves
       profitable_count = 0
+      filtered_by_risk = 0
+      filtered_by_direction = 0
+
       inflection_points.each do |inflection_idx|
         # Skip if not enough future data
         next if inflection_idx + @fpop >= prices.size
+        next if inflection_idx >= fpl_analysis.size
 
         entry_price = prices[inflection_idx]
+        fpl_data = fpl_analysis[inflection_idx]
+
+        # Optional: Filter by FPL risk (volatility)
+        if @max_fpl_risk && fpl_data[:risk] > @max_fpl_risk
+          filtered_by_risk += 1
+          next
+        end
+
+        # Optional: Filter by FPL direction
+        if @required_fpl_directions && !@required_fpl_directions.include?(fpl_data[:direction])
+          filtered_by_direction += 1
+          next
+        end
 
         # Calculate price change over fpop period
         future_prices = prices[(inflection_idx + 1)..(inflection_idx + @fpop)]
@@ -230,7 +264,8 @@ module SQA
             entry_index: inflection_idx,
             entry_price: entry_price,
             exit_index: exit_idx,
-            exit_price: max_future_price
+            exit_price: max_future_price,
+            fpl_data: fpl_data
           )
           profitable_count += 1
         # Check if loss exceeds threshold (sell opportunity)
@@ -241,16 +276,29 @@ module SQA
             entry_index: inflection_idx,
             entry_price: entry_price,
             exit_index: exit_idx,
-            exit_price: min_future_price
+            exit_price: min_future_price,
+            fpl_data: fpl_data
           )
           profitable_count += 1
         end
       end
 
       puts "  Inflection points analyzed: #{inflection_points.size}"
+      puts "  Filtered by risk: #{filtered_by_risk}" if @max_fpl_risk
+      puts "  Filtered by direction: #{filtered_by_direction}" if @required_fpl_directions
       puts "  Profitable opportunities found: #{@profitable_points.size}"
       if inflection_points.size > 0
         puts "  Success rate: #{(@profitable_points.size.to_f / inflection_points.size * 100).round(2)}%"
+      end
+
+      # Print FPL quality stats
+      if @profitable_points.any? && @profitable_points.first.fpl_direction
+        avg_risk = @profitable_points.map(&:fpl_risk).compact.sum / @profitable_points.size
+        avg_magnitude = @profitable_points.map(&:fpl_magnitude).compact.sum / @profitable_points.size
+        directions = @profitable_points.map(&:fpl_direction).compact.tally
+        puts "  Average FPL risk: #{avg_risk.round(2)}%"
+        puts "  Average FPL magnitude: #{avg_magnitude.round(2)}%"
+        puts "  Direction distribution: #{directions}"
       end
       puts
     end

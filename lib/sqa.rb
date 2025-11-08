@@ -64,6 +64,7 @@ require_relative 'sqa/init.rb'
 require_relative "sqa/config"
 require_relative "sqa/data_frame"
 require_relative "sqa/indicator"
+require_relative "sqa/fpop"
 require_relative "sqa/portfolio"
 require_relative "sqa/backtest"
 require_relative "sqa/strategy"
