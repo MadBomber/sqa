@@ -66,4 +66,5 @@ require_relative 'strategy/bollinger_bands'
 require_relative 'strategy/macd'
 require_relative 'strategy/stochastic'
 require_relative 'strategy/volume_breakout'
+require_relative 'strategy/kbs_strategy'
 

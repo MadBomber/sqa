@@ -46,18 +46,57 @@ sqa-console        # Launch IRB with SQA library loaded
 - **SQA::Stock**: Primary domain object representing a stock with price history and metadata
 - **SQA::DataFrame**: High-performance wrapper around Polars for time series data manipulation
 - **SQAI / SQA::TAI**: Access to 150+ technical indicators from `sqa-tai` gem (TA-Lib wrapper)
-- **SQA::Strategy**: Trading strategy framework with built-in strategies
-- **SQA::Portfolio**: Portfolio management (minimal implementation)
+- **SQA::Strategy**: Trading strategy framework with 12+ built-in strategies
+- **SQA::Portfolio**: Position and trade tracking with P&L calculations (265 lines)
+- **SQA::Backtest**: Strategy simulation with comprehensive performance metrics (345 lines)
 - **SQA::Ticker**: Stock symbol validation and lookup
 - **SQA::Config**: Configuration management with YAML/TOML support
 
+### Advanced Module Structure
+- **SQA::StrategyGenerator**: Reverse-engineer profitable trades to discover patterns (690 lines)
+- **SQA::GeneticProgram**: Evolutionary algorithm for strategy parameter optimization (259 lines)
+- **SQA::Strategy::KBS**: RETE-based forward-chaining inference engine (454 lines)
+- **SQA::Stream**: Real-time price stream processor with callbacks (343 lines)
+
 ### Data Flow
+
+**Basic Flow:**
 1. Create `SQA::Stock` with ticker symbol
 2. Stock fetches data from Alpha Vantage or Yahoo Finance
 3. Data stored in Polars-based `SQA::DataFrame`
 4. Apply technical indicators via `SQAI` / `SQA::TAI` (from sqa-tai gem)
 5. Execute trading strategies to generate buy/sell/hold signals
 6. Analyze results with statistical functions
+
+**Advanced Workflows:**
+
+**Backtesting:**
+1. Load historical data via `SQA::Stock`
+2. Create `SQA::Backtest` with stock, strategy, and capital
+3. Backtest simulates trades using `SQA::Portfolio`
+4. Returns `Results` with metrics: Sharpe ratio, max drawdown, win rate, etc.
+
+**Pattern Discovery:**
+1. `SQA::StrategyGenerator` scans historical data for profitable points
+2. Identifies indicator states at each profitable entry
+3. Mines patterns from indicator combinations
+4. Generates executable strategies from patterns
+5. Strategies can be backtested or used live
+
+**Parameter Optimization:**
+1. `SQA::GeneticProgram` defines parameter space (genes)
+2. Creates random population of strategies
+3. Evaluates fitness via backtesting
+4. Evolves through selection, crossover, mutation
+5. Returns best individual with optimal parameters
+
+**Real-Time Trading:**
+1. `SQA::Stream` receives live price updates
+2. Maintains rolling window of recent data
+3. Calculates indicators on-the-fly (with caching)
+4. Executes multiple strategies in parallel
+5. Aggregates signals and fires callbacks
+6. Callbacks can execute trades, send alerts, log data
 
 ### Key Design Patterns
 - **Plugin Architecture**: Strategies are pluggable modules
@@ -158,6 +197,13 @@ end
 - Maintain backward compatibility with existing data file formats
 - API keys from environment variables only (no api_key_manager)
 
+### Testing Guidelines
+- All new features should have corresponding tests in `/test/`
+- Integration tests require `RUN_INTEGRATION_TESTS=1` environment variable
+- Use `skip` for tests requiring network access or long runtimes
+- Portfolio, Backtest, Stream have comprehensive test coverage
+- GP and StrategyGenerator tests available but skipped by default (long running)
+
 ## File Structure
 
 ```
@@ -167,30 +213,62 @@ lib/
 ├── patches/
 │   └── string.rb                   # String helpers (camelize, constantize, underscore)
 └── sqa/
+    ├── backtest.rb                 # ✨ NEW: Backtesting framework (345 lines)
     ├── config.rb                   # Configuration management
     ├── data_frame.rb               # Polars DataFrame wrapper
     ├── data_frame/
     │   ├── alpha_vantage.rb        # Alpha Vantage data adapter
     │   └── yahoo_finance.rb        # Yahoo Finance scraper
     ├── errors.rb                   # Error classes
-    ├── gp.rb                       # Genetic programming (experimental)
+    ├── gp.rb                       # ✨ NEW: Genetic programming (259 lines, COMPLETE)
     ├── indicator.rb                # Delegates to sqa-tai gem
     ├── init.rb                     # Module initialization
-    ├── portfolio.rb                # Portfolio management (minimal)
+    ├── portfolio.rb                # ✨ NEW: Portfolio management (265 lines, COMPLETE)
     ├── stock.rb                    # Stock class with data management
     ├── strategy.rb                 # Strategy framework
     ├── strategy/
+    │   ├── bollinger_bands.rb      # ✨ NEW: Bollinger Bands strategy
     │   ├── common.rb               # Shared strategy utilities
     │   ├── consensus.rb            # Consensus from multiple strategies
     │   ├── ema.rb                  # EMA-based strategy
+    │   ├── kbs_strategy.rb         # ✨ NEW: RETE-based KBS (454 lines)
+    │   ├── macd.rb                 # ✨ NEW: MACD crossover strategy
     │   ├── mp.rb                   # Market Profile strategy
     │   ├── mr.rb                   # Mean Reversion strategy
     │   ├── random.rb               # Random signals (testing)
     │   ├── rsi.rb                  # RSI-based strategy
-    │   └── sma.rb                  # SMA-based strategy
+    │   ├── sma.rb                  # SMA-based strategy
+    │   ├── stochastic.rb           # ✨ NEW: Stochastic oscillator strategy
+    │   └── volume_breakout.rb      # ✨ NEW: Volume breakout strategy
+    ├── stream.rb                   # ✨ NEW: Real-time price streaming (343 lines)
+    ├── strategy_generator.rb       # ✨ NEW: Pattern discovery (690 lines)
     ├── ticker.rb                   # Ticker validation
     └── version.rb                  # Version constant
+
+examples/
+├── README.md                       # ✨ NEW: Comprehensive examples guide
+├── genetic_programming_example.rb  # ✨ NEW: GP parameter evolution
+├── kbs_strategy_example.rb         # ✨ NEW: RETE rule-based trading
+├── realtime_stream_example.rb      # ✨ NEW: Live price processing
+└── strategy_generator_example.rb   # ✨ NEW: Pattern mining
+
+test/
+├── backtest_test.rb                # ✨ NEW: Backtest tests
+├── gp_test.rb                      # ✨ NEW: Genetic programming tests
+├── portfolio_test.rb               # ✨ NEW: Portfolio tests
+├── stream_test.rb                  # ✨ NEW: Stream processor tests
+├── strategy_generator_test.rb      # ✨ NEW: Strategy generator tests
+├── data_frame_test.rb              # DataFrame tests
+├── test_helper.rb                  # Test configuration
+└── indicator/                      # Indicator tests (legacy, may need updates)
 ```
+
+**Line Counts:**
+- Core: ~2,000 lines (DataFrame, Stock, Strategy framework)
+- Advanced: ~2,300 lines (Portfolio, Backtest, GP, KBS, Stream, Generator)
+- Tests: ~650 lines
+- Examples: ~1,200 lines
+- Total: ~6,150 lines
 
 ## Common Gotchas
 
@@ -200,6 +278,55 @@ lib/
 4. **Indicators in separate gem**: Technical indicators are in `sqa-tai`, not SQA
 5. **API key format changed**: Use `AV_API_KEY` not `AV_API_KEYS` (singular)
 6. **Strategies need OpenStruct**: Pass data to strategies as OpenStruct with named fields
+
+## Advanced Features Quick Reference
+
+### Portfolio Management
+```ruby
+portfolio = SQA::Portfolio.new(initial_cash: 10_000, commission: 1.0)
+portfolio.buy('AAPL', shares: 10, price: 150.0)
+portfolio.sell('AAPL', shares: 5, price: 160.0)
+portfolio.value({ 'AAPL' => 165.0 })
+```
+
+### Backtesting
+```ruby
+backtest = SQA::Backtest.new(stock: stock, strategy: SQA::Strategy::RSI)
+results = backtest.run
+puts "Return: #{results.total_return}%, Sharpe: #{results.sharpe_ratio}"
+```
+
+### Strategy Generator
+```ruby
+gen = SQA::StrategyGenerator.new(stock: stock, min_gain_percent: 10.0)
+patterns = gen.discover_patterns
+strategy = gen.generate_strategy(pattern_index: 0)
+```
+
+### Genetic Programming
+```ruby
+gp = SQA::GeneticProgram.new(stock: stock, population_size: 50)
+gp.define_genes(rsi_period: (7..30).to_a)
+gp.fitness { |genes| backtest_with(genes).total_return }
+best = gp.evolve
+```
+
+### Knowledge-Based Strategy
+```ruby
+strategy = SQA::Strategy::KBS.new(load_defaults: false)
+strategy.add_rule :my_rule do
+  on :rsi, { level: :oversold }
+  on :macd, { crossover: :bullish }
+  then { assert(:signal, { action: :buy }) }
+end
+```
+
+### Real-Time Streaming
+```ruby
+stream = SQA::Stream.new(ticker: 'AAPL', strategies: [SQA::Strategy::RSI])
+stream.on_signal { |signal, data| execute_trade(signal, data) }
+stream.update(price: 150.25, volume: 1_000_000)
+```
 
 ## Quick Reference
 
