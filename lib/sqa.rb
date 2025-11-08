@@ -76,5 +76,10 @@ require_relative "sqa/ticker"
 require_relative "sqa/stream"
 require_relative "sqa/gp"
 require_relative "sqa/strategy_generator"
+require_relative "sqa/risk_manager"
+require_relative "sqa/portfolio_optimizer"
+require_relative "sqa/ensemble"
+require_relative "sqa/multi_timeframe"
+require_relative "sqa/pattern_matcher"
 
 
