@@ -33,6 +33,7 @@ A Ruby library for technical analysis of stock market data. This is a simplistic
 
 ## Features
 
+### Core Capabilities
 - **High-Performance DataFrames** - Polars-based data structures for time series financial data
 - **150+ Technical Indicators** - Via the `sqa-tai` gem (TA-Lib wrapper)
 - **Trading Strategies** - Framework for building and testing trading strategies
@@ -41,6 +42,14 @@ A Ruby library for technical analysis of stock market data. This is a simplistic
 - **Statistical Analysis** - Comprehensive statistics on price data
 - **Ticker Validation** - Validate stock symbols against market exchanges
 - **Interactive Console** - IRB console for experimentation (`sqa-console`)
+
+### Advanced Features
+- **Portfolio Management** - Track positions, trades, P&L with commission support
+- **Backtesting Framework** - Simulate trading strategies with comprehensive performance metrics
+- **Strategy Generator** - Reverse-engineer profitable trades to discover indicator patterns
+- **Genetic Programming** - Evolve optimal strategy parameters through natural selection
+- **Knowledge-Based Strategy (KBS)** - RETE-based forward-chaining inference for complex trading rules
+- **Real-Time Streaming** - Event-driven live price processing with on-the-fly signal generation
 
 ## Installation
 
@@ -235,8 +244,13 @@ results = strategies.execute(vector)
 # - SQA::Strategy::RSI - Based on Relative Strength Index
 # - SQA::Strategy::SMA - Simple Moving Average crossover
 # - SQA::Strategy::EMA - Exponential Moving Average crossover
+# - SQA::Strategy::MACD - MACD crossover strategy
+# - SQA::Strategy::BollingerBands - Bollinger Bands bounce strategy
+# - SQA::Strategy::Stochastic - Stochastic oscillator strategy
+# - SQA::Strategy::VolumeBreakout - Volume-based breakout strategy
 # - SQA::Strategy::MR - Mean Reversion
 # - SQA::Strategy::MP - Market Profile
+# - SQA::Strategy::KBS - Knowledge-based RETE strategy (advanced)
 # - SQA::Strategy::Random - Random signal generator (for testing)
 # - SQA::Strategy::Consensus - Combines multiple strategies
 ```
@@ -264,6 +278,260 @@ stats = prices.summary
 #   }
 ```
 
+### Portfolio Management
+
+Track positions, trades, and P&L:
+
+```ruby
+require 'sqa'
+
+# Create portfolio with initial cash and commission
+portfolio = SQA::Portfolio.new(initial_cash: 10_000.0, commission: 1.0)
+
+# Buy stock
+portfolio.buy('AAPL', shares: 10, price: 150.0, date: Date.today)
+
+# Sell stock
+portfolio.sell('AAPL', shares: 5, price: 160.0, date: Date.today)
+
+# Check portfolio value
+current_prices = { 'AAPL' => 165.0 }
+portfolio.value(current_prices)
+#=> Total portfolio value
+
+# Calculate profit/loss
+portfolio.profit_loss(current_prices)
+#=> P&L amount
+
+# View summary
+portfolio.summary
+#=> { initial_cash: 10000.0, cash: 8248.0, positions: 1, trades: 2, ... }
+
+# Save trades to CSV
+portfolio.save_to_csv('my_trades.csv')
+
+# Load from CSV
+portfolio.load_from_csv('my_trades.csv')
+```
+
+### Backtesting
+
+Simulate trading strategies against historical data:
+
+```ruby
+require 'sqa'
+
+SQA.init
+stock = SQA::Stock.new(ticker: 'AAPL')
+
+# Create backtest
+backtest = SQA::Backtest.new(
+  stock: stock,
+  strategy: SQA::Strategy::RSI,
+  initial_capital: 10_000.0,
+  commission: 1.0
+)
+
+# Run backtest
+results = backtest.run
+
+# View comprehensive metrics
+puts "Total Return: #{results.total_return.round(2)}%"
+puts "Annualized Return: #{results.annualized_return.round(2)}%"
+puts "Sharpe Ratio: #{results.sharpe_ratio.round(2)}"
+puts "Max Drawdown: #{results.max_drawdown.round(2)}%"
+puts "Total Trades: #{results.total_trades}"
+puts "Win Rate: #{results.win_rate.round(2)}%"
+puts "Profit Factor: #{results.profit_factor.round(2)}"
+
+# Access equity curve for charting
+results.equity_curve  #=> Array of portfolio values over time
+```
+
+### Strategy Generator
+
+Reverse-engineer profitable trades to discover winning patterns:
+
+```ruby
+require 'sqa'
+
+SQA.init
+stock = SQA::Stock.new(ticker: 'AAPL')
+
+# Create strategy generator
+generator = SQA::StrategyGenerator.new(
+  stock: stock,
+  min_gain_percent: 10.0,    # Find trades with ≥10% gain
+  holding_period: (5..20)    # Within 5-20 days
+)
+
+# Discover patterns
+patterns = generator.discover_patterns(min_pattern_frequency: 3)
+
+# Print discovered patterns
+generator.print_patterns(max_patterns: 10)
+#=> Pattern #1:
+#=>   Frequency: 15 occurrences
+#=>   Average Gain: 12.5%
+#=>   Average Holding: 8.3 days
+#=>   Conditions:
+#=>     - rsi: oversold
+#=>     - macd_crossover: bullish
+#=>     - volume: high
+
+# Generate strategy from top pattern
+strategy = generator.generate_strategy(pattern_index: 0, strategy_type: :class)
+
+# Backtest the discovered strategy
+backtest = SQA::Backtest.new(stock: stock, strategy: strategy)
+results = backtest.run
+
+# Export patterns to CSV
+generator.export_patterns('/tmp/patterns.csv')
+```
+
+### Genetic Programming
+
+Evolve optimal strategy parameters through natural selection:
+
+```ruby
+require 'sqa'
+
+SQA.init
+stock = SQA::Stock.new(ticker: 'AAPL')
+
+# Create genetic program
+gp = SQA::GeneticProgram.new(
+  stock: stock,
+  population_size: 50,
+  generations: 100,
+  mutation_rate: 0.15
+)
+
+# Define parameter space to explore
+gp.define_genes(
+  rsi_period: (7..30).to_a,
+  buy_threshold: (20..40).to_a,
+  sell_threshold: (60..80).to_a
+)
+
+# Define fitness function (backtest performance)
+gp.fitness do |genes|
+  # Create strategy with these genes
+  strategy = create_rsi_strategy(genes)
+
+  # Backtest and return total return as fitness
+  backtest = SQA::Backtest.new(stock: stock, strategy: strategy)
+  backtest.run.total_return
+end
+
+# Evolve!
+best = gp.evolve
+
+puts "Best Parameters:"
+puts "  RSI Period: #{best.genes[:rsi_period]}"
+puts "  Buy Threshold: #{best.genes[:buy_threshold]}"
+puts "  Sell Threshold: #{best.genes[:sell_threshold]}"
+puts "  Fitness: #{best.fitness.round(2)}%"
+
+# View evolution history
+gp.history.each do |gen|
+  puts "Gen #{gen[:generation]}: Best=#{gen[:best_fitness].round(2)}%"
+end
+```
+
+### Knowledge-Based Strategy (KBS)
+
+Build sophisticated rule-based systems with RETE forward chaining:
+
+```ruby
+require 'sqa'
+
+# Create KBS strategy
+strategy = SQA::Strategy::KBS.new(load_defaults: false)
+
+# Define custom trading rules
+strategy.add_rule :golden_opportunity do
+  desc "Perfect storm: Multiple bullish indicators align"
+
+  # Multiple conditions
+  on :rsi, { level: :oversold }
+  on :macd, { crossover: :bullish }
+  on :stochastic, { zone: :oversold, crossover: :bullish }
+  on :trend, { short_term: :up, strength: :strong }
+  on :volume, { level: :high }
+
+  # Negation: Don't buy if overbought elsewhere
+  without :rsi, { level: :overbought }
+
+  # Action
+  then do
+    assert(:signal, { action: :buy, confidence: :high })
+  end
+end
+
+# Execute strategy
+signal = strategy.execute(vector)
+#=> :buy or :sell or :hold
+
+# Use with backtesting
+backtest = SQA::Backtest.new(
+  stock: stock,
+  strategy: SQA::Strategy::KBS,
+  initial_capital: 10_000.0
+)
+results = backtest.run
+```
+
+### Real-Time Streaming
+
+Process live stock prices and generate on-the-fly trading signals:
+
+```ruby
+require 'sqa'
+
+# Create stream processor
+stream = SQA::Stream.new(
+  ticker: 'AAPL',
+  window_size: 100,
+  strategies: [
+    SQA::Strategy::RSI,
+    SQA::Strategy::MACD,
+    SQA::Strategy::BollingerBands
+  ]
+)
+
+# Register signal callback
+stream.on_signal do |signal, data|
+  puts "🔔 SIGNAL: #{signal.upcase}"
+  puts "   Price: $#{data[:price]}"
+  puts "   Consensus: #{data[:strategies_vote]}"
+
+  # Execute trade, send alert, etc.
+  execute_trade(signal, data) if signal != :hold
+end
+
+# Register update callback (optional)
+stream.on_update do |data|
+  puts "📊 Price update: $#{data[:price]}"
+end
+
+# Feed live data (from WebSocket, API, etc.)
+stream.update(
+  price: 150.25,
+  volume: 1_000_000,
+  timestamp: Time.now
+)
+
+# Access real-time indicators
+rsi = stream.indicator(:rsi, period: 14)
+sma = stream.indicator(:sma, period: 20)
+
+# View stream statistics
+stream.stats
+#=> { ticker: 'AAPL', updates: 125, current_price: 150.25, ... }
+```
+
 ## Interactive Console
 
 Launch an interactive Ruby console with SQA loaded:
@@ -283,6 +551,23 @@ prices = stock.df["close_price"].to_a
 sma = SQAI.sma(prices, period: 20)
 ```
 
+## Examples
+
+The `examples/` directory contains comprehensive demonstrations of advanced features:
+
+- **`genetic_programming_example.rb`** - Evolve RSI parameters through natural selection
+- **`kbs_strategy_example.rb`** - Build rule-based trading systems with RETE
+- **`realtime_stream_example.rb`** - Process live price streams with callbacks
+- **`strategy_generator_example.rb`** - Mine profitable patterns from history
+
+Run examples:
+```bash
+ruby examples/genetic_programming_example.rb
+ruby examples/strategy_generator_example.rb
+```
+
+See `examples/README.md` for detailed documentation and integration patterns.
+
 ## Architecture
 
 **Core Components:**
@@ -293,6 +578,15 @@ sma = SQAI.sma(prices, period: 20)
 - **`SQA::Strategy`** - Trading strategy execution framework
 - **`SQA::Config`** - Configuration management
 - **`SQAI`** - Alias for `SQA::TAI` (technical indicators from sqa-tai gem)
+
+**Advanced Components:**
+
+- **`SQA::Portfolio`** - Position and trade tracking with P&L calculations
+- **`SQA::Backtest`** - Strategy simulation with comprehensive metrics
+- **`SQA::StrategyGenerator`** - Pattern mining from profitable historical trades
+- **`SQA::GeneticProgram`** - Evolutionary algorithm for parameter optimization
+- **`SQA::Strategy::KBS`** - RETE-based forward-chaining inference engine
+- **`SQA::Stream`** - Real-time price stream processor with event callbacks
 
 **Data Flow:**
 
