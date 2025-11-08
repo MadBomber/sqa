@@ -68,7 +68,8 @@ module SQA
     # Represents a discovered indicator pattern
     class Pattern
       attr_accessor :conditions, :frequency, :avg_gain, :avg_holding_days,
-                    :success_rate, :occurrences
+                    :success_rate, :occurrences,
+                    :context
 
       def initialize(conditions: {})
         @conditions = conditions
@@ -77,10 +78,62 @@ module SQA
         @avg_holding_days = 0.0
         @success_rate = 0.0
         @occurrences = []
+        @context = PatternContext.new
       end
 
       def to_s
-        "Pattern(conditions=#{conditions.size}, freq=#{frequency}, gain=#{avg_gain.round(2)}%, success=#{success_rate.round(2)}%)"
+        ctx_info = @context.valid? ? " [#{@context.summary}]" : ""
+        "Pattern(conditions=#{conditions.size}, freq=#{frequency}, gain=#{avg_gain.round(2)}%, success=#{success_rate.round(2)}%#{ctx_info})"
+      end
+    end
+
+    # Pattern Context - metadata about when/where pattern is valid
+    class PatternContext
+      attr_accessor :market_regime, :valid_months, :valid_quarters,
+                    :discovered_period, :validation_period,
+                    :stability_score, :sector, :volatility_regime
+
+      def initialize
+        @market_regime = nil        # :bull, :bear, :sideways
+        @valid_months = []          # [10, 11, 12, 1] for Q4/Q1
+        @valid_quarters = []        # [1, 4] for Q1/Q4
+        @discovered_period = nil    # "2020-01-01 to 2022-12-31"
+        @validation_period = nil    # "2023-01-01 to 2024-11-08"
+        @stability_score = nil      # 0.0-1.0, how consistent over time
+        @sector = nil               # :technology, :finance, etc.
+        @volatility_regime = nil    # :low, :medium, :high
+      end
+
+      def valid?
+        @market_regime || @valid_months.any? || @sector
+      end
+
+      def summary
+        parts = []
+        parts << @market_regime.to_s if @market_regime
+        parts << "months:#{@valid_months.join(',')}" if @valid_months.any?
+        parts << "Q#{@valid_quarters.join(',')}" if @valid_quarters.any?
+        parts << @sector.to_s if @sector
+        parts.join(' ')
+      end
+
+      # Check if pattern is valid for given date and conditions
+      def valid_for?(date: nil, regime: nil, sector: nil)
+        # Check market regime
+        return false if @market_regime && regime && @market_regime != regime
+
+        # Check sector
+        return false if @sector && sector && @sector != sector
+
+        # Check calendar constraints
+        if date
+          return false if @valid_months.any? && !@valid_months.include?(date.month)
+
+          quarter = ((date.month - 1) / 3) + 1
+          return false if @valid_quarters.any? && !@valid_quarters.include?(quarter)
+        end
+
+        true
       end
     end
 
@@ -205,6 +258,182 @@ module SQA
       end
 
       puts "Patterns exported to #{filename}"
+    end
+
+    # Walk-forward validation - discover patterns with time-series cross-validation
+    #
+    # Splits data into train/test windows and rolls forward through history
+    # to prevent overfitting. Only keeps patterns that work out-of-sample.
+    #
+    # @param train_size [Integer] Training window size in days
+    # @param test_size [Integer] Testing window size in days
+    # @param step_size [Integer] How many days to step forward each iteration
+    # @return [Hash] Validation results with patterns and performance
+    #
+    def walk_forward_validate(train_size: 250, test_size: 60, step_size: 30)
+      puts "\n" + "=" * 70
+      puts "Walk-Forward Validation"
+      puts "=" * 70
+      puts "Training window: #{train_size} days"
+      puts "Testing window: #{test_size} days"
+      puts "Step size: #{step_size} days"
+      puts
+
+      prices = @stock.df["adj_close_price"].to_a
+      dates = @stock.df["date"].to_a.map { |d| Date.parse(d.to_s) }
+
+      validated_patterns = []
+      validation_results = []
+
+      start_idx = 0
+      iteration = 0
+
+      while start_idx + train_size + test_size < prices.size
+        iteration += 1
+        train_start = start_idx
+        train_end = start_idx + train_size
+        test_start = train_end
+        test_end = test_start + test_size
+
+        puts "\nIteration #{iteration}:"
+        puts "  Train: #{dates[train_start]} to #{dates[train_end - 1]}"
+        puts "  Test:  #{dates[test_start]} to #{dates[test_end - 1]}"
+
+        # Create temporary stock with training data
+        train_data = create_stock_subset(train_start, train_end)
+
+        # Discover patterns on training data
+        temp_generator = SQA::StrategyGenerator.new(
+          stock: train_data,
+          min_gain_percent: @min_gain_percent,
+          fpop: @fpop,
+          inflection_window: @inflection_window,
+          max_fpl_risk: @max_fpl_risk,
+          required_fpl_directions: @required_fpl_directions
+        )
+
+        train_patterns = temp_generator.discover_patterns(min_pattern_frequency: 2)
+
+        # Test each pattern on out-of-sample data
+        test_data = create_stock_subset(test_start, test_end)
+
+        train_patterns.each do |pattern|
+          # Generate strategy from pattern
+          strategy = temp_generator.generate_strategy(
+            pattern_index: train_patterns.index(pattern),
+            strategy_type: :proc
+          )
+
+          # Backtest on test period
+          begin
+            backtest = SQA::Backtest.new(stock: test_data, strategy: strategy)
+            results = backtest.run
+
+            # Store validation result
+            validation_results << {
+              iteration: iteration,
+              pattern: pattern,
+              train_period: "#{dates[train_start]} to #{dates[train_end - 1]}",
+              test_period: "#{dates[test_start]} to #{dates[test_end - 1]}",
+              test_return: results.total_return,
+              test_sharpe: results.sharpe_ratio,
+              test_max_drawdown: results.max_drawdown
+            }
+
+            # Keep pattern if it performed well out-of-sample
+            if results.total_return > 0 && results.sharpe_ratio > 0.5
+              validated_patterns << pattern
+            end
+          rescue => e
+            puts "    Warning: Pattern validation failed: #{e.message}"
+          end
+        end
+
+        start_idx += step_size
+      end
+
+      puts "\n" + "=" * 70
+      puts "Validation Complete"
+      puts "  Total iterations: #{iteration}"
+      puts "  Total patterns tested: #{validation_results.size}"
+      puts "  Patterns validated: #{validated_patterns.size}"
+      puts "=" * 70
+
+      {
+        validated_patterns: validated_patterns,
+        validation_results: validation_results,
+        total_iterations: iteration
+      }
+    end
+
+    # Discover patterns with context (regime, seasonal, sector)
+    #
+    # @param analyze_regime [Boolean] Detect and filter by market regime
+    # @param analyze_seasonal [Boolean] Detect seasonal patterns
+    # @param sector [Symbol] Sector classification
+    # @return [Array<Pattern>] Patterns with context metadata
+    #
+    def discover_context_aware_patterns(analyze_regime: true, analyze_seasonal: true, sector: nil)
+      puts "\n" + "=" * 70
+      puts "Context-Aware Pattern Discovery"
+      puts "=" * 70
+
+      # Step 1: Detect market regime
+      if analyze_regime
+        regime_data = SQA::MarketRegime.detect(@stock)
+        puts "Current regime: #{regime_data[:type]} (#{regime_data[:strength]} strength)"
+
+        # Split data by regime
+        regime_splits = SQA::MarketRegime.split_by_regime(@stock)
+
+        puts "\nRegime periods:"
+        regime_splits.each do |regime, periods|
+          total_days = periods.sum { |p| p[:duration] }
+          puts "  #{regime}: #{total_days} days across #{periods.size} periods"
+        end
+      end
+
+      # Step 2: Analyze seasonality
+      if analyze_seasonal
+        seasonal_data = SQA::SeasonalAnalyzer.analyze(@stock)
+        puts "\nSeasonal analysis:"
+        puts "  Best months: #{seasonal_data[:best_months].join(', ')}"
+        puts "  Worst months: #{seasonal_data[:worst_months].join(', ')}"
+        puts "  Best quarters: Q#{seasonal_data[:best_quarters].join(', Q')}"
+        puts "  Has seasonal pattern: #{seasonal_data[:has_seasonal_pattern]}"
+      end
+
+      # Step 3: Discover patterns normally
+      patterns = discover_patterns
+
+      # Step 4: Add context to each pattern
+      patterns.each do |pattern|
+        if analyze_regime
+          pattern.context.market_regime = regime_data[:type]
+          pattern.context.volatility_regime = regime_data[:volatility]
+        end
+
+        if analyze_seasonal && seasonal_data[:has_seasonal_pattern]
+          pattern.context.valid_months = seasonal_data[:best_months]
+          pattern.context.valid_quarters = seasonal_data[:best_quarters]
+        end
+
+        if sector
+          pattern.context.sector = sector
+        end
+
+        # Add discovery period
+        dates = @stock.df["date"].to_a
+        pattern.context.discovered_period = "#{dates.first} to #{dates.last}"
+      end
+
+      puts "\n" + "=" * 70
+      puts "Context-Aware Discovery Complete"
+      puts "  Patterns found: #{patterns.size}"
+      puts "  Patterns with context: #{patterns.count { |p| p.context.valid? }}"
+      puts "=" * 70
+
+      patterns
     end
 
     private
@@ -640,6 +869,23 @@ module SQA
       end
 
       strategy
+    end
+
+    # Helper: Create stock subset for walk-forward validation
+    def create_stock_subset(start_idx, end_idx)
+      # Extract subset of data
+      subset_df_data = {}
+
+      @stock.df.columns.each do |col|
+        subset_df_data[col] = @stock.df[col].to_a[start_idx...end_idx]
+      end
+
+      # Create new stock object with subset
+      temp_stock = SQA::Stock.allocate
+      temp_stock.instance_variable_set(:@ticker, @stock.ticker)
+      temp_stock.instance_variable_set(:@df, SQA::DataFrame.new(subset_df_data))
+
+      temp_stock
     end
 
     # Helper: Get current indicator state from vector
