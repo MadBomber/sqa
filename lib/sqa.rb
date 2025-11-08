@@ -71,5 +71,6 @@ require_relative "sqa/stock"
 require_relative "sqa/ticker"
 require_relative "sqa/stream"
 require_relative "sqa/gp"
+require_relative "sqa/strategy_generator"
 
 
