@@ -4,23 +4,27 @@
 
 Strategy Generator - Reverse Engineering Profitable Trades
 
-This module analyzes historical price data to identify profitable entry points
-and discovers which indicator patterns were present at those times. It's a
-backward-looking pattern mining approach to strategy discovery.
+This module analyzes historical price data to identify inflection points (turning points)
+that precede significant price movements. It discovers which indicator patterns were
+present at those inflection points.
+
+FPOP (Future Period of Performance): The number of days to look ahead from an
+inflection point to measure if the price change exceeds the threshold.
 
 Process:
-1. Scan historical data for entry points that yielded ≥X% gain
-2. Calculate all indicators at those profitable points
-3. Identify which indicators were "active" (in buy/sell zones)
-4. Find common patterns across profitable trades
-5. Generate trading rules from discovered patterns
-6. Optionally create KBS rules or strategy classes
+1. Detect inflection points (local minima for buys, local maxima for sells)
+2. Check if price change during fpop period exceeds threshold percentage
+3. Calculate all indicators at those profitable inflection points
+4. Identify which indicators were "active" (in buy/sell zones)
+5. Find common patterns across profitable trades
+6. Generate trading rules from discovered patterns
+7. Optionally create KBS rules or strategy classes
 
 Example:
   generator = SQA::StrategyGenerator.new(
     stock: stock,
     min_gain_percent: 10.0,
-    holding_period: (5..20)
+    fpop: 10  # Future Period of Performance (days)
   )
 
   patterns = generator.discover_patterns
@@ -70,13 +74,14 @@ module SQA
     end
 
     attr_reader :stock, :profitable_points, :patterns, :min_gain_percent,
-                :holding_period, :indicators_config
+                :fpop, :min_loss_percent, :indicators_config, :inflection_window
 
-    def initialize(stock:, min_gain_percent: 10.0, holding_period: (5..20), max_holding_days: nil)
+    def initialize(stock:, min_gain_percent: 10.0, min_loss_percent: nil, fpop: 10, inflection_window: 3)
       @stock = stock
       @min_gain_percent = min_gain_percent
-      @holding_period = holding_period
-      @max_holding_days = max_holding_days || holding_period.max
+      @min_loss_percent = min_loss_percent || -min_gain_percent  # Symmetric loss threshold
+      @fpop = fpop  # Future Period of Performance
+      @inflection_window = inflection_window  # Window for detecting local min/max
       @profitable_points = []
       @patterns = []
 
@@ -98,10 +103,12 @@ module SQA
       puts "Strategy Generator: Discovering Profitable Patterns"
       puts "=" * 70
       puts "Target gain: ≥#{min_gain_percent}%"
-      puts "Holding period: #{holding_period}"
+      puts "Target loss: ≤#{min_loss_percent}%"
+      puts "FPOP (Future Period of Performance): #{fpop} days"
+      puts "Inflection window: #{inflection_window} days"
       puts
 
-      # Step 1: Find profitable entry points
+      # Step 1: Find profitable inflection points
       find_profitable_points
 
       return [] if @profitable_points.empty?
@@ -188,45 +195,89 @@ module SQA
 
     private
 
-    # Step 1: Find all profitable entry points
+    # Step 1: Find all profitable inflection points
     def find_profitable_points
-      puts "Step 1: Scanning for profitable entry points..."
+      puts "Step 1: Detecting inflection points and analyzing FPOP..."
 
       prices = @stock.df["adj_close_price"].to_a
-      total_scanned = 0
 
-      # Scan through historical data
-      (0...(prices.size - @max_holding_days)).each do |entry_idx|
-        entry_price = prices[entry_idx]
+      # Step 1a: Detect inflection points (local minima and maxima)
+      inflection_points = detect_inflection_points(prices)
+      puts "  Found #{inflection_points.size} inflection points"
 
-        # Look forward to find best exit within holding period
-        future_start = entry_idx + @holding_period.min
-        future_end = [entry_idx + @holding_period.max, prices.size - 1].min
+      # Step 1b: Check which inflection points lead to profitable moves
+      profitable_count = 0
+      inflection_points.each do |inflection_idx|
+        # Skip if not enough future data
+        next if inflection_idx + @fpop >= prices.size
 
-        next if future_start >= prices.size
+        entry_price = prices[inflection_idx]
 
-        future_prices = prices[future_start..future_end]
+        # Calculate price change over fpop period
+        future_prices = prices[(inflection_idx + 1)..(inflection_idx + @fpop)]
         max_future_price = future_prices.max
-        max_idx = future_start + future_prices.index(max_future_price)
+        min_future_price = future_prices.min
 
-        gain_percent = ((max_future_price - entry_price) / entry_price * 100.0)
+        # Calculate gain/loss percentages
+        max_gain_percent = ((max_future_price - entry_price) / entry_price * 100.0)
+        max_loss_percent = ((min_future_price - entry_price) / entry_price * 100.0)
 
-        if gain_percent >= @min_gain_percent
+        # Check if gain exceeds threshold (buy opportunity)
+        if max_gain_percent >= @min_gain_percent
+          exit_idx = inflection_idx + 1 + future_prices.index(max_future_price)
+
           @profitable_points << ProfitablePoint.new(
-            entry_index: entry_idx,
+            entry_index: inflection_idx,
             entry_price: entry_price,
-            exit_index: max_idx,
+            exit_index: exit_idx,
             exit_price: max_future_price
           )
-        end
+          profitable_count += 1
+        # Check if loss exceeds threshold (sell opportunity)
+        elsif max_loss_percent <= @min_loss_percent
+          exit_idx = inflection_idx + 1 + future_prices.index(min_future_price)
 
-        total_scanned += 1
+          @profitable_points << ProfitablePoint.new(
+            entry_index: inflection_idx,
+            entry_price: entry_price,
+            exit_index: exit_idx,
+            exit_price: min_future_price
+          )
+          profitable_count += 1
+        end
       end
 
-      puts "  Scanned: #{total_scanned} potential entry points"
-      puts "  Found: #{@profitable_points.size} profitable opportunities"
-      puts "  Success Rate: #{(@profitable_points.size.to_f / total_scanned * 100).round(2)}%"
+      puts "  Inflection points analyzed: #{inflection_points.size}"
+      puts "  Profitable opportunities found: #{@profitable_points.size}"
+      if inflection_points.size > 0
+        puts "  Success rate: #{(@profitable_points.size.to_f / inflection_points.size * 100).round(2)}%"
+      end
       puts
+    end
+
+    # Detect inflection points (local minima and maxima)
+    def detect_inflection_points(prices)
+      inflection_points = []
+      window = @inflection_window
+
+      # Scan for local minima and maxima
+      (window...(prices.size - window)).each do |idx|
+        current_price = prices[idx]
+
+        # Get surrounding window
+        left_window = prices[(idx - window)...idx]
+        right_window = prices[(idx + 1)..(idx + window)]
+
+        # Check if local minimum (potential buy point)
+        if left_window.all? { |p| current_price <= p } && right_window.all? { |p| current_price <= p }
+          inflection_points << idx
+        # Check if local maximum (potential sell point)
+        elsif left_window.all? { |p| current_price >= p } && right_window.all? { |p| current_price >= p }
+          inflection_points << idx
+        end
+      end
+
+      inflection_points
     end
 
     # Step 2: Calculate indicator states at each profitable point
@@ -531,7 +582,7 @@ module SQA
           on indicator, { state: state }
         end
 
-        then do
+        send(:then) do
           assert(:signal, {
             action: :buy,
             confidence: :high,

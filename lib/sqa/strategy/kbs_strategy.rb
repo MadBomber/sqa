@@ -349,7 +349,7 @@ module SQA
         add_rule :buy_oversold_uptrend do
           on :rsi, { level: :oversold }
           on :trend, { short_term: :up }
-          then do
+          send(:then) do
             assert(:signal, { action: :buy, confidence: :high, reason: :oversold_uptrend })
           end
         end
@@ -358,7 +358,7 @@ module SQA
         add_rule :sell_overbought_downtrend do
           on :rsi, { level: :overbought }
           on :trend, { short_term: :down }
-          then do
+          send(:then) do
             assert(:signal, { action: :sell, confidence: :high, reason: :overbought_downtrend })
           end
         end
@@ -367,7 +367,7 @@ module SQA
         add_rule :buy_macd_bullish do
           on :macd, { crossover: :bullish }
           on :trend, { medium_term: :up }
-          then do
+          send(:then) do
             assert(:signal, { action: :buy, confidence: :medium, reason: :macd_crossover })
           end
         end
@@ -376,7 +376,7 @@ module SQA
         add_rule :sell_macd_bearish do
           on :macd, { crossover: :bearish }
           on :trend, { medium_term: :down }
-          then do
+          send(:then) do
             assert(:signal, { action: :sell, confidence: :medium, reason: :macd_crossover })
           end
         end
@@ -385,7 +385,7 @@ module SQA
         add_rule :buy_bb_lower do
           on :bollinger, { position: :below }
           on :trend, { short_term: :up }
-          then do
+          send(:then) do
             assert(:signal, { action: :buy, confidence: :medium, reason: :bollinger_bounce })
           end
         end
@@ -394,7 +394,7 @@ module SQA
         add_rule :sell_bb_upper do
           on :bollinger, { position: :above }
           on :trend, { short_term: :down }
-          then do
+          send(:then) do
             assert(:signal, { action: :sell, confidence: :medium, reason: :bollinger_resistance })
           end
         end
@@ -403,7 +403,7 @@ module SQA
         add_rule :buy_stoch_oversold do
           on :stochastic, { zone: :oversold, crossover: :bullish }
           on :volume, { level: :high }
-          then do
+          send(:then) do
             assert(:signal, { action: :buy, confidence: :high, reason: :stoch_oversold_volume })
           end
         end
@@ -412,7 +412,7 @@ module SQA
         add_rule :sell_stoch_overbought do
           on :stochastic, { zone: :overbought, crossover: :bearish }
           on :volume, { level: :high }
-          then do
+          send(:then) do
             assert(:signal, { action: :sell, confidence: :high, reason: :stoch_overbought_volume })
           end
         end
@@ -421,7 +421,7 @@ module SQA
         add_rule :buy_golden_cross do
           on :sma_crossover, { signal: :bullish }
           on :volume, { level: :high }
-          then do
+          send(:then) do
             assert(:signal, { action: :buy, confidence: :high, reason: :golden_cross })
           end
         end
@@ -430,7 +430,7 @@ module SQA
         add_rule :sell_death_cross do
           on :sma_crossover, { signal: :bearish }
           on :volume, { level: :high }
-          then do
+          send(:then) do
             assert(:signal, { action: :sell, confidence: :high, reason: :death_cross })
           end
         end

@@ -14,12 +14,12 @@ class StrategyGeneratorTest < Minitest::Test
     generator = SQA::StrategyGenerator.new(
       stock: @stock,
       min_gain_percent: 10.0,
-      holding_period: (5..20)
+      fpop: 10
     )
 
     assert_equal @stock, generator.stock
     assert_equal 10.0, generator.min_gain_percent
-    assert_equal (5..20), generator.holding_period
+    assert_equal 10, generator.fpop
   end
 
   def test_profitable_point_creation
@@ -54,7 +54,7 @@ class StrategyGeneratorTest < Minitest::Test
     generator = SQA::StrategyGenerator.new(
       stock: @stock,
       min_gain_percent: 10.0,
-      holding_period: (5..20)
+      fpop: 10
     )
 
     patterns = generator.discover_patterns(min_pattern_frequency: 2)
@@ -70,7 +70,7 @@ class StrategyGeneratorTest < Minitest::Test
     generator = SQA::StrategyGenerator.new(
       stock: @stock,
       min_gain_percent: 5.0,
-      holding_period: (5..15)
+      fpop: 10
     )
 
     patterns = generator.discover_patterns(min_pattern_frequency: 1)
@@ -89,7 +89,7 @@ class StrategyGeneratorTest < Minitest::Test
     generator = SQA::StrategyGenerator.new(
       stock: @stock,
       min_gain_percent: 5.0,
-      holding_period: (5..15)
+      fpop: 10
     )
 
     patterns = generator.discover_patterns(min_pattern_frequency: 1)
@@ -109,7 +109,7 @@ class StrategyGeneratorTest < Minitest::Test
     generator = SQA::StrategyGenerator.new(
       stock: @stock,
       min_gain_percent: 5.0,
-      holding_period: (5..15)
+      fpop: 10
     )
 
     patterns = generator.discover_patterns(min_pattern_frequency: 1)

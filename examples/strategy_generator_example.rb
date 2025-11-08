@@ -4,10 +4,14 @@
 # Example: Strategy Generator - Reverse Engineering Profitable Trades
 #
 # This example demonstrates how to use SQA::StrategyGenerator to:
-# 1. Identify historically profitable entry points
-# 2. Discover which indicators were active at those points
-# 3. Generate trading strategies from discovered patterns
-# 4. Backtest the generated strategies
+# 1. Detect inflection points (turning points) in price history
+# 2. Identify which inflection points preceded profitable moves
+# 3. Discover which indicators were active at those points
+# 4. Generate trading strategies from discovered patterns
+# 5. Backtest the generated strategies
+#
+# FPOP (Future Period of Performance): The number of days to look ahead
+# from an inflection point to measure if price change exceeds threshold.
 
 require 'sqa'
 
@@ -24,16 +28,17 @@ stock = SQA::Stock.new(ticker: 'AAPL')
 puts "Loaded #{stock.df.data.height} days of price history"
 puts
 
-# Example 1: Basic Pattern Discovery
+# Example 1: Basic Pattern Discovery with FPOP
 puts "\n" + "=" * 70
-puts "Example 1: Discovering Patterns for 10% Gains"
+puts "Example 1: Discovering Patterns with FPOP (Future Period of Performance)"
 puts "=" * 70
 puts
 
 generator = SQA::StrategyGenerator.new(
   stock: stock,
-  min_gain_percent: 10.0,     # Find trades that gained ≥10%
-  holding_period: (5..20)     # Within 5-20 days
+  min_gain_percent: 10.0,      # Find inflection points that lead to ≥10% gain
+  fpop: 10,                    # Look 10 days ahead from inflection point
+  inflection_window: 3         # 3-day window for detecting local min/max
 )
 
 # Discover patterns
@@ -97,7 +102,7 @@ gain_thresholds.each do |threshold|
   gen = SQA::StrategyGenerator.new(
     stock: stock,
     min_gain_percent: threshold,
-    holding_period: (5..20)
+    fpop: 10
   )
 
   patterns = gen.discover_patterns(min_pattern_frequency: 2)
@@ -115,27 +120,27 @@ gain_thresholds.each do |threshold|
   puts
 end
 
-# Example 4: Short vs Long Holding Periods
+# Example 4: Different FPOP Periods
 puts "\n" + "=" * 70
-puts "Example 4: Short-term vs Long-term Patterns"
+puts "Example 4: Short-term vs Long-term FPOP"
 puts "=" * 70
 puts
 
-holding_configs = [
-  { name: "Short-term", period: (3..10) },
-  { name: "Medium-term", period: (10..30) },
-  { name: "Long-term", period: (30..60) }
+fpop_configs = [
+  { name: "Short-term", fpop: 5 },
+  { name: "Medium-term", fpop: 15 },
+  { name: "Long-term", fpop: 30 }
 ]
 
-holding_configs.each do |config|
+fpop_configs.each do |config|
   puts "-" * 70
-  puts "#{config[:name]} Trading (#{config[:period]} days)"
+  puts "#{config[:name]} FPOP (#{config[:fpop]} days)"
   puts
 
   gen = SQA::StrategyGenerator.new(
     stock: stock,
     min_gain_percent: 10.0,
-    holding_period: config[:period]
+    fpop: config[:fpop]
   )
 
   patterns = gen.discover_patterns(min_pattern_frequency: 2)
@@ -163,7 +168,7 @@ puts
 generator = SQA::StrategyGenerator.new(
   stock: stock,
   min_gain_percent: 10.0,
-  holding_period: (5..20)
+  fpop: 10
 )
 
 patterns = generator.discover_patterns(min_pattern_frequency: 2)
@@ -185,7 +190,7 @@ puts
 generator = SQA::StrategyGenerator.new(
   stock: stock,
   min_gain_percent: 10.0,
-  holding_period: (5..20)
+  fpop: 10
 )
 
 patterns = generator.discover_patterns(min_pattern_frequency: 3)
@@ -283,7 +288,7 @@ puts
 aggressive_gen = SQA::StrategyGenerator.new(
   stock: stock,
   min_gain_percent: 20.0,  # Very high gain target
-  holding_period: (5..30)
+  fpop: 15
 )
 
 aggressive_patterns = aggressive_gen.discover_patterns(min_pattern_frequency: 1)
