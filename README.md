@@ -50,6 +50,12 @@ A Ruby library for technical analysis of stock market data. This is a simplistic
 - **Genetic Programming** - Evolve optimal strategy parameters through natural selection
 - **Knowledge-Based Strategy (KBS)** - RETE-based forward-chaining inference for complex trading rules
 - **Real-Time Streaming** - Event-driven live price processing with on-the-fly signal generation
+- **FPL Analysis** - Future Period Loss/Profit analysis with risk metrics and directional classification
+- **Market Regime Detection** - Identify bull/bear/sideways markets with volatility and strength metrics
+- **Seasonal Analysis** - Discover calendar-dependent patterns (monthly/quarterly performance)
+- **Sector Analysis** - Multi-stock pattern discovery with KBS blackboards per sector
+- **Walk-Forward Validation** - Time-series cross-validation to prevent pattern overfitting
+- **Pattern Context System** - Context-aware patterns that know when/where they're valid
 
 ## Installation
 
@@ -531,6 +537,321 @@ sma = stream.indicator(:sma, period: 20)
 stream.stats
 #=> { ticker: 'AAPL', updates: 125, current_price: 150.25, ... }
 ```
+
+### FPL Analysis (Future Period Loss/Profit)
+
+Analyze potential future price movements with risk metrics:
+
+```ruby
+require 'sqa'
+
+stock = SQA::Stock.new(ticker: 'AAPL')
+
+# Calculate FPL for 14-day future period
+fpl_data = stock.df.fpl(fpop: 14)
+# Returns: [[min_delta, max_delta], ...] for each price point
+
+# Full analysis with risk metrics
+analysis = stock.df.fpl_analysis(fpop: 14)
+
+analysis.first
+#=> {
+#  min_delta: -5.2,      # Worst loss percentage
+#  max_delta: 8.7,       # Best gain percentage
+#  risk: 13.9,           # Volatility (max - min)
+#  direction: :UNCERTAIN,# :UP, :DOWN, :UNCERTAIN, :FLAT
+#  magnitude: 1.75,      # Average expected movement
+#  interpretation: "UNCERTAIN: 1.75% (±6.95% risk)"
+#}
+
+# Filter high-quality opportunities
+good_indices = SQA::FPOP.filter_by_quality(
+  analysis,
+  min_magnitude: 5.0,     # Minimum average movement
+  max_risk: 10.0,         # Maximum acceptable volatility
+  directions: [:UP]       # Only bullish patterns
+)
+
+# Use with Strategy Generator for risk-aware pattern discovery
+generator = SQA::StrategyGenerator.new(
+  stock: stock,
+  min_gain_percent: 10.0,
+  fpop: 10,
+  max_fpl_risk: 20.0,           # NEW: Filter high-volatility points
+  required_fpl_directions: [:UP] # NEW: Only bullish patterns
+)
+```
+
+**Key Benefits:**
+- Captures both upside AND downside potential
+- Measures volatility/risk during future period
+- Classifies directional bias (UP/DOWN/UNCERTAIN/FLAT)
+- Enables risk-adjusted opportunity filtering
+
+### Market Regime Detection
+
+Identify and adapt to changing market conditions:
+
+```ruby
+# Detect current market regime
+regime = SQA::MarketRegime.detect(stock)
+#=> {
+#  type: :bull,           # :bull, :bear, :sideways
+#  volatility: :low,      # :low, :medium, :high
+#  strength: :strong,     # :weak, :moderate, :strong
+#  lookback_days: 60,
+#  detected_at: 2024-11-08
+#}
+
+# Analyze regime history
+regimes = SQA::MarketRegime.detect_history(stock)
+#=> [
+#  { type: :bull, start_index: 0, end_index: 120, duration: 120 },
+#  { type: :bear, start_index: 121, end_index: 200, duration: 79 },
+#  ...
+#]
+
+# Split data by regime
+regime_data = SQA::MarketRegime.split_by_regime(stock)
+#=> {
+#  bull: [{ prices: [...], start_index: 0, end_index: 120 }, ...],
+#  bear: [...],
+#  sideways: [...]
+#}
+
+# Use regime-specific strategies
+current_regime = SQA::MarketRegime.detect(stock)
+strategy = case current_regime[:type]
+when :bull
+  SQA::Strategy::MomentumBreakout
+when :bear
+  SQA::Strategy::MeanReversion
+when :sideways
+  SQA::Strategy::BollingerBands
+end
+```
+
+**Key Benefits:**
+- Different strategies for different market conditions
+- Avoid using bull market strategies in bear markets
+- Detect regime changes before they impact performance
+
+### Seasonal Analysis
+
+Discover calendar-dependent patterns:
+
+```ruby
+# Analyze seasonal performance
+seasonal = SQA::SeasonalAnalyzer.analyze(stock)
+#=> {
+#  best_months: [10, 11, 12],        # October, November, December
+#  worst_months: [5, 6, 7],          # May, June, July
+#  best_quarters: [4, 1],            # Q4 and Q1
+#  worst_quarters: [2, 3],
+#  has_seasonal_pattern: true,
+#  monthly_returns: { ... },
+#  quarterly_returns: { ... }
+#}
+
+# Filter data for Q4 only (holiday shopping season)
+q4_data = SQA::SeasonalAnalyzer.filter_by_quarters(stock, [4])
+#=> { indices: [...], dates: [...], prices: [...] }
+
+# Filter for specific months
+dec_data = SQA::SeasonalAnalyzer.filter_by_months(stock, [12])
+
+# Get context for specific date
+context = SQA::SeasonalAnalyzer.context_for_date(Date.new(2024, 12, 15))
+#=> {
+#  month: 12,
+#  quarter: 4,
+#  month_name: "December",
+#  quarter_name: "Q4",
+#  is_year_end: true,
+#  is_holiday_season: true,
+#  is_earnings_season: false
+#}
+
+# Discover patterns only for best months
+generator = SQA::StrategyGenerator.new(stock: stock)
+patterns = generator.discover_context_aware_patterns(
+  analyze_seasonal: true
+)
+
+patterns.each do |pattern|
+  puts pattern.context.valid_months  # [10, 11, 12] for Q4 patterns
+end
+```
+
+**Real-World Examples:**
+- Retail stocks: Q4 holiday shopping boost
+- Tax prep stocks: Q1/Q4 seasonal surge
+- Energy stocks: Summer driving season
+- Agriculture stocks: Planting/harvest cycles
+
+### Sector Analysis with KBS
+
+Analyze patterns across related stocks using KBS blackboards:
+
+```ruby
+# Create sector analyzer (separate blackboard per sector)
+analyzer = SQA::SectorAnalyzer.new
+
+# Add stocks to technology sector
+analyzer.add_stock('AAPL', sector: :technology)
+analyzer.add_stock('MSFT', sector: :technology)
+analyzer.add_stock('GOOGL', sector: :technology)
+
+# Detect sector-wide regime
+tech_stocks = [
+  SQA::Stock.new(ticker: 'AAPL'),
+  SQA::Stock.new(ticker: 'MSFT'),
+  SQA::Stock.new(ticker: 'GOOGL')
+]
+
+sector_regime = analyzer.detect_sector_regime(:technology, tech_stocks)
+#=> {
+#  sector: :technology,
+#  consensus_regime: :bull,  # Majority vote
+#  sector_strength: 85.0,    # % of stocks bullish
+#  stock_regimes: [...]
+#}
+
+# Discover patterns across entire sector
+sector_patterns = analyzer.discover_sector_patterns(
+  :technology,
+  tech_stocks,
+  min_gain_percent: 10.0,
+  fpop: 10
+)
+
+# Patterns that work for MULTIPLE stocks in sector
+sector_patterns.each do |sp|
+  puts "Pattern found in: #{sp[:stocks].join(', ')}"
+  puts "Avg gain: #{sp[:avg_gain].round(2)}%"
+  puts "Conditions: #{sp[:conditions]}"
+end
+
+# Query sector blackboard
+facts = analyzer.query_sector(:technology, :sector_pattern)
+
+# Print sector summary
+analyzer.print_sector_summary(:technology)
+```
+
+**Available Sectors:**
+`:technology`, `:finance`, `:healthcare`, `:energy`, `:consumer`, `:industrial`, `:materials`, `:utilities`, `:real_estate`, `:communications`
+
+**Key Benefits:**
+- Leverage "stocks move together" in same sector
+- Find patterns valid across multiple related stocks
+- Persistent KBS blackboard tracks sector knowledge
+- Cross-stock pattern validation
+
+### Walk-Forward Validation
+
+Prevent overfitting with time-series cross-validation:
+
+```ruby
+generator = SQA::StrategyGenerator.new(
+  stock: stock,
+  min_gain_percent: 10.0,
+  fpop: 10
+)
+
+# Run walk-forward validation
+results = generator.walk_forward_validate(
+  train_size: 250,  # 1 year training window
+  test_size: 60,    # 3 months testing window
+  step_size: 30     # Step forward 1 month each iteration
+)
+
+# Only patterns that work out-of-sample
+validated_patterns = results[:validated_patterns]
+
+# Detailed results for each iteration
+results[:validation_results].each do |r|
+  puts "Train: #{r[:train_period]}"
+  puts "Test:  #{r[:test_period]}"
+  puts "Return: #{r[:test_return]}%"
+  puts "Sharpe: #{r[:test_sharpe]}"
+end
+
+# Statistics
+all_returns = results[:validation_results].map { |r| r[:test_return] }
+avg_return = all_returns.sum / all_returns.size
+puts "Average out-of-sample return: #{avg_return.round(2)}%"
+```
+
+**How It Works:**
+1. Split data into train/test windows
+2. Discover patterns on training data
+3. Test patterns on future (unseen) data
+4. Roll forward and repeat
+5. Only keep patterns that work out-of-sample
+
+**Prevents:**
+- Curve-fitting to historical noise
+- Patterns that only worked in the past
+- Overconfidence in backtest results
+
+### Pattern Context System
+
+Context-aware patterns that know when/where they're valid:
+
+```ruby
+# Discover patterns with full context
+generator = SQA::StrategyGenerator.new(stock: stock, min_gain_percent: 10.0)
+
+patterns = generator.discover_context_aware_patterns(
+  analyze_regime: true,
+  analyze_seasonal: true,
+  sector: :technology
+)
+
+# Each pattern has rich context metadata
+pattern = patterns.first
+pattern.context.market_regime        #=> :bull
+pattern.context.volatility_regime    #=> :low
+pattern.context.valid_months         #=> [10, 11, 12]
+pattern.context.valid_quarters       #=> [4, 1]
+pattern.context.sector               #=> :technology
+pattern.context.discovered_period    #=> "2020-01-01 to 2022-12-31"
+
+# Runtime validation - check if pattern applies NOW
+valid = pattern.context.valid_for?(
+  date: Date.today,
+  regime: :bull,
+  sector: :technology
+)
+
+if valid
+  # Execute strategy - context matches current conditions
+  signal = strategy.trade(vector)
+else
+  # Skip - pattern not valid in current context
+  puts "Pattern not valid for current conditions"
+end
+
+# Pattern summary includes context
+puts pattern.to_s
+#=> "Pattern(conditions=3, freq=12, gain=11.5%, success=75.0%) [bull months:10,11,12 technology]"
+```
+
+**Context Metadata:**
+- **Market regime**: Bull/bear/sideways classification
+- **Seasonality**: Valid months/quarters
+- **Sector**: Industry classification
+- **Volatility regime**: Low/medium/high
+- **Discovery period**: When pattern was found
+- **Stability score**: Consistency over time
+
+**Key Benefits:**
+- Patterns aren't universal - they're context-specific
+- Avoid using patterns in wrong market conditions
+- Seasonal awareness (Q4 retail patterns, etc.)
+- Sector-specific strategies
+- Runtime validation before execution
 
 ## Interactive Console
 

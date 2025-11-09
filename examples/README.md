@@ -132,6 +132,72 @@ This example shows how to build real-time trading signal systems:
 
 ---
 
+### 5. FPL Analysis (`fpop_analysis_example.rb`)
+
+**Analyze Future Period Loss/Profit to identify high-quality trading opportunities**
+
+This example demonstrates how to use the FPL (Future Period Loss/Profit) analysis utilities to discover optimal entry points with controlled risk:
+
+- Calculate min/max price changes over future periods
+- Filter opportunities by magnitude and risk thresholds
+- Identify inflection points (local minima/maxima)
+- Analyze directional bias (UP, DOWN, UNCERTAIN, FLAT)
+- Risk management with max FPL risk constraints
+
+**Run it:**
+```bash
+./examples/fpop_analysis_example.rb
+```
+
+**Key Examples:**
+- Example 1: Basic FPL calculation
+- Example 2: DataFrame FPL convenience methods
+- Example 3: Comprehensive FPL analysis
+- Example 4: Quality filtering (magnitude, risk, direction)
+- Example 5: Integration with Strategy Generator
+
+**Output:**
+- FPL arrays (min/max deltas per price point)
+- Risk metrics and directional analysis
+- Filtered high-quality opportunities
+- Integration with pattern discovery
+
+---
+
+### 6. Pattern Context System (`pattern_context_example.rb`)
+
+**Discover context-aware trading patterns with market regime, seasonal, and sector analysis**
+
+This comprehensive example demonstrates the Pattern Context system that addresses the reality that trading patterns are not universal - they depend on market conditions, seasonality, and sector behavior:
+
+- **Market Regime Detection**: Identify bull/bear/sideways markets with volatility classification
+- **Seasonal Analysis**: Discover calendar-dependent patterns (monthly/quarterly performance)
+- **Sector Analysis**: Cross-stock pattern discovery with separate KBS blackboards per sector
+- **Walk-Forward Validation**: Prevent overfitting with time-series cross-validation
+- **Context-Aware Patterns**: Patterns know when they're valid (regime, season, sector)
+
+**Run it:**
+```bash
+./examples/pattern_context_example.rb
+```
+
+**Key Examples:**
+- Example 1: Market regime detection and history
+- Example 2: Seasonal pattern analysis
+- Example 3: Sector analysis with KBS blackboards
+- Example 4: Context-aware pattern discovery
+- Example 5: Walk-forward validation
+- Example 6: Runtime pattern validation
+
+**Output:**
+- Market regime classification (bull/bear/sideways)
+- Best/worst months and quarters
+- Sector-wide patterns across multiple stocks
+- Validated patterns that work out-of-sample
+- Runtime validation results
+
+---
+
 ## Running All Examples
 
 To run all examples in sequence:
@@ -177,24 +243,83 @@ stream.on_signal { |signal, data| execute_trade(signal, data) }
 stream.update(price: 150.25, volume: 1_000_000)
 ```
 
-### Full Pipeline: Generate → Optimize → Stream
+### Combining FPL + Pattern Discovery
 
 ```ruby
-# 1. Discover patterns
-generator = SQA::StrategyGenerator.new(stock: stock)
-patterns = generator.discover_patterns
+# Use FPL analysis to filter high-quality opportunities
+generator = SQA::StrategyGenerator.new(
+  stock: stock,
+  min_gain_percent: 8.0,
+  fpop: 10,
+  max_fpl_risk: 25.0  # Filter by risk
+)
 
-# 2. Generate strategy
+patterns = generator.discover_patterns
+# Only includes opportunities with FPL risk ≤ 25%
+```
+
+### Combining Pattern Context + Sector Analysis
+
+```ruby
+# Discover sector-wide patterns with context
+analyzer = SQA::SectorAnalyzer.new
+tech_stocks = ['AAPL', 'MSFT', 'GOOGL'].map { |t| SQA::Stock.new(ticker: t) }
+
+tech_stocks.each { |stock| analyzer.add_stock(stock.ticker, sector: :technology) }
+
+# Find patterns that work across the sector
+patterns = analyzer.discover_sector_patterns(
+  :technology,
+  tech_stocks,
+  analyze_regime: true,
+  analyze_seasonal: true
+)
+
+# Patterns have full context metadata
+patterns.first.context.market_regime   # => :bull
+patterns.first.context.sector          # => :technology
+patterns.first.context.valid_months    # => [10, 11, 12]
+```
+
+### Full Pipeline: Generate → Optimize → Validate → Stream
+
+```ruby
+# 1. Discover context-aware patterns
+generator = SQA::StrategyGenerator.new(stock: stock, fpop: 10)
+patterns = generator.discover_context_aware_patterns(
+  analyze_regime: true,
+  analyze_seasonal: true,
+  sector: :technology
+)
+
+# 2. Walk-forward validate
+validated = generator.walk_forward_validate(
+  train_size: 250,
+  test_size: 60,
+  step_size: 30
+)
+
+# 3. Generate strategy from best validated pattern
 discovered_strategy = generator.generate_strategy(pattern_index: 0)
 
-# 3. Optimize with GP
+# 4. Optimize with GP
 gp = SQA::GeneticProgram.new(stock: stock)
 # ... optimize discovered strategy parameters ...
 optimized_strategy = gp.evolve
 
-# 4. Deploy to real-time stream
+# 5. Deploy to real-time stream with runtime validation
 stream = SQA::Stream.new(ticker: 'AAPL', strategies: [optimized_strategy])
-stream.on_signal { |signal, data| execute_trade(signal, data) }
+stream.on_signal do |signal, data|
+  # Check if pattern is valid for current conditions
+  regime = SQA::MarketRegime.detect(stock)
+  if patterns.first.context.valid_for?(
+    date: Date.today,
+    regime: regime[:type],
+    sector: :technology
+  )
+    execute_trade(signal, data)
+  end
+end
 ```
 
 ## Data Requirements
