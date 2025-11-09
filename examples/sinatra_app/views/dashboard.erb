@@ -1,0 +1,419 @@
+<div class="dashboard">
+  <div class="dashboard-header">
+    <div class="ticker-info">
+      <h1><%= @ticker %></h1>
+      <div id="priceInfo" class="price-info">
+        <span class="current-price">Loading...</span>
+        <span class="price-change">--</span>
+      </div>
+    </div>
+    <div class="header-actions">
+      <button onclick="location.href='/analyze/<%= @ticker %>'" class="btn btn-secondary">
+        <i class="fas fa-analytics"></i> Analysis
+      </button>
+      <button onclick="location.href='/backtest/<%= @ticker %>'" class="btn btn-secondary">
+        <i class="fas fa-history"></i> Backtest
+      </button>
+      <button onclick="refreshData()" class="btn btn-secondary">
+        <i class="fas fa-sync-alt"></i> Refresh
+      </button>
+    </div>
+  </div>
+
+  <!-- Key Metrics Cards -->
+  <div class="metrics-grid">
+    <div class="metric-card">
+      <div class="metric-label">52-Week High</div>
+      <div id="high52w" class="metric-value">--</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label">52-Week Low</div>
+      <div id="low52w" class="metric-value">--</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label">Current RSI</div>
+      <div id="currentRSI" class="metric-value">--</div>
+      <div id="rsiSignal" class="metric-signal"></div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label">Market Regime</div>
+      <div id="marketRegime" class="metric-value">--</div>
+      <div id="regimeDetail" class="metric-signal"></div>
+    </div>
+  </div>
+
+  <!-- Main Price Chart -->
+  <div class="chart-container">
+    <div class="chart-header">
+      <h2><i class="fas fa-chart-candlestick"></i> Price Chart</h2>
+      <div class="chart-controls">
+        <button onclick="updateChartType('candlestick')" class="btn-small active" data-chart="candlestick">
+          Candlestick
+        </button>
+        <button onclick="updateChartType('line')" class="btn-small" data-chart="line">
+          Line
+        </button>
+      </div>
+    </div>
+    <div id="priceChart" class="chart"></div>
+  </div>
+
+  <!-- Volume Chart -->
+  <div class="chart-container">
+    <div class="chart-header">
+      <h2><i class="fas fa-chart-bar"></i> Volume</h2>
+    </div>
+    <div id="volumeChart" class="chart"></div>
+  </div>
+
+  <!-- Technical Indicators Grid -->
+  <div class="indicators-grid">
+    <!-- RSI Chart -->
+    <div class="chart-container">
+      <div class="chart-header">
+        <h3><i class="fas fa-wave-square"></i> RSI (14)</h3>
+      </div>
+      <div id="rsiChart" class="chart chart-small"></div>
+    </div>
+
+    <!-- MACD Chart -->
+    <div class="chart-container">
+      <div class="chart-header">
+        <h3><i class="fas fa-signal"></i> MACD</h3>
+      </div>
+      <div id="macdChart" class="chart chart-small"></div>
+    </div>
+  </div>
+
+  <!-- Strategy Comparison -->
+  <div class="chart-container">
+    <div class="chart-header">
+      <h2><i class="fas fa-trophy"></i> Strategy Comparison</h2>
+      <button onclick="runStrategyComparison()" class="btn btn-primary">
+        <i class="fas fa-play"></i> Compare Strategies
+      </button>
+    </div>
+    <div id="strategyResults" class="strategy-results">
+      <p class="hint">Click "Compare Strategies" to see backtest results for different trading strategies.</p>
+    </div>
+  </div>
+</div>
+
+<script>
+const ticker = '<%= @ticker %>';
+let stockData = null;
+let indicatorData = null;
+let currentChartType = 'candlestick';
+
+// Load data when page loads
+document.addEventListener('DOMContentLoaded', async function() {
+  await loadStockData();
+  await loadIndicators();
+  await loadAnalysis();
+});
+
+async function loadStockData() {
+  try {
+    const response = await fetch(`/api/stock/${ticker}`);
+    stockData = await response.json();
+
+    // Update price info
+    document.querySelector('.current-price').textContent = `$${stockData.current_price.toFixed(2)}`;
+
+    const changeClass = stockData.change >= 0 ? 'positive' : 'negative';
+    const changeSign = stockData.change >= 0 ? '+' : '';
+    document.querySelector('.price-change').className = `price-change ${changeClass}`;
+    document.querySelector('.price-change').textContent =
+      `${changeSign}${stockData.change.toFixed(2)} (${changeSign}${stockData.change_percent.toFixed(2)}%)`;
+
+    // Update metrics
+    document.getElementById('high52w').textContent = `$${stockData.high_52w.toFixed(2)}`;
+    document.getElementById('low52w').textContent = `$${stockData.low_52w.toFixed(2)}`;
+
+    // Render charts
+    renderPriceChart();
+    renderVolumeChart();
+  } catch (error) {
+    console.error('Error loading stock data:', error);
+    alert('Failed to load stock data. Please try again.');
+  }
+}
+
+async function loadIndicators() {
+  try {
+    const response = await fetch(`/api/indicators/${ticker}`);
+    indicatorData = await response.json();
+
+    // Update RSI metric
+    const currentRSI = indicatorData.rsi[indicatorData.rsi.length - 1];
+    document.getElementById('currentRSI').textContent = currentRSI.toFixed(2);
+
+    let rsiSignal = '';
+    let rsiClass = '';
+    if (currentRSI < 30) {
+      rsiSignal = 'Oversold';
+      rsiClass = 'signal-buy';
+    } else if (currentRSI > 70) {
+      rsiSignal = 'Overbought';
+      rsiClass = 'signal-sell';
+    } else {
+      rsiSignal = 'Neutral';
+      rsiClass = 'signal-neutral';
+    }
+    const rsiSignalEl = document.getElementById('rsiSignal');
+    rsiSignalEl.textContent = rsiSignal;
+    rsiSignalEl.className = `metric-signal ${rsiClass}`;
+
+    // Render indicator charts
+    renderRSIChart();
+    renderMACDChart();
+  } catch (error) {
+    console.error('Error loading indicators:', error);
+  }
+}
+
+async function loadAnalysis() {
+  try {
+    const response = await fetch(`/api/analyze/${ticker}`);
+    const analysis = await response.json();
+
+    // Update market regime
+    const regime = analysis.regime.type.toUpperCase();
+    const regimeEl = document.getElementById('marketRegime');
+    regimeEl.textContent = regime;
+
+    let regimeClass = '';
+    if (regime === 'BULL') regimeClass = 'signal-buy';
+    else if (regime === 'BEAR') regimeClass = 'signal-sell';
+    else regimeClass = 'signal-neutral';
+    regimeEl.className = `metric-value ${regimeClass}`;
+
+    const regimeDetail = document.getElementById('regimeDetail');
+    regimeDetail.textContent = `${analysis.regime.volatility} volatility, ${analysis.regime.strength.toFixed(2)} strength`;
+    regimeDetail.className = 'metric-signal';
+  } catch (error) {
+    console.error('Error loading analysis:', error);
+  }
+}
+
+function renderPriceChart() {
+  const trace = currentChartType === 'candlestick' ? {
+    type: 'candlestick',
+    x: stockData.dates,
+    open: stockData.open,
+    high: stockData.high,
+    low: stockData.low,
+    close: stockData.close,
+    name: ticker,
+    increasing: { line: { color: '#26a69a' } },
+    decreasing: { line: { color: '#ef5350' } }
+  } : {
+    type: 'scatter',
+    mode: 'lines',
+    x: stockData.dates,
+    y: stockData.close,
+    name: ticker,
+    line: { color: '#2196F3', width: 2 }
+  };
+
+  // Add moving averages if we have indicator data
+  const traces = [trace];
+  if (indicatorData) {
+    traces.push({
+      type: 'scatter',
+      mode: 'lines',
+      x: indicatorData.dates,
+      y: indicatorData.sma_20,
+      name: 'SMA 20',
+      line: { color: '#FF9800', width: 1, dash: 'dash' }
+    });
+    traces.push({
+      type: 'scatter',
+      mode: 'lines',
+      x: indicatorData.dates,
+      y: indicatorData.sma_50,
+      name: 'SMA 50',
+      line: { color: '#9C27B0', width: 1, dash: 'dash' }
+    });
+  }
+
+  const layout = {
+    title: '',
+    xaxis: { title: 'Date', rangeslider: { visible: false } },
+    yaxis: { title: 'Price ($)' },
+    plot_bgcolor: '#ffffff',
+    paper_bgcolor: '#ffffff',
+    margin: { l: 50, r: 50, t: 20, b: 50 },
+    height: 400,
+    showlegend: true,
+    legend: { x: 0, y: 1 }
+  };
+
+  Plotly.newPlot('priceChart', traces, layout, { responsive: true });
+}
+
+function renderVolumeChart() {
+  const colors = stockData.close.map((close, i) => {
+    if (i === 0) return '#2196F3';
+    return close >= stockData.close[i - 1] ? '#26a69a' : '#ef5350';
+  });
+
+  const trace = {
+    type: 'bar',
+    x: stockData.dates,
+    y: stockData.volume,
+    name: 'Volume',
+    marker: { color: colors }
+  };
+
+  const layout = {
+    title: '',
+    xaxis: { title: 'Date' },
+    yaxis: { title: 'Volume' },
+    plot_bgcolor: '#ffffff',
+    paper_bgcolor: '#ffffff',
+    margin: { l: 50, r: 50, t: 20, b: 50 },
+    height: 200,
+    showlegend: false
+  };
+
+  Plotly.newPlot('volumeChart', [trace], layout, { responsive: true });
+}
+
+function renderRSIChart() {
+  const trace = {
+    type: 'scatter',
+    mode: 'lines',
+    x: indicatorData.dates,
+    y: indicatorData.rsi,
+    name: 'RSI',
+    line: { color: '#2196F3', width: 2 }
+  };
+
+  const oversold = {
+    type: 'scatter',
+    mode: 'lines',
+    x: indicatorData.dates,
+    y: Array(indicatorData.dates.length).fill(30),
+    name: 'Oversold',
+    line: { color: '#4CAF50', width: 1, dash: 'dash' }
+  };
+
+  const overbought = {
+    type: 'scatter',
+    mode: 'lines',
+    x: indicatorData.dates,
+    y: Array(indicatorData.dates.length).fill(70),
+    name: 'Overbought',
+    line: { color: '#F44336', width: 1, dash: 'dash' }
+  };
+
+  const layout = {
+    title: '',
+    xaxis: { title: 'Date' },
+    yaxis: { title: 'RSI', range: [0, 100] },
+    plot_bgcolor: '#ffffff',
+    paper_bgcolor: '#ffffff',
+    margin: { l: 50, r: 50, t: 20, b: 50 },
+    height: 250,
+    showlegend: true,
+    legend: { x: 0, y: 1 }
+  };
+
+  Plotly.newPlot('rsiChart', [trace, oversold, overbought], layout, { responsive: true });
+}
+
+function renderMACDChart() {
+  const macd = {
+    type: 'scatter',
+    mode: 'lines',
+    x: indicatorData.dates,
+    y: indicatorData.macd,
+    name: 'MACD',
+    line: { color: '#2196F3', width: 2 }
+  };
+
+  const signal = {
+    type: 'scatter',
+    mode: 'lines',
+    x: indicatorData.dates,
+    y: indicatorData.macd_signal,
+    name: 'Signal',
+    line: { color: '#FF9800', width: 2 }
+  };
+
+  const hist = {
+    type: 'bar',
+    x: indicatorData.dates,
+    y: indicatorData.macd_hist,
+    name: 'Histogram',
+    marker: {
+      color: indicatorData.macd_hist.map(v => v >= 0 ? '#26a69a' : '#ef5350')
+    }
+  };
+
+  const layout = {
+    title: '',
+    xaxis: { title: 'Date' },
+    yaxis: { title: 'MACD' },
+    plot_bgcolor: '#ffffff',
+    paper_bgcolor: '#ffffff',
+    margin: { l: 50, r: 50, t: 20, b: 50 },
+    height: 250,
+    showlegend: true,
+    legend: { x: 0, y: 1 }
+  };
+
+  Plotly.newPlot('macdChart', [hist, macd, signal], layout, { responsive: true });
+}
+
+function updateChartType(type) {
+  currentChartType = type;
+
+  // Update button states
+  document.querySelectorAll('[data-chart]').forEach(btn => {
+    btn.classList.remove('active');
+  });
+  document.querySelector(`[data-chart="${type}"]`).classList.add('active');
+
+  // Re-render chart
+  renderPriceChart();
+}
+
+async function runStrategyComparison() {
+  const resultsDiv = document.getElementById('strategyResults');
+  resultsDiv.innerHTML = '<p class="loading"><i class="fas fa-spinner fa-spin"></i> Running backtests...</p>';
+
+  try {
+    const response = await fetch(`/api/compare/${ticker}`, { method: 'POST' });
+    const results = await response.json();
+
+    let html = '<table class="results-table"><thead><tr>';
+    html += '<th>Strategy</th><th>Return</th><th>Sharpe</th><th>Drawdown</th><th>Win Rate</th><th>Trades</th>';
+    html += '</tr></thead><tbody>';
+
+    results.forEach((result, i) => {
+      const returnClass = result.return >= 0 ? 'positive' : 'negative';
+      const rank = i === 0 ? '<i class="fas fa-trophy" style="color: #FFD700;"></i> ' : '';
+      html += `<tr>
+        <td>${rank}${result.strategy}</td>
+        <td class="${returnClass}">${result.return.toFixed(2)}%</td>
+        <td>${result.sharpe.toFixed(2)}</td>
+        <td>${result.drawdown.toFixed(2)}%</td>
+        <td>${result.win_rate.toFixed(2)}%</td>
+        <td>${result.trades}</td>
+      </tr>`;
+    });
+
+    html += '</tbody></table>';
+    resultsDiv.innerHTML = html;
+  } catch (error) {
+    console.error('Error comparing strategies:', error);
+    resultsDiv.innerHTML = '<p class="error">Failed to compare strategies. Please try again.</p>';
+  }
+}
+
+function refreshData() {
+  location.reload();
+}
+</script>

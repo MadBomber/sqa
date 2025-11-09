@@ -1,0 +1,22 @@
+# frozen_string_literal: true
+
+source 'https://rubygems.org'
+
+ruby '>= 3.2.0'
+
+# Web framework
+gem 'sinatra', '~> 4.0'
+gem 'sinatra-contrib', '~> 4.0'
+gem 'puma', '~> 6.0'
+
+# JSON handling
+gem 'json', '~> 2.7'
+
+# SQA library (assumes it's in parent directory)
+# In production, this would be:
+# gem 'sqa'
+# For development, we'll load from local path via require in app.rb
+
+group :development do
+  gem 'rerun'  # Auto-reload on file changes
+end
