@@ -1,0 +1,118 @@
+<div class="hero">
+  <div class="hero-content">
+    <h1>
+      <i class="fas fa-chart-line"></i>
+      Stock Analysis Platform
+    </h1>
+    <p class="hero-subtitle">
+      Advanced technical analysis powered by SQA library
+    </p>
+
+    <div class="ticker-search">
+      <form onsubmit="return searchTicker(event)" class="search-form">
+        <input
+          type="text"
+          id="mainTickerInput"
+          placeholder="Enter stock ticker (e.g., AAPL, MSFT, GOOGL)"
+          autocomplete="off"
+        >
+        <button type="submit" class="btn btn-primary btn-large">
+          <i class="fas fa-search"></i> Analyze
+        </button>
+      </form>
+    </div>
+
+    <div class="quick-links">
+      <h3>Quick Analysis</h3>
+      <div class="ticker-buttons">
+        <a href="/dashboard/AAPL" class="ticker-btn">AAPL</a>
+        <a href="/dashboard/MSFT" class="ticker-btn">MSFT</a>
+        <a href="/dashboard/GOOGL" class="ticker-btn">GOOGL</a>
+        <a href="/dashboard/AMZN" class="ticker-btn">AMZN</a>
+        <a href="/dashboard/TSLA" class="ticker-btn">TSLA</a>
+        <a href="/dashboard/NVDA" class="ticker-btn">NVDA</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="features">
+  <div class="container">
+    <h2>Features</h2>
+    <div class="feature-grid">
+      <div class="feature-card">
+        <div class="feature-icon">
+          <i class="fas fa-chart-candlestick"></i>
+        </div>
+        <h3>Interactive Charts</h3>
+        <p>Candlestick charts with technical indicators including RSI, MACD, Bollinger Bands, and moving averages.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">
+          <i class="fas fa-robot"></i>
+        </div>
+        <h3>Strategy Backtesting</h3>
+        <p>Test trading strategies on historical data with detailed performance metrics and comparison tools.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">
+          <i class="fas fa-brain"></i>
+        </div>
+        <h3>Market Analysis</h3>
+        <p>Detect market regimes, seasonal patterns, and future price projections with FPOP analysis.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">
+          <i class="fas fa-shield-alt"></i>
+        </div>
+        <h3>Risk Management</h3>
+        <p>Value at Risk (VaR), Sharpe ratio, maximum drawdown, and other risk metrics for informed decisions.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">
+          <i class="fas fa-layer-group"></i>
+        </div>
+        <h3>Portfolio Optimization</h3>
+        <p>Optimize allocation across multiple stocks using maximum Sharpe, minimum variance, or risk parity.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">
+          <i class="fas fa-search-dollar"></i>
+        </div>
+        <h3>Pattern Discovery</h3>
+        <p>Discover profitable trading patterns by reverse-engineering historical data and indicator combinations.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="info-section">
+  <div class="container">
+    <div class="info-content">
+      <h2>About SQA</h2>
+      <p>
+        SQA (Simple Qualitative Analysis) is a comprehensive Ruby library for stock market
+        technical analysis. This web interface provides an intuitive way to visualize and
+        analyze stock data using advanced algorithms and machine learning techniques.
+      </p>
+      <ul class="info-list">
+        <li><i class="fas fa-check-circle"></i> 150+ technical indicators via TA-Lib</li>
+        <li><i class="fas fa-check-circle"></i> 12+ built-in trading strategies</li>
+        <li><i class="fas fa-check-circle"></i> High-performance Polars DataFrame backend</li>
+        <li><i class="fas fa-check-circle"></i> Real-time streaming support</li>
+        <li><i class="fas fa-check-circle"></i> Genetic programming for parameter optimization</li>
+        <li><i class="fas fa-check-circle"></i> Knowledge-based trading with RETE engine</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<script>
+// Focus on ticker input when page loads
+document.getElementById('mainTickerInput').focus();
+</script>
