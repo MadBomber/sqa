@@ -1,0 +1,34 @@
+# frozen_string_literal: true
+
+source 'https://rubygems.org'
+
+ruby '>= 3.2.0'
+
+# Rails framework
+gem 'rails', '~> 7.1'
+
+# Database - use SQLite for simplicity
+gem 'sqlite3', '~> 1.7'
+
+# Web server
+gem 'puma', '~> 6.0'
+
+# Asset pipeline
+gem 'sprockets-rails'
+gem 'importmap-rails'
+gem 'turbo-rails'
+gem 'stimulus-rails'
+
+# JSON
+gem 'jbuilder'
+
+# SQA library (load from parent directory)
+# In production: gem 'sqa'
+
+group :development, :test do
+  gem 'debug', platforms: %i[mri windows]
+end
+
+group :development do
+  gem 'web-console'
+end

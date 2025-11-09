@@ -1,0 +1,171 @@
+<div class="dashboard">
+  <div class="dashboard-header">
+    <div class="ticker-info">
+      <h1><%= @ticker %> - Strategy Backtesting</h1>
+    </div>
+    <div class="header-actions">
+      <%= link_to stock_dashboard_path(@ticker), class: "btn btn-secondary" do %>
+        <i class="fas fa-chart-line"></i> Dashboard
+      <% end %>
+      <%= link_to stock_analysis_path(@ticker), class: "btn btn-secondary" do %>
+        <i class="fas fa-analytics"></i> Analysis
+      <% end %>
+    </div>
+  </div>
+
+  <!-- Strategy Selection -->
+  <div class="chart-container">
+    <div class="chart-header">
+      <h2><i class="fas fa-cogs"></i> Select Strategy</h2>
+    </div>
+    <div class="strategy-selector">
+      <div class="strategy-grid">
+        <div class="strategy-option" onclick="selectStrategy('RSI')">
+          <div class="strategy-icon"><i class="fas fa-wave-square"></i></div>
+          <h3>RSI</h3>
+          <p>Relative Strength Index</p>
+        </div>
+        <div class="strategy-option" onclick="selectStrategy('MACD')">
+          <div class="strategy-icon"><i class="fas fa-signal"></i></div>
+          <h3>MACD</h3>
+          <p>Moving Average Convergence Divergence</p>
+        </div>
+        <div class="strategy-option" onclick="selectStrategy('SMA')">
+          <div class="strategy-icon"><i class="fas fa-chart-line"></i></div>
+          <h3>SMA</h3>
+          <p>Simple Moving Average</p>
+        </div>
+        <div class="strategy-option" onclick="selectStrategy('EMA')">
+          <div class="strategy-icon"><i class="fas fa-chart-area"></i></div>
+          <h3>EMA</h3>
+          <p>Exponential Moving Average</p>
+        </div>
+        <div class="strategy-option" onclick="selectStrategy('BollingerBands')">
+          <div class="strategy-icon"><i class="fas fa-chart-candlestick"></i></div>
+          <h3>Bollinger Bands</h3>
+          <p>Volatility-based bands</p>
+        </div>
+        <div class="strategy-option" onclick="selectStrategy('KBS')">
+          <div class="strategy-icon"><i class="fas fa-brain"></i></div>
+          <h3>KBS</h3>
+          <p>Knowledge-Based Strategy</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Backtest Results -->
+  <div class="chart-container">
+    <div class="chart-header">
+      <h2><i class="fas fa-chart-bar"></i> Backtest Results</h2>
+    </div>
+    <div id="backtestResults" class="backtest-results">
+      <p class="hint">Select a strategy above to run backtest</p>
+    </div>
+  </div>
+
+  <!-- Strategy Comparison -->
+  <div class="chart-container">
+    <div class="chart-header">
+      <h2><i class="fas fa-trophy"></i> Compare All Strategies</h2>
+      <button onclick="compareStrategies()" class="btn btn-primary">
+        <i class="fas fa-play"></i> Run Comparison
+      </button>
+    </div>
+    <div id="comparisonResults" class="comparison-results">
+      <p class="hint">Click "Run Comparison" to backtest all strategies</p>
+    </div>
+  </div>
+</div>
+
+<%= javascript_tag do %>
+const ticker = '<%= @ticker %>';
+
+async function selectStrategy(strategy) {
+  event.currentTarget.style.borderColor = 'var(--primary-color)';
+  await runBacktest(strategy);
+}
+
+async function runBacktest(strategy) {
+  const resultsDiv = document.getElementById('backtestResults');
+  resultsDiv.innerHTML = '<p class="loading"><i class="fas fa-spinner fa-spin"></i> Running backtest...</p>';
+
+  try {
+    const response = await fetch(`/api/v1/backtest/${ticker}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-Token': document.querySelector('[name="csrf-token"]').content
+      },
+      body: JSON.stringify({ strategy: strategy })
+    });
+
+    const results = await response.json();
+
+    const html = `
+      <h3 style="margin-bottom: 1.5rem">${strategy} Strategy Results</h3>
+      <div class="results-metrics">
+        <div class="result-metric">
+          <div class="result-metric-label">Total Return</div>
+          <div class="result-metric-value ${results.total_return >= 0 ? 'positive' : 'negative'}">
+            ${results.total_return.toFixed(2)}%
+          </div>
+        </div>
+        <div class="result-metric">
+          <div class="result-metric-label">Sharpe Ratio</div>
+          <div class="result-metric-value">${results.sharpe_ratio.toFixed(2)}</div>
+        </div>
+        <div class="result-metric">
+          <div class="result-metric-label">Max Drawdown</div>
+          <div class="result-metric-value negative">${results.max_drawdown.toFixed(2)}%</div>
+        </div>
+        <div class="result-metric">
+          <div class="result-metric-label">Win Rate</div>
+          <div class="result-metric-value">${results.win_rate.toFixed(2)}%</div>
+        </div>
+      </div>
+    `;
+
+    resultsDiv.innerHTML = html;
+  } catch (error) {
+    console.error('Error running backtest:', error);
+    resultsDiv.innerHTML = '<p class="error">Failed to run backtest.</p>';
+  }
+}
+
+async function compareStrategies() {
+  const resultsDiv = document.getElementById('comparisonResults');
+  resultsDiv.innerHTML = '<p class="loading"><i class="fas fa-spinner fa-spin"></i> Comparing strategies...</p>';
+
+  try {
+    const response = await fetch(`/api/v1/compare/${ticker}`, {
+      method: 'POST',
+      headers: {
+        'X-CSRF-Token': document.querySelector('[name="csrf-token"]').content
+      }
+    });
+    const results = await response.json();
+
+    let html = '<table class="results-table"><thead><tr>';
+    html += '<th>Strategy</th><th>Return</th><th>Sharpe</th><th>Drawdown</th><th>Win Rate</th>';
+    html += '</tr></thead><tbody>';
+
+    results.forEach((result, i) => {
+      const rank = i === 0 ? '<i class="fas fa-trophy" style="color: #FFD700;"></i> ' : '';
+      html += `<tr>
+        <td>${rank}${result.strategy}</td>
+        <td class="${result.return >= 0 ? 'positive' : 'negative'}">${result.return.toFixed(2)}%</td>
+        <td>${result.sharpe.toFixed(2)}</td>
+        <td>${result.drawdown.toFixed(2)}%</td>
+        <td>${result.win_rate.toFixed(2)}%</td>
+      </tr>`;
+    });
+
+    html += '</tbody></table>';
+    resultsDiv.innerHTML = html;
+  } catch (error) {
+    console.error('Error comparing strategies:', error);
+    resultsDiv.innerHTML = '<p class="error">Failed to compare strategies.</p>';
+  }
+}
+<% end %>

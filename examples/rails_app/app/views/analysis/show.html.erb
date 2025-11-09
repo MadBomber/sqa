@@ -1,0 +1,209 @@
+<div class="dashboard">
+  <div class="dashboard-header">
+    <div class="ticker-info">
+      <h1><%= @ticker %> - Market Analysis</h1>
+    </div>
+    <div class="header-actions">
+      <%= link_to stock_dashboard_path(@ticker), class: "btn btn-secondary" do %>
+        <i class="fas fa-chart-line"></i> Dashboard
+      <% end %>
+      <%= link_to stock_backtest_path(@ticker), class: "btn btn-secondary" do %>
+        <i class="fas fa-history"></i> Backtest
+      <% end %>
+    </div>
+  </div>
+
+  <!-- Market Regime Analysis -->
+  <div class="chart-container">
+    <div class="chart-header">
+      <h2><i class="fas fa-chart-area"></i> Market Regime Analysis</h2>
+    </div>
+    <div id="regimeAnalysis" class="analysis-content">
+      <p class="loading"><i class="fas fa-spinner fa-spin"></i> Loading market regime data...</p>
+    </div>
+  </div>
+
+  <!-- Seasonal Pattern Analysis -->
+  <div class="chart-container">
+    <div class="chart-header">
+      <h2><i class="fas fa-calendar-alt"></i> Seasonal Pattern Analysis</h2>
+    </div>
+    <div id="seasonalAnalysis" class="analysis-content">
+      <p class="loading"><i class="fas fa-spinner fa-spin"></i> Loading seasonal data...</p>
+    </div>
+  </div>
+
+  <!-- FPOP Analysis -->
+  <div class="chart-container">
+    <div class="chart-header">
+      <h2><i class="fas fa-crystal-ball"></i> Future Period Analysis (FPOP)</h2>
+      <p class="chart-subtitle">Potential future price movements based on historical patterns</p>
+    </div>
+    <div id="fpopAnalysis" class="analysis-content">
+      <p class="loading"><i class="fas fa-spinner fa-spin"></i> Loading FPOP analysis...</p>
+    </div>
+  </div>
+
+  <!-- Risk Metrics -->
+  <div class="chart-container">
+    <div class="chart-header">
+      <h2><i class="fas fa-shield-alt"></i> Risk Metrics</h2>
+    </div>
+    <div id="riskMetrics" class="analysis-content">
+      <p class="loading"><i class="fas fa-spinner fa-spin"></i> Loading risk metrics...</p>
+    </div>
+  </div>
+</div>
+
+<%= javascript_tag do %>
+const ticker = '<%= @ticker %>';
+
+document.addEventListener('DOMContentLoaded', async function() {
+  await loadAnalysisData();
+});
+
+async function loadAnalysisData() {
+  try {
+    const response = await fetch(`/api/v1/analyze/${ticker}`);
+    const data = await response.json();
+
+    renderRegimeAnalysis(data.regime);
+    renderSeasonalAnalysis(data.seasonal);
+    renderFPOPAnalysis(data.fpop);
+    renderRiskMetrics(data.risk);
+  } catch (error) {
+    console.error('Error loading analysis data:', error);
+  }
+}
+
+function renderRegimeAnalysis(regime) {
+  const regimeType = regime.type.toUpperCase();
+  const regimeClass = regimeType === 'BULL' ? 'signal-buy' :
+                      regimeType === 'BEAR' ? 'signal-sell' : 'signal-neutral';
+
+  const html = `
+    <div class="analysis-grid">
+      <div class="analysis-card">
+        <h3>Current Market Regime</h3>
+        <div class="analysis-stat">
+          <span class="stat-label">Type</span>
+          <span class="stat-value ${regimeClass}">${regimeType}</span>
+        </div>
+        <div class="analysis-stat">
+          <span class="stat-label">Volatility</span>
+          <span class="stat-value">${regime.volatility.toUpperCase()}</span>
+        </div>
+        <div class="analysis-stat">
+          <span class="stat-label">Strength</span>
+          <span class="stat-value">${regime.strength.toFixed(2)}</span>
+        </div>
+        <div class="analysis-stat">
+          <span class="stat-label">Trend</span>
+          <span class="stat-value">${regime.trend.toFixed(2)}%</span>
+        </div>
+      </div>
+    </div>
+  `;
+
+  document.getElementById('regimeAnalysis').innerHTML = html;
+}
+
+function renderSeasonalAnalysis(seasonal) {
+  const monthNames = ['', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  const bestMonths = seasonal.best_months.map(m => monthNames[m]).join(', ');
+  const worstMonths = seasonal.worst_months.map(m => monthNames[m]).join(', ');
+
+  const html = `
+    <div class="analysis-grid">
+      <div class="analysis-card">
+        <h3>Monthly Patterns</h3>
+        <div class="analysis-stat">
+          <span class="stat-label">Best Months</span>
+          <span class="stat-value signal-buy">${bestMonths}</span>
+        </div>
+        <div class="analysis-stat">
+          <span class="stat-label">Worst Months</span>
+          <span class="stat-value signal-sell">${worstMonths}</span>
+        </div>
+      </div>
+      <div class="analysis-card">
+        <h3>Quarterly Patterns</h3>
+        <div class="analysis-stat">
+          <span class="stat-label">Best Quarters</span>
+          <span class="stat-value signal-buy">Q${seasonal.best_quarters.join(', Q')}</span>
+        </div>
+        <div class="analysis-stat">
+          <span class="stat-label">Has Seasonal Pattern</span>
+          <span class="stat-value">${seasonal.has_pattern ? 'Yes' : 'No'}</span>
+        </div>
+      </div>
+    </div>
+  `;
+
+  document.getElementById('seasonalAnalysis').innerHTML = html;
+}
+
+function renderFPOPAnalysis(fpop) {
+  if (!fpop || fpop.length === 0) {
+    document.getElementById('fpopAnalysis').innerHTML = '<p class="hint">No FPOP data available.</p>';
+    return;
+  }
+
+  let tableHTML = `
+    <table class="fpop-table">
+      <thead>
+        <tr>
+          <th>Direction</th>
+          <th>Magnitude</th>
+          <th>Risk</th>
+          <th>Interpretation</th>
+        </tr>
+      </thead>
+      <tbody>
+  `;
+
+  fpop.forEach(f => {
+    const dirClass = f.direction === 'UP' ? 'signal-buy' :
+                     f.direction === 'DOWN' ? 'signal-sell' : 'signal-neutral';
+
+    tableHTML += `
+      <tr>
+        <td><span class="${dirClass}">${f.direction}</span></td>
+        <td>${f.magnitude.toFixed(2)}%</td>
+        <td>${f.risk.toFixed(2)}%</td>
+        <td>${f.interpretation}</td>
+      </tr>
+    `;
+  });
+
+  tableHTML += '</tbody></table>';
+  document.getElementById('fpopAnalysis').innerHTML = tableHTML;
+}
+
+function renderRiskMetrics(risk) {
+  const html = `
+    <div class="analysis-grid">
+      <div class="analysis-card">
+        <h3>Value at Risk (VaR)</h3>
+        <div class="analysis-stat">
+          <span class="stat-label">95% Confidence</span>
+          <span class="stat-value signal-sell">${(risk.var_95 * 100).toFixed(2)}%</span>
+        </div>
+      </div>
+      <div class="analysis-card">
+        <h3>Performance Metrics</h3>
+        <div class="analysis-stat">
+          <span class="stat-label">Sharpe Ratio</span>
+          <span class="stat-value">${risk.sharpe_ratio.toFixed(2)}</span>
+        </div>
+        <div class="analysis-stat">
+          <span class="stat-label">Max Drawdown</span>
+          <span class="stat-value signal-sell">${(risk.max_drawdown * 100).toFixed(2)}%</span>
+        </div>
+      </div>
+    </div>
+  `;
+
+  document.getElementById('riskMetrics').innerHTML = html;
+}
+<% end %>
