@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SQA - Stock Analysis Platform</title>
+  <%= csrf_meta_tags %>
+  <%= csp_meta_tag %>
+
+  <!-- Plotly.js for charts -->
+  <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+
+  <!-- Font Awesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <%= stylesheet_link_tag "application", media: "all" %>
+  <%= javascript_importmap_tags %>
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="navbar">
+    <div class="nav-container">
+      <div class="nav-brand">
+        <i class="fas fa-chart-line"></i>
+        <span>SQA Analytics (Rails)</span>
+      </div>
+      <ul class="nav-menu">
+        <li><%= link_to root_path, class: "nav-link" do %><i class="fas fa-home"></i> Home<% end %></li>
+        <li><a href="#" class="nav-link" onclick="showTickerModal()"><i class="fas fa-search"></i> Analyze Stock</a></li>
+        <li><%= link_to portfolio_path, class: "nav-link" do %><i class="fas fa-briefcase"></i> Portfolio<% end %></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <%= yield %>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-content">
+      <p>&copy; 2025 SQA - Simple Qualitative Analysis. Educational purposes only.</p>
+      <p class="disclaimer">⚠️ Not financial advice. For educational use only.</p>
+    </div>
+  </footer>
+
+  <!-- Ticker Search Modal -->
+  <div id="tickerModal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeTickerModal()">&times;</span>
+      <h2>Enter Stock Ticker</h2>
+      <%= form_with url: "#", method: :get, local: true, html: { onsubmit: "return searchTicker(event)" } do |f| %>
+        <input type="text" id="tickerInput" placeholder="e.g., AAPL" autocomplete="off" autofocus>
+        <button type="submit" class="btn btn-primary">Analyze</button>
+      <% end %>
+    </div>
+  </div>
+</body>
+</html>

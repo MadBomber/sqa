@@ -1,0 +1,17 @@
+<div class="error-page">
+  <div class="error-container">
+    <div class="error-icon">
+      <i class="fas fa-exclamation-triangle"></i>
+    </div>
+    <h1>Oops! Something went wrong</h1>
+    <p class="error-message"><%= @error %></p>
+    <div class="error-actions">
+      <%= link_to root_path, class: "btn btn-primary" do %>
+        <i class="fas fa-home"></i> Back to Home
+      <% end %>
+      <button onclick="history.back()" class="btn btn-secondary">
+        <i class="fas fa-arrow-left"></i> Go Back
+      </button>
+    </div>
+  </div>
+</div>
