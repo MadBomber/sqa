@@ -44,6 +44,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'kbs'
   spec.add_dependency 'lite-statistics'
   spec.add_dependency 'nenv'
+  spec.add_dependency 'redis'  # Required for KBS blackboard persistence
   spec.add_dependency 'ruby_llm'
   spec.add_dependency 'ruby_llm-mcp'
   spec.add_dependency 'shared_tools'

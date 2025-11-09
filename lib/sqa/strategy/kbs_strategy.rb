@@ -24,6 +24,9 @@ DSL Keywords:
 Example:
   strategy = SQA::Strategy::KBS.new
 
+  # Capture kb for use in perform blocks
+  kb = strategy.kb
+
   # Define custom rules using the DSL
   strategy.add_rule :buy_oversold_uptrend do
     on :rsi, { level: :oversold }
@@ -31,14 +34,14 @@ Example:
     without :position
 
     perform do
-      assert(:signal, { action: :buy, confidence: :high })
+      kb.assert(:signal, { action: :buy, confidence: :high })
     end
   end
 
   # Execute strategy
   signal = strategy.trade(vector)
 
-Note: Use 'perform' (not 'then') to avoid Ruby keyword conflicts.
+Note: Use 'kb.assert' (not just 'assert') in perform blocks to access the knowledge base.
 
 =end
 
@@ -82,10 +85,19 @@ module SQA
       #   add_rule :buy_dip do
       #     on :rsi, { value: ->(v) { v < 30 } }
       #     on :macd, { signal: :bullish }
-      #     perform { assert(:signal, { action: :buy, confidence: :high }) }
+      #     perform { kb.assert(:signal, { action: :buy, confidence: :high }) }
       #   end
+      #
+      # Note: Use `kb.assert` in perform blocks, not just `assert`
       def add_rule(name, &block)
-        @kb.rule(name, &block)
+        # Capture kb reference for use in perform blocks
+        kb = @kb
+
+        # Define the rule with kb available in closure
+        @kb.instance_eval do
+          rule(name, &block)
+        end
+
         self
       end
 
@@ -357,12 +369,15 @@ module SQA
       def load_default_rules
         return if @default_rules_loaded
 
+        # Capture kb reference for use in perform blocks
+        kb = @kb
+
         # Rule 1: Buy on RSI oversold in uptrend
         add_rule :buy_oversold_uptrend do
           on :rsi, { level: :oversold }
           on :trend, { short_term: :up }
           perform do
-            assert(:signal, { action: :buy, confidence: :high, reason: :oversold_uptrend })
+            kb.assert(:signal, { action: :buy, confidence: :high, reason: :oversold_uptrend })
           end
         end
 
@@ -371,7 +386,7 @@ module SQA
           on :rsi, { level: :overbought }
           on :trend, { short_term: :down }
           perform do
-            assert(:signal, { action: :sell, confidence: :high, reason: :overbought_downtrend })
+            kb.assert(:signal, { action: :sell, confidence: :high, reason: :overbought_downtrend })
           end
         end
 
@@ -380,7 +395,7 @@ module SQA
           on :macd, { crossover: :bullish }
           on :trend, { medium_term: :up }
           perform do
-            assert(:signal, { action: :buy, confidence: :medium, reason: :macd_crossover })
+            kb.assert(:signal, { action: :buy, confidence: :medium, reason: :macd_crossover })
           end
         end
 
@@ -389,7 +404,7 @@ module SQA
           on :macd, { crossover: :bearish }
           on :trend, { medium_term: :down }
           perform do
-            assert(:signal, { action: :sell, confidence: :medium, reason: :macd_crossover })
+            kb.assert(:signal, { action: :sell, confidence: :medium, reason: :macd_crossover })
           end
         end
 
@@ -398,7 +413,7 @@ module SQA
           on :bollinger, { position: :below }
           on :trend, { short_term: :up }
           perform do
-            assert(:signal, { action: :buy, confidence: :medium, reason: :bollinger_bounce })
+            kb.assert(:signal, { action: :buy, confidence: :medium, reason: :bollinger_bounce })
           end
         end
 
@@ -407,7 +422,7 @@ module SQA
           on :bollinger, { position: :above }
           on :trend, { short_term: :down }
           perform do
-            assert(:signal, { action: :sell, confidence: :medium, reason: :bollinger_resistance })
+            kb.assert(:signal, { action: :sell, confidence: :medium, reason: :bollinger_resistance })
           end
         end
 
@@ -416,7 +431,7 @@ module SQA
           on :stochastic, { zone: :oversold, crossover: :bullish }
           on :volume, { level: :high }
           perform do
-            assert(:signal, { action: :buy, confidence: :high, reason: :stoch_oversold_volume })
+            kb.assert(:signal, { action: :buy, confidence: :high, reason: :stoch_oversold_volume })
           end
         end
 
@@ -425,7 +440,7 @@ module SQA
           on :stochastic, { zone: :overbought, crossover: :bearish }
           on :volume, { level: :high }
           perform do
-            assert(:signal, { action: :sell, confidence: :high, reason: :stoch_overbought_volume })
+            kb.assert(:signal, { action: :sell, confidence: :high, reason: :stoch_overbought_volume })
           end
         end
 
@@ -434,7 +449,7 @@ module SQA
           on :sma_crossover, { signal: :bullish }
           on :volume, { level: :high }
           perform do
-            assert(:signal, { action: :buy, confidence: :high, reason: :golden_cross })
+            kb.assert(:signal, { action: :buy, confidence: :high, reason: :golden_cross })
           end
         end
 
@@ -443,7 +458,7 @@ module SQA
           on :sma_crossover, { signal: :bearish }
           on :volume, { level: :high }
           perform do
-            assert(:signal, { action: :sell, confidence: :high, reason: :death_cross })
+            kb.assert(:signal, { action: :sell, confidence: :high, reason: :death_cross })
           end
         end
 

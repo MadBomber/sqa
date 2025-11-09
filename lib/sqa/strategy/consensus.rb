@@ -26,9 +26,12 @@ class SQA::Strategy::Consensus
 	def consensus
 		count = @results.group_by(&:itself).transform_values(&:count)
 
-		if count[:buy] > count[:sell]
+		buy_count = count[:buy].to_i
+		sell_count = count[:sell].to_i
+
+		if buy_count > sell_count
 			:buy
-		elsif count[:sell] > count[:buy]
+		elsif sell_count > buy_count
 			:sell
 		else
 			:hold

@@ -463,7 +463,7 @@ module SQA
       peaks = []
       window = 5
 
-      (window...(@ prices.size - window)).each do |i|
+      (window...(@prices.size - window)).each do |i|
         left = @prices[(i - window)...i]
         right = @prices[(i + 1)..(i + window)]
 

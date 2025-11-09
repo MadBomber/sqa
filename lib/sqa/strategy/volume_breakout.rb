@@ -29,9 +29,11 @@ class SQA::Strategy::VolumeBreakout
     # High volume threshold (1.5x average)
     volume_threshold = avg_volume * 1.5
 
-    # Get recent high and low (resistance and support)
-    recent_high = prices.last(20).max
-    recent_low = prices.last(20).min
+    # Get recent high and low (resistance and support) from previous prices
+    # Exclude current price to allow breakout detection
+    lookback_prices = prices[...-1].last(20)  # Last 20 prices excluding current
+    recent_high = lookback_prices.max
+    recent_low = lookback_prices.min
 
     # Buy signal: price breaks above recent high with high volume
     if current_price > recent_high &&
