@@ -1,0 +1,282 @@
+# MkDocs Configuration for SQA Documentation
+site_name: SQA - Simple Qualitative Analysis
+site_description: A powerful Ruby library for stock market technical analysis and trading strategy development
+site_author: Dewayne VanHoozer
+site_url: https://madbomber.github.io/sqa
+copyright: Copyright &copy; 2024 Dewayne VanHoozer
+
+# Repository information
+repo_name: madbomber/sqa
+repo_url: https://github.com/madbomber/sqa
+edit_uri: edit/main/docs/
+
+# Configuration
+theme:
+  name: material
+
+  # Color scheme - Default to light mode
+  palette:
+    # Palette toggle for light mode (default)
+    - scheme: default
+      primary: indigo
+      accent: deep purple
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+
+    # Palette toggle for dark mode
+    - scheme: slate
+      primary: indigo
+      accent: deep purple
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+
+  # Typography
+  font:
+    text: Roboto
+    code: Roboto Mono
+
+  # Logo and icon
+  icon:
+    repo: fontawesome/brands/github
+
+  # Theme features
+  features:
+    # Navigation
+    - navigation.instant
+    - navigation.tracking
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.sections
+    - navigation.path
+    - navigation.indexes
+    - navigation.top
+    - navigation.footer
+
+    # Table of contents
+    - toc.follow
+    - toc.integrate
+
+    # Search
+    - search.suggest
+    - search.highlight
+    - search.share
+
+    # Header
+    - header.autohide
+
+    # Content
+    - content.code.copy
+    - content.code.annotate
+    - content.tabs.link
+    - content.tooltips
+    - content.action.edit
+    - content.action.view
+
+    # Announce
+    - announce.dismiss
+
+# Plugins
+plugins:
+  - search:
+      separator: '[\s\-,:!=\[\]()"`/]+|\.(?!\d)|&[lg]t;|(?!\b)(?=[A-Z][a-z])'
+  - tags:
+      tags_file: tags.md
+
+# Extensions
+markdown_extensions:
+  # Python Markdown
+  - abbr
+  - admonition
+  - attr_list
+  - def_list
+  - footnotes
+  - md_in_html
+  - tables
+  - toc:
+      permalink: true
+      title: On this page
+      toc_depth: 3
+
+  # Python Markdown Extensions
+  - pymdownx.arithmatex:
+      generic: true
+  - pymdownx.betterem:
+      smart_enable: all
+  - pymdownx.caret
+  - pymdownx.critic
+  - pymdownx.details
+  - pymdownx.emoji:
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.keys
+  - pymdownx.magiclink:
+      repo_url_shorthand: true
+      user: madbomber
+      repo: sqa
+  - pymdownx.mark
+  - pymdownx.smartsymbols
+  - pymdownx.snippets:
+      check_paths: true
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.tilde
+
+# Extra CSS and JavaScript
+extra_css:
+  - assets/css/custom.css
+
+extra_javascript:
+  - assets/js/mathjax.js
+  - https://polyfill.io/v3/polyfill.min.js?features=es6
+  - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
+
+# Social media and extra configuration
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/madbomber/sqa
+      name: SQA on GitHub
+    - icon: fontawesome/solid/gem
+      link: https://rubygems.org/gems/sqa
+      name: SQA on RubyGems
+
+  version:
+    provider: mike
+
+  analytics:
+    feedback:
+      title: Was this page helpful?
+      ratings:
+        - icon: material/emoticon-happy-outline
+          name: This page was helpful
+          data: 1
+          note: >-
+            Thanks for your feedback!
+        - icon: material/emoticon-sad-outline
+          name: This page could be improved
+          data: 0
+          note: >-
+            Thanks for your feedback! Help us improve by creating an issue.
+
+# Navigation
+nav:
+  - Home: index.md
+  - Getting Started:
+    - getting-started/index.md
+    - Installation: getting-started/installation.md
+    - Quick Start: getting-started/quick-start.md
+    - Configuration: getting-started/configuration.md
+    - Console Usage: getting-started/console-usage.md
+
+  - Core Concepts:
+    - concepts/index.md
+    - Stock Objects: concepts/stock.md
+    - DataFrames: data_frame.md
+    - Technical Indicators: concepts/indicators.md
+    - Trading Strategies: strategy.md
+
+  - Technical Indicators:
+    - indicators/index.md
+    - Overview: indicators.md
+    - Moving Averages:
+      - Simple Moving Average: simple_moving_average.md
+      - Exponential Moving Average: exponential_moving_average.md
+      - Weighted Moving Average: weighted_moving_average.md
+    - Momentum Indicators:
+      - RSI (Relative Strength Index): relative_strength_index.md
+      - Momentum: momentum.md
+      - Stochastic Oscillator: stochastic_oscillator.md
+      - True Strength Index: true_strength_index.md
+    - Volatility Indicators:
+      - Bollinger Bands: bollinger_bands.md
+      - Average True Range: average_true_range.md
+      - True Range: true_range.md
+      - Donchian Channel: donchian_channel.md
+    - Trend Indicators:
+      - MACD: moving_average_convergence_divergence.md
+      - Market Profile: market_profile.md
+    - Pattern Recognition:
+      - Fibonacci Retracement: fibonacci_retracement.md
+      - Peaks and Valleys: peaks_and_valleys.md
+      - Candlestick Patterns: candlestick_pattern_recognizer.md
+      - Double Top/Bottom: double_top_bottom_pattern.md
+      - Head and Shoulders: head_and_shoulders_pattern.md
+
+  - Trading Strategies:
+    - strategies/index.md
+    - Built-in Strategies:
+      - Bollinger Bands Strategy: strategies/bollinger-bands.md
+      - RSI Strategy: strategies/rsi.md
+      - MACD Strategy: strategies/macd.md
+      - SMA Strategy: strategies/sma.md
+      - EMA Strategy: strategies/ema.md
+      - Stochastic Strategy: strategies/stochastic.md
+      - Volume Breakout: strategies/volume-breakout.md
+      - Mean Reversion: mean_reversion.md
+      - Consensus Strategy: strategies/consensus.md
+    - Advanced Strategies:
+      - Knowledge-Based Strategy (KBS): strategies/kbs.md
+      - Custom Strategies: strategies/custom.md
+
+  - Advanced Features:
+    - advanced/index.md
+    - Portfolio Management: advanced/portfolio.md
+    - Backtesting: advanced/backtesting.md
+    - Strategy Generator: advanced/strategy-generator.md
+    - Genetic Programming: genetic_programming.md
+    - Real-Time Streaming: advanced/streaming.md
+    - FPOP Analysis: advanced/fpop.md
+
+  - AI & Machine Learning:
+    - ai_and_ml.md
+    - Predict Next Value: predict_next_value.md
+    - Identify Wave Condition: identify_wave_condition.md
+    - LIBSVM Format: libsvm_file_format.md
+
+  - API Reference:
+    - api/index.md
+    - SQA Module: api/sqa.md
+    - Stock Class: api/stock.md
+    - DataFrame Class: api/dataframe.md
+    - Strategy Framework: api/strategy.md
+    - Portfolio Class: api/portfolio.md
+    - Backtest Class: api/backtest.md
+    - Stream Class: api/stream.md
+
+  - Data Sources:
+    - data-sources/index.md
+    - Alpha Vantage: alpha_vantage_technical_indicators.md
+    - Data Format: data-sources/format.md
+    - Custom Data: data-sources/custom.md
+
+  - Resources:
+    - Tags: tags.md
+    - Requirements: requirements.md
+    - Terms of Use: terms_of_use.md
+    - Trading Ideas: i_gotta_an_idea.md
+    - Factor Analysis: factors_that_impact_price.md
+    - External Tools:
+      - TA-Lib: ta_lib.md
+      - FinViz: finviz.md
+      - FX Pro Bit: fx_pro_bit.md
+    - Options Trading: options.md
+
+  - Contributing:
+    - contributing/index.md
+    - Development Setup: contributing/setup.md
+    - Testing: contributing/testing.md
+    - Code Style: contributing/style.md
