@@ -226,7 +226,8 @@ nav:
       - EMA Strategy: strategies/ema.md
       - Stochastic Strategy: strategies/stochastic.md
       - Volume Breakout: strategies/volume-breakout.md
-      - Mean Reversion: mean_reversion.md
+      - Mean Reversion: strategies/mean-reversion.md
+      - Market Profile: strategies/market-profile.md
       - Consensus Strategy: strategies/consensus.md
     - Advanced Strategies:
       - Knowledge-Based Strategy (KBS): strategies/kbs.md
@@ -240,6 +241,11 @@ nav:
     - Genetic Programming: genetic_programming.md
     - Real-Time Streaming: advanced/streaming.md
     - FPOP Analysis: advanced/fpop.md
+    - Risk Management: advanced/risk-management.md
+    - Portfolio Optimizer: advanced/portfolio-optimizer.md
+    - Ensemble Strategies: advanced/ensemble.md
+    - Multi-Timeframe Analysis: advanced/multi-timeframe.md
+    - Pattern Matcher: advanced/pattern-matcher.md
 
   - AI & Machine Learning:
     - ai_and_ml.md
