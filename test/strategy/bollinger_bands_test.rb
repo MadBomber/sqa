@@ -27,8 +27,11 @@ class BollingerBandsTest < Minitest::Test
   end
 
   def test_hold_signal_when_price_between_bands
-    # Create stable price data
-    prices = Array.new(30) { 100.0 }
+    # Create price data with some variation (realistic scenario)
+    # Mean around 100, standard deviation around 2
+    prices = [98.0, 99.0, 100.0, 101.0, 102.0, 100.0, 99.0, 101.0, 100.0, 99.0,
+              100.0, 101.0, 99.0, 100.0, 102.0, 100.0, 99.0, 101.0, 100.0, 99.0,
+              100.0, 101.0, 100.0, 99.0, 100.0, 101.0, 100.0, 99.0, 100.0, 100.0]
 
     vector = OpenStruct.new(prices: prices)
     signal = SQA::Strategy::BollingerBands.trade(vector)

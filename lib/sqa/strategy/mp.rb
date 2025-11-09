@@ -6,7 +6,7 @@ class SQA::Strategy::MP
 	extend SQA::Strategy::Common
 
 	def self.trade(vector)
-		mp = vector.market_profile=:mixed,
+		mp = vector.market_profile || :mixed
 
 		if :resistance == mp
 			:sell
