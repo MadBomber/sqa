@@ -21,7 +21,7 @@ module SQA
       # @param stock [SQA::Stock] Stock to analyze
       # @param lookback [Integer] Days to look back for regime detection
       # @param window [Integer] Alias for lookback (for backward compatibility)
-      # @return [Hash] Regime metadata
+      # @return [Hash] Regime metadata with both symbolic and numeric values
       #
       def detect(stock, lookback: nil, window: nil)
         # Accept both lookback and window for backward compatibility
@@ -33,10 +33,18 @@ module SQA
 
         recent_prices = prices.last(period)
 
+        # Get both symbolic and numeric classifications
+        trend_data = detect_trend_with_score(recent_prices)
+        volatility_data = detect_volatility_with_score(recent_prices)
+        strength_data = detect_strength_with_score(recent_prices)
+
         {
-          type: detect_trend(recent_prices),
-          volatility: detect_volatility(recent_prices),
-          strength: detect_strength(recent_prices),
+          type: trend_data[:type],
+          trend_score: trend_data[:score],
+          volatility: volatility_data[:type],
+          volatility_score: volatility_data[:score],
+          strength: strength_data[:type],
+          strength_score: strength_data[:score],
           lookback_days: period,
           detected_at: Time.now
         }
@@ -93,13 +101,13 @@ module SQA
         regimes
       end
 
-      # Classify regime type based on trend
+      # Classify regime type based on trend with numeric score
       #
       # @param prices [Array<Float>] Price array
-      # @return [Symbol] :bull, :bear, or :sideways
+      # @return [Hash] { type: Symbol, score: Float }
       #
-      def detect_trend(prices)
-        return :unknown if prices.size < 20
+      def detect_trend_with_score(prices)
+        return { type: :unknown, score: 0.0 } if prices.size < 20
 
         # Simple moving averages
         sma_short = prices.last(20).sum / 20.0
@@ -108,25 +116,34 @@ module SQA
         # Price vs moving averages
         current_price = prices.last
 
-        # Calculate trend strength
+        # Calculate trend strength (percentage above/below SMA)
         pct_above_sma = ((current_price - sma_long) / sma_long * 100.0)
 
         if pct_above_sma > 5 && sma_short > sma_long
-          :bull
+          { type: :bull, score: pct_above_sma }
         elsif pct_above_sma < -5 && sma_short < sma_long
-          :bear
+          { type: :bear, score: pct_above_sma }
         else
-          :sideways
+          { type: :sideways, score: pct_above_sma }
         end
       end
 
-      # Detect volatility regime
+      # Classify regime type based on trend (backward compatibility)
       #
       # @param prices [Array<Float>] Price array
-      # @return [Symbol] :low, :medium, or :high
+      # @return [Symbol] :bull, :bear, or :sideways
       #
-      def detect_volatility(prices)
-        return :unknown if prices.size < 20
+      def detect_trend(prices)
+        detect_trend_with_score(prices)[:type]
+      end
+
+      # Detect volatility regime with numeric score
+      #
+      # @param prices [Array<Float>] Price array
+      # @return [Hash] { type: Symbol, score: Float }
+      #
+      def detect_volatility_with_score(prices)
+        return { type: :unknown, score: 0.0 } if prices.size < 20
 
         # Calculate daily returns
         returns = []
@@ -137,21 +154,30 @@ module SQA
         avg_volatility = returns.sum / returns.size
 
         if avg_volatility < 1.0
-          :low
+          { type: :low, score: avg_volatility }
         elsif avg_volatility < 2.5
-          :medium
+          { type: :medium, score: avg_volatility }
         else
-          :high
+          { type: :high, score: avg_volatility }
         end
       end
 
-      # Detect trend strength
+      # Detect volatility regime (backward compatibility)
       #
       # @param prices [Array<Float>] Price array
-      # @return [Symbol] :weak, :moderate, or :strong
+      # @return [Symbol] :low, :medium, or :high
       #
-      def detect_strength(prices)
-        return :unknown if prices.size < 20
+      def detect_volatility(prices)
+        detect_volatility_with_score(prices)[:type]
+      end
+
+      # Detect trend strength with numeric score
+      #
+      # @param prices [Array<Float>] Price array
+      # @return [Hash] { type: Symbol, score: Float }
+      #
+      def detect_strength_with_score(prices)
+        return { type: :unknown, score: 0.0 } if prices.size < 20
 
         # Look at consistency of direction
         up_days = 0
@@ -169,12 +195,21 @@ module SQA
         directional_pct = [up_days, down_days].max.to_f / total_days * 100
 
         if directional_pct > 70
-          :strong
+          { type: :strong, score: directional_pct }
         elsif directional_pct > 55
-          :moderate
+          { type: :moderate, score: directional_pct }
         else
-          :weak
+          { type: :weak, score: directional_pct }
         end
+      end
+
+      # Detect trend strength (backward compatibility)
+      #
+      # @param prices [Array<Float>] Price array
+      # @return [Symbol] :weak, :moderate, or :strong
+      #
+      def detect_strength(prices)
+        detect_strength_with_score(prices)[:type]
       end
 
       # Split data by regime
