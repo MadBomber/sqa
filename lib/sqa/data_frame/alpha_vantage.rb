@@ -51,7 +51,7 @@ class SQA::DataFrame
       end
 
       # Read CSV into Polars DataFrame directly
-      df = Polars::DataFrame.read_csv(
+      df = Polars.read_csv(
         StringIO.new(response[:body]),
         dtypes: {
           "open" => :f64,
