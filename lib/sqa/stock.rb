@@ -52,6 +52,19 @@ class SQA::Stock
       # Load cached CSV - transformers already applied when data was first fetched
       # Don't reapply them as columns are already in correct format
       @df = SQA::DataFrame.load(source: @df_path)
+
+      # Migration: Add adj_close_price column if missing (for old cached files)
+      # This ensures compatibility when appending new data that includes this column
+      migrated = false
+      unless @df.columns.include?("adj_close_price")
+        @df.data = @df.data.with_column(
+          @df.data["close_price"].alias("adj_close_price")
+        )
+        migrated = true
+      end
+
+      # Save migrated DataFrame to avoid repeating migration
+      @df.to_csv(@df_path) if migrated
     else
       # Fetch fresh data from source (applies transformers and mapping)
       @df = @klass.recent(@ticker, full: true)
