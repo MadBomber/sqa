@@ -1,5 +1,12 @@
 ## [Unreleased]
 
+### Fixed
+- **DataFrame::Data**: Added missing `SQA::DataFrame::Data` class for stock metadata storage
+  - Stores ticker, name, exchange, source, indicators, and overview data
+  - Supports both hash initialization (JSON) and keyword arguments
+  - Used by `SQA::Stock` for persisting stock metadata
+  - Fixes error when loading stocks in sqa-cli gem
+
 ## [0.0.31] - 2024-11-09
 
 ### Added

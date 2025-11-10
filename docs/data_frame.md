@@ -1,164 +1,384 @@
-# DataFrame (DF)
+# DataFrame Documentation
 
-A common way to handling data is good.  Having multiple ways to import and export datasets is good.  Originally SQA::Datastore was intended to provide this functionality but creating that capability took away from the key focs of this project.
+## Overview
 
-Daru was chosen to fill the gap.  The Daru::Vector and Daru::DataFrane classes offer a good abstraction with multiple import and export formats.
+The `SQA::DataFrame` class is a high-performance wrapper around the Polars DataFrame library, specifically designed for time series financial data manipulation. Polars is a Rust-backed library that provides blazingly fast operations on columnar data.
 
-Daru is part of the SciRuby collection.  Both Daru and SciRuby are a little out of date.
+## Architecture
 
-* https://github.com/SciRuby/daru
-* https://github.com/SciRuby
+The DataFrame system consists of two main components:
 
-There will be Daru extensions and patches made to adapt it to the specific needs of SQA.
+### 1. SQA::DataFrame
 
-Frankly, Ruby has lost the battle to Python w/r/t data analysis.  The Python equivalent library to Daru is Pandas.  It is actively maintained.  There is a Ruby gem that uses PyCall to access Pandas but it is a few years out of date with open issues.
+The main DataFrame class that wraps Polars::DataFrame with SQA-specific convenience methods.
 
-I am considering extracting the Daru::DataFrame class into a new gem `sqa-Ddata_frame` so that I can more easily make upgrades and refactor the old thing.  It really could use a facelift and a better plugin strategy.  The lib/daru/data_frame.rb is over 3,000 lines long.  There is a lot of method documentation; but, I not really sure that all of those methods are really needed.  We could at least extract each of the methods out into its own file.
+**Location**: `lib/sqa/data_frame.rb`
 
-## Creating a DataFrame from a CSV File
+**Key Features**:
+- Wraps Polars::DataFrame for high-performance operations
+- Column-based vectorized operations (avoid row iterations)
+- CSV and JSON import/export
+- Automatic column renaming and transformations
+- FPL (Future Period Loss/Profit) analysis convenience methods
+- Method delegation to underlying Polars DataFrame
 
-A common activity is to use financial websites such as https://finance.yahoo.com to download historical price data for a stock.
+### 2. SQA::DataFrame::Data
 
-Here is how to create a DataFrame from a CSV file downloaded from Finance.yahoo.com ...
+A metadata storage class for stock information, separate from the price/volume data.
 
-```ruby
-df = Daru::DataFrame.from_csv('aapl.csv')
+**Location**: `lib/sqa/data_frame/data.rb`
 
-# The SQA way uses the file's type to invoke the
-# correct method.
-df = SQA::DataFrame.load(filename)
-```
+**Attributes**:
+- `ticker` - Stock symbol (e.g., 'AAPL', 'MSFT')
+- `name` - Company name
+- `exchange` - Exchange symbol (NASDAQ, NYSE, etc.)
+- `source` - Data source (`:alpha_vantage`, `:yahoo_finance`)
+- `indicators` - Technical indicators configuration hash
+- `overview` - Company overview data from Alpha Vantage
 
-The Daru::DataFrame class can be created from many different sources including an ActiveRecord relation -- e.g. you can get you data from a database.
+**Key Features**:
+- Dual initialization: from hash (JSON) or keyword arguments
+- JSON serialization with `to_json`
+- Used by `SQA::Stock` to persist metadata in `~/sqa_data/ticker.json`
+- All attributes are read/write accessible
 
-## Using a DataFrame
+## Creating DataFrames
 
-The column names for a DataFrame are String objects.  To get an Array of the column names do this:
-
-```ruby
-df.vectors.to_a
-  #=> ["Date", "Open", "High", "Low", "Close", "Adj Close", "Volume"]
-```
-
-To get an Array of any specific column do this:
-
-```ruby
-df.vectors["The Column Name"].to_a
-# where "Any Column Name" could be "Adj Close"
-
-```
-
-You can of course use the `last()` method to constrain your Array to only those entries that make sense during your analysis.  Daru::DataFrame supposts both the `first` and `last` methods as well.  You can use them to avoid using any more memory in your Array than is needed.
+### From Data Sources
 
 ```ruby
-df.vectors["The Column Name"].last(14).to_a
-  # This limits the size of the Array to just the last 14 entries in the DataFrame
+# Using Alpha Vantage
+stock = SQA::Stock.new(ticker: 'AAPL')
+df = stock.df  # SQA::DataFrame instance
+
+# Using Yahoo Finance
+stock = SQA::Stock.new(ticker: 'MSFT', source: :yahoo_finance)
+df = stock.df
 ```
 
-## Renaming the Columns
-
-You can rename the columns to be symbols.  Doing this allows you to use the column names as methods for accessing them in the DataFrame.
+### From CSV File
 
 ```ruby
-old_names = df.vectors.to_a
-  #=> ["Date", "Open", "High", "Low", "Close", "Adj Close", "Volume"]
+# Load CSV file (Polars-compatible)
+df = SQA::DataFrame.from_csv_file('path/to/stock_data.csv')
 
-new_names = {} # Hash where key is old name, value is new name
-  #=> {}
-
-df.vectors.each_entry {|old_name| new_names[old_name] = old_name.downcase.gsub(' ','_').to_sym}
-
-new_names
-  #=>
-{"Date"=>:date,
- "Open"=>:open,
- "High"=>:high,
- "Low"=>:low,
- "Close"=>:close,
- "Adj Close"=>:adj_close,
- "Volume"=>:volume}
-
-
-df.rename_vectors(new_names)
-  #=> #<Daru::Index(7): {date, open, high, low, close, adj_close, volume}>
-
-df.vectors
-  #=> #<Daru::Index(7): {date, open, high, low, close, adj_close, volume}>
-
-# Now you can use the symbolized column name as a method to select that column
-df.volume.last(14).volume
-  #=>
-#<Daru::Vector(14)>
-              volume
-     10741  45377800
-     10742  37283200
-     10743  47471900
-     10744  47460200
-     10745  48291400
-     10746  38824100
-     10747  35175100
-     10748  50389300
-     10749  61235200
-     10750 115799700
-     10751  97576100
-     10752  67823000
-     10753  60378500
-     10754  54628800
+# The underlying Polars DataFrame is accessible via .data
+polars_df = df.data
 ```
 
-
-
-
-
-## Stats on a DataFrame
-
-Daru provides some basic tools for the analysis of data stored in a DataFrame.  There are too many to cover at this time.  Here is a simple example:
+### From JSON File
 
 ```ruby
-df.last(14)['Adj Close'].minmax
-  #=> [177.970001, 196.449997]
-
-# You cab cgabge the order of operations ...
-df['Adj Close'].last(14).minmax
-  #=> [177.970001, 196.449997]
-
-# Get a summary report ...
-puts df['Adj Close'].last(14).minmax
+# Load JSON array of hashes
+df = SQA::DataFrame.from_json_file('path/to/stock_data.json')
 ```
-<pre>
-= Adj Close
-  n :14
-  non-missing:14
-  median: 192.66500100000002
-  mean: 188.7521
-  std.dev.: 7.4488
-  std.err.: 1.9908
-  skew: -0.4783
-  kurtosis: -1.7267
-</pre>
 
-## Bacon in the Sky
+### From Array of Hashes
 
 ```ruby
-puts df.ai("when is the best time to buy a stock?")
+data = [
+  { date: '2024-01-01', close: 150.0, volume: 1_000_000 },
+  { date: '2024-01-02', close: 152.0, volume: 1_200_000 }
+]
+
+df = SQA::DataFrame.from_aofh(data)
 ```
-The best time to buy a stock is subjective and can vary depending on individual goals, investment strategies, and risk tolerance. However, there are a few general principles to consider:
 
-1. Valuation: Look for stocks trading at a reasonable or discounted price compared to their intrinsic value. Conduct fundamental analysis to assess a company's financial health, growth prospects, and competitive advantage.
+## Working with DataFrames
 
-2. Market Timing: Trying to time the market perfectly can be challenging and is often unpredictable. Instead, focus on buying stocks for the long term, considering the company's potential to grow over time.
-
-3. Diversification: Avoid investing all your funds in a single stock or industry. Diversifying your portfolio across various sectors can help reduce risk and capture different opportunities.
-
-4. Patient approach: Practice patience and avoid making impulsive decisions. Regularly monitor the stock's performance, industry trends, and market conditions to make informed choices.
-
-5. Considerations: Take into account any upcoming events that may impact a stock's price, such as earnings announcements, mergers and acquisitions, regulatory changes, or macroeconomic factors.
-
-It's important to note that investing in stocks carries inherent risks, and seeking guidance from financial professionals or conducting thorough research is recommended.  Don't ever listen to what an AI has to say about the subject.  We are all biased, error prone, and predictability uninformed on the subject.
-
+### Column Access
 
 ```ruby
-puts df.ai("Yes; but, should I buy this stock now?")
-```
-Consulting the magic eight ball cluster.... The future looks cloudy.  You should have bought it 14 days ago when I told you it was on its way up!  Do you ever listen to me?  No!  I slave over these numbers night and day.  I consult the best magic eight ball sources available.  What do I get for my efforts?  Nothing!
+# Get column names
+df.columns
+# => ["timestamp", "open", "high", "low", "close", "adj_close_price", "volume"]
 
+# Access a column (returns Polars::Series)
+close_prices = df["close"]
+
+# Convert to Ruby array
+prices_array = df["adj_close_price"].to_a
+```
+
+### Basic Operations
+
+```ruby
+# Get dimensions
+df.size      # Number of rows (also: df.nrows, df.length)
+df.ncols     # Number of columns
+
+# Get first/last rows
+df.head(10)  # First 10 rows
+df.tail(10)  # Last 10 rows
+
+# Column statistics (via Polars)
+df.data["close"].mean
+df.data["volume"].sum
+df.data["close"].min
+df.data["close"].max
+```
+
+### Data Transformation
+
+```ruby
+# Rename columns
+mapping = { 'Close' => :close, 'Volume' => :volume }
+df.rename_columns!(mapping)
+
+# Apply transformers
+transformers = {
+  date: ->(val) { Date.parse(val) },
+  volume: ->(val) { val.to_i }
+}
+df.apply_transformers!(transformers)
+```
+
+### Appending DataFrames
+
+```ruby
+# Combine two DataFrames
+df1.append!(df2)  # Modifies df1 in place
+df1.concat!(df2)  # Alias for append!
+```
+
+### Export
+
+```ruby
+# To CSV
+df.to_csv('output.csv')
+df.write_csv('output.csv')  # Alias
+
+# To Hash
+hash = df.to_h
+# => { close: [150.0, 152.0, ...], volume: [1_000_000, 1_200_000, ...] }
+```
+
+## FPL Analysis Methods
+
+The DataFrame includes convenience methods for Future Period Loss/Profit analysis:
+
+### Basic FPL Calculation
+
+```ruby
+# Calculate min/max future deltas for each point
+fpl_data = df.fpl(column: "adj_close_price", fpop: 10)
+# => [[min_delta, max_delta], [min_delta, max_delta], ...]
+```
+
+### Comprehensive FPL Analysis
+
+```ruby
+# Get detailed analysis with risk metrics
+analysis = df.fpl_analysis(column: "adj_close_price", fpop: 10)
+# => [
+#   {
+#     min_delta: -2.5,
+#     max_delta: 5.3,
+#     magnitude: 3.9,
+#     risk: 7.8,
+#     direction: :UP
+#   },
+#   ...
+# ]
+```
+
+See [FPL Analysis Documentation](advanced/fpop.md) for more details.
+
+## Working with Stock Metadata
+
+### Creating Metadata
+
+```ruby
+# From keyword arguments
+data = SQA::DataFrame::Data.new(
+  ticker: 'AAPL',
+  source: :alpha_vantage,
+  indicators: { rsi: 14, sma: [20, 50] }
+)
+
+# From hash (JSON deserialization)
+json_data = JSON.parse(File.read('aapl.json'))
+data = SQA::DataFrame::Data.new(json_data)
+```
+
+### Accessing and Modifying Metadata
+
+```ruby
+# Read attributes
+data.ticker        # => 'AAPL'
+data.source        # => :alpha_vantage
+data.indicators    # => { rsi: 14, sma: [20, 50] }
+
+# Write attributes
+data.name = 'Apple Inc.'
+data.exchange = 'NASDAQ'
+data.overview = {
+  'company' => 'Apple Inc.',
+  'sector' => 'Technology',
+  'market_cap' => 2_800_000_000_000
+}
+```
+
+### Persistence
+
+```ruby
+# Serialize to JSON
+json_string = data.to_json
+
+# Save to file (typically done by SQA::Stock)
+File.write('aapl.json', data.to_json)
+
+# Load from file
+json_data = JSON.parse(File.read('aapl.json'))
+data = SQA::DataFrame::Data.new(json_data)
+```
+
+## Performance Tips
+
+1. **Use Column Operations**: Always prefer Polars column operations over Ruby loops
+   ```ruby
+   # GOOD: Vectorized operation
+   df.data["close"].mean
+
+   # BAD: Ruby loop
+   df["close"].to_a.sum / df.size.to_f
+   ```
+
+2. **Access Underlying Polars**: Use `df.data` for direct Polars operations
+   ```ruby
+   # Direct Polars access
+   filtered = df.data.filter(df.data["volume"] > 1_000_000)
+   ```
+
+3. **Avoid Unnecessary Array Conversions**: Only convert to arrays when needed
+   ```ruby
+   # Only convert when passing to external functions
+   prices = df["adj_close_price"].to_a
+   rsi = SQAI.rsi(prices, period: 14)
+   ```
+
+4. **Batch Operations**: Combine operations when possible
+   ```ruby
+   # Instead of multiple separate operations
+   df.apply_transformers!(transformers)
+   df.rename_columns!(mapping)
+   ```
+
+## Data Sources
+
+### Alpha Vantage
+
+**Location**: `lib/sqa/data_frame/alpha_vantage.rb`
+
+```ruby
+SQA::DataFrame::AlphaVantage.recent('AAPL', full: true)
+```
+
+**Requirements**:
+- Environment variable: `AV_API_KEY` or `ALPHAVANTAGE_API_KEY`
+- Rate limiting: 5 calls/minute (free tier)
+
+### Yahoo Finance
+
+**Location**: `lib/sqa/data_frame/yahoo_finance.rb`
+
+```ruby
+SQA::DataFrame::YahooFinance.recent('AAPL', full: true)
+```
+
+**Features**:
+- No API key required
+- Web scraping based (less reliable)
+- Good for testing and fallback
+
+## Adding New Data Sources
+
+To add a new data source adapter:
+
+1. Create `lib/sqa/data_frame/my_source.rb`
+2. Define class `SQA::DataFrame::MySource`
+3. Implement `self.recent(ticker, **options)` method
+4. Return data in Polars-compatible format
+5. Add column mapping if needed
+
+**Example**:
+
+```ruby
+class SQA::DataFrame::MySource
+  TRANSFORMERS = {
+    timestamp: ->(val) { Date.parse(val) },
+    volume: ->(val) { val.to_i }
+  }
+
+  def self.recent(ticker, **options)
+    # Fetch data from your source
+    raw_data = fetch_from_api(ticker)
+
+    # Convert to Polars-compatible format
+    SQA::DataFrame.new(raw_data, transformers: TRANSFORMERS)
+  end
+end
+```
+
+## Common Gotchas
+
+1. **DataFrame vs Polars**:
+   - `df` is `SQA::DataFrame`
+   - `df.data` is `Polars::DataFrame`
+
+2. **Column Names**:
+   - Column names are strings, not symbols
+   - Use `df["close"]` not `df[:close]`
+
+3. **Method Delegation**:
+   - Unknown methods are delegated to Polars::DataFrame
+   - Check Polars docs for advanced operations
+
+4. **Indicators Need Arrays**:
+   - Extract data with `.to_a` before passing to SQAI/TAI functions
+   - Example: `prices = df["close"].to_a`
+
+## Related Documentation
+
+- [FPL Analysis](advanced/fpop.md) - Future Period Loss/Profit utilities
+- [Stock Class](api/stock.md) - Using DataFrames with Stock objects
+- [Indicators](indicators/index.md) - Technical indicator integration
+- [Polars Documentation](https://pola-rs.github.io/polars-book/) - Underlying library
+
+## Example: Complete Workflow
+
+```ruby
+require 'sqa'
+
+SQA.init
+
+# Load stock data
+stock = SQA::Stock.new(ticker: 'AAPL')
+
+# Access DataFrame
+df = stock.df
+
+# Get price array for indicators
+prices = df["adj_close_price"].to_a
+
+# Calculate technical indicators
+sma_20 = SQAI.sma(prices, period: 20)
+rsi_14 = SQAI.rsi(prices, period: 14)
+
+# FPL analysis
+fpl_analysis = df.fpl_analysis(fpop: 10)
+high_quality = SQA::FPOP.filter_by_quality(
+  fpl_analysis,
+  min_magnitude: 5.0,
+  max_risk: 25.0
+)
+
+# Access stock metadata
+puts "Ticker: #{stock.ticker}"
+puts "Exchange: #{stock.exchange}"
+puts "Source: #{stock.source}"
+
+# Export data
+df.to_csv("aapl_prices.csv")
+File.write("aapl_metadata.json", stock.data.to_json)
+```
