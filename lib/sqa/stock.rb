@@ -52,7 +52,7 @@ class SQA::Stock
       @df = SQA::DataFrame.load(source: @df_path, transformers: @transformers)
     else
       @df = @klass.recent(@ticker, full: true)
-      @df.write_csv(@df_path)
+      @df.to_csv(@df_path)
       return
     end
 
@@ -60,17 +60,17 @@ class SQA::Stock
   end
 
   def update_dataframe_with_recent_data
-    from_date = Date.parse(@df.column("timestamp").last)
+    from_date = Date.parse(@df["timestamp"].to_a.last)
     df2 = @klass.recent(@ticker, from_date: from_date)
 
-    if df2 && (df2.height > 0)
-      @df.concat(df2)
-      @df.write_csv(@df_path)
+    if df2 && (df2.size > 0)
+      @df.concat!(df2)
+      @df.to_csv(@df_path)
     end
   end
 
   def to_s
-    "#{ticker} with #{@df.height} data points from #{@df["timestamp"].first} to #{@df["timestamp"].last}"
+    "#{ticker} with #{@df.size} data points from #{@df["timestamp"].to_a.first} to #{@df["timestamp"].to_a.last}"
   end
   alias_method :inspect, :to_s
 

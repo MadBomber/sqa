@@ -64,11 +64,11 @@ class SQA::DataFrame
 
       # Handle date criteria if applicable
       if from_date
-        df = df.filter(df["date"].gt_eq(from_date.to_s))
+        df = df.filter(df["timestamp"].gt_eq(from_date.to_s))
       end
 
-      # Relay that DataFrame
-      df
+      # Wrap in SQA::DataFrame with proper transformers
+      SQA::DataFrame.new(df, transformers: TRANSFORMERS, mapping: HEADER_MAPPING)
     end
   end
 end

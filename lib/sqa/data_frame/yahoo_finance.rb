@@ -64,8 +64,9 @@ class SQA::DataFrame
         }
       end.compact
 
-      # Utilize Polars DataFrame for the Yahoo Finance data
-      Polars::DataFrame.new(data)
+      # Create Polars DataFrame then wrap in SQA::DataFrame
+      polars_df = Polars::DataFrame.new(data)
+      SQA::DataFrame.new(polars_df, mapping: HEADER_MAPPING)
     end
   end
 end
