@@ -30,7 +30,11 @@ $DEBUG_ME = true
 #############################################
 ## Additional Libraries
 
-require 'amazing_print'
+begin
+  require 'amazing_print'
+rescue LoadError
+  # amazing_print is optional (development dependency)
+end
 require 'faraday'
 require 'hashie'
 require 'lite/statistics'
