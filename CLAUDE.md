@@ -45,6 +45,7 @@ sqa-console        # Launch IRB with SQA library loaded
 ### Core Module Structure
 - **SQA::Stock**: Primary domain object representing a stock with price history and metadata
 - **SQA::DataFrame**: High-performance wrapper around Polars for time series data manipulation
+- **SQA::DataFrame::Data**: Stock metadata storage (ticker, name, exchange, source, indicators, overview)
 - **SQAI / SQA::TAI**: Access to 150+ technical indicators from `sqa-tai` gem (TA-Lib wrapper)
 - **SQA::Strategy**: Trading strategy framework with 12+ built-in strategies
 - **SQA::Portfolio**: Position and trade tracking with P&L calculations (265 lines)
@@ -248,6 +249,16 @@ end
 - Leverage vectorized operations
 - Example: `df.data["close_price"]` returns Polars::Series
 
+### Working with Stock Metadata (DataFrame::Data)
+- **Purpose**: Stores stock metadata separate from price/volume DataFrame
+- **Attributes**: ticker, name, exchange, source, indicators, overview
+- **Dual initialization**:
+  - From hash: `SQA::DataFrame::Data.new(JSON.parse(json_string))`
+  - From keywords: `SQA::DataFrame::Data.new(ticker: 'AAPL', source: :alpha_vantage, indicators: {})`
+- **JSON serialization**: `data.to_json` for persistence
+- **Used by**: `SQA::Stock` to persist metadata in `~/sqa_data/ticker.json`
+- **File location**: `lib/sqa/data_frame/data.rb`
+
 ### Working with Indicators
 - **Do NOT add indicators to SQA** - contribute to `sqa-tai` gem instead
 - Use indicators: `SQAI.sma(prices_array, period: 20)`
@@ -297,6 +308,7 @@ lib/
     ├── data_frame.rb               # Polars DataFrame wrapper
     ├── data_frame/
     │   ├── alpha_vantage.rb        # Alpha Vantage data adapter
+    │   ├── data.rb                 # Stock metadata storage class (93 lines)
     │   └── yahoo_finance.rb        # Yahoo Finance scraper
     ├── errors.rb                   # Error classes
     ├── ensemble.rb                 # ✨ NEW: Strategy combination and voting (358 lines)
