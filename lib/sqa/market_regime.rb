@@ -20,19 +20,24 @@ module SQA
       #
       # @param stock [SQA::Stock] Stock to analyze
       # @param lookback [Integer] Days to look back for regime detection
+      # @param window [Integer] Alias for lookback (for backward compatibility)
       # @return [Hash] Regime metadata
       #
-      def detect(stock, lookback: 60)
-        prices = stock.df["adj_close_price"].to_a
-        return { type: :unknown } if prices.size < lookback
+      def detect(stock, lookback: nil, window: nil)
+        # Accept both lookback and window for backward compatibility
+        # lookback takes precedence if both provided
+        period = lookback || window || 60
 
-        recent_prices = prices.last(lookback)
+        prices = stock.df["adj_close_price"].to_a
+        return { type: :unknown } if prices.size < period
+
+        recent_prices = prices.last(period)
 
         {
           type: detect_trend(recent_prices),
           volatility: detect_volatility(recent_prices),
           strength: detect_strength(recent_prices),
-          lookback_days: lookback,
+          lookback_days: period,
           detected_at: Time.now
         }
       end
