@@ -6,6 +6,7 @@ require 'csv'
 require 'polars'
 
 
+require_relative 'data_frame/data'
 require_relative 'data_frame/yahoo_finance'
 require_relative 'data_frame/alpha_vantage'
 
