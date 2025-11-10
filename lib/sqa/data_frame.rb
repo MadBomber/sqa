@@ -45,7 +45,8 @@ class SQA::DataFrame
     rename_mapping = @data.columns.each_with_index.map do |col, _|
       # Try exact match first, then lowercase match
       new_name = string_mapping[col] || string_mapping[col.downcase] || col
-      [col, new_name]
+      # Polars requires both keys and values to be strings
+      [col, new_name.to_s]
     end.to_h
 
     @data = @data.rename(rename_mapping)
