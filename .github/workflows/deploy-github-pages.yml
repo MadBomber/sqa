@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - develop
     paths:
       - "docs/**"
       - "mkdocs.yml"
@@ -28,37 +29,25 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: 3.x
-          cache: 'pip'
-
-      - name: Cache dependencies
-        uses: actions/cache@v4
-        with:
-          path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
-          restore-keys: |
-            ${{ runner.os }}-pip-
 
       - name: Install dependencies
         run: |
-          pip install --upgrade pip
           pip install mkdocs
           pip install mkdocs-material
           pip install mkdocs-macros-plugin
           pip install mike
-          pip install pymdown-extensions
-          pip install mkdocs-git-revision-date-localized-plugin
-          pip install mkdocs-minify-plugin
 
       - name: Configure Git
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
 
-      - name: Build documentation
-        run: mkdocs build --clean --strict
-
       - name: Deploy to GitHub Pages
-        if: github.ref == 'refs/heads/main'
         run: |
-          echo "Deploying from main branch"
-          mkdocs gh-deploy --force --clean --message "docs: deploy documentation [skip ci]"
+          if [ "${{ github.ref }}" = "refs/heads/main" ]; then
+            echo "Deploying from main branch"
+            mkdocs gh-deploy --force --clean
+          else
+            echo "Deploying from develop branch"
+            mkdocs gh-deploy --force --clean
+          fi
