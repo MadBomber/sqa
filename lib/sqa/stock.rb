@@ -53,9 +53,24 @@ class SQA::Stock
       # Don't reapply them as columns are already in correct format
       @df = SQA::DataFrame.load(source: @df_path)
 
-      # Migration: Add adj_close_price column if missing (for old cached files)
-      # This ensures compatibility when appending new data that includes this column
       migrated = false
+
+      # Migration 1: Rename old column names to new convention
+      # Old files may have: open, high, low, close
+      # New files should have: open_price, high_price, low_price, close_price
+      if @df.columns.include?("open") && !@df.columns.include?("open_price")
+        old_to_new_mapping = {
+          "open"   => "open_price",
+          "high"   => "high_price",
+          "low"    => "low_price",
+          "close"  => "close_price"
+        }
+        @df.rename_columns!(old_to_new_mapping)
+        migrated = true
+      end
+
+      # Migration 2: Add adj_close_price column if missing (for old cached files)
+      # This ensures compatibility when appending new data that includes this column
       unless @df.columns.include?("adj_close_price")
         @df.data = @df.data.with_column(
           @df.data["close_price"].alias("adj_close_price")
