@@ -1,0 +1,88 @@
+/* Custom styles for SQA documentation */
+
+:root {
+  --md-primary-fg-color: #3f51b5;
+  --md-accent-fg-color: #673ab7;
+}
+
+/* Enhanced code blocks */
+.highlight {
+  border-radius: 4px;
+}
+
+/* Better tables */
+table {
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Card styling for grid layouts */
+.md-typeset .grid.cards > * {
+  border: 1px solid var(--md-default-fg-color--lightest);
+  border-radius: 4px;
+  transition: all 0.2s ease-in-out;
+}
+
+.md-typeset .grid.cards > *:hover {
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  transform: translateY(-2px);
+}
+
+/* Admonition enhancements */
+.admonition {
+  border-left-width: 4px;
+}
+
+/* Code inline emphasis */
+code {
+  background-color: var(--md-code-bg-color);
+  border-radius: 2px;
+  padding: 0.1em 0.3em;
+}
+
+/* Better h1 styling */
+.md-typeset h1 {
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+/* Footer enhancement */
+.md-footer-meta {
+  background-color: var(--md-footer-bg-color);
+}
+
+/* Responsive images */
+.md-typeset img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Warning box for trading disclaimers */
+.md-typeset .admonition.warning {
+  border-left-color: #ff9800;
+}
+
+/* Success indicators */
+.md-typeset .admonition.tip {
+  border-left-color: #00c853;
+}
+
+/* Mermaid diagram styling */
+.mermaid {
+  text-align: center;
+  margin: 1em 0;
+}
+
+/* Better spacing for navigation tabs */
+.md-tabs {
+  border-bottom: 1px solid var(--md-default-fg-color--lightest);
+}
+
+/* Code copy button enhancement */
+.md-clipboard {
+  transition: opacity 0.2s;
+}
+
+/* Table of contents highlighting */
+.md-sidebar--secondary .md-nav__link--active {
+  font-weight: 600;
+}
