@@ -137,6 +137,18 @@ class SQA::DataFrame
   end
 
   class << self
+    # Load a DataFrame from a file source
+    # This is the primary method for loading persisted DataFrames
+    #
+    # @param source [String, Pathname] Path to CSV file
+    # @param transformers [Hash] Column transformations to apply
+    # @param mapping [Hash] Column name mappings
+    # @return [SQA::DataFrame] Loaded DataFrame
+    def load(source:, transformers: {}, mapping: {})
+      df = Polars.read_csv(source.to_s)
+      new(df, mapping: mapping, transformers: transformers)
+    end
+
     def from_aofh(aofh, mapping: {}, transformers: {})
       aoh_sanitized = aofh.map { |entry| entry.transform_keys(&:to_s) }
       columns = aoh_sanitized.first.keys
@@ -150,7 +162,7 @@ class SQA::DataFrame
 
     def from_csv_file(source, mapping: {}, transformers: {})
       df = Polars.read_csv(source)
-      new(df)
+      new(df, mapping: mapping, transformers: transformers)
     end
 
     def from_json_file(source, mapping: {}, transformers: {})
