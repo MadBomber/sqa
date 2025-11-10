@@ -22,8 +22,10 @@ class SQA::DataFrame
               Polars::DataFrame.new([])
             end
 
-    apply_transformers!(transformers) unless transformers.empty?
+    # IMPORTANT: Rename columns FIRST, then apply transformers
+    # Transformers expect renamed column names
     rename_columns!(mapping) unless mapping.empty?
+    apply_transformers!(transformers) unless transformers.empty?
   end
 
   def apply_transformers!(transformers)
@@ -36,9 +38,16 @@ class SQA::DataFrame
   end
 
   def rename_columns!(mapping)
+    # Normalize mapping keys to strings for consistent lookup
+    # mapping can have string or symbol keys, columns are always strings
+    string_mapping = mapping.transform_keys(&:to_s)
+
     rename_mapping = @data.columns.each_with_index.map do |col, _|
-      [col, mapping[col.downcase.to_sym] || col]
+      # Try exact match first, then lowercase match
+      new_name = string_mapping[col] || string_mapping[col.downcase] || col
+      [col, new_name]
     end.to_h
+
     @data = @data.rename(rename_mapping)
   end
 
@@ -141,11 +150,18 @@ class SQA::DataFrame
     # This is the primary method for loading persisted DataFrames
     #
     # @param source [String, Pathname] Path to CSV file
-    # @param transformers [Hash] Column transformations to apply
-    # @param mapping [Hash] Column name mappings
+    # @param transformers [Hash] Column transformations to apply (usually not needed for cached data)
+    # @param mapping [Hash] Column name mappings (usually not needed for cached data)
     # @return [SQA::DataFrame] Loaded DataFrame
+    #
+    # Note: For cached CSV files, transformers and mapping should typically be empty
+    # since transformations were already applied when the data was first fetched.
+    # We only apply them if the CSV has old-format column names that need migration.
     def load(source:, transformers: {}, mapping: {})
       df = Polars.read_csv(source.to_s)
+
+      # Auto-detect if CSV needs migration (has old column names like "open" instead of "open_price")
+      # Only apply mapping if explicitly provided (for migration scenarios)
       new(df, mapping: mapping, transformers: transformers)
     end
 

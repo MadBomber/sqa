@@ -49,8 +49,11 @@ class SQA::Stock
 
   def update_the_dataframe
     if @df_path.exist?
-      @df = SQA::DataFrame.load(source: @df_path, transformers: @transformers)
+      # Load cached CSV - transformers already applied when data was first fetched
+      # Don't reapply them as columns are already in correct format
+      @df = SQA::DataFrame.load(source: @df_path)
     else
+      # Fetch fresh data from source (applies transformers and mapping)
       @df = @klass.recent(@ticker, full: true)
       @df.to_csv(@df_path)
       return
