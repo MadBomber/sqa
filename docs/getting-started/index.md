@@ -40,22 +40,6 @@ Before you begin, make sure you have:
 
     [:octicons-arrow-right-24: Quick Start Guide](quick-start.md)
 
--   :material-cog:{ .lg .middle } __Configuration__
-
-    ---
-
-    Configure data sources and customize settings
-
-    [:octicons-arrow-right-24: Configuration](configuration.md)
-
--   :material-console:{ .lg .middle } __Console Usage__
-
-    ---
-
-    Interactive exploration with sqa-console
-
-    [:octicons-arrow-right-24: Console Guide](console-usage.md)
-
 </div>
 
 ## Typical Workflow

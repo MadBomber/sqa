@@ -92,4 +92,4 @@ signal = SQA::Strategy::RSI.trade(vector)
 ## Further Reading
 
 - [RSI on Investopedia](https://www.investopedia.com/terms/r/rsi.asp)
-- [Trading with RSI](../concepts/momentum.md)
+- [Technical Indicators](../indicators/index.md)

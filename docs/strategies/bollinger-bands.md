@@ -143,4 +143,4 @@ end
 
 - [Bollinger Bands on Wikipedia](https://en.wikipedia.org/wiki/Bollinger_Bands)
 - [John Bollinger's Official Site](https://www.bollingerbands.com/)
-- [Understanding Volatility with Bollinger Bands](../concepts/volatility.md)
+- [Technical Indicators](../indicators/index.md)

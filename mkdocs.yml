@@ -225,6 +225,7 @@ nav:
 
   - AI & Machine Learning:
     - ai_and_ml.md
+    - Mean Reversion: mean_reversion.md
     - Predict Next Value: predict_next_value.md
     - Identify Wave Condition: identify_wave_condition.md
     - LIBSVM Format: libsvm_file_format.md

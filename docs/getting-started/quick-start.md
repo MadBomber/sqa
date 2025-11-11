@@ -204,10 +204,10 @@ SQA::Strategy.descendants  # List all strategy classes
 
 Now that you've run your first analyses:
 
-1. **[Configuration Guide](configuration.md)** - Customize data sources and settings
-2. **[Core Concepts](../concepts/index.md)** - Understand SQA's architecture
-3. **[Trading Strategies](../strategies/index.md)** - Explore built-in strategies
-4. **[Advanced Features](../advanced/index.md)** - Portfolio management, streaming, etc.
+1. **[Core Concepts](../concepts/index.md)** - Understand SQA's architecture
+2. **[Trading Strategies](../strategies/index.md)** - Explore built-in strategies
+3. **[Advanced Features](../advanced/index.md)** - Portfolio management, streaming, etc.
+4. **[API Reference](../api/index.md)** - Complete API documentation
 
 ## Common Patterns
 
