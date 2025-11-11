@@ -341,7 +341,6 @@ end
 ## Related Documentation
 
 - [FPL Analysis](advanced/fpop.md) - Future Period Loss/Profit utilities
-- [Stock Class](api/stock.md) - Using DataFrames with Stock objects
 - [Indicators](indicators/index.md) - Technical indicator integration
 - [Polars Documentation](https://pola-rs.github.io/polars-book/) - Underlying library
 

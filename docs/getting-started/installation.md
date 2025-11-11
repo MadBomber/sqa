@@ -192,8 +192,8 @@ bundle install
 Now that you have SQA installed:
 
 1. **[Quick Start Guide](quick-start.md)** - Run your first analysis
-2. **[Configuration](configuration.md)** - Customize your setup
-3. **[Console Usage](console-usage.md)** - Explore interactively
+2. **[Core Concepts](../concepts/index.md)** - Understand SQA's architecture
+3. **[Trading Strategies](../strategies/index.md)** - Explore built-in strategies
 
 ## Additional Dependencies
 

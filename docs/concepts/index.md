@@ -33,14 +33,6 @@ graph TB
 
 <div class="grid cards" markdown>
 
--   :material-chart-line:{ .lg .middle } __Stock Objects__
-
-    ---
-
-    Learn about loading and managing stock data
-
-    [:octicons-arrow-right-24: Stock Guide](stock.md)
-
 -   :material-table:{ .lg .middle } __DataFrames__
 
     ---
@@ -53,9 +45,9 @@ graph TB
 
     ---
 
-    150+ technical analysis indicators via TA-Lib
+    150+ technical analysis indicators via sqa-tai gem
 
-    [:octicons-arrow-right-24: Indicators](indicators.md)
+    [:octicons-arrow-right-24: Indicators](../indicators/index.md)
 
 -   :material-strategy:{ .lg .middle } __Strategies__
 

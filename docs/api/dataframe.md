@@ -1047,7 +1047,6 @@ See `DATAFRAME_ARCHITECTURE_REVIEW.md` for detailed analysis.
 
 ## Related Documentation
 
-- [Stock Class](stock.md) - Using DataFrames with Stock objects
 - [FPL Analysis](../advanced/fpop.md) - Future Period Loss/Profit utilities
 - [Technical Indicators](../indicators/index.md) - SQAI/TAI integration
 - [Polars Documentation](https://pola-rs.github.io/polars-book/) - Underlying library

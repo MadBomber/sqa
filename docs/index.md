@@ -124,8 +124,6 @@ Ready to dive in? Check out our guides:
 
 - **[Installation Guide](getting-started/installation.md)** - Get SQA up and running
 - **[Quick Start](getting-started/quick-start.md)** - Your first analysis in minutes
-- **[Configuration](getting-started/configuration.md)** - Customize SQA for your needs
-- **[Console Usage](getting-started/console-usage.md)** - Interactive exploration with `sqa-console`
 
 ## Key Resources
 
