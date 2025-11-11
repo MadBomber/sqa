@@ -26,7 +26,7 @@ module SQA
         df = stock.df
 
         # Extract dates and prices
-        dates = df["date"].to_a.map { |d| Date.parse(d.to_s) }
+        dates = df["timestamp"].to_a.map { |d| Date.parse(d.to_s) }
         prices = df["adj_close_price"].to_a
 
         # Calculate monthly returns
@@ -52,7 +52,7 @@ module SQA
       #
       def filter_by_months(stock, months)
         df = stock.df
-        dates = df["date"].to_a.map { |d| Date.parse(d.to_s) }
+        dates = df["timestamp"].to_a.map { |d| Date.parse(d.to_s) }
         prices = df["adj_close_price"].to_a
 
         indices = []
