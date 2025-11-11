@@ -20,12 +20,20 @@ if defined?(DebugMe)
 	unless respond_to?(:debug_me)
 		include DebugMe
 	end
+	$DEBUG_ME = true
 else
-	require 'debug_me'
-	include DebugMe
+	begin
+		require 'debug_me'
+		include DebugMe
+		$DEBUG_ME = true
+	rescue LoadError
+		# debug_me is optional - define a no-op if not available
+		def debug_me(tag = nil, &block)
+			# No-op when debug_me gem is not available
+		end
+		$DEBUG_ME = false
+	end
 end
-
-$DEBUG_ME = true
 
 #############################################
 ## Additional Libraries

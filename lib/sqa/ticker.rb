@@ -36,14 +36,21 @@ class SQA::Ticker
      until(found || tries >= 3) do
       files     = Pathname.new(SQA.config.data_dir).children.select{|c| c.basename.to_s.start_with?(FILENAME_PREFIX)}.sort
       if files.empty?
-        download
+        begin
+          download
+        rescue => e
+          warn "Warning: Could not download ticker list: #{e.message}" if $VERBOSE
+        end
         tries += 1
       else
         found = true
       end
     end
 
-    raise "NoDataError" if files.empty?
+    if files.empty?
+      warn "Warning: No ticker validation data available. Proceeding without validation." if $VERBOSE
+      return {}
+    end
 
     load_from_csv files.last
   end

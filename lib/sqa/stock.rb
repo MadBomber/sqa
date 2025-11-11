@@ -11,10 +11,15 @@ class SQA::Stock
     @ticker = ticker.downcase
     @source = source
 
-    raise "Invalid Ticker #{ticker}" unless SQA::Ticker.valid?(ticker)
-
     @data_path = SQA.data_dir + "#{@ticker}.json"
     @df_path = SQA.data_dir + "#{@ticker}.csv"
+
+    # Validate ticker if validation data is available and cached data doesn't exist
+    unless @data_path.exist? && @df_path.exist?
+      unless SQA::Ticker.valid?(ticker)
+        warn "Warning: Ticker #{ticker} could not be validated. Proceeding anyway." if $VERBOSE
+      end
+    end
 
     @klass = "SQA::DataFrame::#{@source.to_s.camelize}".constantize
     @transformers = "SQA::DataFrame::#{@source.to_s.camelize}::TRANSFORMERS".constantize
@@ -27,8 +32,14 @@ class SQA::Stock
     if @data_path.exist?
       @data = SQA::DataFrame::Data.new(JSON.parse(@data_path.read))
     else
+      # Create minimal data structure
       create_data
+
+      # Try to fetch overview data, but don't fail if we can't
+      # This is optional metadata - we can work with just price data
       update
+
+      # Save whatever data we have (even if overview fetch failed)
       save_data
     end
   end
@@ -38,7 +49,13 @@ class SQA::Stock
   end
 
   def update
-    merge_overview
+    begin
+      merge_overview
+    rescue => e
+      # Log warning but don't fail - overview data is optional
+      # Common causes: rate limits, network issues, API errors
+      warn "Warning: Could not fetch overview data for #{@ticker} (#{e.class}: #{e.message}). Continuing without it."
+    end
   end
 
   def save_data
@@ -82,22 +99,51 @@ class SQA::Stock
       @df.to_csv(@df_path) if migrated
     else
       # Fetch fresh data from source (applies transformers and mapping)
-      @df = @klass.recent(@ticker, full: true)
-      @df.to_csv(@df_path)
-      return
+      begin
+        @df = @klass.recent(@ticker, full: true)
+        @df.to_csv(@df_path)
+        return
+      rescue => e
+        # If we can't fetch data, raise a more helpful error
+        raise "Unable to fetch data for #{@ticker}. Please ensure API key is set or provide cached CSV file at #{@df_path}. Error: #{e.message}"
+      end
     end
 
     update_dataframe_with_recent_data
   end
 
   def update_dataframe_with_recent_data
-    from_date = Date.parse(@df["timestamp"].to_a.last)
-    df2 = @klass.recent(@ticker, from_date: from_date)
+    return unless should_update?
 
-    if df2 && (df2.size > 0)
-      @df.concat!(df2)
-      @df.to_csv(@df_path)
+    begin
+      from_date = Date.parse(@df["timestamp"].to_a.last)
+      df2 = @klass.recent(@ticker, from_date: from_date)
+
+      if df2 && (df2.size > 0)
+        @df.concat!(df2)
+        @df.to_csv(@df_path)
+      end
+    rescue => e
+      # Log warning but don't fail - we have cached data
+      # Common causes: rate limits, network issues, API errors
+      warn "Warning: Could not update #{@ticker} from API (#{e.class}: #{e.message}). Using cached data."
     end
+  end
+
+  def should_update?
+    # Don't update if we're in lazy update mode
+    return false if SQA.config.lazy_update
+
+    # Don't update if we don't have an API key (only relevant for Alpha Vantage)
+    if @source == :alpha_vantage
+      begin
+        SQA.av_api_key
+      rescue
+        return false
+      end
+    end
+
+    true
   end
 
   def to_s

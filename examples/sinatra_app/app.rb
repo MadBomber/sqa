@@ -104,7 +104,7 @@ get '/api/stock/:ticker' do
     df = stock.df
 
     # Get price data
-    dates = df["date"].to_a.map(&:to_s)
+    dates = df["timestamp"].to_a.map(&:to_s)
     opens = df["open_price"].to_a
     highs = df["high_price"].to_a
     lows = df["low_price"].to_a
@@ -150,7 +150,7 @@ get '/api/indicators/:ticker' do
     prices = df["adj_close_price"].to_a
     highs = df["high_price"].to_a
     lows = df["low_price"].to_a
-    dates = df["date"].to_a.map(&:to_s)
+    dates = df["timestamp"].to_a.map(&:to_s)
 
     # Calculate indicators
     rsi = SQAI.rsi(prices, period: 14)
