@@ -39,6 +39,7 @@ Gem::Specification.new do |spec|
   spec.require_paths  = %w[lib]
 
   spec.add_dependency 'alphavantage' # requires hashie v4.1; bad wrapper library
+  spec.add_dependency 'csv'  # Required for Ruby 3.4+
   spec.add_dependency 'faraday'
   spec.add_dependency 'hashie'
   spec.add_dependency 'kbs'

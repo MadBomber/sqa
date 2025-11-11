@@ -16,17 +16,21 @@ class SQA::DataFrame
   attr_accessor :data
 
   def initialize(raw_data = nil, mapping: {}, transformers: {})
-    @data = if raw_data
-              Polars::DataFrame.new(raw_data)
-            else
-              Polars::DataFrame.new([])
-            end
+    @data = Polars::DataFrame.new(raw_data || [])
+
+    debug_me{[
+      :raw_data,
+      :mapping,
+      :transformers,
+      '@data'
+    ]}
 
     # IMPORTANT: Rename columns FIRST, then apply transformers
     # Transformers expect renamed column names
     rename_columns!(mapping) unless mapping.empty?
     apply_transformers!(transformers) unless transformers.empty?
   end
+
 
   def apply_transformers!(transformers)
     transformers.each do |col, transformer|
@@ -36,6 +40,7 @@ class SQA::DataFrame
       )
     end
   end
+
 
   def rename_columns!(mapping)
     # Normalize mapping keys to strings for consistent lookup
@@ -52,25 +57,30 @@ class SQA::DataFrame
     @data = @data.rename(rename_mapping)
   end
 
+
   def append!(other_df)
     self_row_count = @data.shape[0]
     other_row_count = other_df.data.shape[0]
 
-    if self_row_count == 0
-      @data = other_df.data
-    else
-      @data = @data.vstack(other_df.data)
-    end
+    @data = if self_row_count == 0
+              other_df.data
+            else
+              @data.vstack(other_df.data)
+            end
 
     post_append_row_count = @data.shape[0]
     expected_row_count = self_row_count + other_row_count
-    raise "Append Error: expected #{expected_row_count}, got #{post_append_row_count} " unless post_append_row_count == expected_row_count
+    return if post_append_row_count == expected_row_count
+
+    raise "Append Error: expected #{expected_row_count}, got #{post_append_row_count} "
+
   end
   alias concat! append!
 
   def columns
     @data.columns
   end
+
 
   def keys
     @data.columns
@@ -81,9 +91,11 @@ class SQA::DataFrame
     @data.columns.map { |col| [col.to_sym, @data[col].to_a] }.to_h
   end
 
+
   def to_csv(path_to_file)
     @data.write_csv(path_to_file)
   end
+
 
   def size
     @data.height
@@ -95,6 +107,7 @@ class SQA::DataFrame
     @data.width
   end
 
+
   # FPL Analysis - Calculate Future Period Loss/Profit
   #
   # @param column [String, Symbol] Column name containing prices (default: "adj_close_price")
@@ -105,10 +118,11 @@ class SQA::DataFrame
   #   stock = SQA::Stock.new(ticker: 'AAPL')
   #   fpl_data = stock.df.fpl(fpop: 10)
   #
-  def fpl(column: "adj_close_price", fpop: 14)
+  def fpl(column: 'adj_close_price', fpop: 14)
     prices = @data[column.to_s].to_a
     SQA::FPOP.fpl(prices, fpop: fpop)
   end
+
 
   # FPL Analysis with risk metrics and classification
   #
@@ -122,14 +136,16 @@ class SQA::DataFrame
   #   analysis.first[:magnitude]  # => Average expected movement percentage
   #   analysis.first[:risk]       # => Volatility range
   #
-  def fpl_analysis(column: "adj_close_price", fpop: 14)
+  def fpl_analysis(column: 'adj_close_price', fpop: 14)
     prices = @data[column.to_s].to_a
     SQA::FPOP.fpl_analysis(prices, fpop: fpop)
   end
 
+
   def self.is_date?(value)
     value.is_a?(String) && !/\d{4}-\d{2}-\d{2}/.match(value).nil?
   end
+
 
   def method_missing(method_name, *args, &block)
     if @data.respond_to?(method_name)
@@ -141,6 +157,7 @@ class SQA::DataFrame
       super
     end
   end
+
 
   def respond_to_missing?(method_name, include_private = false)
     @data.respond_to?(method_name) || super
@@ -177,15 +194,26 @@ class SQA::DataFrame
       new(df)
     end
 
+
     def from_csv_file(source, mapping: {}, transformers: {})
+      debug_me do
+        %i[
+          source
+          mapping
+          transformers
+        ]
+      end
+
       df = Polars.read_csv(source)
       new(df, mapping: mapping, transformers: transformers)
     end
+
 
     def from_json_file(source, mapping: {}, transformers: {})
       aofh = JSON.parse(File.read(source)).map { |entry| entry.transform_keys(&:to_s) }
       from_aofh(aofh, mapping: mapping, transformers: transformers)
     end
+
 
     def generate_mapping(keys)
       keys.each_with_object({}) do |key, hash|
@@ -193,16 +221,17 @@ class SQA::DataFrame
       end
     end
 
+
     def underscore_key(key)
       key.to_s
-        .gsub(/([A-Z]+)([A-Z][a-z])/, '\1_\2')
-        .gsub(/([a-z\d])([A-Z])/, '\1_\2')
-        .gsub(/[^a-zA-Z0-9]/, ' ')
-        .squeeze(' ')
-        .strip
-        .tr(' ', '_')
-        .downcase
-        .to_sym
+         .gsub(/([A-Z]+)([A-Z][a-z])/, '\1_\2')
+         .gsub(/([a-z\d])([A-Z])/, '\1_\2')
+         .gsub(/[^a-zA-Z0-9]/, ' ')
+         .squeeze(' ')
+         .strip
+         .tr(' ', '_')
+         .downcase
+         .to_sym
     end
 
     alias sanitize_key underscore_key
@@ -213,10 +242,12 @@ class SQA::DataFrame
       rename(hash, mapping)
     end
 
+
     def rename(hash, mapping)
       mapping.each { |old_key, new_key| hash[new_key] = hash.delete(old_key) if hash.key?(old_key) }
       hash
     end
+
 
     def aofh_to_hofa(aofh, mapping: {}, transformers: {})
       hofa = Hash.new { |h, k| h[k.downcase] = [] }

@@ -3,6 +3,7 @@ PATH
   specs:
     sqa (0.0.31)
       alphavantage
+      csv
       eps
       faraday
       hashie
@@ -42,6 +43,7 @@ GEM
     containable (1.5.0)
       concurrent-ruby (~> 1.3)
     core (2.5.0)
+    csv (3.3.5)
     debug_me (1.1.1)
     dentaku (3.5.6)
       bigdecimal
