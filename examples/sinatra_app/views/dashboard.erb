@@ -42,6 +42,21 @@
     </div>
   </div>
 
+  <!-- Time Period Selector -->
+  <div class="period-selector">
+    <label>Time Period:</label>
+    <div class="period-buttons">
+      <button onclick="updatePeriod('30d')" class="btn-period" data-period="30d">30 Days</button>
+      <button onclick="updatePeriod('60d')" class="btn-period" data-period="60d">60 Days</button>
+      <button onclick="updatePeriod('90d')" class="btn-period" data-period="90d">90 Days</button>
+      <button onclick="updatePeriod('1q')" class="btn-period" data-period="1q">1 Quarter</button>
+      <button onclick="updatePeriod('2q')" class="btn-period" data-period="2q">2 Quarters</button>
+      <button onclick="updatePeriod('3q')" class="btn-period" data-period="3q">3 Quarters</button>
+      <button onclick="updatePeriod('4q')" class="btn-period" data-period="4q">4 Quarters</button>
+      <button onclick="updatePeriod('all')" class="btn-period active" data-period="all">All Data</button>
+    </div>
+  </div>
+
   <!-- Main Price Chart -->
   <div class="chart-container">
     <div class="chart-header">
@@ -104,6 +119,7 @@ const ticker = '<%= @ticker %>';
 let stockData = null;
 let indicatorData = null;
 let currentChartType = 'candlestick';
+let currentPeriod = 'all';
 
 // Load data when page loads
 document.addEventListener('DOMContentLoaded', async function() {
@@ -114,7 +130,7 @@ document.addEventListener('DOMContentLoaded', async function() {
 
 async function loadStockData() {
   try {
-    const response = await fetch(`/api/stock/${ticker}`);
+    const response = await fetch(`/api/stock/${ticker}?period=${currentPeriod}`);
     stockData = await response.json();
 
     // Update price info
@@ -141,7 +157,7 @@ async function loadStockData() {
 
 async function loadIndicators() {
   try {
-    const response = await fetch(`/api/indicators/${ticker}`);
+    const response = await fetch(`/api/indicators/${ticker}?period=${currentPeriod}`);
     indicatorData = await response.json();
 
     // Update RSI metric
@@ -411,6 +427,20 @@ async function runStrategyComparison() {
     console.error('Error comparing strategies:', error);
     resultsDiv.innerHTML = '<p class="error">Failed to compare strategies. Please try again.</p>';
   }
+}
+
+async function updatePeriod(period) {
+  currentPeriod = period;
+
+  // Update button states
+  document.querySelectorAll('[data-period]').forEach(btn => {
+    btn.classList.remove('active');
+  });
+  document.querySelector(`[data-period="${period}"]`).classList.add('active');
+
+  // Reload data with new period
+  await loadStockData();
+  await loadIndicators();
 }
 
 function refreshData() {
