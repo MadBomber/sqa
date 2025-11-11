@@ -280,7 +280,7 @@ module SQA
       puts
 
       prices = @stock.df["adj_close_price"].to_a
-      dates = @stock.df["date"].to_a.map { |d| Date.parse(d.to_s) }
+      dates = @stock.df["timestamp"].to_a.map { |d| Date.parse(d.to_s) }
 
       validated_patterns = []
       validation_results = []
@@ -423,7 +423,7 @@ module SQA
         end
 
         # Add discovery period
-        dates = @stock.df["date"].to_a
+        dates = @stock.df["timestamp"].to_a
         pattern.context.discovered_period = "#{dates.first} to #{dates.last}"
       end
 
