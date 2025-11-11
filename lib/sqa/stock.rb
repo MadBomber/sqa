@@ -32,14 +32,15 @@ class SQA::Stock
     if @data_path.exist?
       @data = SQA::DataFrame::Data.new(JSON.parse(@data_path.read))
     else
+      # Create minimal data structure
       create_data
-      begin
-        update
-        save_data
-      rescue => e
-        # If we can't fetch data from API, raise a more helpful error
-        raise "Unable to fetch data for #{@ticker}. Please ensure API key is set or provide cached data in #{SQA.data_dir}. Error: #{e.message}"
-      end
+
+      # Try to fetch overview data, but don't fail if we can't
+      # This is optional metadata - we can work with just price data
+      update
+
+      # Save whatever data we have (even if overview fetch failed)
+      save_data
     end
   end
 
@@ -48,7 +49,13 @@ class SQA::Stock
   end
 
   def update
-    merge_overview
+    begin
+      merge_overview
+    rescue => e
+      # Log warning but don't fail - overview data is optional
+      # Common causes: rate limits, network issues, API errors
+      warn "Warning: Could not fetch overview data for #{@ticker} (#{e.class}: #{e.message}). Continuing without it."
+    end
   end
 
   def save_data
@@ -118,7 +125,8 @@ class SQA::Stock
       end
     rescue => e
       # Log warning but don't fail - we have cached data
-      warn "Warning: Could not update cached data for #{@ticker}: #{e.message}" if SQA.config.verbose?
+      # Common causes: rate limits, network issues, API errors
+      warn "Warning: Could not update #{@ticker} from API (#{e.class}: #{e.message}). Using cached data."
     end
   end
 
