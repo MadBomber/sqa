@@ -1,35 +1,22 @@
-# SQA - Simple Qualitative Analysis
+<div align="center">
+  <h1>SQA - Simple Qualitative Analysis</h1>
 
-[![Badges?](https://img.shields.io/badge/Badge-We%20don't%20need%20no%20stinkin'%20badges!-red)](https://www.youtube.com/watch?v=VqomZQMZQCQ)
+  <p>A Ruby library for technical analysis of stock market data, trading strategies, and portfolio optimization.<br/>
+      Core library of the <a href="https://github.com/MadBomber/sqa">SQA</a> (Simple Qualitative Analysis) ecosystem.</p>
+</div>
 
-A Ruby library for technical analysis of stock market data. This is a simplistic set of tools for quantitative and qualitative stock analysis designed for **educational purposes only**.
+<table>
+<tr>
+<td width="30%" valign="middle" align="center">
+    <img src="docs/assets/images/sqa.jpg" alt="Ruby Turns Information into Knowledge" width="80%">
+  <br/>
+  <a href="https://www.youtube.com/watch?v=VqomZQMZQCQ">
+    <img src="https://img.shields.io/badge/Badge-We%20don't%20need%20no%20stinkin'%20badges!-red" alt="Badges?">
+  </a>
+</td>
+<td width="70%" valign="top">
 
-**⚠️ WARNING:** This is a learning tool, not production software. Do NOT use this library when real money is at stake. The BUY/SELL signals it generates should not be taken seriously. If you lose your shirt playing in the stock market, don't come crying to me. Playing in the market is like playing in the street - you're going to get run over.
-
-<!-- Tocer[start]: Auto-generated, don't remove. -->
-
-## Table of Contents
-
-  - [Features](#features)
-  - [Installation](#installation)
-  - [Configuration](#configuration)
-    - [Data Directory](#data-directory)
-    - [Alpha Vantage API Key](#alpha-vantage-api-key)
-  - [Usage](#usage)
-    - [Working with Stocks](#working-with-stocks)
-    - [DataFrame Operations](#dataframe-operations)
-    - [Technical Indicators](#technical-indicators)
-    - [Trading Strategies](#trading-strategies)
-    - [Statistics](#statistics)
-  - [Interactive Console](#interactive-console)
-  - [Architecture](#architecture)
-  - [Data Sources](#data-sources)
-    - [Alpha Vantage](#alpha-vantage)
-    - [Yahoo Finance](#yahoo-finance)
-  - [Contributing](#contributing)
-  - [License](#license)
-
-<!-- Tocer[finish]: Auto-generated, don't remove. -->
+**⚠️ WARNING:** This is a learning tool, not production software. DO NOT use this library when real money is at stake. The BUY/SELL signals it generates should not be taken seriously. If you lose your shirt playing in the stock market, don't come crying to me. Playing in the market is like playing in the street - you're going to get run over.
 
 ## Features
 
@@ -58,6 +45,34 @@ A Ruby library for technical analysis of stock market data. This is a simplistic
 - **Walk-Forward Validation** - Time-series cross-validation to prevent pattern overfitting
 - **Pattern Context System** - Context-aware patterns that know when/where they're valid
 
+</td>
+</tr>
+</table>
+
+<!-- Tocer[start]: Auto-generated, don't remove. -->
+
+## Table of Contents
+
+  - [Features](#features)
+  - [Installation](#installation)
+  - [Configuration](#configuration)
+    - [Data Directory](#data-directory)
+    - [Alpha Vantage API Key](#alpha-vantage-api-key)
+  - [Usage](#usage)
+    - [Working with Stocks](#working-with-stocks)
+    - [DataFrame Operations](#dataframe-operations)
+    - [Technical Indicators](#technical-indicators)
+    - [Trading Strategies](#trading-strategies)
+    - [Statistics](#statistics)
+  - [Interactive Console](#interactive-console)
+  - [Architecture](#architecture)
+  - [Data Sources](#data-sources)
+    - [Alpha Vantage](#alpha-vantage)
+    - [Yahoo Finance](#yahoo-finance)
+  - [Contributing](#contributing)
+  - [License](#license)
+
+<!-- Tocer[finish]: Auto-generated, don't remove. -->
 ## Installation
 
 Install the gem:
