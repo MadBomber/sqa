@@ -28,8 +28,13 @@ class SQA::Stock
       @data = SQA::DataFrame::Data.new(JSON.parse(@data_path.read))
     else
       create_data
-      update
-      save_data
+      begin
+        update
+        save_data
+      rescue => e
+        # If we can't fetch data from API, raise a more helpful error
+        raise "Unable to fetch data for #{@ticker}. Please ensure API key is set or provide cached data in #{SQA.data_dir}. Error: #{e.message}"
+      end
     end
   end
 
@@ -82,22 +87,50 @@ class SQA::Stock
       @df.to_csv(@df_path) if migrated
     else
       # Fetch fresh data from source (applies transformers and mapping)
-      @df = @klass.recent(@ticker, full: true)
-      @df.to_csv(@df_path)
-      return
+      begin
+        @df = @klass.recent(@ticker, full: true)
+        @df.to_csv(@df_path)
+        return
+      rescue => e
+        # If we can't fetch data, raise a more helpful error
+        raise "Unable to fetch data for #{@ticker}. Please ensure API key is set or provide cached CSV file at #{@df_path}. Error: #{e.message}"
+      end
     end
 
     update_dataframe_with_recent_data
   end
 
   def update_dataframe_with_recent_data
-    from_date = Date.parse(@df["timestamp"].to_a.last)
-    df2 = @klass.recent(@ticker, from_date: from_date)
+    return unless should_update?
 
-    if df2 && (df2.size > 0)
-      @df.concat!(df2)
-      @df.to_csv(@df_path)
+    begin
+      from_date = Date.parse(@df["timestamp"].to_a.last)
+      df2 = @klass.recent(@ticker, from_date: from_date)
+
+      if df2 && (df2.size > 0)
+        @df.concat!(df2)
+        @df.to_csv(@df_path)
+      end
+    rescue => e
+      # Log warning but don't fail - we have cached data
+      warn "Warning: Could not update cached data for #{@ticker}: #{e.message}" if SQA.config.verbose?
     end
+  end
+
+  def should_update?
+    # Don't update if we're in lazy update mode
+    return false if SQA.config.lazy_update
+
+    # Don't update if we don't have an API key (only relevant for Alpha Vantage)
+    if @source == :alpha_vantage
+      begin
+        SQA.av_api_key
+      rescue
+        return false
+      end
+    end
+
+    true
   end
 
   def to_s
