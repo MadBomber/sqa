@@ -11,10 +11,15 @@ class SQA::Stock
     @ticker = ticker.downcase
     @source = source
 
-    raise "Invalid Ticker #{ticker}" unless SQA::Ticker.valid?(ticker)
-
     @data_path = SQA.data_dir + "#{@ticker}.json"
     @df_path = SQA.data_dir + "#{@ticker}.csv"
+
+    # Validate ticker if validation data is available and cached data doesn't exist
+    unless @data_path.exist? && @df_path.exist?
+      unless SQA::Ticker.valid?(ticker)
+        warn "Warning: Ticker #{ticker} could not be validated. Proceeding anyway." if $VERBOSE
+      end
+    end
 
     @klass = "SQA::DataFrame::#{@source.to_s.camelize}".constantize
     @transformers = "SQA::DataFrame::#{@source.to_s.camelize}::TRANSFORMERS".constantize
