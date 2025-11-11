@@ -221,15 +221,15 @@ function renderPriceChart() {
     low: stockData.low,
     close: stockData.close,
     name: ticker,
-    increasing: { line: { color: '#26a69a' } },
-    decreasing: { line: { color: '#ef5350' } }
+    increasing: { line: { color: '#00ff88' } },
+    decreasing: { line: { color: '#ff3366' } }
   } : {
     type: 'scatter',
     mode: 'lines',
     x: stockData.dates,
     y: stockData.close,
     name: ticker,
-    line: { color: '#2196F3', width: 2 }
+    line: { color: '#00d4ff', width: 3 }
   };
 
   // Add moving averages if we have indicator data
@@ -241,7 +241,7 @@ function renderPriceChart() {
       x: indicatorData.dates,
       y: indicatorData.sma_20,
       name: 'SMA 20',
-      line: { color: '#FF9800', width: 1, dash: 'dash' }
+      line: { color: '#ffaa00', width: 2 }
     });
     traces.push({
       type: 'scatter',
@@ -249,29 +249,52 @@ function renderPriceChart() {
       x: indicatorData.dates,
       y: indicatorData.sma_50,
       name: 'SMA 50',
-      line: { color: '#9C27B0', width: 1, dash: 'dash' }
+      line: { color: '#ff66ff', width: 2 }
     });
   }
 
   const layout = {
+    autosize: true,
     title: '',
-    xaxis: { title: 'Date', rangeslider: { visible: false } },
-    yaxis: { title: 'Price ($)' },
-    plot_bgcolor: '#ffffff',
-    paper_bgcolor: '#ffffff',
-    margin: { l: 50, r: 50, t: 20, b: 50 },
-    height: 400,
+    xaxis: {
+      title: 'Date',
+      rangeslider: { visible: false },
+      gridcolor: '#2a3154',
+      color: '#9fa8da'
+    },
+    yaxis: {
+      title: 'Price ($)',
+      gridcolor: '#2a3154',
+      color: '#9fa8da'
+    },
+    plot_bgcolor: '#0f1535',
+    paper_bgcolor: '#151b3d',
+    font: { color: '#e8eaf6', size: 14 },
+    margin: { l: 60, r: 40, t: 20, b: 60 },
     showlegend: true,
-    legend: { x: 0, y: 1 }
+    legend: {
+      x: 0.02,
+      y: 0.98,
+      bgcolor: 'rgba(21, 27, 61, 0.8)',
+      bordercolor: '#2a3154',
+      borderwidth: 1,
+      font: { size: 14, color: '#e8eaf6' }
+    }
   };
 
-  Plotly.newPlot('priceChart', traces, layout, { responsive: true });
+  const config = {
+    responsive: true,
+    displayModeBar: true,
+    displaylogo: false
+  };
+
+  Plotly.newPlot('priceChart', traces, layout, config);
 }
 
 function renderVolumeChart() {
   const colors = stockData.close.map((close, i) => {
-    if (i === 0) return '#2196F3';
-    return close >= stockData.close[i - 1] ? '#26a69a' : '#ef5350';
+    if (i === 0) return '#00d4ff';
+    return close >= stockData.close[i - 1] ? '#00ff88' : '#ff3366';
   });
 
   const trace = {
@@ -283,17 +306,32 @@ function renderVolumeChart() {
   };
 
   const layout = {
+    autosize: true,
     title: '',
-    xaxis: { title: 'Date' },
-    yaxis: { title: 'Volume' },
-    plot_bgcolor: '#ffffff',
-    paper_bgcolor: '#ffffff',
-    margin: { l: 50, r: 50, t: 20, b: 50 },
-    height: 200,
+    xaxis: {
+      title: 'Date',
+      gridcolor: '#2a3154',
+      color: '#9fa8da'
+    },
+    yaxis: {
+      title: 'Volume',
+      gridcolor: '#2a3154',
+      color: '#9fa8da'
+    },
+    plot_bgcolor: '#0f1535',
+    paper_bgcolor: '#151b3d',
+    font: { color: '#e8eaf6', size: 14 },
+    margin: { l: 60, r: 40, t: 20, b: 60 },
     showlegend: false
   };
 
-  Plotly.newPlot('volumeChart', [trace], layout, { responsive: true });
+  const config = {
+    responsive: true,
+    displayModeBar: true,
+    displaylogo: false
+  };
+
+  Plotly.newPlot('volumeChart', [trace], layout, config);
 }
 
 function renderRSIChart() {
@@ -303,7 +341,7 @@ function renderRSIChart() {
     x: indicatorData.dates,
     y: indicatorData.rsi,
     name: 'RSI',
-    line: { color: '#2196F3', width: 2 }
+    line: { color: '#00d4ff', width: 3 }
   };
 
   const oversold = {
@@ -311,8 +349,8 @@ function renderRSIChart() {
     mode: 'lines',
     x: indicatorData.dates,
     y: Array(indicatorData.dates.length).fill(30),
-    name: 'Oversold',
-    line: { color: '#4CAF50', width: 1, dash: 'dash' }
+    name: 'Oversold (30)',
+    line: { color: '#00ff88', width: 2, dash: 'dash' }
   };
 
   const overbought = {
@@ -320,23 +358,46 @@ function renderRSIChart() {
     mode: 'lines',
     x: indicatorData.dates,
     y: Array(indicatorData.dates.length).fill(70),
-    name: 'Overbought',
-    line: { color: '#F44336', width: 1, dash: 'dash' }
+    name: 'Overbought (70)',
+    line: { color: '#ff3366', width: 2, dash: 'dash' }
   };
 
   const layout = {
+    autosize: true,
     title: '',
-    xaxis: { title: 'Date' },
-    yaxis: { title: 'RSI', range: [0, 100] },
-    plot_bgcolor: '#ffffff',
-    paper_bgcolor: '#ffffff',
-    margin: { l: 50, r: 50, t: 20, b: 50 },
-    height: 250,
+    xaxis: {
+      title: 'Date',
+      gridcolor: '#2a3154',
+      color: '#9fa8da'
+    },
+    yaxis: {
+      title: 'RSI',
+      range: [0, 100],
+      gridcolor: '#2a3154',
+      color: '#9fa8da'
+    },
+    plot_bgcolor: '#0f1535',
+    paper_bgcolor: '#151b3d',
+    font: { color: '#e8eaf6', size: 14 },
+    margin: { l: 60, r: 40, t: 20, b: 60 },
     showlegend: true,
-    legend: { x: 0, y: 1 }
+    legend: {
+      x: 0.02,
+      y: 0.98,
+      bgcolor: 'rgba(21, 27, 61, 0.8)',
+      bordercolor: '#2a3154',
+      borderwidth: 1,
+      font: { size: 14, color: '#e8eaf6' }
+    }
   };
 
-  Plotly.newPlot('rsiChart', [trace, oversold, overbought], layout, { responsive: true });
+  const config = {
+    responsive: true,
+    displayModeBar: true,
+    displaylogo: false
+  };
+
+  Plotly.newPlot('rsiChart', [trace, oversold, overbought], layout, config);
 }
 
 function renderMACDChart() {
@@ -346,7 +407,7 @@ function renderMACDChart() {
     x: indicatorData.dates,
     y: indicatorData.macd,
     name: 'MACD',
-    line: { color: '#2196F3', width: 2 }
+    line: { color: '#00d4ff', width: 3 }
   };
 
   const signal = {
@@ -355,7 +416,7 @@ function renderMACDChart() {
     x: indicatorData.dates,
     y: indicatorData.macd_signal,
     name: 'Signal',
-    line: { color: '#FF9800', width: 2 }
+    line: { color: '#ffaa00', width: 3 }
   };
 
   const hist = {
@@ -364,23 +425,45 @@ function renderMACDChart() {
     y: indicatorData.macd_hist,
     name: 'Histogram',
     marker: {
-      color: indicatorData.macd_hist.map(v => v >= 0 ? '#26a69a' : '#ef5350')
+      color: indicatorData.macd_hist.map(v => v >= 0 ? '#00ff88' : '#ff3366')
     }
   };
 
   const layout = {
+    autosize: true,
     title: '',
-    xaxis: { title: 'Date' },
-    yaxis: { title: 'MACD' },
-    plot_bgcolor: '#ffffff',
-    paper_bgcolor: '#ffffff',
-    margin: { l: 50, r: 50, t: 20, b: 50 },
-    height: 250,
+    xaxis: {
+      title: 'Date',
+      gridcolor: '#2a3154',
+      color: '#9fa8da'
+    },
+    yaxis: {
+      title: 'MACD',
+      gridcolor: '#2a3154',
+      color: '#9fa8da'
+    },
+    plot_bgcolor: '#0f1535',
+    paper_bgcolor: '#151b3d',
+    font: { color: '#e8eaf6', size: 14 },
+    margin: { l: 60, r: 40, t: 20, b: 60 },
     showlegend: true,
-    legend: { x: 0, y: 1 }
+    legend: {
+      x: 0.02,
+      y: 0.98,
+      bgcolor: 'rgba(21, 27, 61, 0.8)',
+      bordercolor: '#2a3154',
+      borderwidth: 1,
+      font: { size: 14, color: '#e8eaf6' }
+    }
   };
 
-  Plotly.newPlot('macdChart', [hist, macd, signal], layout, { responsive: true });
+  const config = {
+    responsive: true,
+    displayModeBar: true,
+    displaylogo: false
+  };
+
+  Plotly.newPlot('macdChart', [hist, macd, signal], layout, config);
 }
 
 function updateChartType(type) {
