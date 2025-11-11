@@ -35,13 +35,14 @@ A Ruby library for technical analysis of stock market data. This is a simplistic
 
 ### Core Capabilities
 - **High-Performance DataFrames** - Polars-based data structures for time series financial data
-- **150+ Technical Indicators** - Via the `sqa-tai` gem (TA-Lib wrapper)
+- **150+ Technical Indicators** - Via the separate [`sqa-tai`](https://github.com/MadBomber/sqa-tai) gem (TA-Lib wrapper)
 - **Trading Strategies** - Framework for building and testing trading strategies
 - **Multiple Data Sources** - Alpha Vantage and Yahoo Finance adapters
 - **Stock Management** - Track stocks with historical prices and company metadata
 - **Statistical Analysis** - Comprehensive statistics on price data
 - **Ticker Validation** - Validate stock symbols against market exchanges
 - **Interactive Console** - IRB console for experimentation (`sqa-console`)
+- **CLI Tools** - Command-line interface via the separate [`sqa-cli`](https://github.com/MadBomber/sqa-cli) gem
 
 ### Advanced Features
 - **Portfolio Management** - Track positions, trades, P&L with commission support
@@ -65,6 +66,8 @@ Install the gem:
 gem install sqa
 ```
 
+This will automatically install the `sqa-tai` gem (technical indicators) as a dependency.
+
 Or add to your `Gemfile`:
 
 ```ruby
@@ -75,6 +78,12 @@ Then run:
 
 ```bash
 bundle install
+```
+
+For command-line tools, install the separate CLI gem:
+
+```bash
+gem install sqa-cli
 ```
 
 ## Configuration
@@ -186,7 +195,7 @@ df.data        # Polars::DataFrame
 
 ### Technical Indicators
 
-All technical indicators are provided by the [`sqa-tai`](https://github.com/MadBomber/sqa-tai) gem, which wraps the industry-standard TA-Lib library:
+All technical indicators are provided by the separate [`sqa-tai`](https://github.com/MadBomber/sqa-tai) gem, which wraps the industry-standard TA-Lib library. The `sqa-tai` gem must be installed separately but is automatically included as a dependency of `sqa`.
 
 ```ruby
 require 'sqa'

@@ -179,42 +179,18 @@ nav:
     - getting-started/index.md
     - Installation: getting-started/installation.md
     - Quick Start: getting-started/quick-start.md
-    - Configuration: getting-started/configuration.md
-    - Console Usage: getting-started/console-usage.md
 
   - Core Concepts:
     - concepts/index.md
-    - Stock Objects: concepts/stock.md
     - DataFrames: data_frame.md
-    - Technical Indicators: concepts/indicators.md
+    - Technical Indicators: indicators/index.md
     - Trading Strategies: strategy.md
 
   - Technical Indicators:
     - indicators/index.md
     - Overview: indicators.md
-    - Moving Averages:
-      - Simple Moving Average: simple_moving_average.md
-      - Exponential Moving Average: exponential_moving_average.md
-      - Weighted Moving Average: weighted_moving_average.md
-    - Momentum Indicators:
-      - RSI (Relative Strength Index): relative_strength_index.md
-      - Momentum: momentum.md
-      - Stochastic Oscillator: stochastic_oscillator.md
-      - True Strength Index: true_strength_index.md
-    - Volatility Indicators:
-      - Bollinger Bands: bollinger_bands.md
-      - Average True Range: average_true_range.md
-      - True Range: true_range.md
-      - Donchian Channel: donchian_channel.md
-    - Trend Indicators:
-      - MACD: moving_average_convergence_divergence.md
-      - Market Profile: market_profile.md
-    - Pattern Recognition:
-      - Fibonacci Retracement: fibonacci_retracement.md
-      - Peaks and Valleys: peaks_and_valleys.md
-      - Candlestick Patterns: candlestick_pattern_recognizer.md
-      - Double Top/Bottom: double_top_bottom_pattern.md
-      - Head and Shoulders: head_and_shoulders_pattern.md
+    - sqa-tai Gem: https://github.com/MadBomber/sqa-tai
+    - TA-Lib Documentation: https://ta-lib.org/
 
   - Trading Strategies:
     - strategies/index.md
@@ -255,19 +231,10 @@ nav:
 
   - API Reference:
     - api/index.md
-    - SQA Module: api/sqa.md
-    - Stock Class: api/stock.md
     - DataFrame Class: api/dataframe.md
-    - Strategy Framework: api/strategy.md
-    - Portfolio Class: api/portfolio.md
-    - Backtest Class: api/backtest.md
-    - Stream Class: api/stream.md
 
   - Data Sources:
     - data-sources/index.md
-    - Alpha Vantage: alpha_vantage_technical_indicators.md
-    - Data Format: data-sources/format.md
-    - Custom Data: data-sources/custom.md
 
   - Resources:
     - Tags: tags.md
@@ -276,13 +243,9 @@ nav:
     - Trading Ideas: i_gotta_an_idea.md
     - Factor Analysis: factors_that_impact_price.md
     - External Tools:
-      - TA-Lib: ta_lib.md
       - FinViz: finviz.md
       - FX Pro Bit: fx_pro_bit.md
     - Options Trading: options.md
 
   - Contributing:
     - contributing/index.md
-    - Development Setup: contributing/setup.md
-    - Testing: contributing/testing.md
-    - Code Style: contributing/style.md
