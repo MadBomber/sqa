@@ -48,12 +48,12 @@
     <div class="period-buttons">
       <button onclick="updatePeriod('30d')" class="btn-period" data-period="30d">30 Days</button>
       <button onclick="updatePeriod('60d')" class="btn-period" data-period="60d">60 Days</button>
-      <button onclick="updatePeriod('90d')" class="btn-period" data-period="90d">90 Days</button>
+      <button onclick="updatePeriod('90d')" class="btn-period active" data-period="90d">90 Days</button>
       <button onclick="updatePeriod('1q')" class="btn-period" data-period="1q">1 Quarter</button>
       <button onclick="updatePeriod('2q')" class="btn-period" data-period="2q">2 Quarters</button>
       <button onclick="updatePeriod('3q')" class="btn-period" data-period="3q">3 Quarters</button>
       <button onclick="updatePeriod('4q')" class="btn-period" data-period="4q">4 Quarters</button>
-      <button onclick="updatePeriod('all')" class="btn-period active" data-period="all">All Data</button>
+      <button onclick="updatePeriod('all')" class="btn-period" data-period="all">All Data</button>
     </div>
   </div>
 
@@ -119,7 +119,7 @@ const ticker = '<%= @ticker %>';
 let stockData = null;
 let indicatorData = null;
 let currentChartType = 'candlestick';
-let currentPeriod = 'all';
+let currentPeriod = '90d';  // Default to 90 days to avoid performance issues
 
 // ApexCharts instances
 let priceChart = null;
@@ -272,6 +272,9 @@ function renderPriceChart() {
           enabled: true,
           type: 'x'
         }
+      },
+      dataLabels: {
+        enabled: false  // Disable data labels for performance
       },
       plotOptions: {
         candlestick: {
@@ -441,6 +444,9 @@ function renderVolumeChart() {
         enabled: true,
         type: 'x'
       }
+    },
+    dataLabels: {
+      enabled: false  // Disable data labels for performance
     },
     plotOptions: {
       bar: {
