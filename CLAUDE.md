@@ -212,6 +212,27 @@ sqa-console        # Launch IRB with SQA library loaded
 - 150+ indicators available: SMA, EMA, RSI, MACD, Bollinger Bands, ADX, ATR, etc.
 - See: https://github.com/MadBomber/sqa-tai
 
+### Data Ordering (CRITICAL)
+**TA-Lib Requirement**: Arrays MUST be in **OLDEST-FIRST** (ascending chronological) order
+- Index [0] = oldest data point
+- Index [last] = newest/most recent data point
+- This applies to ALL TA-Lib indicators
+
+**SQA Implementation**:
+- ✅ CSV files stored in **ASCENDING order** (oldest-first) for TA-Lib compatibility
+- ✅ DataFrames maintain ascending order after updates
+- ✅ `.to_a` extracts arrays ready for TA-Lib (no reversal needed)
+- ✅ `concat_and_deduplicate!` sorts ascending by default
+- ⚠️ Alpha Vantage API returns data newest-first, but SQA automatically sorts to ascending
+
+**Example**:
+```ruby
+prices = stock.df["adj_close_price"].to_a
+# => [100.0, 101.5, 103.2, ...]  (oldest to newest - ready for TA-Lib)
+
+rsi = SQAI.rsi(prices, period: 14)  # Correct order, no reversal needed
+```
+
 ### Testing Approach
 - Minitest framework in `/test/` directory
 - SimpleCov for coverage reporting

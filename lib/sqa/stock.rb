@@ -116,12 +116,12 @@ class SQA::Stock
     return unless should_update?
 
     begin
-      # CSV is sorted descending (newest first), so .first gets the most recent date
-      from_date = Date.parse(@df["timestamp"].to_a.first)
+      # CSV is sorted ascending (oldest first, TA-Lib compatible), so .last gets the most recent date
+      from_date = Date.parse(@df["timestamp"].to_a.last)
       df2 = @klass.recent(@ticker, from_date: from_date)
 
       if df2 && (df2.size > 0)
-        # Use concat_and_deduplicate! to prevent duplicate timestamps
+        # Use concat_and_deduplicate! to prevent duplicate timestamps and maintain ascending sort
         @df.concat_and_deduplicate!(df2)
         @df.to_csv(@df_path)
       end
@@ -151,6 +151,8 @@ class SQA::Stock
   def to_s
     "#{ticker} with #{@df.size} data points from #{@df["timestamp"].to_a.first} to #{@df["timestamp"].to_a.last}"
   end
+  # Note: CSV data is stored in ascending chronological order (oldest to newest)
+  # This ensures compatibility with TA-Lib indicators which expect arrays in this order
   alias_method :inspect, :to_s
 
   def merge_overview

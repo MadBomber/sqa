@@ -35,9 +35,14 @@ class SQA::DataFrame
 
     ################################################################
 
-    # Get recent data from JSON API
+    # Get recent data from Alpha Vantage API
+    #
     # ticker String the security to retrieve
-    # returns a Polars DataFrame
+    # full Boolean whether to fetch full history or compact (last 100 days)
+    # from_date Date optional date to fetch data after (for incremental updates)
+    #
+    # Returns: SQA::DataFrame sorted in ASCENDING order (oldest to newest)
+    # Note: Alpha Vantage returns data newest-first, but we sort ascending for TA-Lib compatibility
     def self.recent(ticker, full: false, from_date: nil)
       response  = CONNECTION.get(
         "/query?" +
@@ -80,6 +85,10 @@ class SQA::DataFrame
       sqa_df.data = sqa_df.data.with_column(
         sqa_df.data["close_price"].alias("adj_close_price")
       )
+
+      # Sort data in ascending chronological order (oldest to newest) for TA-Lib compatibility
+      # Alpha Vantage returns data newest-first, but TA-Lib expects oldest-first
+      sqa_df.data = sqa_df.data.sort("timestamp", reverse: false)
 
       sqa_df
     end
