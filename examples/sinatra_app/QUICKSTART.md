@@ -24,11 +24,21 @@ bundle install
 
 ## 3. Start the Application
 
+**IMPORTANT:** Always use `bundle exec` to ensure all gems are loaded correctly:
+
 ```bash
-ruby app.rb
+bundle exec ruby app.rb
+```
+
+Or use the provided startup script:
+
+```bash
+./start.sh
 ```
 
 The app will start on http://localhost:4567
+
+**Common mistake:** Running `ruby app.rb` without `bundle exec` will cause the app to fail or behave incorrectly.
 
 ## 4. Quick Tour
 
@@ -92,8 +102,8 @@ curl -X POST http://localhost:4567/api/compare/AAPL
 Auto-reload on file changes:
 
 ```bash
-gem install rerun
-rerun 'ruby app.rb'
+bundle install  # rerun is in the development group
+bundle exec rerun 'ruby app.rb'
 ```
 
 ## 8. Troubleshooting

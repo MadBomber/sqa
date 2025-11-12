@@ -84,13 +84,23 @@ redis-server
 
 ### Start the Application
 
+**⚠️ IMPORTANT:** Always use `bundle exec` to run the app:
+
 ```bash
-ruby app.rb
+bundle exec ruby app.rb
 ```
+
+**Or use the startup script:**
+
+```bash
+./start.sh
+```
+
+**Why `bundle exec`?** Running `ruby app.rb` without `bundle exec` may fail to load required gems, causing the dashboard to not work properly (buttons won't respond, charts won't load, API calls will fail).
 
 Or using Rack:
 ```bash
-rackup
+bundle exec rackup
 ```
 
 The application will start on `http://localhost:4567`
