@@ -67,7 +67,8 @@ class SQA::DataFrame
       # Handle date criteria if applicable
       if from_date
         # Use Polars.col() to create an expression for filtering
-        df = df.filter(Polars.col("timestamp") >= from_date.to_s)
+        # Use > (not >=) to exclude the from_date itself and prevent duplicates
+        df = df.filter(Polars.col("timestamp") > from_date.to_s)
       end
 
       # Wrap in SQA::DataFrame with proper transformers
