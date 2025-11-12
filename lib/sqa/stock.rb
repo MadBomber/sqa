@@ -116,11 +116,13 @@ class SQA::Stock
     return unless should_update?
 
     begin
-      from_date = Date.parse(@df["timestamp"].to_a.last)
+      # CSV is sorted descending (newest first), so .first gets the most recent date
+      from_date = Date.parse(@df["timestamp"].to_a.first)
       df2 = @klass.recent(@ticker, from_date: from_date)
 
       if df2 && (df2.size > 0)
-        @df.concat!(df2)
+        # Use concat_and_deduplicate! to prevent duplicate timestamps
+        @df.concat_and_deduplicate!(df2)
         @df.to_csv(@df_path)
       end
     rescue => e

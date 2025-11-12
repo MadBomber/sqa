@@ -81,4 +81,154 @@ class DataFrameTest < Minitest::Test
     assert SQA::DataFrame.is_date?('2023-04-01')
     refute SQA::DataFrame.is_date?('NotADate')
   end
+
+  def test_concat_and_deduplicate_removes_duplicates
+    # Create initial DataFrame with timestamps
+    data1 = {
+      'timestamp' => ['2024-11-12', '2024-11-11', '2024-11-10'],
+      'close_price' => [150.0, 149.0, 148.0],
+      'volume' => [1000, 1100, 1200]
+    }
+    df1 = SQA::DataFrame.new(data1)
+
+    # Create new DataFrame with overlapping timestamp
+    data2 = {
+      'timestamp' => ['2024-11-13', '2024-11-12'],  # 2024-11-12 is duplicate
+      'close_price' => [151.0, 150.0],
+      'volume' => [900, 1000]
+    }
+    df2 = SQA::DataFrame.new(data2)
+
+    # Concatenate with deduplication
+    df1.concat_and_deduplicate!(df2)
+
+    # Should have 4 unique timestamps (not 5)
+    assert_equal 4, df1.nrows
+
+    # Check timestamps are unique
+    timestamps = df1['timestamp'].to_a
+    assert_equal 4, timestamps.uniq.size
+  end
+
+  def test_concat_and_deduplicate_maintains_descending_order
+    # Create initial DataFrame (already descending)
+    data1 = {
+      'timestamp' => ['2024-11-12', '2024-11-11', '2024-11-10'],
+      'close_price' => [150.0, 149.0, 148.0]
+    }
+    df1 = SQA::DataFrame.new(data1)
+
+    # Create new DataFrame with newer dates
+    data2 = {
+      'timestamp' => ['2024-11-15', '2024-11-14', '2024-11-13'],
+      'close_price' => [153.0, 152.0, 151.0]
+    }
+    df2 = SQA::DataFrame.new(data2)
+
+    # Concatenate with deduplication
+    df1.concat_and_deduplicate!(df2)
+
+    # Check descending order
+    timestamps = df1['timestamp'].to_a
+    assert_equal ['2024-11-15', '2024-11-14', '2024-11-13', '2024-11-12', '2024-11-11', '2024-11-10'], timestamps
+  end
+
+  def test_concat_and_deduplicate_keeps_first_occurrence
+    # Create initial DataFrame
+    data1 = {
+      'timestamp' => ['2024-11-12', '2024-11-11'],
+      'close_price' => [150.0, 149.0],
+      'volume' => [1000, 1100]
+    }
+    df1 = SQA::DataFrame.new(data1)
+
+    # Create new DataFrame with duplicate timestamp but different values
+    data2 = {
+      'timestamp' => ['2024-11-13', '2024-11-12'],  # 2024-11-12 is duplicate
+      'close_price' => [151.0, 999.0],  # Different value for duplicate
+      'volume' => [900, 9999]
+    }
+    df2 = SQA::DataFrame.new(data2)
+
+    # Concatenate with deduplication
+    df1.concat_and_deduplicate!(df2)
+
+    # Should keep first occurrence (from df1: 150.0, not 999.0)
+    timestamps = df1['timestamp'].to_a
+    prices = df1['close_price'].to_a
+
+    idx = timestamps.index('2024-11-12')
+    assert_equal 150.0, prices[idx]
+  end
+
+  def test_concat_and_deduplicate_with_empty_dataframe
+    # Create empty DataFrame
+    df1 = SQA::DataFrame.new({
+      'timestamp' => [],
+      'close_price' => []
+    })
+
+    # Create new DataFrame
+    data2 = {
+      'timestamp' => ['2024-11-13', '2024-11-12'],
+      'close_price' => [151.0, 150.0]
+    }
+    df2 = SQA::DataFrame.new(data2)
+
+    # Concatenate with deduplication
+    df1.concat_and_deduplicate!(df2)
+
+    # Should have all data from df2
+    assert_equal 2, df1.nrows
+    assert_equal ['2024-11-13', '2024-11-12'], df1['timestamp'].to_a
+  end
+
+  def test_concat_and_deduplicate_custom_sort_column
+    # Create DataFrame with custom sort column
+    data1 = {
+      'id' => [3, 2, 1],
+      'value' => ['c', 'b', 'a']
+    }
+    df1 = SQA::DataFrame.new(data1)
+
+    # Create new DataFrame with overlapping id
+    data2 = {
+      'id' => [4, 3],  # 3 is duplicate
+      'value' => ['d', 'c_duplicate']
+    }
+    df2 = SQA::DataFrame.new(data2)
+
+    # Concatenate with deduplication on 'id'
+    df1.concat_and_deduplicate!(df2, sort_column: 'id')
+
+    # Should have 4 unique ids
+    assert_equal 4, df1.nrows
+
+    # Check descending order by id
+    ids = df1['id'].to_a
+    assert_equal [4, 3, 2, 1], ids
+  end
+
+  def test_concat_and_deduplicate_ascending_order
+    # Create initial DataFrame
+    data1 = {
+      'timestamp' => ['2024-11-10', '2024-11-11', '2024-11-12'],
+      'close_price' => [148.0, 149.0, 150.0]
+    }
+    df1 = SQA::DataFrame.new(data1)
+
+    # Create new DataFrame
+    data2 = {
+      'timestamp' => ['2024-11-13', '2024-11-14'],
+      'close_price' => [151.0, 152.0]
+    }
+    df2 = SQA::DataFrame.new(data2)
+
+    # Concatenate with ascending order
+    df1.concat_and_deduplicate!(df2, descending: false)
+
+    # Check ascending order
+    timestamps = df1['timestamp'].to_a
+    assert_equal ['2024-11-10', '2024-11-11', '2024-11-12', '2024-11-13', '2024-11-14'], timestamps
+  end
 end

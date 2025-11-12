@@ -77,6 +77,27 @@ class SQA::DataFrame
   end
   alias concat! append!
 
+  # Concatenate another DataFrame, remove duplicates, and sort
+  # This is the preferred method for updating CSV data to prevent duplicates
+  #
+  # @param other_df [SQA::DataFrame] DataFrame to append
+  # @param sort_column [String] Column to use for deduplication and sorting (default: "timestamp")
+  # @param descending [Boolean] Sort order - true for descending (newest first), false for ascending
+  def concat_and_deduplicate!(other_df, sort_column: "timestamp", descending: true)
+    # Concatenate the dataframes
+    @data = if @data.shape[0] == 0
+              other_df.data
+            else
+              @data.vstack(other_df.data)
+            end
+
+    # Remove duplicates based on sort_column, keeping first occurrence
+    @data = @data.unique(subset: [sort_column], keep: "first")
+
+    # Sort by the specified column (Polars uses 'reverse' for descending)
+    @data = @data.sort(sort_column, reverse: descending)
+  end
+
   def columns
     @data.columns
   end
