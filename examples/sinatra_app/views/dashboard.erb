@@ -224,7 +224,10 @@ async function loadAnalysis() {
     regimeEl.className = `metric-value ${regimeClass}`;
 
     const regimeDetail = document.getElementById('regimeDetail');
-    regimeDetail.textContent = `${analysis.regime.volatility} volatility, ${analysis.regime.strength.toFixed(2)} strength`;
+    const strengthText = typeof analysis.regime.strength === 'number'
+      ? analysis.regime.strength.toFixed(2)
+      : analysis.regime.strength || 'N/A';
+    regimeDetail.textContent = `${analysis.regime.volatility || 'unknown'} volatility, ${strengthText} strength`;
     regimeDetail.className = 'metric-signal';
   } catch (error) {
     console.error('Error loading analysis:', error);
@@ -508,12 +511,22 @@ function renderRSIChart() {
     return;
   }
 
-  // Filter out null/NaN values (RSI has warmup period)
+  // Filter out null/NaN/undefined values (RSI has warmup period)
   const validRSIIndices = [];
   for (let i = 0; i < indicatorData.rsi.length; i++) {
-    if (indicatorData.rsi[i] !== null && !isNaN(indicatorData.rsi[i])) {
+    if (indicatorData.dates[i] !== null &&
+        indicatorData.dates[i] !== undefined &&
+        indicatorData.rsi[i] !== null &&
+        indicatorData.rsi[i] !== undefined &&
+        !isNaN(indicatorData.rsi[i])) {
       validRSIIndices.push(i);
     }
+  }
+
+  // If no valid data, show message
+  if (validRSIIndices.length === 0) {
+    document.querySelector("#rsiChart").innerHTML = '<p style="text-align: center; padding: 40px; color: #9fa8da;">No valid RSI data available (warmup period or data issue)</p>';
+    return;
   }
 
   const options = {
@@ -630,17 +643,28 @@ function renderMACDChart() {
     return;
   }
 
-  // Filter out null/NaN values (MACD has warmup period)
+  // Filter out null/NaN/undefined values (MACD has warmup period)
   const validIndices = [];
   for (let i = 0; i < indicatorData.macd.length; i++) {
-    if (indicatorData.macd[i] !== null &&
+    if (indicatorData.dates[i] !== null &&
+        indicatorData.dates[i] !== undefined &&
+        indicatorData.macd[i] !== null &&
+        indicatorData.macd[i] !== undefined &&
         indicatorData.macd_signal[i] !== null &&
+        indicatorData.macd_signal[i] !== undefined &&
         indicatorData.macd_hist[i] !== null &&
+        indicatorData.macd_hist[i] !== undefined &&
         !isNaN(indicatorData.macd[i]) &&
         !isNaN(indicatorData.macd_signal[i]) &&
         !isNaN(indicatorData.macd_hist[i])) {
       validIndices.push(i);
     }
+  }
+
+  // If no valid data, show message
+  if (validIndices.length === 0) {
+    document.querySelector("#macdChart").innerHTML = '<p style="text-align: center; padding: 40px; color: #9fa8da;">No valid MACD data available (warmup period or data issue)</p>';
+    return;
   }
 
   // Prepare histogram data with colors (only valid values)
