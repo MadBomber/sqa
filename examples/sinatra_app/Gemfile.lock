@@ -192,6 +192,8 @@ GEM
       tilt (~> 2.0)
     sqa-tai (0.1.0)
       ta_lib_ffi (~> 0.3)
+    sqlite3 (1.7.3)
+      mini_portile2 (~> 2.8.0)
     sqlite3 (1.7.3-aarch64-linux)
     sqlite3 (1.7.3-arm-linux)
     sqlite3 (1.7.3-arm64-darwin)
