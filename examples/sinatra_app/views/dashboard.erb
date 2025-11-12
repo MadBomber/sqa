@@ -121,6 +121,12 @@ let indicatorData = null;
 let currentChartType = 'candlestick';
 let currentPeriod = 'all';
 
+// ApexCharts instances
+let priceChart = null;
+let volumeChart = null;
+let rsiChart = null;
+let macdChart = null;
+
 // Load data when page loads
 document.addEventListener('DOMContentLoaded', async function() {
   await loadStockData();
@@ -213,257 +219,474 @@ async function loadAnalysis() {
 }
 
 function renderPriceChart() {
-  const trace = currentChartType === 'candlestick' ? {
-    type: 'candlestick',
-    x: stockData.dates,
-    open: stockData.open,
-    high: stockData.high,
-    low: stockData.low,
-    close: stockData.close,
-    name: ticker,
-    increasing: { line: { color: '#00ff88' } },
-    decreasing: { line: { color: '#ff3366' } }
-  } : {
-    type: 'scatter',
-    mode: 'lines',
-    x: stockData.dates,
-    y: stockData.close,
-    name: ticker,
-    line: { color: '#00d4ff', width: 3 }
-  };
-
-  // Add moving averages if we have indicator data
-  const traces = [trace];
-  if (indicatorData) {
-    traces.push({
-      type: 'scatter',
-      mode: 'lines',
-      x: indicatorData.dates,
-      y: indicatorData.sma_20,
-      name: 'SMA 20',
-      line: { color: '#ffaa00', width: 2 }
-    });
-    traces.push({
-      type: 'scatter',
-      mode: 'lines',
-      x: indicatorData.dates,
-      y: indicatorData.sma_50,
-      name: 'SMA 50',
-      line: { color: '#ff66ff', width: 2 }
-    });
+  // Destroy existing chart if it exists
+  if (priceChart) {
+    priceChart.destroy();
   }
 
-  const layout = {
-    autosize: true,
-    title: '',
-    xaxis: {
-      title: 'Date',
-      rangeslider: { visible: false },
-      gridcolor: '#2a3154',
-      color: '#9fa8da'
-    },
-    yaxis: {
-      title: 'Price ($)',
-      gridcolor: '#2a3154',
-      color: '#9fa8da'
-    },
-    plot_bgcolor: '#0f1535',
-    paper_bgcolor: '#151b3d',
-    font: { color: '#e8eaf6', size: 14 },
-    margin: { l: 60, r: 40, t: 20, b: 60 },
-    showlegend: true,
-    legend: {
-      x: 0.02,
-      y: 0.98,
-      bgcolor: 'rgba(21, 27, 61, 0.8)',
-      bordercolor: '#2a3154',
-      borderwidth: 1,
-      font: { size: 14, color: '#e8eaf6' }
+  let options;
+
+  if (currentChartType === 'candlestick') {
+    // Prepare candlestick data
+    const candleData = stockData.dates.map((date, i) => ({
+      x: new Date(date),
+      y: [stockData.open[i], stockData.high[i], stockData.low[i], stockData.close[i]]
+    }));
+
+    options = {
+      series: [{
+        name: ticker,
+        data: candleData
+      }],
+      chart: {
+        type: 'candlestick',
+        height: 500,
+        group: 'stock-charts',
+        background: '#151b3d',
+        foreColor: '#e8eaf6',
+        toolbar: {
+          show: true,
+          tools: {
+            download: true,
+            zoom: true,
+            zoomin: true,
+            zoomout: true,
+            pan: true,
+            reset: true
+          }
+        },
+        zoom: {
+          enabled: true,
+          type: 'x'
+        }
+      },
+      plotOptions: {
+        candlestick: {
+          colors: {
+            upward: '#00ff88',
+            downward: '#ff3366'
+          }
+        }
+      },
+      xaxis: {
+        type: 'datetime',
+        labels: {
+          style: {
+            colors: '#9fa8da'
+          }
+        }
+      },
+      yaxis: {
+        tooltip: {
+          enabled: true
+        },
+        labels: {
+          style: {
+            colors: '#9fa8da'
+          },
+          formatter: (val) => '$' + val.toFixed(2)
+        }
+      },
+      grid: {
+        borderColor: '#2a3154',
+        strokeDashArray: 3
+      },
+      theme: {
+        mode: 'dark'
+      },
+      tooltip: {
+        theme: 'dark'
+      }
+    };
+  } else {
+    // Line chart with moving averages
+    const series = [{
+      name: ticker,
+      data: stockData.dates.map((date, i) => [new Date(date).getTime(), stockData.close[i]])
+    }];
+
+    // Add moving averages if available
+    if (indicatorData) {
+      series.push({
+        name: 'SMA 20',
+        data: indicatorData.dates.map((date, i) => [new Date(date).getTime(), indicatorData.sma_20[i]])
+      });
+      series.push({
+        name: 'SMA 50',
+        data: indicatorData.dates.map((date, i) => [new Date(date).getTime(), indicatorData.sma_50[i]])
+      });
     }
-  };
 
-  const config = {
-    responsive: true,
-    displayModeBar: true,
-    displaylogo: false
-  };
+    options = {
+      series: series,
+      chart: {
+        type: 'line',
+        height: 500,
+        group: 'stock-charts',
+        background: '#151b3d',
+        foreColor: '#e8eaf6',
+        toolbar: {
+          show: true,
+          tools: {
+            download: true,
+            zoom: true,
+            zoomin: true,
+            zoomout: true,
+            pan: true,
+            reset: true
+          }
+        },
+        zoom: {
+          enabled: true,
+          type: 'x'
+        }
+      },
+      colors: ['#00d4ff', '#ffaa00', '#ff66ff'],
+      stroke: {
+        width: [3, 2, 2],
+        curve: 'smooth'
+      },
+      xaxis: {
+        type: 'datetime',
+        labels: {
+          style: {
+            colors: '#9fa8da'
+          }
+        }
+      },
+      yaxis: {
+        labels: {
+          style: {
+            colors: '#9fa8da'
+          },
+          formatter: (val) => '$' + val.toFixed(2)
+        }
+      },
+      grid: {
+        borderColor: '#2a3154',
+        strokeDashArray: 3
+      },
+      legend: {
+        position: 'top',
+        horizontalAlign: 'left',
+        fontSize: '14px',
+        labels: {
+          colors: '#e8eaf6'
+        }
+      },
+      theme: {
+        mode: 'dark'
+      },
+      tooltip: {
+        theme: 'dark',
+        shared: true,
+        intersect: false
+      }
+    };
+  }
 
-  Plotly.newPlot('priceChart', traces, layout, config);
+  priceChart = new ApexCharts(document.querySelector("#priceChart"), options);
+  priceChart.render();
 }
 
 function renderVolumeChart() {
-  const colors = stockData.close.map((close, i) => {
-    if (i === 0) return '#00d4ff';
-    return close >= stockData.close[i - 1] ? '#00ff88' : '#ff3366';
-  });
+  // Destroy existing chart if it exists
+  if (volumeChart) {
+    volumeChart.destroy();
+  }
 
-  const trace = {
-    type: 'bar',
-    x: stockData.dates,
-    y: stockData.volume,
-    name: 'Volume',
-    marker: { color: colors }
-  };
+  // Prepare volume data with timestamps and colors
+  const volumeData = stockData.dates.map((date, i) => ({
+    x: new Date(date).getTime(),
+    y: stockData.volume[i],
+    fillColor: i === 0 ? '#00d4ff' : (stockData.close[i] >= stockData.close[i - 1] ? '#00ff88' : '#ff3366')
+  }));
 
-  const layout = {
-    autosize: true,
-    title: '',
+  const options = {
+    series: [{
+      name: 'Volume',
+      data: volumeData
+    }],
+    chart: {
+      type: 'bar',
+      height: 300,
+      group: 'stock-charts',
+      background: '#151b3d',
+      foreColor: '#e8eaf6',
+      toolbar: {
+        show: true,
+        tools: {
+          download: true,
+          zoom: true,
+          zoomin: true,
+          zoomout: true,
+          pan: true,
+          reset: true
+        }
+      },
+      zoom: {
+        enabled: true,
+        type: 'x'
+      }
+    },
+    plotOptions: {
+      bar: {
+        columnWidth: '95%',
+        colors: {
+          ranges: []
+        }
+      }
+    },
     xaxis: {
-      title: 'Date',
-      gridcolor: '#2a3154',
-      color: '#9fa8da'
+      type: 'datetime',
+      labels: {
+        style: {
+          colors: '#9fa8da'
+        }
+      }
     },
     yaxis: {
-      title: 'Volume',
-      gridcolor: '#2a3154',
-      color: '#9fa8da'
+      labels: {
+        style: {
+          colors: '#9fa8da'
+        },
+        formatter: (val) => {
+          if (val >= 1e9) return (val / 1e9).toFixed(1) + 'B';
+          if (val >= 1e6) return (val / 1e6).toFixed(1) + 'M';
+          if (val >= 1e3) return (val / 1e3).toFixed(1) + 'K';
+          return val.toFixed(0);
+        }
+      }
     },
-    plot_bgcolor: '#0f1535',
-    paper_bgcolor: '#151b3d',
-    font: { color: '#e8eaf6', size: 14 },
-    margin: { l: 60, r: 40, t: 20, b: 60 },
-    showlegend: false
+    grid: {
+      borderColor: '#2a3154',
+      strokeDashArray: 3
+    },
+    theme: {
+      mode: 'dark'
+    },
+    tooltip: {
+      theme: 'dark',
+      y: {
+        formatter: (val) => val.toLocaleString()
+      }
+    }
   };
 
-  const config = {
-    responsive: true,
-    displayModeBar: true,
-    displaylogo: false
-  };
-
-  Plotly.newPlot('volumeChart', [trace], layout, config);
+  volumeChart = new ApexCharts(document.querySelector("#volumeChart"), options);
+  volumeChart.render();
 }
 
 function renderRSIChart() {
-  const trace = {
-    type: 'scatter',
-    mode: 'lines',
-    x: indicatorData.dates,
-    y: indicatorData.rsi,
-    name: 'RSI',
-    line: { color: '#00d4ff', width: 3 }
-  };
+  // Destroy existing chart if it exists
+  if (rsiChart) {
+    rsiChart.destroy();
+  }
 
-  const oversold = {
-    type: 'scatter',
-    mode: 'lines',
-    x: indicatorData.dates,
-    y: Array(indicatorData.dates.length).fill(30),
-    name: 'Oversold (30)',
-    line: { color: '#00ff88', width: 2, dash: 'dash' }
-  };
-
-  const overbought = {
-    type: 'scatter',
-    mode: 'lines',
-    x: indicatorData.dates,
-    y: Array(indicatorData.dates.length).fill(70),
-    name: 'Overbought (70)',
-    line: { color: '#ff3366', width: 2, dash: 'dash' }
-  };
-
-  const layout = {
-    autosize: true,
-    title: '',
+  const options = {
+    series: [
+      {
+        name: 'RSI',
+        data: indicatorData.dates.map((date, i) => [new Date(date).getTime(), indicatorData.rsi[i]])
+      },
+      {
+        name: 'Oversold (30)',
+        data: indicatorData.dates.map((date) => [new Date(date).getTime(), 30])
+      },
+      {
+        name: 'Overbought (70)',
+        data: indicatorData.dates.map((date) => [new Date(date).getTime(), 70])
+      }
+    ],
+    chart: {
+      type: 'line',
+      height: 350,
+      group: 'stock-charts',
+      background: '#151b3d',
+      foreColor: '#e8eaf6',
+      toolbar: {
+        show: true,
+        tools: {
+          download: true,
+          zoom: true,
+          zoomin: true,
+          zoomout: true,
+          pan: true,
+          reset: true
+        }
+      },
+      zoom: {
+        enabled: true,
+        type: 'x'
+      }
+    },
+    colors: ['#00d4ff', '#00ff88', '#ff3366'],
+    stroke: {
+      width: [3, 2, 2],
+      curve: 'smooth',
+      dashArray: [0, 5, 5]
+    },
     xaxis: {
-      title: 'Date',
-      gridcolor: '#2a3154',
-      color: '#9fa8da'
+      type: 'datetime',
+      labels: {
+        style: {
+          colors: '#9fa8da'
+        }
+      }
     },
     yaxis: {
-      title: 'RSI',
-      range: [0, 100],
-      gridcolor: '#2a3154',
-      color: '#9fa8da'
+      min: 0,
+      max: 100,
+      labels: {
+        style: {
+          colors: '#9fa8da'
+        }
+      }
     },
-    plot_bgcolor: '#0f1535',
-    paper_bgcolor: '#151b3d',
-    font: { color: '#e8eaf6', size: 14 },
-    margin: { l: 60, r: 40, t: 20, b: 60 },
-    showlegend: true,
+    grid: {
+      borderColor: '#2a3154',
+      strokeDashArray: 3
+    },
     legend: {
-      x: 0.02,
-      y: 0.98,
-      bgcolor: 'rgba(21, 27, 61, 0.8)',
-      bordercolor: '#2a3154',
-      borderwidth: 1,
-      font: { size: 14, color: '#e8eaf6' }
+      position: 'top',
+      horizontalAlign: 'left',
+      fontSize: '14px',
+      labels: {
+        colors: '#e8eaf6'
+      }
+    },
+    theme: {
+      mode: 'dark'
+    },
+    tooltip: {
+      theme: 'dark',
+      shared: true,
+      intersect: false
+    },
+    annotations: {
+      yaxis: [
+        {
+          y: 30,
+          borderColor: '#00ff88',
+          fillColor: '#00ff88',
+          opacity: 0.1
+        },
+        {
+          y: 70,
+          borderColor: '#ff3366',
+          fillColor: '#ff3366',
+          opacity: 0.1
+        }
+      ]
     }
   };
 
-  const config = {
-    responsive: true,
-    displayModeBar: true,
-    displaylogo: false
-  };
-
-  Plotly.newPlot('rsiChart', [trace, oversold, overbought], layout, config);
+  rsiChart = new ApexCharts(document.querySelector("#rsiChart"), options);
+  rsiChart.render();
 }
 
 function renderMACDChart() {
-  const macd = {
-    type: 'scatter',
-    mode: 'lines',
-    x: indicatorData.dates,
-    y: indicatorData.macd,
-    name: 'MACD',
-    line: { color: '#00d4ff', width: 3 }
-  };
+  // Destroy existing chart if it exists
+  if (macdChart) {
+    macdChart.destroy();
+  }
 
-  const signal = {
-    type: 'scatter',
-    mode: 'lines',
-    x: indicatorData.dates,
-    y: indicatorData.macd_signal,
-    name: 'Signal',
-    line: { color: '#ffaa00', width: 3 }
-  };
+  // Prepare histogram data with colors
+  const histData = indicatorData.dates.map((date, i) => ({
+    x: new Date(date).getTime(),
+    y: indicatorData.macd_hist[i],
+    fillColor: indicatorData.macd_hist[i] >= 0 ? '#00ff88' : '#ff3366'
+  }));
 
-  const hist = {
-    type: 'bar',
-    x: indicatorData.dates,
-    y: indicatorData.macd_hist,
-    name: 'Histogram',
-    marker: {
-      color: indicatorData.macd_hist.map(v => v >= 0 ? '#00ff88' : '#ff3366')
-    }
-  };
-
-  const layout = {
-    autosize: true,
-    title: '',
+  const options = {
+    series: [
+      {
+        name: 'Histogram',
+        type: 'bar',
+        data: histData
+      },
+      {
+        name: 'MACD',
+        type: 'line',
+        data: indicatorData.dates.map((date, i) => [new Date(date).getTime(), indicatorData.macd[i]])
+      },
+      {
+        name: 'Signal',
+        type: 'line',
+        data: indicatorData.dates.map((date, i) => [new Date(date).getTime(), indicatorData.macd_signal[i]])
+      }
+    ],
+    chart: {
+      height: 350,
+      group: 'stock-charts',
+      background: '#151b3d',
+      foreColor: '#e8eaf6',
+      toolbar: {
+        show: true,
+        tools: {
+          download: true,
+          zoom: true,
+          zoomin: true,
+          zoomout: true,
+          pan: true,
+          reset: true
+        }
+      },
+      zoom: {
+        enabled: true,
+        type: 'x'
+      }
+    },
+    plotOptions: {
+      bar: {
+        columnWidth: '80%'
+      }
+    },
+    colors: ['#00ff88', '#00d4ff', '#ffaa00'],
+    stroke: {
+      width: [0, 3, 3],
+      curve: 'smooth'
+    },
     xaxis: {
-      title: 'Date',
-      gridcolor: '#2a3154',
-      color: '#9fa8da'
+      type: 'datetime',
+      labels: {
+        style: {
+          colors: '#9fa8da'
+        }
+      }
     },
     yaxis: {
-      title: 'MACD',
-      gridcolor: '#2a3154',
-      color: '#9fa8da'
+      labels: {
+        style: {
+          colors: '#9fa8da'
+        },
+        formatter: (val) => val.toFixed(2)
+      }
     },
-    plot_bgcolor: '#0f1535',
-    paper_bgcolor: '#151b3d',
-    font: { color: '#e8eaf6', size: 14 },
-    margin: { l: 60, r: 40, t: 20, b: 60 },
-    showlegend: true,
+    grid: {
+      borderColor: '#2a3154',
+      strokeDashArray: 3
+    },
     legend: {
-      x: 0.02,
-      y: 0.98,
-      bgcolor: 'rgba(21, 27, 61, 0.8)',
-      bordercolor: '#2a3154',
-      borderwidth: 1,
-      font: { size: 14, color: '#e8eaf6' }
+      position: 'top',
+      horizontalAlign: 'left',
+      fontSize: '14px',
+      labels: {
+        colors: '#e8eaf6'
+      }
+    },
+    theme: {
+      mode: 'dark'
+    },
+    tooltip: {
+      theme: 'dark',
+      shared: true,
+      intersect: false
     }
   };
 
-  const config = {
-    responsive: true,
-    displayModeBar: true,
-    displaylogo: false
-  };
-
-  Plotly.newPlot('macdChart', [hist, macd, signal], layout, config);
+  macdChart = new ApexCharts(document.querySelector("#macdChart"), options);
+  macdChart.render();
 }
 
 function updateChartType(type) {
