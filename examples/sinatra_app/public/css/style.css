@@ -6,24 +6,26 @@
 }
 
 :root {
-  --primary-color: #2196F3;
-  --secondary-color: #1976D2;
-  --success-color: #4CAF50;
-  --danger-color: #F44336;
-  --warning-color: #FF9800;
-  --dark-bg: #1a1a2e;
-  --light-bg: #f5f7fa;
-  --card-bg: #ffffff;
-  --text-primary: #2c3e50;
-  --text-secondary: #7f8c8d;
-  --border-color: #e0e0e0;
-  --positive-color: #26a69a;
-  --negative-color: #ef5350;
+  --primary-color: #00d4ff;
+  --secondary-color: #00a8cc;
+  --success-color: #00ff88;
+  --danger-color: #ff3366;
+  --warning-color: #ffaa00;
+  --dark-bg: #0a0e27;
+  --card-bg: #151b3d;
+  --card-bg-lighter: #1e2749;
+  --text-primary: #e8eaf6;
+  --text-secondary: #9fa8da;
+  --border-color: #2a3154;
+  --positive-color: #00ff88;
+  --negative-color: #ff3366;
+  --chart-bg: #0f1535;
+  --grid-color: #2a3154;
 }
 
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-  background-color: var(--light-bg);
+  background-color: var(--dark-bg);
   color: var(--text-primary);
   line-height: 1.6;
 }
@@ -88,7 +90,7 @@ body {
 
 /* Hero Section */
 .hero {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #1a237e 0%, #4a148c 100%);
   color: white;
   padding: 4rem 2rem;
   text-align: center;
@@ -184,7 +186,7 @@ body {
 }
 
 .btn-secondary {
-  background: white;
+  background: var(--card-bg-lighter);
   color: var(--text-primary);
   border: 2px solid var(--border-color);
 }
@@ -192,6 +194,7 @@ body {
 .btn-secondary:hover {
   border-color: var(--primary-color);
   color: var(--primary-color);
+  background: var(--card-bg);
 }
 
 .btn-large {
@@ -202,15 +205,16 @@ body {
 .btn-small {
   padding: 0.5rem 1rem;
   font-size: 0.875rem;
-  background: white;
+  background: var(--card-bg-lighter);
   color: var(--text-primary);
   border: 1px solid var(--border-color);
 }
 
 .btn-small.active {
   background: var(--primary-color);
-  color: white;
+  color: var(--dark-bg);
   border-color: var(--primary-color);
+  font-weight: 700;
 }
 
 /* Period Selector */
@@ -238,7 +242,7 @@ body {
 .btn-period {
   padding: 0.5rem 1rem;
   font-size: 0.875rem;
-  background: white;
+  background: var(--card-bg-lighter);
   color: var(--text-primary);
   border: 1px solid var(--border-color);
   border-radius: 4px;
@@ -248,14 +252,16 @@ body {
 }
 
 .btn-period:hover {
-  background: var(--light-bg);
+  background: var(--card-bg);
   border-color: var(--primary-color);
+  color: var(--primary-color);
 }
 
 .btn-period.active {
   background: var(--primary-color);
-  color: white;
+  color: var(--dark-bg);
   border-color: var(--primary-color);
+  font-weight: 700;
 }
 
 /* Container */
@@ -268,7 +274,7 @@ body {
 /* Features Section */
 .features {
   padding: 4rem 0;
-  background: white;
+  background: var(--card-bg);
 }
 
 .features h2 {
@@ -286,7 +292,7 @@ body {
 
 .feature-card {
   padding: 2rem;
-  background: var(--card-bg);
+  background: var(--card-bg-lighter);
   border-radius: 12px;
   border: 1px solid var(--border-color);
   transition: all 0.3s ease;
@@ -294,7 +300,8 @@ body {
 
 .feature-card:hover {
   transform: translateY(-5px);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 10px 30px rgba(0, 217, 255, 0.2);
+  border-color: var(--primary-color);
 }
 
 .feature-icon {
@@ -317,7 +324,7 @@ body {
 /* Info Section */
 .info-section {
   padding: 4rem 0;
-  background: var(--light-bg);
+  background: var(--dark-bg);
 }
 
 .info-content h2 {
@@ -367,9 +374,10 @@ body {
   align-items: center;
   margin-bottom: 2rem;
   padding: 1.5rem;
-  background: white;
+  background: var(--card-bg);
   border-radius: 12px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+  border: 1px solid var(--border-color);
 }
 
 .ticker-info h1 {
@@ -421,10 +429,12 @@ body {
 }
 
 .metric-card {
-  background: white;
+  background: var(--card-bg);
   padding: 1.5rem;
   border-radius: 12px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+  border-left: 4px solid var(--primary-color);
+  border: 1px solid var(--border-color);
   border-left: 4px solid var(--primary-color);
 }
 
@@ -479,11 +489,12 @@ body {
 
 /* Charts */
 .chart-container {
-  background: white;
+  background: var(--card-bg);
   padding: 1.5rem;
   border-radius: 12px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
   margin-bottom: 2rem;
+  border: 1px solid var(--border-color);
 }
 
 .chart-header {
@@ -537,7 +548,7 @@ body {
 }
 
 .results-table thead {
-  background: var(--light-bg);
+  background: var(--card-bg-lighter);
 }
 
 .results-table th,
@@ -545,6 +556,7 @@ body {
   padding: 1rem;
   text-align: left;
   border-bottom: 1px solid var(--border-color);
+  color: var(--text-primary);
 }
 
 .results-table th {
@@ -560,7 +572,7 @@ body {
 }
 
 .results-table tr:hover {
-  background: var(--light-bg);
+  background: var(--card-bg-lighter);
 }
 
 .results-table .positive {
@@ -607,13 +619,14 @@ body {
 }
 
 .modal-content {
-  background-color: white;
+  background-color: var(--card-bg);
   margin: 15% auto;
   padding: 2rem;
   border-radius: 12px;
   width: 90%;
   max-width: 500px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+  border: 1px solid var(--border-color);
 }
 
 .modal-content h2 {
@@ -629,10 +642,13 @@ body {
   font-size: 1.1rem;
   margin-bottom: 1rem;
   outline: none;
+  background: var(--card-bg-lighter);
+  color: var(--text-primary);
 }
 
 .modal-content input:focus {
   border-color: var(--primary-color);
+  background: var(--card-bg);
 }
 
 .close {
