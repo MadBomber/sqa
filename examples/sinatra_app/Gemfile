@@ -5,12 +5,32 @@ source 'https://rubygems.org'
 ruby '>= 3.2.0'
 
 # Web framework
+gem 'rackup'
 gem 'sinatra', '~> 4.0'
 gem 'sinatra-contrib', '~> 4.0'
 gem 'puma', '~> 6.0'
 
 # JSON handling
 gem 'json', '~> 2.7'
+
+# SQA library dependencies (required when loading SQA from local path)
+gem 'alphavantage'
+gem 'csv'
+gem 'faraday'
+gem 'hashie'
+gem 'kbs'
+gem 'lite-statistics'
+gem 'nenv'
+gem 'redis'
+gem 'ruby_llm'
+gem 'ruby_llm-mcp'
+gem 'shared_tools'
+gem 'sqa-tai'
+gem 'tty-table'
+gem 'eps'
+gem 'polars-df'
+gem 'toml-rb'
+gem 'regent'
 
 # SQA library (assumes it's in parent directory)
 # In production, this would be:
