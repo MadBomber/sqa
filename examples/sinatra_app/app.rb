@@ -219,6 +219,11 @@ get '/api/indicators/:ticker' do
                        bb_result[0], bb_result[1], bb_result[2],
                        sma_20, sma_50, ema_20, period: period)
 
+    # Debug logging
+    puts "DEBUG: Period requested: #{period}"
+    puts "DEBUG: Original dates count: #{dates.length}"
+    puts "DEBUG: Filtered dates count: #{filtered_dates.length}"
+
     {
       period: period,
       dates: filtered_dates,
