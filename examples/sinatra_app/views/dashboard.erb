@@ -508,19 +508,27 @@ function renderRSIChart() {
     return;
   }
 
+  // Filter out null/NaN values (RSI has warmup period)
+  const validRSIIndices = [];
+  for (let i = 0; i < indicatorData.rsi.length; i++) {
+    if (indicatorData.rsi[i] !== null && !isNaN(indicatorData.rsi[i])) {
+      validRSIIndices.push(i);
+    }
+  }
+
   const options = {
     series: [
       {
         name: 'RSI',
-        data: indicatorData.dates.map((date, i) => [new Date(date).getTime(), indicatorData.rsi[i]])
+        data: validRSIIndices.map(i => [new Date(indicatorData.dates[i]).getTime(), indicatorData.rsi[i]])
       },
       {
         name: 'Oversold (30)',
-        data: indicatorData.dates.map((date) => [new Date(date).getTime(), 30])
+        data: validRSIIndices.map(i => [new Date(indicatorData.dates[i]).getTime(), 30])
       },
       {
         name: 'Overbought (70)',
-        data: indicatorData.dates.map((date) => [new Date(date).getTime(), 70])
+        data: validRSIIndices.map(i => [new Date(indicatorData.dates[i]).getTime(), 70])
       }
     ],
     chart: {
@@ -622,9 +630,22 @@ function renderMACDChart() {
     return;
   }
 
-  // Prepare histogram data with colors
-  const histData = indicatorData.dates.map((date, i) => ({
-    x: new Date(date).getTime(),
+  // Filter out null/NaN values (MACD has warmup period)
+  const validIndices = [];
+  for (let i = 0; i < indicatorData.macd.length; i++) {
+    if (indicatorData.macd[i] !== null &&
+        indicatorData.macd_signal[i] !== null &&
+        indicatorData.macd_hist[i] !== null &&
+        !isNaN(indicatorData.macd[i]) &&
+        !isNaN(indicatorData.macd_signal[i]) &&
+        !isNaN(indicatorData.macd_hist[i])) {
+      validIndices.push(i);
+    }
+  }
+
+  // Prepare histogram data with colors (only valid values)
+  const histData = validIndices.map(i => ({
+    x: new Date(indicatorData.dates[i]).getTime(),
     y: indicatorData.macd_hist[i],
     fillColor: indicatorData.macd_hist[i] >= 0 ? '#00ff88' : '#ff3366'
   }));
@@ -639,12 +660,12 @@ function renderMACDChart() {
       {
         name: 'MACD',
         type: 'line',
-        data: indicatorData.dates.map((date, i) => [new Date(date).getTime(), indicatorData.macd[i]])
+        data: validIndices.map(i => [new Date(indicatorData.dates[i]).getTime(), indicatorData.macd[i]])
       },
       {
         name: 'Signal',
         type: 'line',
-        data: indicatorData.dates.map((date, i) => [new Date(date).getTime(), indicatorData.macd_signal[i]])
+        data: validIndices.map(i => [new Date(indicatorData.dates[i]).getTime(), indicatorData.macd_signal[i]])
       }
     ],
     chart: {
