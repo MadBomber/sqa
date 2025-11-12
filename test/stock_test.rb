@@ -154,4 +154,68 @@ class StockTest < Minitest::Test
     refute_nil SQA::Stock::CONNECTION
     assert_kind_of Faraday::Connection, SQA::Stock::CONNECTION
   end
+
+  # Test conditional CSV updates based on last timestamp
+  def test_should_update_when_csv_has_old_data
+    skip "Requires API key and network access" unless ENV['RUN_INTEGRATION_TESTS']
+
+    stock = SQA::Stock.new(ticker: 'AAPL')
+
+    # Mock the DataFrame to have yesterday's data
+    yesterday = (Date.today - 1).to_s
+    stock.df.data = stock.df.data.with_column(
+      Polars::Series.new("timestamp", [yesterday] * stock.df.size)
+    )
+
+    # Should update because data is from yesterday
+    assert stock.send(:should_update?), "Expected should_update? to be true when CSV has yesterday's data"
+  end
+
+  def test_should_not_update_when_csv_has_todays_data
+    skip "Requires API key and network access" unless ENV['RUN_INTEGRATION_TESTS']
+
+    stock = SQA::Stock.new(ticker: 'AAPL')
+
+    # Mock the DataFrame to have today's data
+    today = Date.today.to_s
+    stock.df.data = stock.df.data.with_column(
+      Polars::Series.new("timestamp", [today] * stock.df.size)
+    )
+
+    # Should NOT update because data is already from today
+    refute stock.send(:should_update?), "Expected should_update? to be false when CSV has today's data"
+  end
+
+  def test_should_not_update_when_csv_has_future_data
+    skip "Requires API key and network access" unless ENV['RUN_INTEGRATION_TESTS']
+
+    stock = SQA::Stock.new(ticker: 'AAPL')
+
+    # Mock the DataFrame to have tomorrow's data (edge case)
+    tomorrow = (Date.today + 1).to_s
+    stock.df.data = stock.df.data.with_column(
+      Polars::Series.new("timestamp", [tomorrow] * stock.df.size)
+    )
+
+    # Should NOT update because data is from the future
+    refute stock.send(:should_update?), "Expected should_update? to be false when CSV has future data"
+  end
+
+  def test_should_update_respects_lazy_update_config
+    skip "Requires API key and network access" unless ENV['RUN_INTEGRATION_TESTS']
+
+    stock = SQA::Stock.new(ticker: 'AAPL')
+
+    # Save original config
+    original_lazy_update = SQA.config.lazy_update
+
+    # Enable lazy update
+    SQA.config.lazy_update = true
+
+    # Should NOT update when lazy_update is enabled
+    refute stock.send(:should_update?), "Expected should_update? to be false when lazy_update is enabled"
+
+    # Restore original config
+    SQA.config.lazy_update = original_lazy_update
+  end
 end

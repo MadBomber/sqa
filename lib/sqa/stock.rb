@@ -145,6 +145,18 @@ class SQA::Stock
       end
     end
 
+    # Don't update if CSV data is already current (last timestamp is today or later)
+    # This prevents unnecessary API calls when we already have today's data
+    if @df && @df.size > 0
+      begin
+        last_timestamp = Date.parse(@df["timestamp"].to_a.last)
+        return false if last_timestamp >= Date.today
+      rescue => e
+        # If we can't parse the date, assume we need to update
+        warn "Warning: Could not parse last timestamp for #{@ticker} (#{e.message}). Will attempt update." if $VERBOSE
+      end
+    end
+
     true
   end
 
