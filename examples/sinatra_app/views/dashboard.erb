@@ -164,7 +164,18 @@ async function loadStockData() {
 async function loadIndicators() {
   try {
     const response = await fetch(`/api/indicators/${ticker}?period=${currentPeriod}`);
-    indicatorData = await response.json();
+    const data = await response.json();
+
+    // Check if API returned an error
+    if (data.error) {
+      console.warn('Indicators not available:', data.error);
+      document.getElementById('currentRSI').textContent = 'N/A';
+      document.getElementById('rsiSignal').textContent = 'TA-Lib not installed';
+      document.getElementById('rsiSignal').className = 'metric-signal';
+      return;
+    }
+
+    indicatorData = data;
 
     // Update RSI metric
     const currentRSI = indicatorData.rsi[indicatorData.rsi.length - 1];
@@ -191,6 +202,8 @@ async function loadIndicators() {
     renderMACDChart();
   } catch (error) {
     console.error('Error loading indicators:', error);
+    document.getElementById('currentRSI').textContent = 'Error';
+    document.getElementById('rsiSignal').textContent = 'Failed to load';
   }
 }
 
@@ -483,6 +496,12 @@ function renderRSIChart() {
     rsiChart.destroy();
   }
 
+  // Skip if indicators not available
+  if (!indicatorData || !indicatorData.rsi) {
+    document.querySelector("#rsiChart").innerHTML = '<p style="text-align: center; padding: 40px; color: #9fa8da;">Technical indicators not available (TA-Lib required)</p>';
+    return;
+  }
+
   const options = {
     series: [
       {
@@ -589,6 +608,12 @@ function renderMACDChart() {
   // Destroy existing chart if it exists
   if (macdChart) {
     macdChart.destroy();
+  }
+
+  // Skip if indicators not available
+  if (!indicatorData || !indicatorData.macd) {
+    document.querySelector("#macdChart").innerHTML = '<p style="text-align: center; padding: 40px; color: #9fa8da;">Technical indicators not available (TA-Lib required)</p>';
+    return;
   }
 
   // Prepare histogram data with colors
