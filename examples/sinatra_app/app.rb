@@ -212,51 +212,12 @@ get '/api/indicators/:ticker' do
     sma_50 = SQAI.sma(prices, period: 50)
     ema_20 = SQAI.ema(prices, period: 20)
 
-    # Filter to last N data points for performance
-    # (since data may be intraday, we need to limit by count not date range)
-    limit = case period
-            when '30d' then 60   # Last 60 data points
-            when '60d' then 120  # Last 120 data points
-            when '90d' then 180  # Last 180 data points
-            when '1q' then 126   # ~3 months
-            when '2q' then 252   # ~6 months
-            when '3q' then 378   # ~9 months
-            when '4q' then 504   # ~12 months
-            else nil  # 'all' - no limit
-            end
-
-    if limit && dates.length > limit
-      # Take the last N points
-      filtered_dates = dates.last(limit)
-      filtered_rsi = rsi.last(limit)
-      filtered_macd = macd_result[0].last(limit)
-      filtered_macd_signal = macd_result[1].last(limit)
-      filtered_macd_hist = macd_result[2].last(limit)
-      filtered_bb_upper = bb_result[0].last(limit)
-      filtered_bb_middle = bb_result[1].last(limit)
-      filtered_bb_lower = bb_result[2].last(limit)
-      filtered_sma_20 = sma_20.last(limit)
-      filtered_sma_50 = sma_50.last(limit)
-      filtered_ema_20 = ema_20.last(limit)
-    else
-      # Return all data
-      filtered_dates = dates
-      filtered_rsi = rsi
-      filtered_macd = macd_result[0]
-      filtered_macd_signal = macd_result[1]
-      filtered_macd_hist = macd_result[2]
-      filtered_bb_upper = bb_result[0]
-      filtered_bb_middle = bb_result[1]
-      filtered_bb_lower = bb_result[2]
-      filtered_sma_20 = sma_20
-      filtered_sma_50 = sma_50
-      filtered_ema_20 = ema_20
-    end
-
-    # Debug logging
-    puts "DEBUG: Period requested: #{period}, limit: #{limit}"
-    puts "DEBUG: Original dates count: #{dates.length}"
-    puts "DEBUG: Filtered dates count: #{filtered_dates.length}"
+    # Filter results by period (keep indicators aligned with dates)
+    filtered_dates, filtered_rsi, filtered_macd, filtered_macd_signal, filtered_macd_hist,
+      filtered_bb_upper, filtered_bb_middle, filtered_bb_lower, filtered_sma_20, filtered_sma_50, filtered_ema_20 =
+      filter_by_period(dates, rsi, macd_result[0], macd_result[1], macd_result[2],
+                       bb_result[0], bb_result[1], bb_result[2],
+                       sma_20, sma_50, ema_20, period: period)
 
     {
       period: period,
