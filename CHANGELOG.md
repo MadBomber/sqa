@@ -1,6 +1,19 @@
 ## [Unreleased]
 
+## [0.0.32] 2025-11-12
+### Added
+- **CSV Updates**: Conditional CSV updates based on timestamp
+  - Only updates CSV files when new data is available
+  - Improves performance by avoiding unnecessary writes
+
+### Changed
+- **DataFrame**: Removed debug_me calls from SQA::DataFrame
+  - Cleaned up debugging code for production use
+
 ### Fixed
+- **CSV Data Quality**: Multiple improvements to CSV data handling
+  - Change CSV sort order to ascending (oldest-first) for TA-Lib compatibility
+  - Prevent duplicate timestamps in CSV data files
 - **DataFrame::Data**: Added missing `SQA::DataFrame::Data` class for stock metadata storage
   - Stores ticker, name, exchange, source, indicators, and overview data
   - Supports both hash initialization (JSON) and keyword arguments
