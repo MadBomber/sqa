@@ -18,13 +18,6 @@ class SQA::DataFrame
   def initialize(raw_data = nil, mapping: {}, transformers: {})
     @data = Polars::DataFrame.new(raw_data || [])
 
-    debug_me{[
-      :raw_data,
-      :mapping,
-      :transformers,
-      '@data'
-    ]}
-
     # IMPORTANT: Rename columns FIRST, then apply transformers
     # Transformers expect renamed column names
     rename_columns!(mapping) unless mapping.empty?
@@ -217,14 +210,6 @@ class SQA::DataFrame
 
 
     def from_csv_file(source, mapping: {}, transformers: {})
-      debug_me do
-        %i[
-          source
-          mapping
-          transformers
-        ]
-      end
-
       df = Polars.read_csv(source)
       new(df, mapping: mapping, transformers: transformers)
     end
