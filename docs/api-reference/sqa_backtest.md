@@ -1,0 +1,137 @@
+# 📦 SQA::Backtest
+
+!!! abstract "Source Information"
+    **Defined in:** `lib/sqa/backtest.rb:7`
+    
+    **Inherits from:** `Object`
+
+## 🔨 Instance Methods
+
+### `#stock()`
+
+Returns the value of attribute stock.
+
+
+
+
+??? info "Source Location"
+    `lib/sqa/backtest.rb:8`
+
+---
+
+### `#strategy()`
+
+Returns the value of attribute strategy.
+
+
+
+
+??? info "Source Location"
+    `lib/sqa/backtest.rb:8`
+
+---
+
+### `#portfolio()`
+
+Returns the value of attribute portfolio.
+
+
+
+
+??? info "Source Location"
+    `lib/sqa/backtest.rb:8`
+
+---
+
+### `#results()`
+
+Returns the value of attribute results.
+
+
+
+
+??? info "Source Location"
+    `lib/sqa/backtest.rb:8`
+
+---
+
+### `#equity_curve()`
+
+Returns the value of attribute equity_curve.
+
+
+
+
+??? info "Source Location"
+    `lib/sqa/backtest.rb:8`
+
+---
+
+### `#initialize(stock:, strategy:, start_date: = nil, end_date: = nil, initial_capital: = 10_000.0, commission: = 0.0, position_size: = :all_cash)`
+
+Initialize a backtest
+
+!!! info "Parameters"
+
+    | Name | Type | Description |
+    |------|------|-------------|
+    | `stock` | `SQA::Stock` | Stock to backtest |
+    | `strategy` | `SQA::Strategy, Proc` | Strategy or callable that returns :buy, :sell, or :hold |
+    | `start_date` | `Date, String` | Start date for backtest |
+    | `end_date` | `Date, String` | End date for backtest |
+    | `initial_capital` | `Float` | Starting capital |
+    | `commission` | `Float` | Commission per trade |
+    | `position_size` | `Symbol, Float` | :all_cash or fraction of portfolio per trade |
+!!! success "Returns"
+
+    **Type:** `Backtest`
+
+    
+
+    a new instance of Backtest
+
+??? info "Source Location"
+    `lib/sqa/backtest.rb:85`
+
+---
+
+### `#run()`
+
+Run the backtest
+
+
+!!! success "Returns"
+
+    **Type:** `Results`
+
+    
+
+    Backtest results
+
+??? info "Source Location"
+    `lib/sqa/backtest.rb:102`
+
+---
+
+## 📝 Attributes
+
+### 👁️ `stock` <small>read-only</small>
+
+Returns the value of attribute stock.
+
+### 👁️ `strategy` <small>read-only</small>
+
+Returns the value of attribute strategy.
+
+### 👁️ `portfolio` <small>read-only</small>
+
+Returns the value of attribute portfolio.
+
+### 👁️ `results` <small>read-only</small>
+
+Returns the value of attribute results.
+
+### 👁️ `equity_curve` <small>read-only</small>
+
+Returns the value of attribute equity_curve.
+

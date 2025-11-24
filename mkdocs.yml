@@ -3,7 +3,7 @@ site_name: SQA - Simple Qualitative Analysis
 site_description: A powerful Ruby library for stock market technical analysis and trading strategy development
 site_author: Dewayne VanHoozer
 site_url: https://madbomber.github.io/sqa
-copyright: Copyright &copy; 2024 Dewayne VanHoozer
+copyright: Copyright &copy; 2025 Dewayne VanHoozer (CAUTION! This documentation was mostly written by a robot so it might be wrong.)
 
 # Repository information
 repo_name: madbomber/sqa
@@ -56,7 +56,6 @@ theme:
 
     # Table of contents
     - toc.follow
-    - toc.integrate
 
     # Search
     - search.suggest
@@ -74,15 +73,11 @@ theme:
     - content.action.edit
     - content.action.view
 
-    # Announce
-    - announce.dismiss
-
 # Plugins
 plugins:
   - search:
       separator: '[\s\-,:!=\[\]()"`/]+|\.(?!\d)|&[lg]t;|(?!\b)(?=[A-Z][a-z])'
-  - tags:
-      tags_file: tags.md
+  - tags
 
 # Extensions
 markdown_extensions:
@@ -97,7 +92,6 @@ markdown_extensions:
   - toc:
       permalink: true
       title: On this page
-      toc_depth: 3
 
   # Python Markdown Extensions
   - pymdownx.arithmatex:
@@ -154,9 +148,6 @@ extra:
       link: https://rubygems.org/gems/sqa
       name: SQA on RubyGems
 
-  version:
-    provider: mike
-
   analytics:
     feedback:
       title: Was this page helpful?
@@ -175,78 +166,74 @@ extra:
 # Navigation
 nav:
   - Home: index.md
+
   - Getting Started:
-    - getting-started/index.md
-    - Installation: getting-started/installation.md
-    - Quick Start: getting-started/quick-start.md
+      - Overview: getting-started/index.md
+      - Installation: getting-started/installation.md
+      - Quick Start: getting-started/quick-start.md
 
-  - Core Concepts:
-    - concepts/index.md
-    - DataFrames: data_frame.md
-    - Technical Indicators: indicators/index.md
-    - Trading Strategies: strategy.md
+  - User Guide:
+      - Core Concepts:
+          - Overview: concepts/index.md
+          - DataFrames: data_frame.md
+          - Trading Strategies: strategy.md
+      - Technical Indicators:
+          - Overview: indicators/index.md
+          - Indicator Details: indicators.md
+          - sqa-tai Gem: https://github.com/MadBomber/sqa-tai
+          - TA-Lib Documentation: https://ta-lib.org/
+      - Trading Strategies:
+          - Overview: strategies/index.md
+          - Built-in Strategies:
+              - Bollinger Bands: strategies/bollinger-bands.md
+              - RSI Strategy: strategies/rsi.md
+              - MACD Strategy: strategies/macd.md
+              - SMA Strategy: strategies/sma.md
+              - EMA Strategy: strategies/ema.md
+              - Stochastic: strategies/stochastic.md
+              - Volume Breakout: strategies/volume-breakout.md
+              - Mean Reversion: strategies/mean-reversion.md
+              - Market Profile: strategies/market-profile.md
+              - Consensus: strategies/consensus.md
+          - Advanced Strategies:
+              - KBS Strategy: strategies/kbs.md
+              - Custom Strategies: strategies/custom.md
+      - Data Sources:
+          - Overview: data-sources/index.md
 
-  - Technical Indicators:
-    - indicators/index.md
-    - Overview: indicators.md
-    - sqa-tai Gem: https://github.com/MadBomber/sqa-tai
-    - TA-Lib Documentation: https://ta-lib.org/
-
-  - Trading Strategies:
-    - strategies/index.md
-    - Built-in Strategies:
-      - Bollinger Bands Strategy: strategies/bollinger-bands.md
-      - RSI Strategy: strategies/rsi.md
-      - MACD Strategy: strategies/macd.md
-      - SMA Strategy: strategies/sma.md
-      - EMA Strategy: strategies/ema.md
-      - Stochastic Strategy: strategies/stochastic.md
-      - Volume Breakout: strategies/volume-breakout.md
-      - Mean Reversion: strategies/mean-reversion.md
-      - Market Profile: strategies/market-profile.md
-      - Consensus Strategy: strategies/consensus.md
-    - Advanced Strategies:
-      - Knowledge-Based Strategy (KBS): strategies/kbs.md
-      - Custom Strategies: strategies/custom.md
-
-  - Advanced Features:
-    - advanced/index.md
-    - Portfolio Management: advanced/portfolio.md
-    - Backtesting: advanced/backtesting.md
-    - Strategy Generator: advanced/strategy-generator.md
-    - Genetic Programming: genetic_programming.md
-    - Real-Time Streaming: advanced/streaming.md
-    - FPOP Analysis: advanced/fpop.md
-    - Risk Management: advanced/risk-management.md
-    - Portfolio Optimizer: advanced/portfolio-optimizer.md
-    - Ensemble Strategies: advanced/ensemble.md
-    - Multi-Timeframe Analysis: advanced/multi-timeframe.md
-    - Pattern Matcher: advanced/pattern-matcher.md
-
-  - AI & Machine Learning:
-    - ai_and_ml.md
-    - Mean Reversion: mean_reversion.md
-    - Predict Next Value: predict_next_value.md
-    - Identify Wave Condition: identify_wave_condition.md
-    - LIBSVM Format: libsvm_file_format.md
+  - Advanced:
+      - Overview: advanced/index.md
+      - Portfolio Management: advanced/portfolio.md
+      - Backtesting: advanced/backtesting.md
+      - Strategy Generator: advanced/strategy-generator.md
+      - Genetic Programming: genetic_programming.md
+      - Real-Time Streaming: advanced/streaming.md
+      - FPOP Analysis: advanced/fpop.md
+      - Risk Management: advanced/risk-management.md
+      - Portfolio Optimizer: advanced/portfolio-optimizer.md
+      - Ensemble Strategies: advanced/ensemble.md
+      - Multi-Timeframe: advanced/multi-timeframe.md
+      - Pattern Matcher: advanced/pattern-matcher.md
+      - AI & Machine Learning:
+          - Overview: ai_and_ml.md
+          - Mean Reversion: mean_reversion.md
+          - Predict Next Value: predict_next_value.md
+          - Wave Condition: identify_wave_condition.md
+          - LIBSVM Format: libsvm_file_format.md
 
   - API Reference:
-    - api/index.md
-    - DataFrame Class: api/dataframe.md
-
-  - Data Sources:
-    - data-sources/index.md
+      - Overview: api/index.md
+      - DataFrame Class: api/dataframe.md
+      - Complete API Reference: api-reference/index.md
 
   - Resources:
-    - Tags: tags.md
-    - Requirements: requirements.md
-    - Terms of Use: terms_of_use.md
-    - Trading Ideas: i_gotta_an_idea.md
-    - Factor Analysis: factors_that_impact_price.md
-    - External Tools:
-      - FinViz: finviz.md
-      - FX Pro Bit: fx_pro_bit.md
-    - Options Trading: options.md
-
-  - Contributing:
-    - contributing/index.md
+      - Tags: tags.md
+      - Requirements: requirements.md
+      - Terms of Use: terms_of_use.md
+      - Trading Ideas: i_gotta_an_idea.md
+      - Factor Analysis: factors_that_impact_price.md
+      - External Tools:
+          - FinViz: finviz.md
+          - FX Pro Bit: fx_pro_bit.md
+      - Options Trading: options.md
+      - Contributing: contributing/index.md

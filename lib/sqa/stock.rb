@@ -1,12 +1,83 @@
 # lib/sqa/stock.rb
 
+# Represents a stock with price history, metadata, and technical analysis capabilities.
+# This is the primary domain object for interacting with stock data.
+#
+# @example Basic usage
+#   stock = SQA::Stock.new(ticker: 'AAPL')
+#   prices = stock.df["adj_close_price"].to_a
+#   puts stock.to_s
+#
+# @example With different data source
+#   stock = SQA::Stock.new(ticker: 'MSFT', source: :yahoo_finance)
+#
 class SQA::Stock
   extend Forwardable
 
-  CONNECTION = Faraday.new(url: "https://www.alphavantage.co")
+  # Default Alpha Vantage API URL
+  # @return [String] The base URL for Alpha Vantage API
+  ALPHA_VANTAGE_URL = "https://www.alphavantage.co".freeze
 
+  # @deprecated Use {.connection} method instead. Will be removed in v1.0.0
+  # @return [Faraday::Connection] Legacy constant for backward compatibility
+  CONNECTION = Faraday.new(url: ALPHA_VANTAGE_URL)
+
+  class << self
+    # Returns the current Faraday connection for API requests.
+    # Allows injection of custom connections for testing or different configurations.
+    #
+    # @return [Faraday::Connection] The current connection instance
+    def connection
+      @connection ||= default_connection
+    end
+
+    # Sets a custom Faraday connection.
+    # Useful for testing with mocks/stubs or configuring different API endpoints.
+    #
+    # @param conn [Faraday::Connection] Custom Faraday connection to use
+    # @return [Faraday::Connection] The connection that was set
+    def connection=(conn)
+      @connection = conn
+    end
+
+    # Creates the default Faraday connection to Alpha Vantage.
+    #
+    # @return [Faraday::Connection] A new connection to Alpha Vantage API
+    def default_connection
+      Faraday.new(url: ALPHA_VANTAGE_URL)
+    end
+
+    # Resets the connection to default.
+    # Useful for testing cleanup to ensure fresh state between tests.
+    #
+    # @return [nil]
+    def reset_connection!
+      @connection = nil
+    end
+  end
+
+  # @!attribute [rw] data
+  #   @return [SQA::DataFrame::Data] Stock metadata (ticker, name, exchange, etc.)
+  # @!attribute [rw] df
+  #   @return [SQA::DataFrame] Price and volume data as a DataFrame
+  # @!attribute [rw] klass
+  #   @return [Class] The data source class (e.g., SQA::DataFrame::AlphaVantage)
+  # @!attribute [rw] transformers
+  #   @return [Hash] Column transformers for data normalization
+  # @!attribute [rw] strategy
+  #   @return [SQA::Strategy, nil] Optional trading strategy attached to this stock
   attr_accessor :data, :df, :klass, :transformers, :strategy
 
+  # Creates a new Stock instance and loads or fetches its data.
+  #
+  # @param ticker [String] The stock ticker symbol (e.g., 'AAPL', 'MSFT')
+  # @param source [Symbol] The data source to use (:alpha_vantage or :yahoo_finance)
+  # @raise [SQA::DataFetchError] If data cannot be fetched and no cached data exists
+  #
+  # @example
+  #   stock = SQA::Stock.new(ticker: 'AAPL')
+  #   stock = SQA::Stock.new(ticker: 'GOOG', source: :yahoo_finance)
+  #
   def initialize(ticker:, source: :alpha_vantage)
     @ticker = ticker.downcase
     @source = source
@@ -25,9 +96,14 @@ class SQA::Stock
     @transformers = "SQA::DataFrame::#{@source.to_s.camelize}::TRANSFORMERS".constantize
 
     load_or_create_data
-    update_the_dataframe
+    update_dataframe
   end
 
+  # Loads existing data from cache or creates new data structure.
+  # If cached data exists, loads from JSON file. Otherwise creates
+  # minimal structure and attempts to fetch overview from API.
+  #
+  # @return [void]
   def load_or_create_data
     if @data_path.exist?
       @data = SQA::DataFrame::Data.new(JSON.parse(@data_path.read))
@@ -44,27 +120,57 @@ class SQA::Stock
     end
   end
 
+  # Creates a new minimal data structure for the stock.
+  #
+  # @return [SQA::DataFrame::Data] The newly created data object
   def create_data
-    @data = SQA::DataFrame::Data.new(ticker: @ticker, source: @source, indicators: { xyzzy: "Magic" })
+    @data = SQA::DataFrame::Data.new(ticker: @ticker, source: @source, indicators: {})
   end
 
+  # Updates the stock's overview data from the API.
+  # Silently handles errors since overview data is optional.
+  #
+  # @return [void]
   def update
     begin
       merge_overview
-    rescue => e
+    rescue StandardError => e
       # Log warning but don't fail - overview data is optional
       # Common causes: rate limits, network issues, API errors
       warn "Warning: Could not fetch overview data for #{@ticker} (#{e.class}: #{e.message}). Continuing without it."
     end
   end
 
+  # Persists the stock's metadata to a JSON file.
+  #
+  # @return [Integer] Number of bytes written
   def save_data
     @data_path.write(@data.to_json)
   end
 
+  # @!method ticker
+  #   @return [String] The stock's ticker symbol
+  # @!method name
+  #   @return [String, nil] The company name
+  # @!method exchange
+  #   @return [String, nil] The exchange where the stock trades
+  # @!method source
+  #   @return [Symbol] The data source (:alpha_vantage or :yahoo_finance)
+  # @!method indicators
+  #   @return [Hash] Cached indicator values
+  # @!method indicators=(value)
+  #   @param value [Hash] New indicator values
+  # @!method overview
+  #   @return [Hash, nil] Company overview data from API
   def_delegators :@data, :ticker, :name, :exchange, :source, :indicators, :indicators=, :overview
 
-  def update_the_dataframe
+  # Updates the DataFrame with price data.
+  # Loads from cache if available, otherwise fetches from API.
+  # Applies migrations for old data formats and updates with recent data.
+  #
+  # @return [void]
+  # @raise [SQA::DataFetchError] If data cannot be fetched and no cache exists
+  def update_dataframe
     if @df_path.exist?
       # Load cached CSV - transformers already applied when data was first fetched
       # Don't reapply them as columns are already in correct format
@@ -103,15 +209,22 @@ class SQA::Stock
         @df = @klass.recent(@ticker, full: true)
         @df.to_csv(@df_path)
         return
-      rescue => e
+      rescue StandardError => e
         # If we can't fetch data, raise a more helpful error
-        raise "Unable to fetch data for #{@ticker}. Please ensure API key is set or provide cached CSV file at #{@df_path}. Error: #{e.message}"
+        raise SQA::DataFetchError.new(
+          "Unable to fetch data for #{@ticker}. Please ensure API key is set or provide cached CSV file at #{@df_path}. Error: #{e.message}",
+          original: e
+        )
       end
     end
 
     update_dataframe_with_recent_data
   end
 
+  # Fetches recent data from API and appends to existing DataFrame.
+  # Only called if should_update? returns true.
+  #
+  # @return [void]
   def update_dataframe_with_recent_data
     return unless should_update?
 
@@ -125,13 +238,25 @@ class SQA::Stock
         @df.concat_and_deduplicate!(df2)
         @df.to_csv(@df_path)
       end
-    rescue => e
+    rescue StandardError => e
       # Log warning but don't fail - we have cached data
       # Common causes: rate limits, network issues, API errors
       warn "Warning: Could not update #{@ticker} from API (#{e.class}: #{e.message}). Using cached data."
     end
   end
 
+  # @deprecated Use {#update_dataframe} instead. Will be removed in v1.0.0
+  # @return [void]
+  def update_the_dataframe
+    warn "[SQA DEPRECATION] update_the_dataframe is deprecated; use update_dataframe instead" if $VERBOSE
+    update_dataframe
+  end
+
+  # Determines whether the DataFrame should be updated from the API.
+  # Returns false if lazy_update is enabled, API key is missing,
+  # or data is already current.
+  #
+  # @return [Boolean] true if update should proceed, false otherwise
   def should_update?
     # Don't update if we're in lazy update mode
     return false if SQA.config.lazy_update
@@ -140,7 +265,7 @@ class SQA::Stock
     if @source == :alpha_vantage
       begin
         SQA.av_api_key
-      rescue
+      rescue SQA::ConfigurationError
         return false
       end
     end
@@ -151,7 +276,7 @@ class SQA::Stock
       begin
         last_timestamp = Date.parse(@df["timestamp"].to_a.last)
         return false if last_timestamp >= Date.today
-      rescue => e
+      rescue ArgumentError, Date::Error => e
         # If we can't parse the date, assume we need to update
         warn "Warning: Could not parse last timestamp for #{@ticker} (#{e.message}). Will attempt update." if $VERBOSE
       end
@@ -160,6 +285,12 @@ class SQA::Stock
     true
   end
 
+  # Returns a human-readable string representation of the stock.
+  #
+  # @return [String] Summary including ticker, data points count, and date range
+  #
+  # @example
+  #   stock.to_s  # => "aapl with 252 data points from 2023-01-03 to 2023-12-29"
   def to_s
     "#{ticker} with #{@df.size} data points from #{@df["timestamp"].to_a.first} to #{@df["timestamp"].to_a.last}"
   end
@@ -167,13 +298,18 @@ class SQA::Stock
   # This ensures compatibility with TA-Lib indicators which expect arrays in this order
   alias_method :inspect, :to_s
 
+  # Fetches and merges company overview data from Alpha Vantage API.
+  # Converts API response keys to snake_case and appropriate data types.
+  #
+  # @return [Hash] The merged overview data
+  # @raise [ApiError] If the API returns an error response
   def merge_overview
     temp = JSON.parse(
-      CONNECTION.get("/query?function=OVERVIEW&symbol=#{ticker.upcase}&apikey=#{SQA.av.key}")
+      self.class.connection.get("/query?function=OVERVIEW&symbol=#{ticker.upcase}&apikey=#{SQA.av.key}")
       .to_hash[:body]
     )
 
-    if temp.has_key? "Information"
+    if temp.key?("Information")
       ApiError.raise(temp["Information"])
     end
 
@@ -192,10 +328,20 @@ class SQA::Stock
   ## Class Methods
 
   class << self
+    # Fetches top gainers, losers, and most actively traded stocks from Alpha Vantage.
+    # Results are cached after the first call.
+    #
+    # @return [Hashie::Mash] Object with top_gainers, top_losers, and most_actively_traded arrays
+    #
+    # @example
+    #   top = SQA::Stock.top
+    #   top.top_gainers.each { |stock| puts "#{stock.ticker}: +#{stock.change_percentage}%" }
+    #   top.top_losers.first.ticker  # => "XYZ"
+    #
     def top
-      return @@top unless @@top.nil?
+      return @top if @top
 
-      a_hash = JSON.parse(CONNECTION.get("/query?function=TOP_GAINERS_LOSERS&apikey=#{SQA.av.key}").to_hash[:body])
+      a_hash = JSON.parse(connection.get("/query?function=TOP_GAINERS_LOSERS&apikey=#{SQA.av.key}").to_hash[:body])
 
       mash = Hashie::Mash.new(a_hash)
 
@@ -216,7 +362,15 @@ class SQA::Stock
         end
       end
 
-      @@top = mash
+      @top = mash
+    end
+
+    # Resets the cached top gainers/losers data.
+    # Useful for testing or forcing a refresh.
+    #
+    # @return [nil]
+    def reset_top!
+      @top = nil
     end
   end
 end

@@ -1,0 +1,107 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 650" width="900" height="650">
+  <defs>
+    <style>
+      .box { stroke: #ffffff; stroke-width: 3; }
+      .text { fill: #ffffff; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 16px; font-weight: 600; text-anchor: middle; }
+      .arrow { stroke: #ffffff; stroke-width: 2.5; fill: none; marker-end: url(#arrowhead); }
+      .diamond { stroke: #ffffff; stroke-width: 3; }
+      .label { fill: #ffffff; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 14px; font-weight: 500; }
+    </style>
+    <marker id="arrowhead" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <polygon points="0 0, 10 3, 0 6" fill="#ffffff" />
+    </marker>
+  </defs>
+
+  <!-- Stock Data -->
+  <rect x="350" y="20" width="200" height="60" rx="8" class="box" fill="#2E86DE"/>
+  <text x="450" y="55" class="text">Stock Data</text>
+
+  <!-- DataFrame -->
+  <rect x="350" y="120" width="200" height="60" rx="8" class="box" fill="#10AC84"/>
+  <text x="450" y="155" class="text">SQA::DataFrame</text>
+
+  <!-- Technical Indicators -->
+  <rect x="350" y="220" width="200" height="60" rx="8" class="box" fill="#EE5A6F"/>
+  <text x="450" y="255" class="text">Technical Indicators</text>
+
+  <!-- Trading Strategies -->
+  <rect x="350" y="320" width="200" height="60" rx="8" class="box" fill="#F368E0"/>
+  <text x="450" y="355" class="text">Trading Strategies</text>
+
+  <!-- Strategy Type Diamond -->
+  <g transform="translate(450, 450)">
+    <polygon points="0,-50 80,0 0,50 -80,0" class="diamond" fill="#FD79A8"/>
+    <text x="0" y="5" class="text">Strategy Type</text>
+  </g>
+
+  <!-- Simple Strategies -->
+  <rect x="50" y="550" width="160" height="60" rx="8" class="box" fill="#54A0FF"/>
+  <text x="130" y="585" class="text">SMA/EMA/RSI</text>
+
+  <!-- Advanced Strategies -->
+  <rect x="370" y="550" width="160" height="60" rx="8" class="box" fill="#48DBF"/>
+  <text x="450" y="577" class="text">MACD/</text>
+  <text x="450" y="597" class="text">Bollinger</text>
+
+  <!-- Rule-Based -->
+  <rect x="690" y="550" width="160" height="60" rx="8" class="box" fill="#5F27CD"/>
+  <text x="770" y="585" class="text">KBS Strategy</text>
+
+  <!-- Portfolio Management -->
+  <rect x="350" y="420" width="200" height="60" rx="8" class="box" fill="#FF9F43"/>
+  <text x="450" y="447" class="text">Portfolio</text>
+  <text x="450" y="467" class="text">Management</text>
+
+  <!-- Backtesting -->
+  <rect x="620" y="420" width="180" height="60" rx="8" class="box" fill="#01A3A4"/>
+  <text x="710" y="455" class="text">Backtesting</text>
+
+  <!-- Performance Metrics -->
+  <rect x="620" y="520" width="180" height="60" rx="8" class="box" fill="#00D2D3"/>
+  <text x="710" y="547" class="text">Performance</text>
+  <text x="710" y="567" class="text">Metrics</text>
+
+  <!-- Real-Time Data -->
+  <rect x="50" y="220" width="180" height="60" rx="8" class="box" fill="#C56CF0"/>
+  <text x="140" y="255" class="text">Real-Time Data</text>
+
+  <!-- Stream -->
+  <rect x="50" y="320" width="180" height="60" rx="8" class="box" fill="#FFBE76"/>
+  <text x="140" y="355" class="text">SQA::Stream</text>
+
+  <!-- Pattern Discovery -->
+  <rect x="620" y="120" width="200" height="60" rx="8" class="box" fill="#FFA502"/>
+  <text x="720" y="147" class="text">Pattern</text>
+  <text x="720" y="167" class="text">Discovery</text>
+
+  <!-- StrategyGenerator -->
+  <rect x="620" y="220" width="200" height="60" rx="8" class="box" fill="#FF6348"/>
+  <text x="720" y="247" class="text">Strategy</text>
+  <text x="720" y="267" class="text">Generator</text>
+
+  <!-- Generated Strategies -->
+  <rect x="620" y="320" width="200" height="60" rx="8" class="box" fill="#FF4757"/>
+  <text x="720" y="347" class="text">Generated</text>
+  <text x="720" y="367" class="text">Strategies</text>
+
+  <!-- Arrows -->
+  <path d="M 450 80 L 450 120" class="arrow"/>
+  <path d="M 450 180 L 450 220" class="arrow"/>
+  <path d="M 450 280 L 450 320" class="arrow"/>
+  <path d="M 450 380 L 450 400" class="arrow"/>
+  <path d="M 370 500 L 210 550" class="arrow"/>
+  <path d="M 450 500 L 450 550" class="arrow"/>
+  <path d="M 530 500 L 690 550" class="arrow"/>
+  <path d="M 550 450 L 620 450" class="arrow"/>
+  <path d="M 710 480 L 710 520" class="arrow"/>
+  <path d="M 140 280 L 140 320" class="arrow"/>
+  <path d="M 230 350 L 350 350" class="arrow"/>
+  <path d="M 720 180 L 720 220" class="arrow"/>
+  <path d="M 720 280 L 720 320" class="arrow"/>
+  <path d="M 720 380 L 585 380 L 585 360" class="arrow"/>
+
+  <!-- Labels on arrows -->
+  <text x="295" y="535" class="label">Simple</text>
+  <text x="450" y="535" class="label">Advanced</text>
+  <text x="605" y="535" class="label">Rule-Based</text>
+</svg>

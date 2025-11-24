@@ -46,20 +46,7 @@ Before you begin, make sure you have:
 
 Here's the typical workflow when using SQA:
 
-```mermaid
-graph LR
-    A[Install SQA] --> B[Configure API Keys]
-    B --> C[Load Stock Data]
-    C --> D[Calculate Indicators]
-    D --> E[Apply Strategies]
-    E --> F{Analysis Type}
-    F -->|Backtest| G[Run Backtest]
-    F -->|Live| H[Stream Real-Time]
-    F -->|Research| I[Explore in Console]
-    G --> J[Review Results]
-    H --> J
-    I --> J
-```
+![Getting Started Workflow](../assets/images/getting-started-workflow.svg)
 
 ## What's Next?
 

@@ -1,0 +1,89 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 550" width="1400" height="550">
+  <defs>
+    <style>
+      .box { stroke: #ffffff; stroke-width: 3; }
+      .text { fill: #ffffff; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 15px; font-weight: 600; text-anchor: middle; }
+      .small-text { fill: #ffffff; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 13px; font-weight: 500; text-anchor: middle; }
+      .arrow { stroke: #ffffff; stroke-width: 2.5; fill: none; marker-end: url(#arrowhead); }
+      .diamond { stroke: #ffffff; stroke-width: 3; }
+      .label { fill: #ffffff; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 14px; font-weight: 500; }
+    </style>
+    <marker id="arrowhead" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <polygon points="0 0, 10 3, 0 6" fill="#ffffff" />
+    </marker>
+  </defs>
+
+  <!-- Historical Data -->
+  <rect x="30" y="210" width="160" height="70" rx="8" class="box" fill="#2E86DE"/>
+  <text x="110" y="240" class="text">Historical</text>
+  <text x="110" y="260" class="text">Data</text>
+
+  <!-- Strategy Generator -->
+  <rect x="230" y="210" width="160" height="70" rx="8" class="box" fill="#10AC84"/>
+  <text x="310" y="240" class="text">Strategy</text>
+  <text x="310" y="260" class="text">Generator</text>
+
+  <!-- Discovered Patterns -->
+  <rect x="430" y="210" width="160" height="70" rx="8" class="box" fill="#00D2D3"/>
+  <text x="510" y="240" class="text">Discovered</text>
+  <text x="510" y="260" class="text">Patterns</text>
+
+  <!-- Generated Strategies -->
+  <rect x="630" y="210" width="160" height="70" rx="8" class="box" fill="#EE5A6F"/>
+  <text x="710" y="240" class="text">Generated</text>
+  <text x="710" y="260" class="text">Strategies</text>
+
+  <!-- Genetic Programming -->
+  <rect x="830" y="210" width="160" height="70" rx="8" class="box" fill="#F368E0"/>
+  <text x="910" y="240" class="text">Genetic</text>
+  <text x="910" y="260" class="text">Programming</text>
+
+  <!-- Optimized Parameters -->
+  <rect x="1030" y="210" width="160" height="70" rx="8" class="box" fill="#C56CF0"/>
+  <text x="1110" y="240" class="text">Optimized</text>
+  <text x="1110" y="260" class="text">Parameters</text>
+
+  <!-- Backtest -->
+  <rect x="1230" y="210" width="140" height="70" rx="8" class="box" fill="#FF9F43"/>
+  <text x="1300" y="250" class="text">Backtest</text>
+
+  <!-- Results Good? Diamond -->
+  <g transform="translate(1300, 380)">
+    <polygon points="0,-50 70,0 0,50 -70,0" class="diamond" fill="#FD79A8"/>
+    <text x="0" y="-5" class="small-text">Results</text>
+    <text x="0" y="12" class="small-text">Good?</text>
+  </g>
+
+  <!-- Live Stream -->
+  <rect x="1230" y="470" width="140" height="60" rx="8" class="box" fill="#FFA502"/>
+  <text x="1300" y="505" class="text">Live Stream</text>
+
+  <!-- Portfolio Management -->
+  <rect x="1030" y="470" width="160" height="60" rx="8" class="box" fill="#26DE81"/>
+  <text x="1110" y="493" class="text">Portfolio</text>
+  <text x="1110" y="513" class="text">Management</text>
+
+  <!-- Arrows - Main flow -->
+  <path d="M 190 245 L 230 245" class="arrow"/>
+  <path d="M 390 245 L 430 245" class="arrow"/>
+  <path d="M 590 245 L 630 245" class="arrow"/>
+  <path d="M 790 245 L 830 245" class="arrow"/>
+  <path d="M 990 245 L 1030 245" class="arrow"/>
+  <path d="M 1190 245 L 1230 245" class="arrow"/>
+
+  <!-- Backtest to Diamond -->
+  <path d="M 1300 280 L 1300 330" class="arrow"/>
+
+  <!-- Diamond to Live Stream (Yes path) -->
+  <path d="M 1300 430 L 1300 470" class="arrow"/>
+
+  <!-- Diamond back to Generated Strategies (No path) -->
+  <path d="M 1230 380 L 710 380 L 710 280" class="arrow"/>
+
+  <!-- Live Stream to Portfolio Management -->
+  <path d="M 1230 500 L 1190 500" class="arrow"/>
+
+  <!-- Labels -->
+  <text x="1315" y="455" class="label">Yes</text>
+  <text x="950" y="365" class="label">No</text>
+</svg>

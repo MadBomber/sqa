@@ -89,15 +89,11 @@ module SQA
       kb = @blackboards[sector]
       all_patterns = []
 
-      puts "=" * 70
-      puts "Discovering patterns for #{sector.to_s.upcase} sector"
-      puts "Analyzing #{stocks.size} stocks: #{stocks.map(&:ticker).join(', ')}"
-      puts "=" * 70
-      puts
+      debug_me {"Discovering patterns for #{sector.to_s.upcase} sector - #{stocks.size} stocks"}
 
       # Discover patterns for each stock
       stocks.each do |stock|
-        puts "\nAnalyzing #{stock.ticker}..."
+        debug_me {"Analyzing #{stock.ticker}..."}
 
         generator = SQA::StrategyGenerator.new(stock: stock, **options)
         patterns = generator.discover_patterns
@@ -136,11 +132,7 @@ module SQA
         })
       end
 
-      puts "\n" + "=" * 70
-      puts "Sector Analysis Complete"
-      puts "  Individual patterns found: #{all_patterns.size}"
-      puts "  Sector-wide patterns: #{sector_patterns.size}"
-      puts "=" * 70
+      debug_me {"Sector Analysis Complete - #{all_patterns.size} individual, #{sector_patterns.size} sector-wide patterns"}
 
       sector_patterns
     end

@@ -22,7 +22,8 @@ class PortfolioTest < Minitest::Test
     position = @portfolio.positions['AAPL']
     assert_equal 10, position.shares
     assert_equal 150.0, position.avg_cost
-    assert_equal 1_501.0, position.total_cost # 10 * 150 + 1 commission
+    # total_cost is pure share cost, commission tracked separately on trades
+    assert_equal 1_500.0, position.total_cost # 10 * 150
   end
 
   def test_buy_updates_cash
@@ -101,9 +102,12 @@ class PortfolioTest < Minitest::Test
     current_prices = { 'AAPL' => 160.0 }
     pl = @portfolio.profit_loss(current_prices)
 
-    # Bought at 150, now at 160: 10 shares * 10 profit = 100
-    # Minus 2 commissions (buy and hypothetical sell)
-    expected_pl = (10 * (160.0 - 150.0)) - 2.0
+    # P&L = current_value - initial_cash
+    # Cash after buy: 10000 - (10*150 + 1 commission) = 8499
+    # Position value: 10 * 160 = 1600
+    # Total value: 8499 + 1600 = 10099
+    # P&L: 10099 - 10000 = 99
+    expected_pl = 99.0
     assert_in_delta expected_pl, pl, 0.01
   end
 
@@ -114,9 +118,9 @@ class PortfolioTest < Minitest::Test
     summary = @portfolio.summary
 
     assert_equal 10_000.0, summary[:initial_cash]
-    assert summary[:cash] < 10_000.0
-    assert_equal 2, summary[:positions]
-    assert_equal 2, summary[:trades]
+    assert summary[:current_cash] < 10_000.0
+    assert_equal 2, summary[:positions_count]
+    assert_equal 2, summary[:total_trades]
   end
 
   def test_commission_applied

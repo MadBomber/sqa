@@ -335,6 +335,15 @@ Examples may create output files in `/tmp/`:
 - `/tmp/sqa_evolution_history.csv` - GP evolution history
 - `/tmp/sqa_backtest_results.csv` - Backtest results
 
+## Web Demo Application
+
+For a complete web-based demonstration of SQA's capabilities, see the **[sqa_demo-sinatra](https://github.com/MadBomber/sqa_demo-sinatra)** gem. This Sinatra application provides a visual interface for:
+
+- Stock analysis dashboard
+- Technical indicator visualization
+- Strategy backtesting
+- Portfolio management
+
 ## Next Steps
 
 After running these examples:
@@ -344,6 +353,7 @@ After running these examples:
 3. **Walk-Forward Validation**: Test on out-of-sample data
 4. **Combine Techniques**: Use strategy generator + GP + KBS together
 5. **Production Deployment**: Connect to real WebSocket data feeds
+6. **Try the Web Demo**: Install [sqa_demo-sinatra](https://github.com/MadBomber/sqa_demo-sinatra) for a visual interface
 
 ## Educational Disclaimer
 

@@ -32,7 +32,7 @@ Your affirmative act of using our Ruby Gem ("library") located at https://github
   - [20. House rules](#20-house-rules)
   - [21. Third Party Software](#21-third-party-software)
   - [22. Scripts](#22-scripts)
-  - [23. Publications - No Recommendation or Advice Status](#23-publications---no-recommendation-or-advice-status)
+  - [23. Publications - No Recommendation or Advice Status](#23-publications-no-recommendation-or-advice-status)
 
 <!-- Tocer[finish]: Auto-generated, don't remove. -->
 

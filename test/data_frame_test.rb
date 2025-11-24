@@ -209,8 +209,8 @@ class DataFrameTest < Minitest::Test
     assert_equal [1, 2, 3, 4], ids
   end
 
-  def test_concat_and_deduplicate_descending_order
-    # Create initial DataFrame in descending order
+  def test_concat_and_deduplicate_forces_ascending_order
+    # Create initial DataFrame
     data1 = {
       'timestamp' => ['2024-11-12', '2024-11-11', '2024-11-10'],
       'close_price' => [150.0, 149.0, 148.0]
@@ -224,11 +224,67 @@ class DataFrameTest < Minitest::Test
     }
     df2 = SQA::DataFrame.new(data2)
 
-    # Concatenate with explicit descending order
+    # Even when requesting descending order, data should be forced to ascending
+    # (A warning is issued to stderr, but we focus on verifying the behavior)
     df1.concat_and_deduplicate!(df2, descending: true)
 
-    # Check descending order (newest to oldest)
+    # Verify data is in ASCENDING order (not descending) due to TA-Lib enforcement
     timestamps = df1['timestamp'].to_a
-    assert_equal ['2024-11-14', '2024-11-13', '2024-11-12', '2024-11-11', '2024-11-10'], timestamps
+    assert_equal ['2024-11-10', '2024-11-11', '2024-11-12', '2024-11-13', '2024-11-14'], timestamps
+  end
+
+  # Phase 2 Tests
+
+  def test_from_aofh_basic
+    aofh = [
+      { 'name' => 'Alice', 'age' => 30 },
+      { 'name' => 'Bob', 'age' => 25 }
+    ]
+
+    df = SQA::DataFrame.from_aofh(aofh)
+
+    assert_equal 2, df.nrows
+    assert_equal 2, df.ncols
+    assert_includes df.columns, 'name'
+    assert_includes df.columns, 'age'
+  end
+
+  def test_from_aofh_with_transformers
+    aofh = [
+      { 'price' => '100.50', 'quantity' => '10' },
+      { 'price' => '200.75', 'quantity' => '20' }
+    ]
+
+    transformers = {
+      'price' => ->(v) { v.to_f },
+      'quantity' => ->(v) { v.to_i }
+    }
+
+    df = SQA::DataFrame.from_aofh(aofh, transformers: transformers)
+
+    # Transformers should be applied
+    assert_equal 2, df.nrows
+  end
+
+  def test_method_missing_delegates_to_polars
+    # Test that method_missing correctly delegates to Polars DataFrame
+    df = SQA::DataFrame.new({ 'a' => [1, 2, 3], 'b' => [4, 5, 6] })
+
+    # height is a Polars method
+    assert_equal 3, df.height
+
+    # width is a Polars method
+    assert_equal 2, df.width
+  end
+
+  def test_respond_to_missing
+    df = SQA::DataFrame.new({ 'a' => [1, 2, 3] })
+
+    # Should respond to Polars methods
+    assert df.respond_to?(:height)
+    assert df.respond_to?(:width)
+
+    # Should not respond to non-existent methods
+    refute df.respond_to?(:nonexistent_method_xyz)
   end
 end

@@ -83,6 +83,6 @@ class YahooFinanceTest < Minitest::Test
 
   def test_connection_url
     connection = SQA::DataFrame::YahooFinance::CONNECTION
-    assert_equal 'https://finance.yahoo.com', connection.url_prefix.to_s
+    assert_equal 'https://finance.yahoo.com', connection.url_prefix.to_s.chomp('/')
   end
 end

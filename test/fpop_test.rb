@@ -13,7 +13,8 @@ class FPOPTest < Minitest::Test
     fpl_results = SQA::FPOP.fpl(@simple_prices, fpop: 3)
 
     assert_instance_of Array, fpl_results
-    assert_equal @simple_prices.size - 3, fpl_results.size
+    # Returns results for all indices that have at least 1 future price (size - 1)
+    assert_equal @simple_prices.size - 1, fpl_results.size
 
     # First point: 100 -> looking at [105, 110, 108]
     # Min delta: (105-100)/100 = 5%

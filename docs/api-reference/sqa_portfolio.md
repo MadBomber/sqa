@@ -1,0 +1,455 @@
+# 📦 SQA::Portfolio
+
+!!! abstract "Source Information"
+    **Defined in:** `lib/sqa/portfolio.rb:7`
+    
+    **Inherits from:** `Object`
+
+## 🏭 Class Methods
+
+### `.load_from_csv(filename)`
+
+Load portfolio from CSV file
+
+!!! info "Parameters"
+
+    | Name | Type | Description |
+    |------|------|-------------|
+    | `filename` | `String` | Path to CSV file |
+
+
+??? info "Source Location"
+    `lib/sqa/portfolio.rb:236`
+
+---
+
+## 🔨 Instance Methods
+
+### `#positions()`
+
+Returns the value of attribute positions.
+
+
+
+
+??? info "Source Location"
+    `lib/sqa/portfolio.rb:8`
+
+---
+
+### `#positions=(value)`
+
+Sets the attribute positions
+
+!!! info "Parameters"
+
+    | Name | Type | Description |
+    |------|------|-------------|
+    | `value` | `Any` | the value to set the attribute positions to. |
+
+
+??? info "Source Location"
+    `lib/sqa/portfolio.rb:8`
+
+---
+
+### `#trades()`
+
+Returns the value of attribute trades.
+
+
+
+
+??? info "Source Location"
+    `lib/sqa/portfolio.rb:8`
+
+---
+
+### `#trades=(value)`
+
+Sets the attribute trades
+
+!!! info "Parameters"
+
+    | Name | Type | Description |
+    |------|------|-------------|
+    | `value` | `Any` | the value to set the attribute trades to. |
+
+
+??? info "Source Location"
+    `lib/sqa/portfolio.rb:8`
+
+---
+
+### `#cash()`
+
+Returns the value of attribute cash.
+
+
+
+
+??? info "Source Location"
+    `lib/sqa/portfolio.rb:8`
+
+---
+
+### `#cash=(value)`
+
+Sets the attribute cash
+
+!!! info "Parameters"
+
+    | Name | Type | Description |
+    |------|------|-------------|
+    | `value` | `Any` | the value to set the attribute cash to. |
+
+
+??? info "Source Location"
+    `lib/sqa/portfolio.rb:8`
+
+---
+
+### `#initial_cash()`
+
+Returns the value of attribute initial_cash.
+
+
+
+
+??? info "Source Location"
+    `lib/sqa/portfolio.rb:8`
+
+---
+
+### `#initial_cash=(value)`
+
+Sets the attribute initial_cash
+
+!!! info "Parameters"
+
+    | Name | Type | Description |
+    |------|------|-------------|
+    | `value` | `Any` | the value to set the attribute initial_cash to. |
+
+
+??? info "Source Location"
+    `lib/sqa/portfolio.rb:8`
+
+---
+
+### `#commission()`
+
+Returns the value of attribute commission.
+
+
+
+
+??? info "Source Location"
+    `lib/sqa/portfolio.rb:8`
+
+---
+
+### `#commission=(value)`
+
+Sets the attribute commission
+
+!!! info "Parameters"
+
+    | Name | Type | Description |
+    |------|------|-------------|
+    | `value` | `Any` | the value to set the attribute commission to. |
+
+
+??? info "Source Location"
+    `lib/sqa/portfolio.rb:8`
+
+---
+
+### `#initialize(initial_cash: = 10_000.0, commission: = 0.0)`
+
+
+!!! success "Returns"
+
+    **Type:** `Portfolio`
+
+    
+
+    a new instance of Portfolio
+
+??? info "Source Location"
+    `lib/sqa/portfolio.rb:41`
+
+---
+
+### `#buy(ticker, shares:, price:, date: = Date.today)`
+
+Buy shares of a stock
+
+!!! info "Parameters"
+
+    | Name | Type | Description |
+    |------|------|-------------|
+    | `ticker` | `String` | Stock ticker symbol |
+    | `shares` | `Integer` | Number of shares to buy |
+    | `price` | `Float` | Price per share |
+    | `date` | `Date` | Date of trade |
+!!! success "Returns"
+
+    **Type:** `Trade`
+
+    
+
+    The executed trade
+
+??? info "Source Location"
+    `lib/sqa/portfolio.rb:55`
+
+---
+
+### `#sell(ticker, shares:, price:, date: = Date.today)`
+
+Sell shares of a stock
+
+!!! info "Parameters"
+
+    | Name | Type | Description |
+    |------|------|-------------|
+    | `ticker` | `String` | Stock ticker symbol |
+    | `shares` | `Integer` | Number of shares to sell |
+    | `price` | `Float` | Price per share |
+    | `date` | `Date` | Date of trade |
+!!! success "Returns"
+
+    **Type:** `Trade`
+
+    
+
+    The executed trade
+
+??? info "Source Location"
+    `lib/sqa/portfolio.rb:98`
+
+---
+
+### `#position(ticker)`
+
+Get current position for a ticker
+
+!!! info "Parameters"
+
+    | Name | Type | Description |
+    |------|------|-------------|
+    | `ticker` | `String` | Stock ticker symbol |
+!!! success "Returns"
+
+    **Type:** `Position, nil`
+
+    
+
+    The position or nil if not found
+
+??? info "Source Location"
+    `lib/sqa/portfolio.rb:135`
+
+---
+
+### `#all_positions()`
+
+Get all current positions
+
+
+!!! success "Returns"
+
+    **Type:** `Hash`
+
+    
+
+    Hash of ticker => Position
+
+??? info "Source Location"
+    `lib/sqa/portfolio.rb:141`
+
+---
+
+### `#value(current_prices = {})`
+
+Calculate total portfolio value
+
+!!! info "Parameters"
+
+    | Name | Type | Description |
+    |------|------|-------------|
+    | `current_prices` | `Hash` | Hash of ticker => current_price |
+!!! success "Returns"
+
+    **Type:** `Float`
+
+    
+
+    Total portfolio value (cash + positions)
+
+??? info "Source Location"
+    `lib/sqa/portfolio.rb:148`
+
+---
+
+### `#profit_loss(current_prices = {})`
+
+Calculate total profit/loss across all positions
+
+!!! info "Parameters"
+
+    | Name | Type | Description |
+    |------|------|-------------|
+    | `current_prices` | `Hash` | Hash of ticker => current_price |
+!!! success "Returns"
+
+    **Type:** `Float`
+
+    
+
+    Total P&L
+
+??? info "Source Location"
+    `lib/sqa/portfolio.rb:160`
+
+---
+
+### `#profit_loss_percent(current_prices = {})`
+
+Calculate profit/loss percentage
+
+!!! info "Parameters"
+
+    | Name | Type | Description |
+    |------|------|-------------|
+    | `current_prices` | `Hash` | Hash of ticker => current_price |
+!!! success "Returns"
+
+    **Type:** `Float`
+
+    
+
+    P&L percentage
+
+??? info "Source Location"
+    `lib/sqa/portfolio.rb:167`
+
+---
+
+### `#total_return(current_prices = {})`
+
+Calculate total return (including dividends if tracked)
+
+!!! info "Parameters"
+
+    | Name | Type | Description |
+    |------|------|-------------|
+    | `current_prices` | `Hash` | Hash of ticker => current_price |
+!!! success "Returns"
+
+    **Type:** `Float`
+
+    
+
+    Total return as decimal (e.g., 0.15 for 15%)
+
+??? info "Source Location"
+    `lib/sqa/portfolio.rb:175`
+
+---
+
+### `#trade_history()`
+
+Get trade history
+
+
+!!! success "Returns"
+
+    **Type:** `Array<Trade>`
+
+    
+
+    Array of all trades
+
+??? info "Source Location"
+    `lib/sqa/portfolio.rb:182`
+
+---
+
+### `#summary(current_prices = {})`
+
+Get summary statistics
+
+!!! info "Parameters"
+
+    | Name | Type | Description |
+    |------|------|-------------|
+    | `current_prices` | `Hash` | Hash of ticker => current_price |
+!!! success "Returns"
+
+    **Type:** `Hash`
+
+    
+
+    Summary statistics
+
+??? info "Source Location"
+    `lib/sqa/portfolio.rb:189`
+
+---
+
+### `#save_to_csv(filename)`
+
+Save portfolio to CSV file
+
+!!! info "Parameters"
+
+    | Name | Type | Description |
+    |------|------|-------------|
+    | `filename` | `String` | Path to CSV file |
+
+
+??? info "Source Location"
+    `lib/sqa/portfolio.rb:206`
+
+---
+
+### `#save_trades_to_csv(filename)`
+
+Save trade history to CSV file
+
+!!! info "Parameters"
+
+    | Name | Type | Description |
+    |------|------|-------------|
+    | `filename` | `String` | Path to CSV file |
+
+
+??? info "Source Location"
+    `lib/sqa/portfolio.rb:217`
+
+---
+
+## 📝 Attributes
+
+### 🔄 `positions` <small>read/write</small>
+
+Returns the value of attribute positions.
+
+### 🔄 `trades` <small>read/write</small>
+
+Returns the value of attribute trades.
+
+### 🔄 `cash` <small>read/write</small>
+
+Returns the value of attribute cash.
+
+### 🔄 `initial_cash` <small>read/write</small>
+
+Returns the value of attribute initial_cash.
+
+### 🔄 `commission` <small>read/write</small>
+
+Returns the value of attribute commission.
+

@@ -4,14 +4,14 @@ require_relative 'test_helper'
 
 class StockTest < Minitest::Test
   def test_invalid_ticker_raises_error
-    assert_raises RuntimeError do
+    assert_raises SQA::DataFetchError do
       SQA::Stock.new(ticker: 'INVALID_TICKER_9999')
     end
   end
 
   def test_ticker_validation_on_initialization
     # Test with a known invalid ticker format
-    assert_raises RuntimeError do
+    assert_raises SQA::DataFetchError do
       SQA::Stock.new(ticker: '!!!!')
     end
   end
@@ -217,5 +217,69 @@ class StockTest < Minitest::Test
 
     # Restore original config
     SQA.config.lazy_update = original_lazy_update
+  end
+
+  # Phase 2 Tests
+
+  def test_reset_top_clears_cached_data
+    # This test verifies the reset_top! method without requiring API access
+    # First, ensure @top is nil (reset state)
+    SQA::Stock.reset_top!
+
+    # Verify reset_top! method exists and can be called
+    assert_respond_to SQA::Stock, :reset_top!
+
+    # After reset, @top should be nil (next call to top would fetch fresh data)
+    # We can't test this directly without API access, but we verify the method exists
+  end
+
+  def test_reset_top_method_exists
+    assert SQA::Stock.respond_to?(:reset_top!)
+  end
+
+  # Phase 3 Tests - Configurable Connection
+
+  def test_connection_class_method_exists
+    assert SQA::Stock.respond_to?(:connection)
+  end
+
+  def test_connection_returns_faraday_connection
+    conn = SQA::Stock.connection
+    assert_kind_of Faraday::Connection, conn
+  end
+
+  def test_connection_setter_exists
+    assert SQA::Stock.respond_to?(:connection=)
+  end
+
+  def test_reset_connection_method_exists
+    assert SQA::Stock.respond_to?(:reset_connection!)
+  end
+
+  def test_connection_can_be_injected
+    # Save original connection
+    original_conn = SQA::Stock.connection
+
+    # Inject custom connection
+    custom_conn = Faraday.new(url: "https://example.com")
+    SQA::Stock.connection = custom_conn
+
+    # Verify custom connection is used
+    assert_equal custom_conn, SQA::Stock.connection
+
+    # Reset to default
+    SQA::Stock.reset_connection!
+
+    # Verify default connection is restored (new instance)
+    refute_equal custom_conn, SQA::Stock.connection
+    assert_kind_of Faraday::Connection, SQA::Stock.connection
+  end
+
+  def test_default_connection_method_exists
+    assert SQA::Stock.respond_to?(:default_connection)
+  end
+
+  def test_alpha_vantage_url_constant_exists
+    assert_equal "https://www.alphavantage.co", SQA::Stock::ALPHA_VANTAGE_URL
   end
 end

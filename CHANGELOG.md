@@ -1,6 +1,97 @@
 ## [Unreleased]
 
-## [0.0.32] 2025-11-12
+## [0.0.36] - 2025-11-24
+
+### Changed
+- **Phase 3 Architecture & Design Improvements**:
+  - Added deprecation warning for auto-initialization at require time (will be removed in v1.0)
+    - Added `SQA::Config.initialized?` class method to track initialization state
+    - Warning only shows when `$VERBOSE` is set
+  - `concat_and_deduplicate!` now enforces ascending order for TA-Lib compatibility
+    - Warns and forces `descending: false` if `descending: true` is passed
+    - Prevents silent calculation errors from incorrect data ordering
+  - Extracted Faraday connection to configurable dependency in `SQA::Stock`
+    - Added `ALPHA_VANTAGE_URL` constant
+    - Added class methods: `connection`, `connection=`, `default_connection`, `reset_connection!`
+    - Allows injection of custom connections for testing/mocking
+    - Deprecated `CONNECTION` constant (will be removed in v1.0)
+
+### Added
+- **Test Coverage for Phase 3**:
+  - Added 2 tests to `test/config_test.rb` for `initialized?` method
+  - Added 7 tests to `test/stock_test.rb` for configurable connection
+  - Updated `test/data_frame_test.rb` to verify ascending order enforcement
+
+## [0.0.35] - 2025-11-23
+
+### Changed
+- **Phase 2 Code Quality & Best Practices**:
+  - Replaced class variables (`@@var`) with class instance variables (`@var`) for thread safety
+    - `SQA::init.rb`: `@@config`, `@@av_api_key` → `@config`, `@av_api_key`
+    - `SQA::Ticker`: Restructured with `class << self` block, added `reset!` method
+    - `SQA::Stock`: `@@top` → `@top`, added `reset_top!` method
+  - Replaced `puts` statements with `debug_me` in `SQA::SectorAnalyzer`
+  - Simplified `method_missing` in `SQA::DataFrame` (no longer dynamically defines methods)
+  - Fixed type checking pattern in `SQA::Strategy#add` to use `is_a?` instead of `.class ==`
+  - Fixed `SQA::Strategy#available` to use `.name` instead of `.to_s` (avoids pretty_please gem conflict)
+  - Removed magic placeholder "xyzzy" from `SQA::Stock#create_data`
+
+### Fixed
+- **DataFrame.from_aofh**: Fixed Polars compatibility by converting to hash-of-arrays format
+- **DataFrame.from_aofh**: Now properly passes `mapping:` and `transformers:` parameters
+- **Ticker.valid?**: Now handles nil and empty string inputs gracefully
+- **Ticker.lookup**: Now handles nil and empty string inputs gracefully
+
+### Added
+- **Test Coverage for Phase 2**:
+  - New `test/ticker_test.rb` with 10 tests for Ticker class
+  - New `test/strategy_test.rb` with 10 tests for Strategy class
+  - Added 4 tests to `test/data_frame_test.rb` for `from_aofh` and `method_missing`
+  - Added 2 tests to `test/stock_test.rb` for `reset_top!` method
+
+## [0.0.34] - 2025-11-23
+
+### Fixed
+- **Test Suite**: Fixed 15+ pre-existing test failures
+  - Fixed typo in RiskManagerTest (`var` → `cvar`)
+  - Fixed Portfolio test expectations (total_cost, P&L calculation, summary keys)
+  - Fixed URL trailing slash comparisons in AlphaVantage/YahooFinance tests
+  - Fixed FPOP test expectation (implementation returns partial windows)
+  - Fixed SectorAnalyzer symbol/string comparison
+  - Fixed AlphaVantage header mapping test (timestamp, no adjusted_close)
+- **PatternMatcher**: Fixed integer division bug in `pattern_quality` method
+  - Added `.to_f` conversion to prevent truncation with integer inputs
+- **Config Coercion**: Fixed string-to-symbol coercion for `log_level` and `plotting_library`
+  - Added explicit `coerce_key` handlers
+
+### Added
+- **Portfolio**: Added `commission` to `attr_accessor` for public access
+- **Error Namespacing**: Added `SQA::BadParameterError` namespace with backwards-compatible alias
+
+### Changed
+- **Phase 1 Security & Correctness** (from improvement plan):
+  - Replaced shell injection vulnerability (`touch` backticks → `FileUtils.touch`)
+  - Replaced deprecated `has_key?` with `key?` across codebase
+  - Added `SQA::DataFetchError` and `SQA::ConfigurationError` exception classes
+  - Replaced bare `rescue` clauses with specific exception types
+
+## [0.0.33] - 2025-11-23
+
+### Removed
+- **Sinatra Example App**: Removed `examples/sinatra_app/` directory
+  - Functionality moved to separate gem: [sqa_demo-sinatra](https://github.com/MadBomber/sqa_demo-sinatra)
+  - Cleaner separation between library and demo application
+
+### Added
+- **Documentation**: Added links to sqa_demo-sinatra demo application
+  - Updated README.md with Web Demo Application section
+  - Updated docs/index.md with Demo Application section
+  - Updated examples/README.md with reference to web demo
+- **LLM Documentation**: Added llms.txt for AI assistant compatibility
+- **Improvement Plan**: Added docs/IMPROVEMENT_PLAN.md for upcoming code quality improvements
+
+## [0.0.32] - 2024-11-12
+
 ### Added
 - **CSV Updates**: Conditional CSV updates based on timestamp
   - Only updates CSV files when new data is available

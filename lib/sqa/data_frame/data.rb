@@ -21,9 +21,21 @@ class SQA::DataFrame
   #   data = SQA::DataFrame::Data.new(json_data)
   #
   class Data
+    # @!attribute [rw] ticker
+    #   @return [String, nil] Stock ticker symbol (e.g., 'AAPL', 'MSFT')
+    # @!attribute [rw] name
+    #   @return [String, nil] Company name
+    # @!attribute [rw] exchange
+    #   @return [String, nil] Exchange where stock trades (e.g., 'NASDAQ', 'NYSE')
+    # @!attribute [rw] source
+    #   @return [Symbol] Data source (:alpha_vantage, :yahoo_finance)
+    # @!attribute [rw] indicators
+    #   @return [Hash] Technical indicators configuration and cached values
+    # @!attribute [rw] overview
+    #   @return [Hash] Company overview data from API
     attr_accessor :ticker, :name, :exchange, :source, :indicators, :overview
 
-    # Initialize stock metadata
+    # Initializes stock metadata.
     #
     # Can be called in two ways:
     #   1. With a hash: SQA::DataFrame::Data.new(hash) - for JSON deserialization

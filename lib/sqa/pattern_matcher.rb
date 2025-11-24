@@ -214,13 +214,13 @@ module SQA
     def pattern_quality(pattern)
       return nil if pattern.size < 3
 
-      # Trend strength
-      first = pattern.first
-      last = pattern.last
+      # Trend strength (convert to float to avoid integer division)
+      first = pattern.first.to_f
+      last = pattern.last.to_f
       trend = (last - first) / first
 
       # Volatility
-      returns = pattern.each_cons(2).map { |a, b| (b - a) / a }
+      returns = pattern.each_cons(2).map { |a, b| (b - a).to_f / a }
       volatility = standard_deviation(returns)
 
       # Smoothness (how linear is the trend?)

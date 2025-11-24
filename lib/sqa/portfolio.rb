@@ -5,7 +5,7 @@ require 'date'
 require 'csv'
 
 class SQA::Portfolio
-  attr_accessor :positions, :trades, :cash, :initial_cash
+  attr_accessor :positions, :trades, :cash, :initial_cash, :commission
 
   # Represents a single position in the portfolio
   Position = Struct.new(:ticker, :shares, :avg_cost, :total_cost) do
