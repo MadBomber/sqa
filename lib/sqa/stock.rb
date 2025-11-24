@@ -45,7 +45,7 @@ class SQA::Stock
   end
 
   def create_data
-    @data = SQA::DataFrame::Data.new(ticker: @ticker, source: @source, indicators: { xyzzy: "Magic" })
+    @data = SQA::DataFrame::Data.new(ticker: @ticker, source: @source, indicators: {})
   end
 
   def update
@@ -196,7 +196,7 @@ class SQA::Stock
 
   class << self
     def top
-      return @@top unless @@top.nil?
+      return @top if @top
 
       a_hash = JSON.parse(CONNECTION.get("/query?function=TOP_GAINERS_LOSERS&apikey=#{SQA.av.key}").to_hash[:body])
 
@@ -219,7 +219,12 @@ class SQA::Stock
         end
       end
 
-      @@top = mash
+      @top = mash
+    end
+
+    # Reset cached data (useful for testing)
+    def reset_top!
+      @top = nil
     end
   end
 end

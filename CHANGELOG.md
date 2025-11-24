@@ -1,5 +1,31 @@
 ## [Unreleased]
 
+## [0.0.34] - 2025-11-23
+
+### Fixed
+- **Test Suite**: Fixed 15+ pre-existing test failures
+  - Fixed typo in RiskManagerTest (`var` → `cvar`)
+  - Fixed Portfolio test expectations (total_cost, P&L calculation, summary keys)
+  - Fixed URL trailing slash comparisons in AlphaVantage/YahooFinance tests
+  - Fixed FPOP test expectation (implementation returns partial windows)
+  - Fixed SectorAnalyzer symbol/string comparison
+  - Fixed AlphaVantage header mapping test (timestamp, no adjusted_close)
+- **PatternMatcher**: Fixed integer division bug in `pattern_quality` method
+  - Added `.to_f` conversion to prevent truncation with integer inputs
+- **Config Coercion**: Fixed string-to-symbol coercion for `log_level` and `plotting_library`
+  - Added explicit `coerce_key` handlers
+
+### Added
+- **Portfolio**: Added `commission` to `attr_accessor` for public access
+- **Error Namespacing**: Added `SQA::BadParameterError` namespace with backwards-compatible alias
+
+### Changed
+- **Phase 1 Security & Correctness** (from improvement plan):
+  - Replaced shell injection vulnerability (`touch` backticks → `FileUtils.touch`)
+  - Replaced deprecated `has_key?` with `key?` across codebase
+  - Added `SQA::DataFetchError` and `SQA::ConfigurationError` exception classes
+  - Replaced bare `rescue` clauses with specific exception types
+
 ## [0.0.33] - 2025-11-23
 
 ### Removed

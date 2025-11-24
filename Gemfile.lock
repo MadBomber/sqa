@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    sqa (0.0.34)
+    sqa (0.0.35)
       alphavantage
       csv
       eps

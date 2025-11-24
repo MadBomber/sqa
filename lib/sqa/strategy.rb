@@ -8,9 +8,9 @@ class SQA::Strategy
   end
 
   def add(a_strategy)
-    raise BadParameterError unless [Class, Method].include? a_strategy.class
+    raise BadParameterError unless a_strategy.is_a?(Class) || a_strategy.is_a?(Method)
 
-    a_proc  = if Class == a_strategy.class
+    a_proc  = if a_strategy.is_a?(Class)
                 a_strategy.method(:trade)
               else
                 a_strategy
@@ -49,7 +49,7 @@ class SQA::Strategy
 
   def available
     ObjectSpace.each_object(Class).select { |klass|
-      klass.to_s.start_with?("SQA::Strategy::")
+      klass.name&.start_with?("SQA::Strategy::")
     }
   end
 end

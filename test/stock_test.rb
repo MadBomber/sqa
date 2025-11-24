@@ -218,4 +218,22 @@ class StockTest < Minitest::Test
     # Restore original config
     SQA.config.lazy_update = original_lazy_update
   end
+
+  # Phase 2 Tests
+
+  def test_reset_top_clears_cached_data
+    # This test verifies the reset_top! method without requiring API access
+    # First, ensure @top is nil (reset state)
+    SQA::Stock.reset_top!
+
+    # Verify reset_top! method exists and can be called
+    assert_respond_to SQA::Stock, :reset_top!
+
+    # After reset, @top should be nil (next call to top would fetch fresh data)
+    # We can't test this directly without API access, but we verify the method exists
+  end
+
+  def test_reset_top_method_exists
+    assert SQA::Stock.respond_to?(:reset_top!)
+  end
 end

@@ -161,15 +161,11 @@ class SQA::DataFrame
   end
 
 
+  # Delegate unknown methods to underlying Polars DataFrame
+  # Simplified: no longer dynamically defines methods at runtime
   def method_missing(method_name, *args, &block)
-    if @data.respond_to?(method_name)
-      self.class.send(:define_method, method_name) do |*method_args, &method_block|
-        @data.send(method_name, *method_args, &method_block)
-      end
-      send(method_name, *args, &block)
-    else
-      super
-    end
+    return super unless @data.respond_to?(method_name)
+    @data.send(method_name, *args, &block)
   end
 
 
@@ -198,14 +194,19 @@ class SQA::DataFrame
     end
 
     def from_aofh(aofh, mapping: {}, transformers: {})
+      return new({}, mapping: mapping, transformers: transformers) if aofh.empty?
+
+      # Sanitize keys to strings and convert to hash of arrays (Polars-compatible format)
       aoh_sanitized = aofh.map { |entry| entry.transform_keys(&:to_s) }
       columns = aoh_sanitized.first.keys
-      data = aoh_sanitized.map(&:values)
-      df = Polars::DataFrame.new(
-        data,
-        columns: columns
-      )
-      new(df)
+
+      # Convert array-of-hashes to hash-of-arrays for Polars
+      hofa = columns.each_with_object({}) do |col, hash|
+        hash[col] = aoh_sanitized.map { |row| row[col] }
+      end
+
+      df = Polars::DataFrame.new(hofa)
+      new(df, mapping: mapping, transformers: transformers)
     end
 
 

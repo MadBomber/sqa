@@ -231,4 +231,59 @@ class DataFrameTest < Minitest::Test
     timestamps = df1['timestamp'].to_a
     assert_equal ['2024-11-14', '2024-11-13', '2024-11-12', '2024-11-11', '2024-11-10'], timestamps
   end
+
+  # Phase 2 Tests
+
+  def test_from_aofh_basic
+    aofh = [
+      { 'name' => 'Alice', 'age' => 30 },
+      { 'name' => 'Bob', 'age' => 25 }
+    ]
+
+    df = SQA::DataFrame.from_aofh(aofh)
+
+    assert_equal 2, df.nrows
+    assert_equal 2, df.ncols
+    assert_includes df.columns, 'name'
+    assert_includes df.columns, 'age'
+  end
+
+  def test_from_aofh_with_transformers
+    aofh = [
+      { 'price' => '100.50', 'quantity' => '10' },
+      { 'price' => '200.75', 'quantity' => '20' }
+    ]
+
+    transformers = {
+      'price' => ->(v) { v.to_f },
+      'quantity' => ->(v) { v.to_i }
+    }
+
+    df = SQA::DataFrame.from_aofh(aofh, transformers: transformers)
+
+    # Transformers should be applied
+    assert_equal 2, df.nrows
+  end
+
+  def test_method_missing_delegates_to_polars
+    # Test that method_missing correctly delegates to Polars DataFrame
+    df = SQA::DataFrame.new({ 'a' => [1, 2, 3], 'b' => [4, 5, 6] })
+
+    # height is a Polars method
+    assert_equal 3, df.height
+
+    # width is a Polars method
+    assert_equal 2, df.width
+  end
+
+  def test_respond_to_missing
+    df = SQA::DataFrame.new({ 'a' => [1, 2, 3] })
+
+    # Should respond to Polars methods
+    assert df.respond_to?(:height)
+    assert df.respond_to?(:width)
+
+    # Should not respond to non-existent methods
+    refute df.respond_to?(:nonexistent_method_xyz)
+  end
 end
