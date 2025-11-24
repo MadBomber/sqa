@@ -1,0 +1,109 @@
+# SQA - Simple Qualitative Analysis
+
+> A powerful Ruby library for stock market technical analysis and trading strategy development
+
+SQA (Simple Qualitative Analysis) is an educational Ruby library designed for stock market technical analysis and trading strategy development. Built with high-performance data structures and seamlessly integrated with TA-Lib, SQA provides a comprehensive toolkit for analyzing historical stock data, implementing trading strategies, and backtesting your ideas.
+
+SQA is designed for educational purposes only. It should not be used for actual trading without extensive testing and professional financial advice. Trading stocks involves substantial risk of loss.
+
+- Polars DataFrames: Rust-backed data structures providing 30x faster operations than pure Ruby - TA-Lib Integration: Access to 150+ battle-tested technical indicators via the sqa-tai gem - Efficient Algorithms: Optimized for large historical datasets
+
+## Getting Started
+
+  - [Index](https://madbomber.github.io/sqa/getting-started/index): Welcome to SQA! This guide will help you get up and running with stock market technical analysis in just a few minutes.
+  - [Installation](https://madbomber.github.io/sqa/getting-started/installation): This guide walks you through installing SQA and all its dependencies.
+  - [Quick Start](https://madbomber.github.io/sqa/getting-started/quick-start): Get up and running with SQA in just a few minutes!
+
+## Core Concepts
+
+  - [Index](https://madbomber.github.io/sqa/concepts/index): Understanding the fundamental building blocks of SQA.
+  - [Dataframes](https://madbomber.github.io/sqa/data_frame): The SQA::DataFrame class is a high-performance wrapper around the Polars DataFrame library, specifically designed for time series financial data...
+  - [Technical Indicators](https://madbomber.github.io/sqa/indicators/index): SQA provides access to 150+ technical indicators via the sqa-tai gem, which wraps the industry-standard TA-Lib library.
+  - [Trading Strategies](https://madbomber.github.io/sqa/strategy): A strategy is a recipe that cooks all the indicators together to make a decision on a potential trade.  The SQA::Strategy class provides the...
+
+## Technical Indicators
+
+  - [Index](https://madbomber.github.io/sqa/indicators/index): SQA provides access to 150+ technical indicators via the sqa-tai gem, which wraps the industry-standard TA-Lib library.
+  - [Overview](https://madbomber.github.io/sqa/indicators): ## The Philosophy of Indicators
+
+
+
+## Trading Strategies
+
+  - [Index](https://madbomber.github.io/sqa/strategies/index): Explore SQA's comprehensive suite of trading strategies.
+
+### Built-in Strategies
+
+    - [Bollinger Bands Strategy](https://madbomber.github.io/sqa/strategies/bollinger-bands): The Bollinger Bands strategy uses volatility bands to identify oversold and overbought conditions. The strategy generates buy signals when price...
+    - [Rsi Strategy](https://madbomber.github.io/sqa/strategies/rsi): The Relative Strength Index (RSI) strategy identifies overbought and oversold conditions using momentum oscillators. It generates signals when RSI...
+    - [Macd Strategy](https://madbomber.github.io/sqa/strategies/macd): Moving Average Convergence Divergence (MACD) is a trend-following momentum indicator that shows the relationship between two moving averages.
+    - [Sma Strategy](https://madbomber.github.io/sqa/strategies/sma): The SMA strategy uses crossovers of short-term and long-term simple moving averages to identify trend changes and generate trading signals.
+    - [Ema Strategy](https://madbomber.github.io/sqa/strategies/ema): Similar to SMA but gives more weight to recent prices, making it more responsive to price changes.
+    - [Stochastic Strategy](https://madbomber.github.io/sqa/strategies/stochastic): Compares closing price to the price range over a period to identify overbought/oversold conditions and momentum changes.
+    - [Volume Breakout](https://madbomber.github.io/sqa/strategies/volume-breakout): Identifies price breakouts confirmed by high trading volume for stronger signal reliability.
+    - [Mean Reversion](https://madbomber.github.io/sqa/strategies/mean-reversion): Based on the theory that prices tend to return to their average over time. Buys when price is below average and sells when above.
+    - [Market Profile](https://madbomber.github.io/sqa/strategies/market-profile): Uses market profile analysis to identify support and resistance levels, generating signals when price reaches these key levels.
+    - [Consensus Strategy](https://madbomber.github.io/sqa/strategies/consensus): Aggregates signals from multiple strategies and makes trading decisions based on majority vote. Reduces risk of acting on single false signals.
+
+### Advanced Strategies
+
+    - [Knowledge Based Strategy (kbs)](https://madbomber.github.io/sqa/strategies/kbs): Advanced rule-based trading system using RETE forward-chaining inference engine. Combines multiple indicators with custom logic rules.
+    - [Custom Strategies](https://madbomber.github.io/sqa/strategies/custom): Learn how to create your own trading strategies in the SQA framework.
+
+## Advanced Features
+
+  - [Index](https://madbomber.github.io/sqa/advanced/index): Explore SQA's advanced capabilities for professional-grade analysis.
+  - [Portfolio Management](https://madbomber.github.io/sqa/advanced/portfolio): The Portfolio class tracks positions, calculates P&L, manages commissions, and monitors portfolio performance over time.
+  - [Backtesting](https://madbomber.github.io/sqa/advanced/backtesting): Simulate trading strategies on historical data to evaluate performance before risking real capital.
+  - [Strategy Generator](https://madbomber.github.io/sqa/advanced/strategy-generator): Reverse-engineer profitable trades to discover patterns and automatically generate executable trading strategies.
+  - [Genetic Programming](https://madbomber.github.io/sqa/genetic_programming): ### Overview of Genetic Programming (GP)
+  - [Real Time Streaming](https://madbomber.github.io/sqa/advanced/streaming): Process live price data with event callbacks and parallel strategy execution for real-time trading signals.
+  - [Fpop Analysis](https://madbomber.github.io/sqa/advanced/fpop): Calculate future returns, risk metrics, and direction classification to evaluate trading opportunities.
+  - [Risk Management](https://madbomber.github.io/sqa/advanced/risk-management): Comprehensive risk management tools including VaR, position sizing, and risk metrics.
+  - [Portfolio Optimizer](https://madbomber.github.io/sqa/advanced/portfolio-optimizer): Multi-objective portfolio optimization for optimal asset allocation and rebalancing.
+  - [Ensemble Strategies](https://madbomber.github.io/sqa/advanced/ensemble): Combine multiple strategies with voting and meta-learning.
+  - [Multi Timeframe Analysis](https://madbomber.github.io/sqa/advanced/multi-timeframe): Analyze multiple timeframes simultaneously for better trade timing.
+  - [Pattern Matcher](https://madbomber.github.io/sqa/advanced/pattern-matcher): Pattern recognition and similarity search for forecasting.
+
+## AI & Machine Learning
+
+  - [Ai And Ml](https://madbomber.github.io/sqa/ai_and_ml): ## AI and ML in Trading -- Advancing Decision-Making
+  - [Mean Reversion](https://madbomber.github.io/sqa/mean_reversion): Determines if a stock exhibits mean reversion behavior based on a given price series.
+  - [Predict Next Value](https://madbomber.github.io/sqa/predict_next_value): As a stock quantitative analyst, having a predict next value method on a timeseries array of closing day stock price data would be extremely helpful....
+  - [Identify Wave Condition](https://madbomber.github.io/sqa/identify_wave_condition): The Elliott Wave Theory is a popular method used in stock technical analysis to predict future price movements in financial markets. It is based on...
+  - [Libsvm Format](https://madbomber.github.io/sqa/libsvm_file_format): This file format is used by rumale.
+
+## API Reference
+
+  - [Index](https://madbomber.github.io/sqa/api/index): Complete API documentation for SQA classes and modules.
+  - [Dataframe Class](https://madbomber.github.io/sqa/api/dataframe): SQA::DataFrame is a high-performance wrapper around the Polars DataFrame library, specifically optimized for time series financial data manipulation....
+
+## Data Sources
+
+  - [Index](https://madbomber.github.io/sqa/data-sources/index): SQA supports multiple data sources for historical stock price data.
+
+## Resources
+
+  - [Tags](https://madbomber.github.io/sqa/tags): Browse documentation by topic.
+  - [Requirements](https://madbomber.github.io/sqa/requirements): ... otherwise know as what I want to do.  Some people would call it a roadmap; but, where I'm going "we don't need no stinking roads!"
+  - [Terms Of Use](https://madbomber.github.io/sqa/terms_of_use): Some sections of these Terms of Use are aspirational.  If found to be so, they shall not invalidate any other section which shall remain in full...
+  - [Trading Ideas](https://madbomber.github.io/sqa/i_gotta_an_idea): ... based upon my prior work with sports outcome predictions and sensor net architecture.
+  - [Factor Analysis](https://madbomber.github.io/sqa/factors_that_impact_price): ## Factors that Impact Price
+
+### External Tools
+
+    - [Finviz](https://madbomber.github.io/sqa/finviz): The original finviz unofficial gem has been untouched for 3 years.  I just forked it in the hope that I can bring it forward to current versions of...
+    - [Fx Pro Bit](https://madbomber.github.io/sqa/fx_pro_bit): FXProBot is a new trading software by Avenix Fzco, a major fintech firm located in Dubai that specializes in automated trading. This advanced robot...
+  - [Options Trading](https://madbomber.github.io/sqa/options): https://www.youtube.com/watch?v=A5w-dEgIU1M
+
+## Contributing
+
+  - [Index](https://madbomber.github.io/sqa/contributing/index): Thank you for your interest in contributing to SQA!
+
+## Optional
+
+These resources provide supplementary information that may be skipped for shorter context:
+
+- [Tags](https://madbomber.github.io/sqa/tags): Browse documentation by topic.
+- [Requirements](https://madbomber.github.io/sqa/requirements): ... otherwise know as what I want to do.  Some people would call it a roadmap; but, where I'm going "we don't need no stinking roads!"
+- [Terms of Use](https://madbomber.github.io/sqa/terms_of_use): Some sections of these Terms of Use are aspirational.  If found to be so, they shall not invalidate any other section which shall remain in full...
