@@ -1,7 +1,7 @@
 # 📦 SQA::DataFrame::YahooFinance
 
 !!! abstract "Source Information"
-    **Defined in:** `lib/sqa/data_frame/yahoo_finance.rb:13`
+    **Defined in:** [`lib/sqa/data_frame/yahoo_finance.rb:13`](https://github.com/madbomber/sqa/blob/main/lib/sqa/data_frame/yahoo_finance.rb#L13)
     
     **Inherits from:** `Object`
 
@@ -17,7 +17,7 @@ returns a Polars DataFrame
 
 
 ??? info "Source Location"
-    `lib/sqa/data_frame/yahoo_finance.rb:40`
+    [`lib/sqa/data_frame/yahoo_finance.rb:40`](https://github.com/madbomber/sqa/blob/main/lib/sqa/data_frame/yahoo_finance.rb#L40)
 
 ---
 

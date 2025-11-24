@@ -1,7 +1,7 @@
 # 📦 SQA::Strategy::Consensus
 
 !!! abstract "Source Information"
-    **Defined in:** `lib/sqa/strategy/consensus.rb:5`
+    **Defined in:** [`lib/sqa/strategy/consensus.rb:5`](https://github.com/madbomber/sqa/blob/main/lib/sqa/strategy/consensus.rb#L5)
     
     **Inherits from:** `Object`
 
@@ -13,7 +13,7 @@
 
 
 ??? info "Source Location"
-    `lib/sqa/strategy/consensus.rb:8`
+    [`lib/sqa/strategy/consensus.rb:8`](https://github.com/madbomber/sqa/blob/main/lib/sqa/strategy/consensus.rb#L8)
 
 ---
 
@@ -23,7 +23,7 @@
 
 
 ??? info "Source Location"
-    `lib/sqa/strategy/common.rb:9`
+    [`lib/sqa/strategy/common.rb:9`](https://github.com/madbomber/sqa/blob/main/lib/sqa/strategy/common.rb#L9)
 
 ---
 
@@ -33,7 +33,7 @@
 
 
 ??? info "Source Location"
-    `lib/sqa/strategy/common.rb:23`
+    [`lib/sqa/strategy/common.rb:23`](https://github.com/madbomber/sqa/blob/main/lib/sqa/strategy/common.rb#L23)
 
 ---
 
@@ -51,7 +51,7 @@
     a new instance of Consensus
 
 ??? info "Source Location"
-    `lib/sqa/strategy/consensus.rb:12`
+    [`lib/sqa/strategy/consensus.rb:12`](https://github.com/madbomber/sqa/blob/main/lib/sqa/strategy/consensus.rb#L12)
 
 ---
 
@@ -61,7 +61,7 @@
 
 
 ??? info "Source Location"
-    `lib/sqa/strategy/consensus.rb:17`
+    [`lib/sqa/strategy/consensus.rb:17`](https://github.com/madbomber/sqa/blob/main/lib/sqa/strategy/consensus.rb#L17)
 
 ---
 
@@ -71,7 +71,7 @@
 
 
 ??? info "Source Location"
-    `lib/sqa/strategy/consensus.rb:26`
+    [`lib/sqa/strategy/consensus.rb:26`](https://github.com/madbomber/sqa/blob/main/lib/sqa/strategy/consensus.rb#L26)
 
 ---
 
@@ -81,7 +81,7 @@
 
 
 ??? info "Source Location"
-    `lib/sqa/strategy/consensus.rb:41`
+    [`lib/sqa/strategy/consensus.rb:41`](https://github.com/madbomber/sqa/blob/main/lib/sqa/strategy/consensus.rb#L41)
 
 ---
 
@@ -91,7 +91,7 @@
 
 
 ??? info "Source Location"
-    `lib/sqa/strategy/consensus.rb:42`
+    [`lib/sqa/strategy/consensus.rb:42`](https://github.com/madbomber/sqa/blob/main/lib/sqa/strategy/consensus.rb#L42)
 
 ---
 
@@ -101,7 +101,7 @@
 
 
 ??? info "Source Location"
-    `lib/sqa/strategy/consensus.rb:43`
+    [`lib/sqa/strategy/consensus.rb:43`](https://github.com/madbomber/sqa/blob/main/lib/sqa/strategy/consensus.rb#L43)
 
 ---
 
@@ -111,7 +111,7 @@
 
 
 ??? info "Source Location"
-    `lib/sqa/strategy/consensus.rb:44`
+    [`lib/sqa/strategy/consensus.rb:44`](https://github.com/madbomber/sqa/blob/main/lib/sqa/strategy/consensus.rb#L44)
 
 ---
 
@@ -121,7 +121,7 @@
 
 
 ??? info "Source Location"
-    `lib/sqa/strategy/consensus.rb:45`
+    [`lib/sqa/strategy/consensus.rb:45`](https://github.com/madbomber/sqa/blob/main/lib/sqa/strategy/consensus.rb#L45)
 
 ---
 

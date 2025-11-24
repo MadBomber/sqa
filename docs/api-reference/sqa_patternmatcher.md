@@ -15,7 +15,7 @@
     - Pearson correlation
 
 !!! abstract "Source Information"
-    **Defined in:** `lib/sqa/pattern_matcher.rb:24`
+    **Defined in:** [`lib/sqa/pattern_matcher.rb:24`](https://github.com/madbomber/sqa/blob/main/lib/sqa/pattern_matcher.rb#L24)
     
     **Inherits from:** `Object`
 
@@ -29,7 +29,7 @@ Returns the value of attribute stock.
 
 
 ??? info "Source Location"
-    `lib/sqa/pattern_matcher.rb:25`
+    [`lib/sqa/pattern_matcher.rb:25`](https://github.com/madbomber/sqa/blob/main/lib/sqa/pattern_matcher.rb#L25)
 
 ---
 
@@ -41,7 +41,7 @@ Returns the value of attribute prices.
 
 
 ??? info "Source Location"
-    `lib/sqa/pattern_matcher.rb:25`
+    [`lib/sqa/pattern_matcher.rb:25`](https://github.com/madbomber/sqa/blob/main/lib/sqa/pattern_matcher.rb#L25)
 
 ---
 
@@ -63,7 +63,7 @@ Initialize pattern matcher
     a new instance of PatternMatcher
 
 ??? info "Source Location"
-    `lib/sqa/pattern_matcher.rb:32`
+    [`lib/sqa/pattern_matcher.rb:32`](https://github.com/madbomber/sqa/blob/main/lib/sqa/pattern_matcher.rb#L32)
 
 ---
 
@@ -88,7 +88,7 @@ Find similar historical patterns to current pattern
     Similar patterns with metadata
 
 ??? info "Source Location"
-    `lib/sqa/pattern_matcher.rb:46`
+    [`lib/sqa/pattern_matcher.rb:46`](https://github.com/madbomber/sqa/blob/main/lib/sqa/pattern_matcher.rb#L46)
 
 ---
 
@@ -112,7 +112,7 @@ Predict future price movement based on similar patterns
     Forecast with confidence intervals
 
 ??? info "Source Location"
-    `lib/sqa/pattern_matcher.rb:107`
+    [`lib/sqa/pattern_matcher.rb:107`](https://github.com/madbomber/sqa/blob/main/lib/sqa/pattern_matcher.rb#L107)
 
 ---
 
@@ -134,7 +134,7 @@ Detect chart patterns (head & shoulders, double top, etc.)
     Detected patterns
 
 ??? info "Source Location"
-    `lib/sqa/pattern_matcher.rb:141`
+    [`lib/sqa/pattern_matcher.rb:141`](https://github.com/madbomber/sqa/blob/main/lib/sqa/pattern_matcher.rb#L141)
 
 ---
 
@@ -157,7 +157,7 @@ Cluster patterns by similarity
     Clusters of similar patterns
 
 ??? info "Source Location"
-    `lib/sqa/pattern_matcher.rb:163`
+    [`lib/sqa/pattern_matcher.rb:163`](https://github.com/madbomber/sqa/blob/main/lib/sqa/pattern_matcher.rb#L163)
 
 ---
 
@@ -179,7 +179,7 @@ Calculate pattern strength/quality
     Pattern quality metrics
 
 ??? info "Source Location"
-    `lib/sqa/pattern_matcher.rb:214`
+    [`lib/sqa/pattern_matcher.rb:214`](https://github.com/madbomber/sqa/blob/main/lib/sqa/pattern_matcher.rb#L214)
 
 ---
 

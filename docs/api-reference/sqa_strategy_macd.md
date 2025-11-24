@@ -6,7 +6,7 @@
     Sell when MACD line crosses below signal line (bearish)
 
 !!! abstract "Source Information"
-    **Defined in:** `lib/sqa/strategy/macd.rb:8`
+    **Defined in:** [`lib/sqa/strategy/macd.rb:8`](https://github.com/madbomber/sqa/blob/main/lib/sqa/strategy/macd.rb#L8)
     
     **Inherits from:** `Object`
 
@@ -18,7 +18,7 @@
 
 
 ??? info "Source Location"
-    `lib/sqa/strategy/macd.rb:9`
+    [`lib/sqa/strategy/macd.rb:9`](https://github.com/madbomber/sqa/blob/main/lib/sqa/strategy/macd.rb#L9)
 
 ---
 

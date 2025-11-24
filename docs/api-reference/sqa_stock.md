@@ -5,7 +5,7 @@
     This is the primary domain object for interacting with stock data.
 
 !!! abstract "Source Information"
-    **Defined in:** `lib/sqa/stock.rb:14`
+    **Defined in:** [`lib/sqa/stock.rb:14`](https://github.com/madbomber/sqa/blob/main/lib/sqa/stock.rb#L14)
     
     **Inherits from:** `Object`
 
@@ -26,7 +26,7 @@ Allows injection of custom connections for testing or different configurations.
     The current connection instance
 
 ??? info "Source Location"
-    `lib/sqa/stock.rb:30`
+    [`lib/sqa/stock.rb:30`](https://github.com/madbomber/sqa/blob/main/lib/sqa/stock.rb#L30)
 
 ---
 
@@ -49,7 +49,7 @@ Useful for testing with mocks/stubs or configuring different API endpoints.
     The connection that was set
 
 ??? info "Source Location"
-    `lib/sqa/stock.rb:39`
+    [`lib/sqa/stock.rb:39`](https://github.com/madbomber/sqa/blob/main/lib/sqa/stock.rb#L39)
 
 ---
 
@@ -67,7 +67,7 @@ Creates the default Faraday connection to Alpha Vantage.
     A new connection to Alpha Vantage API
 
 ??? info "Source Location"
-    `lib/sqa/stock.rb:46`
+    [`lib/sqa/stock.rb:46`](https://github.com/madbomber/sqa/blob/main/lib/sqa/stock.rb#L46)
 
 ---
 
@@ -84,7 +84,7 @@ Useful for testing cleanup to ensure fresh state between tests.
     
 
 ??? info "Source Location"
-    `lib/sqa/stock.rb:54`
+    [`lib/sqa/stock.rb:54`](https://github.com/madbomber/sqa/blob/main/lib/sqa/stock.rb#L54)
 
 ---
 
@@ -109,7 +109,7 @@ Results are cached after the first call.
     top.top_losers.first.ticker  # => "XYZ"
     ```
 ??? info "Source Location"
-    `lib/sqa/stock.rb:341`
+    [`lib/sqa/stock.rb:341`](https://github.com/madbomber/sqa/blob/main/lib/sqa/stock.rb#L341)
 
 ---
 
@@ -126,7 +126,7 @@ Useful for testing or forcing a refresh.
     
 
 ??? info "Source Location"
-    `lib/sqa/stock.rb:372`
+    [`lib/sqa/stock.rb:372`](https://github.com/madbomber/sqa/blob/main/lib/sqa/stock.rb#L372)
 
 ---
 
@@ -144,7 +144,7 @@ Useful for testing or forcing a refresh.
     Stock metadata (ticker, name, exchange, etc.)
 
 ??? info "Source Location"
-    `lib/sqa/stock.rb:69`
+    [`lib/sqa/stock.rb:69`](https://github.com/madbomber/sqa/blob/main/lib/sqa/stock.rb#L69)
 
 ---
 
@@ -160,7 +160,7 @@ Useful for testing or forcing a refresh.
     Stock metadata (ticker, name, exchange, etc.)
 
 ??? info "Source Location"
-    `lib/sqa/stock.rb:69`
+    [`lib/sqa/stock.rb:69`](https://github.com/madbomber/sqa/blob/main/lib/sqa/stock.rb#L69)
 
 ---
 
@@ -176,7 +176,7 @@ Useful for testing or forcing a refresh.
     Price and volume data as a DataFrame
 
 ??? info "Source Location"
-    `lib/sqa/stock.rb:69`
+    [`lib/sqa/stock.rb:69`](https://github.com/madbomber/sqa/blob/main/lib/sqa/stock.rb#L69)
 
 ---
 
@@ -192,7 +192,7 @@ Useful for testing or forcing a refresh.
     Price and volume data as a DataFrame
 
 ??? info "Source Location"
-    `lib/sqa/stock.rb:69`
+    [`lib/sqa/stock.rb:69`](https://github.com/madbomber/sqa/blob/main/lib/sqa/stock.rb#L69)
 
 ---
 
@@ -208,7 +208,7 @@ Useful for testing or forcing a refresh.
     The data source class (e.g., SQA::DataFrame::AlphaVantage)
 
 ??? info "Source Location"
-    `lib/sqa/stock.rb:69`
+    [`lib/sqa/stock.rb:69`](https://github.com/madbomber/sqa/blob/main/lib/sqa/stock.rb#L69)
 
 ---
 
@@ -224,7 +224,7 @@ Useful for testing or forcing a refresh.
     The data source class (e.g., SQA::DataFrame::AlphaVantage)
 
 ??? info "Source Location"
-    `lib/sqa/stock.rb:69`
+    [`lib/sqa/stock.rb:69`](https://github.com/madbomber/sqa/blob/main/lib/sqa/stock.rb#L69)
 
 ---
 
@@ -240,7 +240,7 @@ Useful for testing or forcing a refresh.
     Column transformers for data normalization
 
 ??? info "Source Location"
-    `lib/sqa/stock.rb:69`
+    [`lib/sqa/stock.rb:69`](https://github.com/madbomber/sqa/blob/main/lib/sqa/stock.rb#L69)
 
 ---
 
@@ -256,7 +256,7 @@ Useful for testing or forcing a refresh.
     Column transformers for data normalization
 
 ??? info "Source Location"
-    `lib/sqa/stock.rb:69`
+    [`lib/sqa/stock.rb:69`](https://github.com/madbomber/sqa/blob/main/lib/sqa/stock.rb#L69)
 
 ---
 
@@ -272,7 +272,7 @@ Useful for testing or forcing a refresh.
     Optional trading strategy attached to this stock
 
 ??? info "Source Location"
-    `lib/sqa/stock.rb:69`
+    [`lib/sqa/stock.rb:69`](https://github.com/madbomber/sqa/blob/main/lib/sqa/stock.rb#L69)
 
 ---
 
@@ -288,7 +288,7 @@ Sets the attribute strategy
 
 
 ??? info "Source Location"
-    `lib/sqa/stock.rb:69`
+    [`lib/sqa/stock.rb:69`](https://github.com/madbomber/sqa/blob/main/lib/sqa/stock.rb#L69)
 
 ---
 
@@ -316,7 +316,7 @@ Creates a new Stock instance and loads or fetches its data.
     stock = SQA::Stock.new(ticker: 'GOOG', source: :yahoo_finance)
     ```
 ??? info "Source Location"
-    `lib/sqa/stock.rb:81`
+    [`lib/sqa/stock.rb:81`](https://github.com/madbomber/sqa/blob/main/lib/sqa/stock.rb#L81)
 
 ---
 
@@ -334,7 +334,7 @@ minimal structure and attempts to fetch overview from API.
     
 
 ??? info "Source Location"
-    `lib/sqa/stock.rb:107`
+    [`lib/sqa/stock.rb:107`](https://github.com/madbomber/sqa/blob/main/lib/sqa/stock.rb#L107)
 
 ---
 
@@ -352,7 +352,7 @@ Creates a new minimal data structure for the stock.
     The newly created data object
 
 ??? info "Source Location"
-    `lib/sqa/stock.rb:126`
+    [`lib/sqa/stock.rb:126`](https://github.com/madbomber/sqa/blob/main/lib/sqa/stock.rb#L126)
 
 ---
 
@@ -367,9 +367,21 @@ Silently handles errors since overview data is optional.
     **Type:** `void`
 
     
+!!! example "Usage Examples"
 
+    ```ruby
+    stock = SQA::Stock.new(ticker: 'AAPL')
+    stock.update  # Fetches latest company overview data
+    stock.data.overview['market_capitalization']  # => 2500000000000
+    stock.data.overview['pe_ratio']  # => 28.5
+    ```
+    
+    ```ruby
+    stock.update  # No error raised if API is unavailable
+    # Warning logged but stock remains usable with cached data
+    ```
 ??? info "Source Location"
-    `lib/sqa/stock.rb:134`
+    [`lib/sqa/stock.rb:134`](https://github.com/madbomber/sqa/blob/main/lib/sqa/stock.rb#L134)
 
 ---
 
@@ -387,7 +399,7 @@ Persists the stock's metadata to a JSON file.
     Number of bytes written
 
 ??? info "Source Location"
-    `lib/sqa/stock.rb:147`
+    [`lib/sqa/stock.rb:147`](https://github.com/madbomber/sqa/blob/main/lib/sqa/stock.rb#L147)
 
 ---
 
@@ -403,7 +415,7 @@ Persists the stock's metadata to a JSON file.
     The stock's ticker symbol
 
 ??? info "Source Location"
-    `lib/sqa/stock.rb:165`
+    [`lib/sqa/stock.rb:165`](https://github.com/madbomber/sqa/blob/main/lib/sqa/stock.rb#L165)
 
 ---
 
@@ -419,7 +431,7 @@ Persists the stock's metadata to a JSON file.
     The company name
 
 ??? info "Source Location"
-    `lib/sqa/stock.rb:165`
+    [`lib/sqa/stock.rb:165`](https://github.com/madbomber/sqa/blob/main/lib/sqa/stock.rb#L165)
 
 ---
 
@@ -435,7 +447,7 @@ Persists the stock's metadata to a JSON file.
     The exchange where the stock trades
 
 ??? info "Source Location"
-    `lib/sqa/stock.rb:165`
+    [`lib/sqa/stock.rb:165`](https://github.com/madbomber/sqa/blob/main/lib/sqa/stock.rb#L165)
 
 ---
 
@@ -451,7 +463,7 @@ Persists the stock's metadata to a JSON file.
     The data source (:alpha_vantage or :yahoo_finance)
 
 ??? info "Source Location"
-    `lib/sqa/stock.rb:165`
+    [`lib/sqa/stock.rb:165`](https://github.com/madbomber/sqa/blob/main/lib/sqa/stock.rb#L165)
 
 ---
 
@@ -467,7 +479,7 @@ Persists the stock's metadata to a JSON file.
     Cached indicator values
 
 ??? info "Source Location"
-    `lib/sqa/stock.rb:165`
+    [`lib/sqa/stock.rb:165`](https://github.com/madbomber/sqa/blob/main/lib/sqa/stock.rb#L165)
 
 ---
 
@@ -481,7 +493,7 @@ Persists the stock's metadata to a JSON file.
 
 
 ??? info "Source Location"
-    `lib/sqa/stock.rb:165`
+    [`lib/sqa/stock.rb:165`](https://github.com/madbomber/sqa/blob/main/lib/sqa/stock.rb#L165)
 
 ---
 
@@ -497,7 +509,7 @@ Persists the stock's metadata to a JSON file.
     Company overview data from API
 
 ??? info "Source Location"
-    `lib/sqa/stock.rb:165`
+    [`lib/sqa/stock.rb:165`](https://github.com/madbomber/sqa/blob/main/lib/sqa/stock.rb#L165)
 
 ---
 
@@ -515,7 +527,7 @@ Applies migrations for old data formats and updates with recent data.
     
 
 ??? info "Source Location"
-    `lib/sqa/stock.rb:173`
+    [`lib/sqa/stock.rb:173`](https://github.com/madbomber/sqa/blob/main/lib/sqa/stock.rb#L173)
 
 ---
 
@@ -532,7 +544,7 @@ Only called if should_update? returns true.
     
 
 ??? info "Source Location"
-    `lib/sqa/stock.rb:228`
+    [`lib/sqa/stock.rb:228`](https://github.com/madbomber/sqa/blob/main/lib/sqa/stock.rb#L228)
 
 ---
 
@@ -546,7 +558,7 @@ Only called if should_update? returns true.
     
 
 ??? info "Source Location"
-    `lib/sqa/stock.rb:250`
+    [`lib/sqa/stock.rb:250`](https://github.com/madbomber/sqa/blob/main/lib/sqa/stock.rb#L250)
 
 ---
 
@@ -566,7 +578,7 @@ or data is already current.
     true if update should proceed, false otherwise
 
 ??? info "Source Location"
-    `lib/sqa/stock.rb:260`
+    [`lib/sqa/stock.rb:260`](https://github.com/madbomber/sqa/blob/main/lib/sqa/stock.rb#L260)
 
 ---
 
@@ -588,7 +600,7 @@ Returns a human-readable string representation of the stock.
     stock.to_s  # => "aapl with 252 data points from 2023-01-03 to 2023-12-29"
     ```
 ??? info "Source Location"
-    `lib/sqa/stock.rb:294`
+    [`lib/sqa/stock.rb:294`](https://github.com/madbomber/sqa/blob/main/lib/sqa/stock.rb#L294)
 
 ---
 
@@ -612,7 +624,7 @@ This ensures compatibility with TA-Lib indicators which expect arrays in this or
     stock.to_s  # => "aapl with 252 data points from 2023-01-03 to 2023-12-29"
     ```
 ??? info "Source Location"
-    `lib/sqa/stock.rb:299`
+    [`lib/sqa/stock.rb:299`](https://github.com/madbomber/sqa/blob/main/lib/sqa/stock.rb#L299)
 
 ---
 
@@ -631,7 +643,7 @@ Converts API response keys to snake_case and appropriate data types.
     The merged overview data
 
 ??? info "Source Location"
-    `lib/sqa/stock.rb:306`
+    [`lib/sqa/stock.rb:306`](https://github.com/madbomber/sqa/blob/main/lib/sqa/stock.rb#L306)
 
 ---
 

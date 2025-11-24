@@ -52,6 +52,19 @@ class SQA::Portfolio
   # @param price [Float] Price per share
   # @param date [Date] Date of trade
   # @return [Trade] The executed trade
+  #
+  # @example Buy 10 shares of AAPL
+  #   portfolio = SQA::Portfolio.new(initial_cash: 10_000, commission: 1.0)
+  #   trade = portfolio.buy('AAPL', shares: 10, price: 150.0)
+  #   trade.action  # => :buy
+  #   trade.total   # => 1500.0
+  #   portfolio.cash  # => 8499.0 (10_000 - 1500 - 1.0 commission)
+  #
+  # @example Buy multiple stocks
+  #   portfolio.buy('AAPL', shares: 10, price: 150.0)
+  #   portfolio.buy('MSFT', shares: 5, price: 300.0)
+  #   portfolio.positions.size  # => 2
+  #
   def buy(ticker, shares:, price:, date: Date.today)
     raise BadParameterError, "Shares must be positive" if shares <= 0
     raise BadParameterError, "Price must be positive" if price <= 0
@@ -95,6 +108,19 @@ class SQA::Portfolio
   # @param price [Float] Price per share
   # @param date [Date] Date of trade
   # @return [Trade] The executed trade
+  #
+  # @example Sell entire position for profit
+  #   portfolio = SQA::Portfolio.new(initial_cash: 10_000, commission: 1.0)
+  #   portfolio.buy('AAPL', shares: 10, price: 150.0)
+  #   trade = portfolio.sell('AAPL', shares: 10, price: 160.0)
+  #   trade.total  # => 1600.0
+  #   portfolio.cash  # => 8498.0 + 1599.0 = 10097.0 (after commissions)
+  #
+  # @example Partial sale
+  #   portfolio.buy('AAPL', shares: 100, price: 150.0)
+  #   portfolio.sell('AAPL', shares: 50, price: 160.0)  # Sell half
+  #   portfolio.position('AAPL').shares  # => 50
+  #
   def sell(ticker, shares:, price:, date: Date.today)
     raise BadParameterError, "Shares must be positive" if shares <= 0
     raise BadParameterError, "Price must be positive" if price <= 0
@@ -145,6 +171,18 @@ class SQA::Portfolio
   # Calculate total portfolio value
   # @param current_prices [Hash] Hash of ticker => current_price
   # @return [Float] Total portfolio value (cash + positions)
+  #
+  # @example Calculate portfolio value with current prices
+  #   portfolio = SQA::Portfolio.new(initial_cash: 10_000)
+  #   portfolio.buy('AAPL', shares: 10, price: 150.0)
+  #   portfolio.buy('MSFT', shares: 5, price: 300.0)
+  #
+  #   current_prices = { 'AAPL' => 160.0, 'MSFT' => 310.0 }
+  #   portfolio.value(current_prices)  # => 10_000 - 1500 - 1500 + 1600 + 1550 = 10_150
+  #
+  # @example Without current prices (uses avg_cost)
+  #   portfolio.value  # Uses purchase prices if no current prices provided
+  #
   def value(current_prices = {})
     positions_value = @positions.sum do |ticker, pos|
       current_price = current_prices[ticker] || pos.avg_cost
@@ -186,6 +224,22 @@ class SQA::Portfolio
   # Get summary statistics
   # @param current_prices [Hash] Hash of ticker => current_price
   # @return [Hash] Summary statistics
+  #
+  # @example Get portfolio performance summary
+  #   portfolio = SQA::Portfolio.new(initial_cash: 10_000, commission: 1.0)
+  #   portfolio.buy('AAPL', shares: 10, price: 150.0)
+  #   portfolio.sell('AAPL', shares: 5, price: 160.0)
+  #
+  #   summary = portfolio.summary({ 'AAPL' => 165.0 })
+  #   summary[:initial_cash]        # => 10_000.0
+  #   summary[:current_cash]        # => 8798.0
+  #   summary[:positions_count]     # => 1
+  #   summary[:total_value]         # => 9623.0
+  #   summary[:profit_loss_percent] # => -3.77%
+  #   summary[:total_trades]        # => 2
+  #   summary[:buy_trades]          # => 1
+  #   summary[:sell_trades]         # => 1
+  #
   def summary(current_prices = {})
     {
       initial_cash: @initial_cash,

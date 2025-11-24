@@ -1,7 +1,7 @@
 # 📦 SQA::Strategy::RSI
 
 !!! abstract "Source Information"
-    **Defined in:** `lib/sqa/strategy/rsi.rb:5`
+    **Defined in:** [`lib/sqa/strategy/rsi.rb:5`](https://github.com/madbomber/sqa/blob/main/lib/sqa/strategy/rsi.rb#L5)
     
     **Inherits from:** `Object`
 
@@ -13,7 +13,7 @@
 
 
 ??? info "Source Location"
-    `lib/sqa/strategy/rsi.rb:8`
+    [`lib/sqa/strategy/rsi.rb:8`](https://github.com/madbomber/sqa/blob/main/lib/sqa/strategy/rsi.rb#L8)
 
 ---
 
@@ -23,7 +23,7 @@
 
 
 ??? info "Source Location"
-    `lib/sqa/strategy/common.rb:9`
+    [`lib/sqa/strategy/common.rb:9`](https://github.com/madbomber/sqa/blob/main/lib/sqa/strategy/common.rb#L9)
 
 ---
 
@@ -33,7 +33,7 @@
 
 
 ??? info "Source Location"
-    `lib/sqa/strategy/common.rb:23`
+    [`lib/sqa/strategy/common.rb:23`](https://github.com/madbomber/sqa/blob/main/lib/sqa/strategy/common.rb#L23)
 
 ---
 

@@ -1,7 +1,7 @@
 # 📦 SQA::Strategy::KBS
 
 !!! abstract "Source Information"
-    **Defined in:** `lib/sqa/strategy/kbs_strategy.rb:50`
+    **Defined in:** [`lib/sqa/strategy/kbs_strategy.rb:50`](https://github.com/madbomber/sqa/blob/main/lib/sqa/strategy/kbs_strategy.rb#L50)
     
     **Inherits from:** `Object`
 
@@ -15,7 +15,7 @@ Main strategy interface - compatible with SQA::Strategy framework
 
 
 ??? info "Source Location"
-    `lib/sqa/strategy/kbs_strategy.rb:62`
+    [`lib/sqa/strategy/kbs_strategy.rb:62`](https://github.com/madbomber/sqa/blob/main/lib/sqa/strategy/kbs_strategy.rb#L62)
 
 ---
 
@@ -29,7 +29,7 @@ Returns the value of attribute kb.
 
 
 ??? info "Source Location"
-    `lib/sqa/strategy/kbs_strategy.rb:51`
+    [`lib/sqa/strategy/kbs_strategy.rb:51`](https://github.com/madbomber/sqa/blob/main/lib/sqa/strategy/kbs_strategy.rb#L51)
 
 ---
 
@@ -41,7 +41,7 @@ Returns the value of attribute default_rules_loaded.
 
 
 ??? info "Source Location"
-    `lib/sqa/strategy/kbs_strategy.rb:51`
+    [`lib/sqa/strategy/kbs_strategy.rb:51`](https://github.com/madbomber/sqa/blob/main/lib/sqa/strategy/kbs_strategy.rb#L51)
 
 ---
 
@@ -57,7 +57,7 @@ Returns the value of attribute default_rules_loaded.
     a new instance of KBS
 
 ??? info "Source Location"
-    `lib/sqa/strategy/kbs_strategy.rb:53`
+    [`lib/sqa/strategy/kbs_strategy.rb:53`](https://github.com/madbomber/sqa/blob/main/lib/sqa/strategy/kbs_strategy.rb#L53)
 
 ---
 
@@ -69,7 +69,7 @@ Execute strategy with given market data
 
 
 ??? info "Source Location"
-    `lib/sqa/strategy/kbs_strategy.rb:68`
+    [`lib/sqa/strategy/kbs_strategy.rb:68`](https://github.com/madbomber/sqa/blob/main/lib/sqa/strategy/kbs_strategy.rb#L68)
 
 ---
 
@@ -90,7 +90,7 @@ Note: Use `kb.assert` in perform blocks, not just `assert`
 
 
 ??? info "Source Location"
-    `lib/sqa/strategy/kbs_strategy.rb:92`
+    [`lib/sqa/strategy/kbs_strategy.rb:92`](https://github.com/madbomber/sqa/blob/main/lib/sqa/strategy/kbs_strategy.rb#L92)
 
 ---
 
@@ -102,7 +102,7 @@ Assert a fact into working memory
 
 
 ??? info "Source Location"
-    `lib/sqa/strategy/kbs_strategy.rb:105`
+    [`lib/sqa/strategy/kbs_strategy.rb:105`](https://github.com/madbomber/sqa/blob/main/lib/sqa/strategy/kbs_strategy.rb#L105)
 
 ---
 
@@ -114,7 +114,7 @@ Query facts from working memory
 
 
 ??? info "Source Location"
-    `lib/sqa/strategy/kbs_strategy.rb:110`
+    [`lib/sqa/strategy/kbs_strategy.rb:110`](https://github.com/madbomber/sqa/blob/main/lib/sqa/strategy/kbs_strategy.rb#L110)
 
 ---
 
@@ -126,7 +126,7 @@ Print current working memory (for debugging)
 
 
 ??? info "Source Location"
-    `lib/sqa/strategy/kbs_strategy.rb:115`
+    [`lib/sqa/strategy/kbs_strategy.rb:115`](https://github.com/madbomber/sqa/blob/main/lib/sqa/strategy/kbs_strategy.rb#L115)
 
 ---
 
@@ -138,7 +138,7 @@ Print all rules (for debugging)
 
 
 ??? info "Source Location"
-    `lib/sqa/strategy/kbs_strategy.rb:120`
+    [`lib/sqa/strategy/kbs_strategy.rb:120`](https://github.com/madbomber/sqa/blob/main/lib/sqa/strategy/kbs_strategy.rb#L120)
 
 ---
 

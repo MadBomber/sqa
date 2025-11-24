@@ -1,7 +1,7 @@
 # 📦 SQA::StrategyGenerator
 
 !!! abstract "Source Information"
-    **Defined in:** `lib/sqa/strategy_generator.rb:36`
+    **Defined in:** [`lib/sqa/strategy_generator.rb:36`](https://github.com/madbomber/sqa/blob/main/lib/sqa/strategy_generator.rb#L36)
     
     **Inherits from:** `Object`
 
@@ -15,7 +15,7 @@ Returns the value of attribute stock.
 
 
 ??? info "Source Location"
-    `lib/sqa/strategy_generator.rb:140`
+    [`lib/sqa/strategy_generator.rb:140`](https://github.com/madbomber/sqa/blob/main/lib/sqa/strategy_generator.rb#L140)
 
 ---
 
@@ -27,7 +27,7 @@ Returns the value of attribute profitable_points.
 
 
 ??? info "Source Location"
-    `lib/sqa/strategy_generator.rb:140`
+    [`lib/sqa/strategy_generator.rb:140`](https://github.com/madbomber/sqa/blob/main/lib/sqa/strategy_generator.rb#L140)
 
 ---
 
@@ -39,7 +39,7 @@ Returns the value of attribute patterns.
 
 
 ??? info "Source Location"
-    `lib/sqa/strategy_generator.rb:140`
+    [`lib/sqa/strategy_generator.rb:140`](https://github.com/madbomber/sqa/blob/main/lib/sqa/strategy_generator.rb#L140)
 
 ---
 
@@ -51,7 +51,7 @@ Returns the value of attribute min_gain_percent.
 
 
 ??? info "Source Location"
-    `lib/sqa/strategy_generator.rb:140`
+    [`lib/sqa/strategy_generator.rb:140`](https://github.com/madbomber/sqa/blob/main/lib/sqa/strategy_generator.rb#L140)
 
 ---
 
@@ -63,7 +63,7 @@ Returns the value of attribute fpop.
 
 
 ??? info "Source Location"
-    `lib/sqa/strategy_generator.rb:140`
+    [`lib/sqa/strategy_generator.rb:140`](https://github.com/madbomber/sqa/blob/main/lib/sqa/strategy_generator.rb#L140)
 
 ---
 
@@ -75,7 +75,7 @@ Returns the value of attribute min_loss_percent.
 
 
 ??? info "Source Location"
-    `lib/sqa/strategy_generator.rb:140`
+    [`lib/sqa/strategy_generator.rb:140`](https://github.com/madbomber/sqa/blob/main/lib/sqa/strategy_generator.rb#L140)
 
 ---
 
@@ -87,7 +87,7 @@ Returns the value of attribute indicators_config.
 
 
 ??? info "Source Location"
-    `lib/sqa/strategy_generator.rb:140`
+    [`lib/sqa/strategy_generator.rb:140`](https://github.com/madbomber/sqa/blob/main/lib/sqa/strategy_generator.rb#L140)
 
 ---
 
@@ -99,7 +99,7 @@ Returns the value of attribute inflection_window.
 
 
 ??? info "Source Location"
-    `lib/sqa/strategy_generator.rb:140`
+    [`lib/sqa/strategy_generator.rb:140`](https://github.com/madbomber/sqa/blob/main/lib/sqa/strategy_generator.rb#L140)
 
 ---
 
@@ -111,7 +111,7 @@ Returns the value of attribute max_fpl_risk.
 
 
 ??? info "Source Location"
-    `lib/sqa/strategy_generator.rb:140`
+    [`lib/sqa/strategy_generator.rb:140`](https://github.com/madbomber/sqa/blob/main/lib/sqa/strategy_generator.rb#L140)
 
 ---
 
@@ -123,7 +123,7 @@ Returns the value of attribute required_fpl_directions.
 
 
 ??? info "Source Location"
-    `lib/sqa/strategy_generator.rb:140`
+    [`lib/sqa/strategy_generator.rb:140`](https://github.com/madbomber/sqa/blob/main/lib/sqa/strategy_generator.rb#L140)
 
 ---
 
@@ -139,7 +139,7 @@ Returns the value of attribute required_fpl_directions.
     a new instance of StrategyGenerator
 
 ??? info "Source Location"
-    `lib/sqa/strategy_generator.rb:144`
+    [`lib/sqa/strategy_generator.rb:144`](https://github.com/madbomber/sqa/blob/main/lib/sqa/strategy_generator.rb#L144)
 
 ---
 
@@ -151,7 +151,7 @@ Main entry point: Discover patterns in historical data
 
 
 ??? info "Source Location"
-    `lib/sqa/strategy_generator.rb:168`
+    [`lib/sqa/strategy_generator.rb:168`](https://github.com/madbomber/sqa/blob/main/lib/sqa/strategy_generator.rb#L168)
 
 ---
 
@@ -163,7 +163,7 @@ Generate a trading strategy from discovered patterns
 
 
 ??? info "Source Location"
-    `lib/sqa/strategy_generator.rb:196`
+    [`lib/sqa/strategy_generator.rb:196`](https://github.com/madbomber/sqa/blob/main/lib/sqa/strategy_generator.rb#L196)
 
 ---
 
@@ -175,7 +175,7 @@ Generate multiple strategies from top N patterns
 
 
 ??? info "Source Location"
-    `lib/sqa/strategy_generator.rb:214`
+    [`lib/sqa/strategy_generator.rb:214`](https://github.com/madbomber/sqa/blob/main/lib/sqa/strategy_generator.rb#L214)
 
 ---
 
@@ -187,7 +187,7 @@ Print discovered patterns
 
 
 ??? info "Source Location"
-    `lib/sqa/strategy_generator.rb:221`
+    [`lib/sqa/strategy_generator.rb:221`](https://github.com/madbomber/sqa/blob/main/lib/sqa/strategy_generator.rb#L221)
 
 ---
 
@@ -199,7 +199,7 @@ Export patterns to CSV
 
 
 ??? info "Source Location"
-    `lib/sqa/strategy_generator.rb:241`
+    [`lib/sqa/strategy_generator.rb:241`](https://github.com/madbomber/sqa/blob/main/lib/sqa/strategy_generator.rb#L241)
 
 ---
 
@@ -226,7 +226,7 @@ to prevent overfitting. Only keeps patterns that work out-of-sample.
     Validation results with patterns and performance
 
 ??? info "Source Location"
-    `lib/sqa/strategy_generator.rb:273`
+    [`lib/sqa/strategy_generator.rb:273`](https://github.com/madbomber/sqa/blob/main/lib/sqa/strategy_generator.rb#L273)
 
 ---
 
@@ -250,7 +250,7 @@ Discover patterns with context (regime, seasonal, sector)
     Patterns with context metadata
 
 ??? info "Source Location"
-    `lib/sqa/strategy_generator.rb:379`
+    [`lib/sqa/strategy_generator.rb:379`](https://github.com/madbomber/sqa/blob/main/lib/sqa/strategy_generator.rb#L379)
 
 ---
 

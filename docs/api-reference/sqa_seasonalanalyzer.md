@@ -1,7 +1,7 @@
 # 🔧 SQA::SeasonalAnalyzer
 
 !!! abstract "Source Information"
-    **Defined in:** `lib/sqa/seasonal_analyzer.rb:18`
+    **Defined in:** [`lib/sqa/seasonal_analyzer.rb:18`](https://github.com/madbomber/sqa/blob/main/lib/sqa/seasonal_analyzer.rb#L18)
 
 ## 🏭 Class Methods
 
@@ -23,7 +23,7 @@ Analyze seasonal performance patterns
     Seasonal performance metadata
 
 ??? info "Source Location"
-    `lib/sqa/seasonal_analyzer.rb:25`
+    [`lib/sqa/seasonal_analyzer.rb:25`](https://github.com/madbomber/sqa/blob/main/lib/sqa/seasonal_analyzer.rb#L25)
 
 ---
 
@@ -46,7 +46,7 @@ Filter data by calendar months
     Filtered data
 
 ??? info "Source Location"
-    `lib/sqa/seasonal_analyzer.rb:56`
+    [`lib/sqa/seasonal_analyzer.rb:56`](https://github.com/madbomber/sqa/blob/main/lib/sqa/seasonal_analyzer.rb#L56)
 
 ---
 
@@ -69,7 +69,7 @@ Filter data by quarters
     Filtered data
 
 ??? info "Source Location"
-    `lib/sqa/seasonal_analyzer.rb:82`
+    [`lib/sqa/seasonal_analyzer.rb:82`](https://github.com/madbomber/sqa/blob/main/lib/sqa/seasonal_analyzer.rb#L82)
 
 ---
 
@@ -91,7 +91,7 @@ Detect if stock has seasonal pattern
     True if significant seasonal pattern exists
 
 ??? info "Source Location"
-    `lib/sqa/seasonal_analyzer.rb:99`
+    [`lib/sqa/seasonal_analyzer.rb:99`](https://github.com/madbomber/sqa/blob/main/lib/sqa/seasonal_analyzer.rb#L99)
 
 ---
 
@@ -113,7 +113,7 @@ Get seasonal context for a specific date
     Seasonal context
 
 ??? info "Source Location"
-    `lib/sqa/seasonal_analyzer.rb:116`
+    [`lib/sqa/seasonal_analyzer.rb:116`](https://github.com/madbomber/sqa/blob/main/lib/sqa/seasonal_analyzer.rb#L116)
 
 ---
 

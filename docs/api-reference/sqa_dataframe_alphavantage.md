@@ -1,7 +1,7 @@
 # 📦 SQA::DataFrame::AlphaVantage
 
 !!! abstract "Source Information"
-    **Defined in:** `lib/sqa/data_frame/alpha_vantage.rb:9`
+    **Defined in:** [`lib/sqa/data_frame/alpha_vantage.rb:9`](https://github.com/madbomber/sqa/blob/main/lib/sqa/data_frame/alpha_vantage.rb#L9)
     
     **Inherits from:** `Object`
 
@@ -22,7 +22,7 @@ Note: Alpha Vantage returns data newest-first, but we sort ascending for TA-Lib 
 
 
 ??? info "Source Location"
-    `lib/sqa/data_frame/alpha_vantage.rb:46`
+    [`lib/sqa/data_frame/alpha_vantage.rb:46`](https://github.com/madbomber/sqa/blob/main/lib/sqa/data_frame/alpha_vantage.rb#L46)
 
 ---
 

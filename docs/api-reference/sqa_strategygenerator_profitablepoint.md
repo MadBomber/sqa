@@ -4,7 +4,7 @@
     Represents a profitable trade opportunity discovered in historical data
 
 !!! abstract "Source Information"
-    **Defined in:** `lib/sqa/strategy_generator.rb:38`
+    **Defined in:** [`lib/sqa/strategy_generator.rb:38`](https://github.com/madbomber/sqa/blob/main/lib/sqa/strategy_generator.rb#L38)
     
     **Inherits from:** `Object`
 
@@ -18,7 +18,7 @@ Returns the value of attribute entry_index.
 
 
 ??? info "Source Location"
-    `lib/sqa/strategy_generator.rb:39`
+    [`lib/sqa/strategy_generator.rb:39`](https://github.com/madbomber/sqa/blob/main/lib/sqa/strategy_generator.rb#L39)
 
 ---
 
@@ -34,7 +34,7 @@ Sets the attribute entry_index
 
 
 ??? info "Source Location"
-    `lib/sqa/strategy_generator.rb:39`
+    [`lib/sqa/strategy_generator.rb:39`](https://github.com/madbomber/sqa/blob/main/lib/sqa/strategy_generator.rb#L39)
 
 ---
 
@@ -46,7 +46,7 @@ Returns the value of attribute entry_price.
 
 
 ??? info "Source Location"
-    `lib/sqa/strategy_generator.rb:39`
+    [`lib/sqa/strategy_generator.rb:39`](https://github.com/madbomber/sqa/blob/main/lib/sqa/strategy_generator.rb#L39)
 
 ---
 
@@ -62,7 +62,7 @@ Sets the attribute entry_price
 
 
 ??? info "Source Location"
-    `lib/sqa/strategy_generator.rb:39`
+    [`lib/sqa/strategy_generator.rb:39`](https://github.com/madbomber/sqa/blob/main/lib/sqa/strategy_generator.rb#L39)
 
 ---
 
@@ -74,7 +74,7 @@ Returns the value of attribute exit_index.
 
 
 ??? info "Source Location"
-    `lib/sqa/strategy_generator.rb:39`
+    [`lib/sqa/strategy_generator.rb:39`](https://github.com/madbomber/sqa/blob/main/lib/sqa/strategy_generator.rb#L39)
 
 ---
 
@@ -90,7 +90,7 @@ Sets the attribute exit_index
 
 
 ??? info "Source Location"
-    `lib/sqa/strategy_generator.rb:39`
+    [`lib/sqa/strategy_generator.rb:39`](https://github.com/madbomber/sqa/blob/main/lib/sqa/strategy_generator.rb#L39)
 
 ---
 
@@ -102,7 +102,7 @@ Returns the value of attribute exit_price.
 
 
 ??? info "Source Location"
-    `lib/sqa/strategy_generator.rb:39`
+    [`lib/sqa/strategy_generator.rb:39`](https://github.com/madbomber/sqa/blob/main/lib/sqa/strategy_generator.rb#L39)
 
 ---
 
@@ -118,7 +118,7 @@ Sets the attribute exit_price
 
 
 ??? info "Source Location"
-    `lib/sqa/strategy_generator.rb:39`
+    [`lib/sqa/strategy_generator.rb:39`](https://github.com/madbomber/sqa/blob/main/lib/sqa/strategy_generator.rb#L39)
 
 ---
 
@@ -130,7 +130,7 @@ Returns the value of attribute gain_percent.
 
 
 ??? info "Source Location"
-    `lib/sqa/strategy_generator.rb:39`
+    [`lib/sqa/strategy_generator.rb:39`](https://github.com/madbomber/sqa/blob/main/lib/sqa/strategy_generator.rb#L39)
 
 ---
 
@@ -146,7 +146,7 @@ Sets the attribute gain_percent
 
 
 ??? info "Source Location"
-    `lib/sqa/strategy_generator.rb:39`
+    [`lib/sqa/strategy_generator.rb:39`](https://github.com/madbomber/sqa/blob/main/lib/sqa/strategy_generator.rb#L39)
 
 ---
 
@@ -158,7 +158,7 @@ Returns the value of attribute holding_days.
 
 
 ??? info "Source Location"
-    `lib/sqa/strategy_generator.rb:39`
+    [`lib/sqa/strategy_generator.rb:39`](https://github.com/madbomber/sqa/blob/main/lib/sqa/strategy_generator.rb#L39)
 
 ---
 
@@ -174,7 +174,7 @@ Sets the attribute holding_days
 
 
 ??? info "Source Location"
-    `lib/sqa/strategy_generator.rb:39`
+    [`lib/sqa/strategy_generator.rb:39`](https://github.com/madbomber/sqa/blob/main/lib/sqa/strategy_generator.rb#L39)
 
 ---
 
@@ -186,7 +186,7 @@ Returns the value of attribute indicators.
 
 
 ??? info "Source Location"
-    `lib/sqa/strategy_generator.rb:39`
+    [`lib/sqa/strategy_generator.rb:39`](https://github.com/madbomber/sqa/blob/main/lib/sqa/strategy_generator.rb#L39)
 
 ---
 
@@ -202,7 +202,7 @@ Sets the attribute indicators
 
 
 ??? info "Source Location"
-    `lib/sqa/strategy_generator.rb:39`
+    [`lib/sqa/strategy_generator.rb:39`](https://github.com/madbomber/sqa/blob/main/lib/sqa/strategy_generator.rb#L39)
 
 ---
 
@@ -214,7 +214,7 @@ Returns the value of attribute fpl_min_delta.
 
 
 ??? info "Source Location"
-    `lib/sqa/strategy_generator.rb:39`
+    [`lib/sqa/strategy_generator.rb:39`](https://github.com/madbomber/sqa/blob/main/lib/sqa/strategy_generator.rb#L39)
 
 ---
 
@@ -230,7 +230,7 @@ Sets the attribute fpl_min_delta
 
 
 ??? info "Source Location"
-    `lib/sqa/strategy_generator.rb:39`
+    [`lib/sqa/strategy_generator.rb:39`](https://github.com/madbomber/sqa/blob/main/lib/sqa/strategy_generator.rb#L39)
 
 ---
 
@@ -242,7 +242,7 @@ Returns the value of attribute fpl_max_delta.
 
 
 ??? info "Source Location"
-    `lib/sqa/strategy_generator.rb:39`
+    [`lib/sqa/strategy_generator.rb:39`](https://github.com/madbomber/sqa/blob/main/lib/sqa/strategy_generator.rb#L39)
 
 ---
 
@@ -258,7 +258,7 @@ Sets the attribute fpl_max_delta
 
 
 ??? info "Source Location"
-    `lib/sqa/strategy_generator.rb:39`
+    [`lib/sqa/strategy_generator.rb:39`](https://github.com/madbomber/sqa/blob/main/lib/sqa/strategy_generator.rb#L39)
 
 ---
 
@@ -270,7 +270,7 @@ Returns the value of attribute fpl_risk.
 
 
 ??? info "Source Location"
-    `lib/sqa/strategy_generator.rb:39`
+    [`lib/sqa/strategy_generator.rb:39`](https://github.com/madbomber/sqa/blob/main/lib/sqa/strategy_generator.rb#L39)
 
 ---
 
@@ -286,7 +286,7 @@ Sets the attribute fpl_risk
 
 
 ??? info "Source Location"
-    `lib/sqa/strategy_generator.rb:39`
+    [`lib/sqa/strategy_generator.rb:39`](https://github.com/madbomber/sqa/blob/main/lib/sqa/strategy_generator.rb#L39)
 
 ---
 
@@ -298,7 +298,7 @@ Returns the value of attribute fpl_direction.
 
 
 ??? info "Source Location"
-    `lib/sqa/strategy_generator.rb:39`
+    [`lib/sqa/strategy_generator.rb:39`](https://github.com/madbomber/sqa/blob/main/lib/sqa/strategy_generator.rb#L39)
 
 ---
 
@@ -314,7 +314,7 @@ Sets the attribute fpl_direction
 
 
 ??? info "Source Location"
-    `lib/sqa/strategy_generator.rb:39`
+    [`lib/sqa/strategy_generator.rb:39`](https://github.com/madbomber/sqa/blob/main/lib/sqa/strategy_generator.rb#L39)
 
 ---
 
@@ -326,7 +326,7 @@ Returns the value of attribute fpl_magnitude.
 
 
 ??? info "Source Location"
-    `lib/sqa/strategy_generator.rb:39`
+    [`lib/sqa/strategy_generator.rb:39`](https://github.com/madbomber/sqa/blob/main/lib/sqa/strategy_generator.rb#L39)
 
 ---
 
@@ -342,7 +342,7 @@ Sets the attribute fpl_magnitude
 
 
 ??? info "Source Location"
-    `lib/sqa/strategy_generator.rb:39`
+    [`lib/sqa/strategy_generator.rb:39`](https://github.com/madbomber/sqa/blob/main/lib/sqa/strategy_generator.rb#L39)
 
 ---
 
@@ -358,7 +358,7 @@ Sets the attribute fpl_magnitude
     a new instance of ProfitablePoint
 
 ??? info "Source Location"
-    `lib/sqa/strategy_generator.rb:43`
+    [`lib/sqa/strategy_generator.rb:43`](https://github.com/madbomber/sqa/blob/main/lib/sqa/strategy_generator.rb#L43)
 
 ---
 
@@ -368,7 +368,7 @@ Sets the attribute fpl_magnitude
 
 
 ??? info "Source Location"
-    `lib/sqa/strategy_generator.rb:62`
+    [`lib/sqa/strategy_generator.rb:62`](https://github.com/madbomber/sqa/blob/main/lib/sqa/strategy_generator.rb#L62)
 
 ---
 

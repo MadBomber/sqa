@@ -11,7 +11,7 @@
     - Stop loss calculations
 
 !!! abstract "Source Information"
-    **Defined in:** `lib/sqa/risk_manager.rb:29`
+    **Defined in:** [`lib/sqa/risk_manager.rb:29`](https://github.com/madbomber/sqa/blob/main/lib/sqa/risk_manager.rb#L29)
     
     **Inherits from:** `Object`
 
@@ -47,7 +47,7 @@ at a specified confidence level.
     # => -0.02 (2% maximum expected loss at 95% confidence)
     ```
 ??? info "Source Location"
-    `lib/sqa/risk_manager.rb:48`
+    [`lib/sqa/risk_manager.rb:48`](https://github.com/madbomber/sqa/blob/main/lib/sqa/risk_manager.rb#L48)
 
 ---
 
@@ -78,7 +78,7 @@ It provides a more conservative risk measure than VaR.
     # => -0.025 (2.5% expected loss in worst 5% of cases)
     ```
 ??? info "Source Location"
-    `lib/sqa/risk_manager.rb:77`
+    [`lib/sqa/risk_manager.rb:77`](https://github.com/madbomber/sqa/blob/main/lib/sqa/risk_manager.rb#L77)
 
 ---
 
@@ -124,7 +124,7 @@ where:
     )
     ```
 ??? info "Source Location"
-    `lib/sqa/risk_manager.rb:116`
+    [`lib/sqa/risk_manager.rb:116`](https://github.com/madbomber/sqa/blob/main/lib/sqa/risk_manager.rb#L116)
 
 ---
 
@@ -155,7 +155,7 @@ Simple and conservative approach.
     # => 200.0 (risk $200 per trade)
     ```
 ??? info "Source Location"
-    `lib/sqa/risk_manager.rb:146`
+    [`lib/sqa/risk_manager.rb:146`](https://github.com/madbomber/sqa/blob/main/lib/sqa/risk_manager.rb#L146)
 
 ---
 
@@ -192,7 +192,7 @@ Higher volatility = smaller position size.
     )
     ```
 ??? info "Source Location"
-    `lib/sqa/risk_manager.rb:170`
+    [`lib/sqa/risk_manager.rb:170`](https://github.com/madbomber/sqa/blob/main/lib/sqa/risk_manager.rb#L170)
 
 ---
 
@@ -227,7 +227,7 @@ Calculate stop loss price based on ATR (Average True Range)
     # => 143.0 (stop at current - 2*ATR)
     ```
 ??? info "Source Location"
-    `lib/sqa/risk_manager.rb:204`
+    [`lib/sqa/risk_manager.rb:204`](https://github.com/madbomber/sqa/blob/main/lib/sqa/risk_manager.rb#L204)
 
 ---
 
@@ -256,7 +256,7 @@ Drawdown is the peak-to-trough decline in portfolio value.
     # => { max_drawdown: -0.136, peak_idx: 1, trough_idx: 3 }
     ```
 ??? info "Source Location"
-    `lib/sqa/risk_manager.rb:224`
+    [`lib/sqa/risk_manager.rb:224`](https://github.com/madbomber/sqa/blob/main/lib/sqa/risk_manager.rb#L224)
 
 ---
 
@@ -286,7 +286,7 @@ Measures risk-adjusted return (excess return per unit of risk).
     sharpe = SQA::RiskManager.sharpe_ratio(returns, risk_free_rate: 0.02)
     ```
 ??? info "Source Location"
-    `lib/sqa/risk_manager.rb:269`
+    [`lib/sqa/risk_manager.rb:269`](https://github.com/madbomber/sqa/blob/main/lib/sqa/risk_manager.rb#L269)
 
 ---
 
@@ -316,7 +316,7 @@ Like Sharpe ratio but only penalizes downside volatility.
     sortino = SQA::RiskManager.sortino_ratio(returns)
     ```
 ??? info "Source Location"
-    `lib/sqa/risk_manager.rb:294`
+    [`lib/sqa/risk_manager.rb:294`](https://github.com/madbomber/sqa/blob/main/lib/sqa/risk_manager.rb#L294)
 
 ---
 
@@ -345,7 +345,7 @@ Ratio of annualized return to maximum drawdown.
     calmar = SQA::RiskManager.calmar_ratio(returns)
     ```
 ??? info "Source Location"
-    `lib/sqa/risk_manager.rb:325`
+    [`lib/sqa/risk_manager.rb:325`](https://github.com/madbomber/sqa/blob/main/lib/sqa/risk_manager.rb#L325)
 
 ---
 
@@ -380,7 +380,7 @@ Monte Carlo simulation for portfolio value
     puts "95th percentile: $#{results[:percentile_95]}"
     ```
 ??? info "Source Location"
-    `lib/sqa/risk_manager.rb:360`
+    [`lib/sqa/risk_manager.rb:360`](https://github.com/madbomber/sqa/blob/main/lib/sqa/risk_manager.rb#L360)
 
 ---
 

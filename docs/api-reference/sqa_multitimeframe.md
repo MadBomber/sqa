@@ -14,7 +14,7 @@
     - Use lower timeframe for entry timing
 
 !!! abstract "Source Information"
-    **Defined in:** `lib/sqa/multi_timeframe.rb:23`
+    **Defined in:** [`lib/sqa/multi_timeframe.rb:23`](https://github.com/madbomber/sqa/blob/main/lib/sqa/multi_timeframe.rb#L23)
     
     **Inherits from:** `Object`
 
@@ -28,7 +28,7 @@ Returns the value of attribute stock.
 
 
 ??? info "Source Location"
-    `lib/sqa/multi_timeframe.rb:24`
+    [`lib/sqa/multi_timeframe.rb:24`](https://github.com/madbomber/sqa/blob/main/lib/sqa/multi_timeframe.rb#L24)
 
 ---
 
@@ -40,7 +40,7 @@ Returns the value of attribute timeframes.
 
 
 ??? info "Source Location"
-    `lib/sqa/multi_timeframe.rb:24`
+    [`lib/sqa/multi_timeframe.rb:24`](https://github.com/madbomber/sqa/blob/main/lib/sqa/multi_timeframe.rb#L24)
 
 ---
 
@@ -62,7 +62,7 @@ Initialize multi-timeframe analyzer
     a new instance of MultiTimeframe
 
 ??? info "Source Location"
-    `lib/sqa/multi_timeframe.rb:31`
+    [`lib/sqa/multi_timeframe.rb:31`](https://github.com/madbomber/sqa/blob/main/lib/sqa/multi_timeframe.rb#L31)
 
 ---
 
@@ -74,7 +74,7 @@ Convert daily data to weekly and monthly
 
 
 ??? info "Source Location"
-    `lib/sqa/multi_timeframe.rb:42`
+    [`lib/sqa/multi_timeframe.rb:42`](https://github.com/madbomber/sqa/blob/main/lib/sqa/multi_timeframe.rb#L42)
 
 ---
 
@@ -96,7 +96,7 @@ Check trend alignment across timeframes
     Trend direction for each timeframe
 
 ??? info "Source Location"
-    `lib/sqa/multi_timeframe.rb:56`
+    [`lib/sqa/multi_timeframe.rb:56`](https://github.com/madbomber/sqa/blob/main/lib/sqa/multi_timeframe.rb#L56)
 
 ---
 
@@ -122,7 +122,7 @@ Uses higher timeframe for trend, lower for timing.
     :buy, :sell, or :hold
 
 ??? info "Source Location"
-    `lib/sqa/multi_timeframe.rb:102`
+    [`lib/sqa/multi_timeframe.rb:102`](https://github.com/madbomber/sqa/blob/main/lib/sqa/multi_timeframe.rb#L102)
 
 ---
 
@@ -146,7 +146,7 @@ Levels that appear on multiple timeframes are stronger.
     Support and resistance levels
 
 ??? info "Source Location"
-    `lib/sqa/multi_timeframe.rb:138`
+    [`lib/sqa/multi_timeframe.rb:138`](https://github.com/madbomber/sqa/blob/main/lib/sqa/multi_timeframe.rb#L138)
 
 ---
 
@@ -169,7 +169,7 @@ Calculate indicators for each timeframe
     Indicator values for each timeframe
 
 ??? info "Source Location"
-    `lib/sqa/multi_timeframe.rb:167`
+    [`lib/sqa/multi_timeframe.rb:167`](https://github.com/madbomber/sqa/blob/main/lib/sqa/multi_timeframe.rb#L167)
 
 ---
 
@@ -189,7 +189,7 @@ Divergence occurs when price and indicator move in opposite directions.
     Divergence information
 
 ??? info "Source Location"
-    `lib/sqa/multi_timeframe.rb:197`
+    [`lib/sqa/multi_timeframe.rb:197`](https://github.com/madbomber/sqa/blob/main/lib/sqa/multi_timeframe.rb#L197)
 
 ---
 
@@ -211,7 +211,7 @@ Check if timeframes confirm each other
     Confirmation status
 
 ??? info "Source Location"
-    `lib/sqa/multi_timeframe.rb:228`
+    [`lib/sqa/multi_timeframe.rb:228`](https://github.com/madbomber/sqa/blob/main/lib/sqa/multi_timeframe.rb#L228)
 
 ---
 

@@ -10,6 +10,10 @@ require 'fileutils'
 # Output directory for generated markdown
 OUTPUT_DIR = 'docs/api-reference'
 
+# GitHub repository URL for source links
+GITHUB_REPO = 'https://github.com/madbomber/sqa'
+GITHUB_BRANCH = 'main'
+
 # Clean and create output directory
 FileUtils.rm_rf(OUTPUT_DIR)
 FileUtils.mkdir_p(OUTPUT_DIR)
@@ -21,6 +25,11 @@ YARD.parse('lib/**/*.rb')
 # Helper to sanitize filenames
 def sanitize_filename(name)
   name.gsub('::', '_').gsub(/[^\w\-]/, '_').downcase
+end
+
+# Helper to create GitHub source link
+def github_source_link(file, line)
+  "[`#{file}:#{line}`](#{GITHUB_REPO}/blob/#{GITHUB_BRANCH}/#{file}#L#{line})"
 end
 
 # Helper to format method signature
@@ -102,7 +111,7 @@ def generate_class_doc(code_object)
 
     # Source info in an abstract box
     f.puts "!!! abstract \"Source Information\""
-    f.puts "    **Defined in:** `#{code_object.file}:#{code_object.line}`"
+    f.puts "    **Defined in:** #{github_source_link(code_object.file, code_object.line)}"
     if code_object.type == :class && code_object.superclass
       f.puts "    "
       f.puts "    **Inherits from:** `#{code_object.superclass}`"
@@ -156,7 +165,7 @@ def generate_class_doc(code_object)
         f.puts format_examples(method)
 
         f.puts "??? info \"Source Location\""
-        f.puts "    `#{method.file}:#{method.line}`"
+        f.puts "    #{github_source_link(method.file, method.line)}"
         f.puts
         f.puts "---"
         f.puts
@@ -187,7 +196,7 @@ def generate_class_doc(code_object)
         f.puts format_examples(method)
 
         f.puts "??? info \"Source Location\""
-        f.puts "    `#{method.file}:#{method.line}`"
+        f.puts "    #{github_source_link(method.file, method.line)}"
         f.puts
         f.puts "---"
         f.puts

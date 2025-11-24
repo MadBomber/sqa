@@ -4,7 +4,7 @@
     Represents a discovered indicator pattern
 
 !!! abstract "Source Information"
-    **Defined in:** `lib/sqa/strategy_generator.rb:69`
+    **Defined in:** [`lib/sqa/strategy_generator.rb:69`](https://github.com/madbomber/sqa/blob/main/lib/sqa/strategy_generator.rb#L69)
     
     **Inherits from:** `Object`
 
@@ -18,7 +18,7 @@ Returns the value of attribute conditions.
 
 
 ??? info "Source Location"
-    `lib/sqa/strategy_generator.rb:70`
+    [`lib/sqa/strategy_generator.rb:70`](https://github.com/madbomber/sqa/blob/main/lib/sqa/strategy_generator.rb#L70)
 
 ---
 
@@ -34,7 +34,7 @@ Sets the attribute conditions
 
 
 ??? info "Source Location"
-    `lib/sqa/strategy_generator.rb:70`
+    [`lib/sqa/strategy_generator.rb:70`](https://github.com/madbomber/sqa/blob/main/lib/sqa/strategy_generator.rb#L70)
 
 ---
 
@@ -46,7 +46,7 @@ Returns the value of attribute frequency.
 
 
 ??? info "Source Location"
-    `lib/sqa/strategy_generator.rb:70`
+    [`lib/sqa/strategy_generator.rb:70`](https://github.com/madbomber/sqa/blob/main/lib/sqa/strategy_generator.rb#L70)
 
 ---
 
@@ -62,7 +62,7 @@ Sets the attribute frequency
 
 
 ??? info "Source Location"
-    `lib/sqa/strategy_generator.rb:70`
+    [`lib/sqa/strategy_generator.rb:70`](https://github.com/madbomber/sqa/blob/main/lib/sqa/strategy_generator.rb#L70)
 
 ---
 
@@ -74,7 +74,7 @@ Returns the value of attribute avg_gain.
 
 
 ??? info "Source Location"
-    `lib/sqa/strategy_generator.rb:70`
+    [`lib/sqa/strategy_generator.rb:70`](https://github.com/madbomber/sqa/blob/main/lib/sqa/strategy_generator.rb#L70)
 
 ---
 
@@ -90,7 +90,7 @@ Sets the attribute avg_gain
 
 
 ??? info "Source Location"
-    `lib/sqa/strategy_generator.rb:70`
+    [`lib/sqa/strategy_generator.rb:70`](https://github.com/madbomber/sqa/blob/main/lib/sqa/strategy_generator.rb#L70)
 
 ---
 
@@ -102,7 +102,7 @@ Returns the value of attribute avg_holding_days.
 
 
 ??? info "Source Location"
-    `lib/sqa/strategy_generator.rb:70`
+    [`lib/sqa/strategy_generator.rb:70`](https://github.com/madbomber/sqa/blob/main/lib/sqa/strategy_generator.rb#L70)
 
 ---
 
@@ -118,7 +118,7 @@ Sets the attribute avg_holding_days
 
 
 ??? info "Source Location"
-    `lib/sqa/strategy_generator.rb:70`
+    [`lib/sqa/strategy_generator.rb:70`](https://github.com/madbomber/sqa/blob/main/lib/sqa/strategy_generator.rb#L70)
 
 ---
 
@@ -130,7 +130,7 @@ Returns the value of attribute success_rate.
 
 
 ??? info "Source Location"
-    `lib/sqa/strategy_generator.rb:70`
+    [`lib/sqa/strategy_generator.rb:70`](https://github.com/madbomber/sqa/blob/main/lib/sqa/strategy_generator.rb#L70)
 
 ---
 
@@ -146,7 +146,7 @@ Sets the attribute success_rate
 
 
 ??? info "Source Location"
-    `lib/sqa/strategy_generator.rb:70`
+    [`lib/sqa/strategy_generator.rb:70`](https://github.com/madbomber/sqa/blob/main/lib/sqa/strategy_generator.rb#L70)
 
 ---
 
@@ -158,7 +158,7 @@ Returns the value of attribute occurrences.
 
 
 ??? info "Source Location"
-    `lib/sqa/strategy_generator.rb:70`
+    [`lib/sqa/strategy_generator.rb:70`](https://github.com/madbomber/sqa/blob/main/lib/sqa/strategy_generator.rb#L70)
 
 ---
 
@@ -174,7 +174,7 @@ Sets the attribute occurrences
 
 
 ??? info "Source Location"
-    `lib/sqa/strategy_generator.rb:70`
+    [`lib/sqa/strategy_generator.rb:70`](https://github.com/madbomber/sqa/blob/main/lib/sqa/strategy_generator.rb#L70)
 
 ---
 
@@ -186,7 +186,7 @@ Returns the value of attribute context.
 
 
 ??? info "Source Location"
-    `lib/sqa/strategy_generator.rb:70`
+    [`lib/sqa/strategy_generator.rb:70`](https://github.com/madbomber/sqa/blob/main/lib/sqa/strategy_generator.rb#L70)
 
 ---
 
@@ -202,7 +202,7 @@ Sets the attribute context
 
 
 ??? info "Source Location"
-    `lib/sqa/strategy_generator.rb:70`
+    [`lib/sqa/strategy_generator.rb:70`](https://github.com/madbomber/sqa/blob/main/lib/sqa/strategy_generator.rb#L70)
 
 ---
 
@@ -218,7 +218,7 @@ Sets the attribute context
     a new instance of Pattern
 
 ??? info "Source Location"
-    `lib/sqa/strategy_generator.rb:74`
+    [`lib/sqa/strategy_generator.rb:74`](https://github.com/madbomber/sqa/blob/main/lib/sqa/strategy_generator.rb#L74)
 
 ---
 
@@ -228,7 +228,7 @@ Sets the attribute context
 
 
 ??? info "Source Location"
-    `lib/sqa/strategy_generator.rb:84`
+    [`lib/sqa/strategy_generator.rb:84`](https://github.com/madbomber/sqa/blob/main/lib/sqa/strategy_generator.rb#L84)
 
 ---
 

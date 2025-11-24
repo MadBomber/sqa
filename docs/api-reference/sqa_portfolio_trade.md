@@ -4,7 +4,7 @@
     Represents a single trade
 
 !!! abstract "Source Information"
-    **Defined in:** `lib/sqa/portfolio.rb:27`
+    **Defined in:** [`lib/sqa/portfolio.rb:27`](https://github.com/madbomber/sqa/blob/main/lib/sqa/portfolio.rb#L27)
     
     **Inherits from:** `Struct`
 
@@ -28,7 +28,7 @@ Sets the attribute ticker
     the newly set value
 
 ??? info "Source Location"
-    `lib/sqa/portfolio.rb:27`
+    [`lib/sqa/portfolio.rb:27`](https://github.com/madbomber/sqa/blob/main/lib/sqa/portfolio.rb#L27)
 
 ---
 
@@ -46,7 +46,7 @@ Returns the value of attribute ticker
     the current value of ticker
 
 ??? info "Source Location"
-    `lib/sqa/portfolio.rb:27`
+    [`lib/sqa/portfolio.rb:27`](https://github.com/madbomber/sqa/blob/main/lib/sqa/portfolio.rb#L27)
 
 ---
 
@@ -68,7 +68,7 @@ Sets the attribute action
     the newly set value
 
 ??? info "Source Location"
-    `lib/sqa/portfolio.rb:27`
+    [`lib/sqa/portfolio.rb:27`](https://github.com/madbomber/sqa/blob/main/lib/sqa/portfolio.rb#L27)
 
 ---
 
@@ -86,7 +86,7 @@ Returns the value of attribute action
     the current value of action
 
 ??? info "Source Location"
-    `lib/sqa/portfolio.rb:27`
+    [`lib/sqa/portfolio.rb:27`](https://github.com/madbomber/sqa/blob/main/lib/sqa/portfolio.rb#L27)
 
 ---
 
@@ -108,7 +108,7 @@ Sets the attribute shares
     the newly set value
 
 ??? info "Source Location"
-    `lib/sqa/portfolio.rb:27`
+    [`lib/sqa/portfolio.rb:27`](https://github.com/madbomber/sqa/blob/main/lib/sqa/portfolio.rb#L27)
 
 ---
 
@@ -126,7 +126,7 @@ Returns the value of attribute shares
     the current value of shares
 
 ??? info "Source Location"
-    `lib/sqa/portfolio.rb:27`
+    [`lib/sqa/portfolio.rb:27`](https://github.com/madbomber/sqa/blob/main/lib/sqa/portfolio.rb#L27)
 
 ---
 
@@ -148,7 +148,7 @@ Sets the attribute price
     the newly set value
 
 ??? info "Source Location"
-    `lib/sqa/portfolio.rb:27`
+    [`lib/sqa/portfolio.rb:27`](https://github.com/madbomber/sqa/blob/main/lib/sqa/portfolio.rb#L27)
 
 ---
 
@@ -166,7 +166,7 @@ Returns the value of attribute price
     the current value of price
 
 ??? info "Source Location"
-    `lib/sqa/portfolio.rb:27`
+    [`lib/sqa/portfolio.rb:27`](https://github.com/madbomber/sqa/blob/main/lib/sqa/portfolio.rb#L27)
 
 ---
 
@@ -188,7 +188,7 @@ Sets the attribute date
     the newly set value
 
 ??? info "Source Location"
-    `lib/sqa/portfolio.rb:27`
+    [`lib/sqa/portfolio.rb:27`](https://github.com/madbomber/sqa/blob/main/lib/sqa/portfolio.rb#L27)
 
 ---
 
@@ -206,7 +206,7 @@ Returns the value of attribute date
     the current value of date
 
 ??? info "Source Location"
-    `lib/sqa/portfolio.rb:27`
+    [`lib/sqa/portfolio.rb:27`](https://github.com/madbomber/sqa/blob/main/lib/sqa/portfolio.rb#L27)
 
 ---
 
@@ -228,7 +228,7 @@ Sets the attribute total
     the newly set value
 
 ??? info "Source Location"
-    `lib/sqa/portfolio.rb:27`
+    [`lib/sqa/portfolio.rb:27`](https://github.com/madbomber/sqa/blob/main/lib/sqa/portfolio.rb#L27)
 
 ---
 
@@ -246,7 +246,7 @@ Returns the value of attribute total
     the current value of total
 
 ??? info "Source Location"
-    `lib/sqa/portfolio.rb:27`
+    [`lib/sqa/portfolio.rb:27`](https://github.com/madbomber/sqa/blob/main/lib/sqa/portfolio.rb#L27)
 
 ---
 
@@ -268,7 +268,7 @@ Sets the attribute commission
     the newly set value
 
 ??? info "Source Location"
-    `lib/sqa/portfolio.rb:27`
+    [`lib/sqa/portfolio.rb:27`](https://github.com/madbomber/sqa/blob/main/lib/sqa/portfolio.rb#L27)
 
 ---
 
@@ -286,7 +286,7 @@ Returns the value of attribute commission
     the current value of commission
 
 ??? info "Source Location"
-    `lib/sqa/portfolio.rb:27`
+    [`lib/sqa/portfolio.rb:27`](https://github.com/madbomber/sqa/blob/main/lib/sqa/portfolio.rb#L27)
 
 ---
 
@@ -296,7 +296,7 @@ Returns the value of attribute commission
 
 
 ??? info "Source Location"
-    `lib/sqa/portfolio.rb:28`
+    [`lib/sqa/portfolio.rb:28`](https://github.com/madbomber/sqa/blob/main/lib/sqa/portfolio.rb#L28)
 
 ---
 

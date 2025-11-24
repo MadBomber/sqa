@@ -4,7 +4,7 @@ Complete API documentation for all SQA classes and modules.
 
 !!! tip "Auto-Generated Documentation"
     This documentation is automatically generated from YARD comments in the source code.
-    Last updated: 2025-11-24 14:46:25
+    Last updated: 2025-11-24 17:07:39
 
 ## 🎯 SQA
 
@@ -33,7 +33,7 @@ Complete API documentation for all SQA classes and modules.
 ### [📦 **DataFrame**](sqa_dataframe.md)
 
 !!! abstract ""
-    The website financial.yahoo.com no longer supports an API.
+    High-performance DataFrame wrapper around Polars for time series data manipulation.
 
 ### [📦 **Ensemble**](sqa_ensemble.md)
 

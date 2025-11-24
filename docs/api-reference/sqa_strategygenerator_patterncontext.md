@@ -4,7 +4,7 @@
     Pattern Context - metadata about when/where pattern is valid
 
 !!! abstract "Source Information"
-    **Defined in:** `lib/sqa/strategy_generator.rb:91`
+    **Defined in:** [`lib/sqa/strategy_generator.rb:91`](https://github.com/madbomber/sqa/blob/main/lib/sqa/strategy_generator.rb#L91)
     
     **Inherits from:** `Object`
 
@@ -18,7 +18,7 @@ Returns the value of attribute market_regime.
 
 
 ??? info "Source Location"
-    `lib/sqa/strategy_generator.rb:92`
+    [`lib/sqa/strategy_generator.rb:92`](https://github.com/madbomber/sqa/blob/main/lib/sqa/strategy_generator.rb#L92)
 
 ---
 
@@ -34,7 +34,7 @@ Sets the attribute market_regime
 
 
 ??? info "Source Location"
-    `lib/sqa/strategy_generator.rb:92`
+    [`lib/sqa/strategy_generator.rb:92`](https://github.com/madbomber/sqa/blob/main/lib/sqa/strategy_generator.rb#L92)
 
 ---
 
@@ -46,7 +46,7 @@ Returns the value of attribute valid_months.
 
 
 ??? info "Source Location"
-    `lib/sqa/strategy_generator.rb:92`
+    [`lib/sqa/strategy_generator.rb:92`](https://github.com/madbomber/sqa/blob/main/lib/sqa/strategy_generator.rb#L92)
 
 ---
 
@@ -62,7 +62,7 @@ Sets the attribute valid_months
 
 
 ??? info "Source Location"
-    `lib/sqa/strategy_generator.rb:92`
+    [`lib/sqa/strategy_generator.rb:92`](https://github.com/madbomber/sqa/blob/main/lib/sqa/strategy_generator.rb#L92)
 
 ---
 
@@ -74,7 +74,7 @@ Returns the value of attribute valid_quarters.
 
 
 ??? info "Source Location"
-    `lib/sqa/strategy_generator.rb:92`
+    [`lib/sqa/strategy_generator.rb:92`](https://github.com/madbomber/sqa/blob/main/lib/sqa/strategy_generator.rb#L92)
 
 ---
 
@@ -90,7 +90,7 @@ Sets the attribute valid_quarters
 
 
 ??? info "Source Location"
-    `lib/sqa/strategy_generator.rb:92`
+    [`lib/sqa/strategy_generator.rb:92`](https://github.com/madbomber/sqa/blob/main/lib/sqa/strategy_generator.rb#L92)
 
 ---
 
@@ -102,7 +102,7 @@ Returns the value of attribute discovered_period.
 
 
 ??? info "Source Location"
-    `lib/sqa/strategy_generator.rb:92`
+    [`lib/sqa/strategy_generator.rb:92`](https://github.com/madbomber/sqa/blob/main/lib/sqa/strategy_generator.rb#L92)
 
 ---
 
@@ -118,7 +118,7 @@ Sets the attribute discovered_period
 
 
 ??? info "Source Location"
-    `lib/sqa/strategy_generator.rb:92`
+    [`lib/sqa/strategy_generator.rb:92`](https://github.com/madbomber/sqa/blob/main/lib/sqa/strategy_generator.rb#L92)
 
 ---
 
@@ -130,7 +130,7 @@ Returns the value of attribute validation_period.
 
 
 ??? info "Source Location"
-    `lib/sqa/strategy_generator.rb:92`
+    [`lib/sqa/strategy_generator.rb:92`](https://github.com/madbomber/sqa/blob/main/lib/sqa/strategy_generator.rb#L92)
 
 ---
 
@@ -146,7 +146,7 @@ Sets the attribute validation_period
 
 
 ??? info "Source Location"
-    `lib/sqa/strategy_generator.rb:92`
+    [`lib/sqa/strategy_generator.rb:92`](https://github.com/madbomber/sqa/blob/main/lib/sqa/strategy_generator.rb#L92)
 
 ---
 
@@ -158,7 +158,7 @@ Returns the value of attribute stability_score.
 
 
 ??? info "Source Location"
-    `lib/sqa/strategy_generator.rb:92`
+    [`lib/sqa/strategy_generator.rb:92`](https://github.com/madbomber/sqa/blob/main/lib/sqa/strategy_generator.rb#L92)
 
 ---
 
@@ -174,7 +174,7 @@ Sets the attribute stability_score
 
 
 ??? info "Source Location"
-    `lib/sqa/strategy_generator.rb:92`
+    [`lib/sqa/strategy_generator.rb:92`](https://github.com/madbomber/sqa/blob/main/lib/sqa/strategy_generator.rb#L92)
 
 ---
 
@@ -186,7 +186,7 @@ Returns the value of attribute sector.
 
 
 ??? info "Source Location"
-    `lib/sqa/strategy_generator.rb:92`
+    [`lib/sqa/strategy_generator.rb:92`](https://github.com/madbomber/sqa/blob/main/lib/sqa/strategy_generator.rb#L92)
 
 ---
 
@@ -202,7 +202,7 @@ Sets the attribute sector
 
 
 ??? info "Source Location"
-    `lib/sqa/strategy_generator.rb:92`
+    [`lib/sqa/strategy_generator.rb:92`](https://github.com/madbomber/sqa/blob/main/lib/sqa/strategy_generator.rb#L92)
 
 ---
 
@@ -214,7 +214,7 @@ Returns the value of attribute volatility_regime.
 
 
 ??? info "Source Location"
-    `lib/sqa/strategy_generator.rb:92`
+    [`lib/sqa/strategy_generator.rb:92`](https://github.com/madbomber/sqa/blob/main/lib/sqa/strategy_generator.rb#L92)
 
 ---
 
@@ -230,7 +230,7 @@ Sets the attribute volatility_regime
 
 
 ??? info "Source Location"
-    `lib/sqa/strategy_generator.rb:92`
+    [`lib/sqa/strategy_generator.rb:92`](https://github.com/madbomber/sqa/blob/main/lib/sqa/strategy_generator.rb#L92)
 
 ---
 
@@ -246,7 +246,7 @@ Sets the attribute volatility_regime
     a new instance of PatternContext
 
 ??? info "Source Location"
-    `lib/sqa/strategy_generator.rb:96`
+    [`lib/sqa/strategy_generator.rb:96`](https://github.com/madbomber/sqa/blob/main/lib/sqa/strategy_generator.rb#L96)
 
 ---
 
@@ -260,7 +260,7 @@ Sets the attribute volatility_regime
     
 
 ??? info "Source Location"
-    `lib/sqa/strategy_generator.rb:107`
+    [`lib/sqa/strategy_generator.rb:107`](https://github.com/madbomber/sqa/blob/main/lib/sqa/strategy_generator.rb#L107)
 
 ---
 
@@ -270,7 +270,7 @@ Sets the attribute volatility_regime
 
 
 ??? info "Source Location"
-    `lib/sqa/strategy_generator.rb:111`
+    [`lib/sqa/strategy_generator.rb:111`](https://github.com/madbomber/sqa/blob/main/lib/sqa/strategy_generator.rb#L111)
 
 ---
 
@@ -286,7 +286,7 @@ Check if pattern is valid for given date and conditions
     
 
 ??? info "Source Location"
-    `lib/sqa/strategy_generator.rb:121`
+    [`lib/sqa/strategy_generator.rb:121`](https://github.com/madbomber/sqa/blob/main/lib/sqa/strategy_generator.rb#L121)
 
 ---
 

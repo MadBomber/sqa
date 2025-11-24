@@ -7,7 +7,7 @@
     Downloads and caches a CSV file containing ticker symbols, company names, and exchanges.
 
 !!! abstract "Source Information"
-    **Defined in:** `lib/sqa/ticker.rb:15`
+    **Defined in:** [`lib/sqa/ticker.rb:15`](https://github.com/madbomber/sqa/blob/main/lib/sqa/ticker.rb#L15)
     
     **Inherits from:** `Object`
 
@@ -35,7 +35,7 @@ Downloads ticker data from dumbstockapi.com and saves to data directory.
     SQA::Ticker.download("US")  # => 200
     ```
 ??? info "Source Location"
-    `lib/sqa/ticker.rb:31`
+    [`lib/sqa/ticker.rb:31`](https://github.com/madbomber/sqa/blob/main/lib/sqa/ticker.rb#L31)
 
 ---
 
@@ -54,7 +54,7 @@ Retries download up to 3 times if no cached file exists.
     Hash mapping ticker symbols to info hashes
 
 ??? info "Source Location"
-    `lib/sqa/ticker.rb:47`
+    [`lib/sqa/ticker.rb:47`](https://github.com/madbomber/sqa/blob/main/lib/sqa/ticker.rb#L47)
 
 ---
 
@@ -76,7 +76,7 @@ Loads ticker data from a specific CSV file.
     Hash mapping ticker symbols to info hashes
 
 ??? info "Source Location"
-    `lib/sqa/ticker.rb:77`
+    [`lib/sqa/ticker.rb:77`](https://github.com/madbomber/sqa/blob/main/lib/sqa/ticker.rb#L77)
 
 ---
 
@@ -94,7 +94,7 @@ Returns the cached ticker data, loading it if necessary.
     Hash mapping ticker symbols to info hashes
 
 ??? info "Source Location"
-    `lib/sqa/ticker.rb:92`
+    [`lib/sqa/ticker.rb:92`](https://github.com/madbomber/sqa/blob/main/lib/sqa/ticker.rb#L92)
 
 ---
 
@@ -121,7 +121,7 @@ Looks up information for a specific ticker symbol.
     SQA::Ticker.lookup('FAKE')  # => nil
     ```
 ??? info "Source Location"
-    `lib/sqa/ticker.rb:106`
+    [`lib/sqa/ticker.rb:106`](https://github.com/madbomber/sqa/blob/main/lib/sqa/ticker.rb#L106)
 
 ---
 
@@ -148,7 +148,7 @@ Checks if a ticker symbol is valid (exists in the data).
     SQA::Ticker.valid?(nil)     # => false
     ```
 ??? info "Source Location"
-    `lib/sqa/ticker.rb:120`
+    [`lib/sqa/ticker.rb:120`](https://github.com/madbomber/sqa/blob/main/lib/sqa/ticker.rb#L120)
 
 ---
 
@@ -167,7 +167,7 @@ Useful for testing to force a fresh load.
     Empty hash
 
 ??? info "Source Location"
-    `lib/sqa/ticker.rb:129`
+    [`lib/sqa/ticker.rb:129`](https://github.com/madbomber/sqa/blob/main/lib/sqa/ticker.rb#L129)
 
 ---
 

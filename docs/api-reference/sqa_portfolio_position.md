@@ -4,7 +4,7 @@
     Represents a single position in the portfolio
 
 !!! abstract "Source Information"
-    **Defined in:** `lib/sqa/portfolio.rb:11`
+    **Defined in:** [`lib/sqa/portfolio.rb:11`](https://github.com/madbomber/sqa/blob/main/lib/sqa/portfolio.rb#L11)
     
     **Inherits from:** `Struct`
 
@@ -28,7 +28,7 @@ Sets the attribute ticker
     the newly set value
 
 ??? info "Source Location"
-    `lib/sqa/portfolio.rb:11`
+    [`lib/sqa/portfolio.rb:11`](https://github.com/madbomber/sqa/blob/main/lib/sqa/portfolio.rb#L11)
 
 ---
 
@@ -46,7 +46,7 @@ Returns the value of attribute ticker
     the current value of ticker
 
 ??? info "Source Location"
-    `lib/sqa/portfolio.rb:11`
+    [`lib/sqa/portfolio.rb:11`](https://github.com/madbomber/sqa/blob/main/lib/sqa/portfolio.rb#L11)
 
 ---
 
@@ -68,7 +68,7 @@ Sets the attribute shares
     the newly set value
 
 ??? info "Source Location"
-    `lib/sqa/portfolio.rb:11`
+    [`lib/sqa/portfolio.rb:11`](https://github.com/madbomber/sqa/blob/main/lib/sqa/portfolio.rb#L11)
 
 ---
 
@@ -86,7 +86,7 @@ Returns the value of attribute shares
     the current value of shares
 
 ??? info "Source Location"
-    `lib/sqa/portfolio.rb:11`
+    [`lib/sqa/portfolio.rb:11`](https://github.com/madbomber/sqa/blob/main/lib/sqa/portfolio.rb#L11)
 
 ---
 
@@ -108,7 +108,7 @@ Sets the attribute avg_cost
     the newly set value
 
 ??? info "Source Location"
-    `lib/sqa/portfolio.rb:11`
+    [`lib/sqa/portfolio.rb:11`](https://github.com/madbomber/sqa/blob/main/lib/sqa/portfolio.rb#L11)
 
 ---
 
@@ -126,7 +126,7 @@ Returns the value of attribute avg_cost
     the current value of avg_cost
 
 ??? info "Source Location"
-    `lib/sqa/portfolio.rb:11`
+    [`lib/sqa/portfolio.rb:11`](https://github.com/madbomber/sqa/blob/main/lib/sqa/portfolio.rb#L11)
 
 ---
 
@@ -148,7 +148,7 @@ Sets the attribute total_cost
     the newly set value
 
 ??? info "Source Location"
-    `lib/sqa/portfolio.rb:11`
+    [`lib/sqa/portfolio.rb:11`](https://github.com/madbomber/sqa/blob/main/lib/sqa/portfolio.rb#L11)
 
 ---
 
@@ -166,7 +166,7 @@ Returns the value of attribute total_cost
     the current value of total_cost
 
 ??? info "Source Location"
-    `lib/sqa/portfolio.rb:11`
+    [`lib/sqa/portfolio.rb:11`](https://github.com/madbomber/sqa/blob/main/lib/sqa/portfolio.rb#L11)
 
 ---
 
@@ -176,7 +176,7 @@ Returns the value of attribute total_cost
 
 
 ??? info "Source Location"
-    `lib/sqa/portfolio.rb:12`
+    [`lib/sqa/portfolio.rb:12`](https://github.com/madbomber/sqa/blob/main/lib/sqa/portfolio.rb#L12)
 
 ---
 
@@ -186,7 +186,7 @@ Returns the value of attribute total_cost
 
 
 ??? info "Source Location"
-    `lib/sqa/portfolio.rb:16`
+    [`lib/sqa/portfolio.rb:16`](https://github.com/madbomber/sqa/blob/main/lib/sqa/portfolio.rb#L16)
 
 ---
 
@@ -196,7 +196,7 @@ Returns the value of attribute total_cost
 
 
 ??? info "Source Location"
-    `lib/sqa/portfolio.rb:20`
+    [`lib/sqa/portfolio.rb:20`](https://github.com/madbomber/sqa/blob/main/lib/sqa/portfolio.rb#L20)
 
 ---
 

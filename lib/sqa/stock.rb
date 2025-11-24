@@ -131,6 +131,17 @@ class SQA::Stock
   # Silently handles errors since overview data is optional.
   #
   # @return [void]
+  #
+  # @example Update stock metadata from API
+  #   stock = SQA::Stock.new(ticker: 'AAPL')
+  #   stock.update  # Fetches latest company overview data
+  #   stock.data.overview['market_capitalization']  # => 2500000000000
+  #   stock.data.overview['pe_ratio']  # => 28.5
+  #
+  # @example Update is safe if API fails
+  #   stock.update  # No error raised if API is unavailable
+  #   # Warning logged but stock remains usable with cached data
+  #
   def update
     begin
       merge_overview

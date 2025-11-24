@@ -177,6 +177,7 @@ nav:
           - Overview: concepts/index.md
           - DataFrames: data_frame.md
           - Trading Strategies: strategy.md
+          - File Formats: file_formats.md
       - Technical Indicators:
           - Overview: indicators/index.md
           - Indicator Details: indicators.md

@@ -6,7 +6,7 @@
     Sell when %K crosses below %D in overbought territory (> 80)
 
 !!! abstract "Source Information"
-    **Defined in:** `lib/sqa/strategy/stochastic.rb:8`
+    **Defined in:** [`lib/sqa/strategy/stochastic.rb:8`](https://github.com/madbomber/sqa/blob/main/lib/sqa/strategy/stochastic.rb#L8)
     
     **Inherits from:** `Object`
 
@@ -18,7 +18,7 @@
 
 
 ??? info "Source Location"
-    `lib/sqa/strategy/stochastic.rb:9`
+    [`lib/sqa/strategy/stochastic.rb:9`](https://github.com/madbomber/sqa/blob/main/lib/sqa/strategy/stochastic.rb#L9)
 
 ---
 

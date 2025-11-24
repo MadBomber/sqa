@@ -4,7 +4,7 @@
     Represents an individual trading strategy with specific parameters
 
 !!! abstract "Source Information"
-    **Defined in:** `lib/sqa/gp.rb:37`
+    **Defined in:** [`lib/sqa/gp.rb:37`](https://github.com/madbomber/sqa/blob/main/lib/sqa/gp.rb#L37)
     
     **Inherits from:** `Object`
 
@@ -18,7 +18,7 @@ Returns the value of attribute genes.
 
 
 ??? info "Source Location"
-    `lib/sqa/gp.rb:38`
+    [`lib/sqa/gp.rb:38`](https://github.com/madbomber/sqa/blob/main/lib/sqa/gp.rb#L38)
 
 ---
 
@@ -34,7 +34,7 @@ Sets the attribute genes
 
 
 ??? info "Source Location"
-    `lib/sqa/gp.rb:38`
+    [`lib/sqa/gp.rb:38`](https://github.com/madbomber/sqa/blob/main/lib/sqa/gp.rb#L38)
 
 ---
 
@@ -46,7 +46,7 @@ Returns the value of attribute fitness.
 
 
 ??? info "Source Location"
-    `lib/sqa/gp.rb:38`
+    [`lib/sqa/gp.rb:38`](https://github.com/madbomber/sqa/blob/main/lib/sqa/gp.rb#L38)
 
 ---
 
@@ -62,7 +62,7 @@ Sets the attribute fitness
 
 
 ??? info "Source Location"
-    `lib/sqa/gp.rb:38`
+    [`lib/sqa/gp.rb:38`](https://github.com/madbomber/sqa/blob/main/lib/sqa/gp.rb#L38)
 
 ---
 
@@ -78,7 +78,7 @@ Sets the attribute fitness
     a new instance of Individual
 
 ??? info "Source Location"
-    `lib/sqa/gp.rb:40`
+    [`lib/sqa/gp.rb:40`](https://github.com/madbomber/sqa/blob/main/lib/sqa/gp.rb#L40)
 
 ---
 
@@ -88,7 +88,7 @@ Sets the attribute fitness
 
 
 ??? info "Source Location"
-    `lib/sqa/gp.rb:45`
+    [`lib/sqa/gp.rb:45`](https://github.com/madbomber/sqa/blob/main/lib/sqa/gp.rb#L45)
 
 ---
 
@@ -98,7 +98,7 @@ Sets the attribute fitness
 
 
 ??? info "Source Location"
-    `lib/sqa/gp.rb:49`
+    [`lib/sqa/gp.rb:49`](https://github.com/madbomber/sqa/blob/main/lib/sqa/gp.rb#L49)
 
 ---
 

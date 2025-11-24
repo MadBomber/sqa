@@ -5,7 +5,7 @@
     Wraps the original exception for debugging purposes.
 
 !!! abstract "Source Information"
-    **Defined in:** `lib/sqa/errors.rb:26`
+    **Defined in:** [`lib/sqa/errors.rb:26`](https://github.com/madbomber/sqa/blob/main/lib/sqa/errors.rb#L26)
     
     **Inherits from:** `StandardError`
 
@@ -23,7 +23,7 @@
     The original exception that caused this error
 
 ??? info "Source Location"
-    `lib/sqa/errors.rb:28`
+    [`lib/sqa/errors.rb:28`](https://github.com/madbomber/sqa/blob/main/lib/sqa/errors.rb#L28)
 
 ---
 
@@ -46,7 +46,7 @@ Creates a new DataFetchError.
     a new instance of DataFetchError
 
 ??? info "Source Location"
-    `lib/sqa/errors.rb:34`
+    [`lib/sqa/errors.rb:34`](https://github.com/madbomber/sqa/blob/main/lib/sqa/errors.rb#L34)
 
 ---
 

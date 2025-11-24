@@ -5,7 +5,7 @@
     Extends Hashie::Dash for property-based configuration with coercion.
 
 !!! abstract "Source Information"
-    **Defined in:** `lib/sqa/config.rb:54`
+    **Defined in:** [`lib/sqa/config.rb:54`](https://github.com/madbomber/sqa/blob/main/lib/sqa/config.rb#L54)
     
     **Inherits from:** `Hashie::Dash`
 
@@ -26,7 +26,7 @@ Creates a new Config instance and assigns it to SQA.config.
     The new config instance
 
 ??? info "Source Location"
-    `lib/sqa/config.rb:255`
+    [`lib/sqa/config.rb:255`](https://github.com/madbomber/sqa/blob/main/lib/sqa/config.rb#L255)
 
 ---
 
@@ -44,7 +44,7 @@ Returns whether the configuration has been initialized.
     true if reset has been called
 
 ??? info "Source Location"
-    `lib/sqa/config.rb:263`
+    [`lib/sqa/config.rb:263`](https://github.com/madbomber/sqa/blob/main/lib/sqa/config.rb#L263)
 
 ---
 
@@ -62,7 +62,7 @@ Returns whether the configuration has been initialized.
     Current command (nil, 'analysis', or 'web')
 
 ??? info "Source Location"
-    `lib/sqa/config.rb:54`
+    [`lib/sqa/config.rb:54`](https://github.com/madbomber/sqa/blob/main/lib/sqa/config.rb#L54)
 
 ---
 
@@ -78,7 +78,7 @@ Returns whether the configuration has been initialized.
     Current command (nil, 'analysis', or 'web')
 
 ??? info "Source Location"
-    `lib/sqa/config.rb:54`
+    [`lib/sqa/config.rb:54`](https://github.com/madbomber/sqa/blob/main/lib/sqa/config.rb#L54)
 
 ---
 
@@ -94,7 +94,7 @@ Returns whether the configuration has been initialized.
     Path to configuration file
 
 ??? info "Source Location"
-    `lib/sqa/config.rb:54`
+    [`lib/sqa/config.rb:54`](https://github.com/madbomber/sqa/blob/main/lib/sqa/config.rb#L54)
 
 ---
 
@@ -110,7 +110,7 @@ Returns whether the configuration has been initialized.
     Path to configuration file
 
 ??? info "Source Location"
-    `lib/sqa/config.rb:54`
+    [`lib/sqa/config.rb:54`](https://github.com/madbomber/sqa/blob/main/lib/sqa/config.rb#L54)
 
 ---
 
@@ -126,7 +126,7 @@ Returns whether the configuration has been initialized.
     Path to dump current configuration
 
 ??? info "Source Location"
-    `lib/sqa/config.rb:54`
+    [`lib/sqa/config.rb:54`](https://github.com/madbomber/sqa/blob/main/lib/sqa/config.rb#L54)
 
 ---
 
@@ -142,7 +142,7 @@ Returns whether the configuration has been initialized.
     Path to dump current configuration
 
 ??? info "Source Location"
-    `lib/sqa/config.rb:54`
+    [`lib/sqa/config.rb:54`](https://github.com/madbomber/sqa/blob/main/lib/sqa/config.rb#L54)
 
 ---
 
@@ -158,7 +158,7 @@ Returns whether the configuration has been initialized.
     Directory for data storage (default: ~/sqa_data)
 
 ??? info "Source Location"
-    `lib/sqa/config.rb:54`
+    [`lib/sqa/config.rb:54`](https://github.com/madbomber/sqa/blob/main/lib/sqa/config.rb#L54)
 
 ---
 
@@ -174,7 +174,7 @@ Returns whether the configuration has been initialized.
     Directory for data storage (default: ~/sqa_data)
 
 ??? info "Source Location"
-    `lib/sqa/config.rb:54`
+    [`lib/sqa/config.rb:54`](https://github.com/madbomber/sqa/blob/main/lib/sqa/config.rb#L54)
 
 ---
 
@@ -190,7 +190,7 @@ Returns whether the configuration has been initialized.
     Portfolio CSV filename (default: portfolio.csv)
 
 ??? info "Source Location"
-    `lib/sqa/config.rb:54`
+    [`lib/sqa/config.rb:54`](https://github.com/madbomber/sqa/blob/main/lib/sqa/config.rb#L54)
 
 ---
 
@@ -206,7 +206,7 @@ Returns whether the configuration has been initialized.
     Portfolio CSV filename (default: portfolio.csv)
 
 ??? info "Source Location"
-    `lib/sqa/config.rb:54`
+    [`lib/sqa/config.rb:54`](https://github.com/madbomber/sqa/blob/main/lib/sqa/config.rb#L54)
 
 ---
 
@@ -222,7 +222,7 @@ Returns whether the configuration has been initialized.
     Trades CSV filename (default: trades.csv)
 
 ??? info "Source Location"
-    `lib/sqa/config.rb:54`
+    [`lib/sqa/config.rb:54`](https://github.com/madbomber/sqa/blob/main/lib/sqa/config.rb#L54)
 
 ---
 
@@ -238,7 +238,7 @@ Returns whether the configuration has been initialized.
     Trades CSV filename (default: trades.csv)
 
 ??? info "Source Location"
-    `lib/sqa/config.rb:54`
+    [`lib/sqa/config.rb:54`](https://github.com/madbomber/sqa/blob/main/lib/sqa/config.rb#L54)
 
 ---
 
@@ -254,7 +254,7 @@ Returns whether the configuration has been initialized.
     Log level (:debug, :info, :warn, :error, :fatal)
 
 ??? info "Source Location"
-    `lib/sqa/config.rb:54`
+    [`lib/sqa/config.rb:54`](https://github.com/madbomber/sqa/blob/main/lib/sqa/config.rb#L54)
 
 ---
 
@@ -270,7 +270,7 @@ Returns whether the configuration has been initialized.
     Log level (:debug, :info, :warn, :error, :fatal)
 
 ??? info "Source Location"
-    `lib/sqa/config.rb:54`
+    [`lib/sqa/config.rb:54`](https://github.com/madbomber/sqa/blob/main/lib/sqa/config.rb#L54)
 
 ---
 
@@ -286,7 +286,7 @@ Returns whether the configuration has been initialized.
     Enable debug mode
 
 ??? info "Source Location"
-    `lib/sqa/config.rb:54`
+    [`lib/sqa/config.rb:54`](https://github.com/madbomber/sqa/blob/main/lib/sqa/config.rb#L54)
 
 ---
 
@@ -302,7 +302,7 @@ Returns whether the configuration has been initialized.
     Enable debug mode
 
 ??? info "Source Location"
-    `lib/sqa/config.rb:54`
+    [`lib/sqa/config.rb:54`](https://github.com/madbomber/sqa/blob/main/lib/sqa/config.rb#L54)
 
 ---
 
@@ -318,7 +318,7 @@ Returns whether the configuration has been initialized.
     Enable verbose output
 
 ??? info "Source Location"
-    `lib/sqa/config.rb:54`
+    [`lib/sqa/config.rb:54`](https://github.com/madbomber/sqa/blob/main/lib/sqa/config.rb#L54)
 
 ---
 
@@ -334,7 +334,7 @@ Returns whether the configuration has been initialized.
     Enable verbose output
 
 ??? info "Source Location"
-    `lib/sqa/config.rb:54`
+    [`lib/sqa/config.rb:54`](https://github.com/madbomber/sqa/blob/main/lib/sqa/config.rb#L54)
 
 ---
 
@@ -350,7 +350,7 @@ Returns whether the configuration has been initialized.
     Plotting library to use (:gruff)
 
 ??? info "Source Location"
-    `lib/sqa/config.rb:54`
+    [`lib/sqa/config.rb:54`](https://github.com/madbomber/sqa/blob/main/lib/sqa/config.rb#L54)
 
 ---
 
@@ -366,7 +366,7 @@ Returns whether the configuration has been initialized.
     Plotting library to use (:gruff)
 
 ??? info "Source Location"
-    `lib/sqa/config.rb:54`
+    [`lib/sqa/config.rb:54`](https://github.com/madbomber/sqa/blob/main/lib/sqa/config.rb#L54)
 
 ---
 
@@ -382,7 +382,7 @@ Returns whether the configuration has been initialized.
     Skip API updates if cached data exists
 
 ??? info "Source Location"
-    `lib/sqa/config.rb:54`
+    [`lib/sqa/config.rb:54`](https://github.com/madbomber/sqa/blob/main/lib/sqa/config.rb#L54)
 
 ---
 
@@ -398,7 +398,7 @@ Returns whether the configuration has been initialized.
     Skip API updates if cached data exists
 
 ??? info "Source Location"
-    `lib/sqa/config.rb:54`
+    [`lib/sqa/config.rb:54`](https://github.com/madbomber/sqa/blob/main/lib/sqa/config.rb#L54)
 
 ---
 
@@ -421,7 +421,7 @@ Automatically applies environment variable overrides.
     a new instance of Config
 
 ??? info "Source Location"
-    `lib/sqa/config.rb:120`
+    [`lib/sqa/config.rb:120`](https://github.com/madbomber/sqa/blob/main/lib/sqa/config.rb#L120)
 
 ---
 
@@ -439,7 +439,7 @@ Returns whether debug mode is enabled.
     true if debug mode is on
 
 ??? info "Source Location"
-    `lib/sqa/config.rb:127`
+    [`lib/sqa/config.rb:127`](https://github.com/madbomber/sqa/blob/main/lib/sqa/config.rb#L127)
 
 ---
 
@@ -457,7 +457,7 @@ Returns whether verbose mode is enabled.
     true if verbose mode is on
 
 ??? info "Source Location"
-    `lib/sqa/config.rb:131`
+    [`lib/sqa/config.rb:131`](https://github.com/madbomber/sqa/blob/main/lib/sqa/config.rb#L131)
 
 ---
 
@@ -474,7 +474,7 @@ Supports YAML (.yml, .yaml), TOML (.toml), and JSON (.json) formats.
     
 
 ??? info "Source Location"
-    `lib/sqa/config.rb:141`
+    [`lib/sqa/config.rb:141`](https://github.com/madbomber/sqa/blob/main/lib/sqa/config.rb#L141)
 
 ---
 
@@ -491,7 +491,7 @@ Format is determined by file extension.
     
 
 ??? info "Source Location"
-    `lib/sqa/config.rb:178`
+    [`lib/sqa/config.rb:178`](https://github.com/madbomber/sqa/blob/main/lib/sqa/config.rb#L178)
 
 ---
 
@@ -508,7 +508,7 @@ Allows external code to register new configuration options.
     
 
 ??? info "Source Location"
-    `lib/sqa/config.rb:206`
+    [`lib/sqa/config.rb:206`](https://github.com/madbomber/sqa/blob/main/lib/sqa/config.rb#L206)
 
 ---
 
