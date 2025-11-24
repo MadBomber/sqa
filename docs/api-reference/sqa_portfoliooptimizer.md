@@ -12,7 +12,7 @@
     - Maximum Sharpe portfolio
 
 !!! abstract "Source Information"
-    **Defined in:** `lib/sqa/portfolio_optimizer.rb:25`
+    **Defined in:** [`lib/sqa/portfolio_optimizer.rb:25`](https://github.com/madbomber/sqa/blob/main/lib/sqa/portfolio_optimizer.rb#L25)
     
     **Inherits from:** `Object`
 
@@ -37,7 +37,7 @@ Calculate portfolio returns given weights
     Portfolio returns over time
 
 ??? info "Source Location"
-    `lib/sqa/portfolio_optimizer.rb:34`
+    [`lib/sqa/portfolio_optimizer.rb:34`](https://github.com/madbomber/sqa/blob/main/lib/sqa/portfolio_optimizer.rb#L34)
 
 ---
 
@@ -60,7 +60,7 @@ Calculate portfolio variance
     Portfolio variance
 
 ??? info "Source Location"
-    `lib/sqa/portfolio_optimizer.rb:51`
+    [`lib/sqa/portfolio_optimizer.rb:51`](https://github.com/madbomber/sqa/blob/main/lib/sqa/portfolio_optimizer.rb#L51)
 
 ---
 
@@ -86,7 +86,7 @@ Uses numerical optimization to find weights that maximize Sharpe ratio.
     { weights: Array, sharpe: Float, return: Float, volatility: Float }
 
 ??? info "Source Location"
-    `lib/sqa/portfolio_optimizer.rb:75`
+    [`lib/sqa/portfolio_optimizer.rb:75`](https://github.com/madbomber/sqa/blob/main/lib/sqa/portfolio_optimizer.rb#L75)
 
 ---
 
@@ -109,7 +109,7 @@ Find Minimum Variance portfolio
     { weights: Array, variance: Float, volatility: Float }
 
 ??? info "Source Location"
-    `lib/sqa/portfolio_optimizer.rb:114`
+    [`lib/sqa/portfolio_optimizer.rb:114`](https://github.com/madbomber/sqa/blob/main/lib/sqa/portfolio_optimizer.rb#L114)
 
 ---
 
@@ -133,7 +133,7 @@ Allocate weights so each asset contributes equally to portfolio risk.
     { weights: Array, volatility: Float }
 
 ??? info "Source Location"
-    `lib/sqa/portfolio_optimizer.rb:146`
+    [`lib/sqa/portfolio_optimizer.rb:146`](https://github.com/madbomber/sqa/blob/main/lib/sqa/portfolio_optimizer.rb#L146)
 
 ---
 
@@ -158,7 +158,7 @@ Generate portfolios along the efficient frontier.
     Array of portfolio hashes
 
 ??? info "Source Location"
-    `lib/sqa/portfolio_optimizer.rb:175`
+    [`lib/sqa/portfolio_optimizer.rb:175`](https://github.com/madbomber/sqa/blob/main/lib/sqa/portfolio_optimizer.rb#L175)
 
 ---
 
@@ -194,7 +194,7 @@ Optimize portfolio for multiple objectives simultaneously.
     )
     ```
 ??? info "Source Location"
-    `lib/sqa/portfolio_optimizer.rb:217`
+    [`lib/sqa/portfolio_optimizer.rb:217`](https://github.com/madbomber/sqa/blob/main/lib/sqa/portfolio_optimizer.rb#L217)
 
 ---
 
@@ -216,7 +216,7 @@ Equal weight portfolio (1/N rule)
     Equal weights
 
 ??? info "Source Location"
-    `lib/sqa/portfolio_optimizer.rb:285`
+    [`lib/sqa/portfolio_optimizer.rb:285`](https://github.com/madbomber/sqa/blob/main/lib/sqa/portfolio_optimizer.rb#L285)
 
 ---
 
@@ -240,7 +240,7 @@ Rebalance portfolio to target weights
     Rebalancing trades { ticker => { action: :buy/:sell, shares: N, value: $ } }
 
 ??? info "Source Location"
-    `lib/sqa/portfolio_optimizer.rb:298`
+    [`lib/sqa/portfolio_optimizer.rb:298`](https://github.com/madbomber/sqa/blob/main/lib/sqa/portfolio_optimizer.rb#L298)
 
 ---
 

@@ -1,7 +1,7 @@
 # 📦 SQA::Backtest
 
 !!! abstract "Source Information"
-    **Defined in:** `lib/sqa/backtest.rb:7`
+    **Defined in:** [`lib/sqa/backtest.rb:7`](https://github.com/madbomber/sqa/blob/main/lib/sqa/backtest.rb#L7)
     
     **Inherits from:** `Object`
 
@@ -15,7 +15,7 @@ Returns the value of attribute stock.
 
 
 ??? info "Source Location"
-    `lib/sqa/backtest.rb:8`
+    [`lib/sqa/backtest.rb:8`](https://github.com/madbomber/sqa/blob/main/lib/sqa/backtest.rb#L8)
 
 ---
 
@@ -27,7 +27,7 @@ Returns the value of attribute strategy.
 
 
 ??? info "Source Location"
-    `lib/sqa/backtest.rb:8`
+    [`lib/sqa/backtest.rb:8`](https://github.com/madbomber/sqa/blob/main/lib/sqa/backtest.rb#L8)
 
 ---
 
@@ -39,7 +39,7 @@ Returns the value of attribute portfolio.
 
 
 ??? info "Source Location"
-    `lib/sqa/backtest.rb:8`
+    [`lib/sqa/backtest.rb:8`](https://github.com/madbomber/sqa/blob/main/lib/sqa/backtest.rb#L8)
 
 ---
 
@@ -51,7 +51,7 @@ Returns the value of attribute results.
 
 
 ??? info "Source Location"
-    `lib/sqa/backtest.rb:8`
+    [`lib/sqa/backtest.rb:8`](https://github.com/madbomber/sqa/blob/main/lib/sqa/backtest.rb#L8)
 
 ---
 
@@ -63,7 +63,7 @@ Returns the value of attribute equity_curve.
 
 
 ??? info "Source Location"
-    `lib/sqa/backtest.rb:8`
+    [`lib/sqa/backtest.rb:8`](https://github.com/madbomber/sqa/blob/main/lib/sqa/backtest.rb#L8)
 
 ---
 
@@ -91,7 +91,7 @@ Initialize a backtest
     a new instance of Backtest
 
 ??? info "Source Location"
-    `lib/sqa/backtest.rb:85`
+    [`lib/sqa/backtest.rb:85`](https://github.com/madbomber/sqa/blob/main/lib/sqa/backtest.rb#L85)
 
 ---
 
@@ -109,7 +109,7 @@ Run the backtest
     Backtest results
 
 ??? info "Source Location"
-    `lib/sqa/backtest.rb:102`
+    [`lib/sqa/backtest.rb:102`](https://github.com/madbomber/sqa/blob/main/lib/sqa/backtest.rb#L102)
 
 ---
 

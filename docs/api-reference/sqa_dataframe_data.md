@@ -7,7 +7,7 @@
     name, exchange, data source, technical indicators, and company overview.
 
 !!! abstract "Source Information"
-    **Defined in:** `lib/sqa/data_frame/data.rb:23`
+    **Defined in:** [`lib/sqa/data_frame/data.rb:23`](https://github.com/madbomber/sqa/blob/main/lib/sqa/data_frame/data.rb#L23)
     
     **Inherits from:** `Object`
 
@@ -25,7 +25,7 @@
     Stock ticker symbol (e.g., 'AAPL', 'MSFT')
 
 ??? info "Source Location"
-    `lib/sqa/data_frame/data.rb:36`
+    [`lib/sqa/data_frame/data.rb:36`](https://github.com/madbomber/sqa/blob/main/lib/sqa/data_frame/data.rb#L36)
 
 ---
 
@@ -41,7 +41,7 @@
     Stock ticker symbol (e.g., 'AAPL', 'MSFT')
 
 ??? info "Source Location"
-    `lib/sqa/data_frame/data.rb:36`
+    [`lib/sqa/data_frame/data.rb:36`](https://github.com/madbomber/sqa/blob/main/lib/sqa/data_frame/data.rb#L36)
 
 ---
 
@@ -57,7 +57,7 @@
     Company name
 
 ??? info "Source Location"
-    `lib/sqa/data_frame/data.rb:36`
+    [`lib/sqa/data_frame/data.rb:36`](https://github.com/madbomber/sqa/blob/main/lib/sqa/data_frame/data.rb#L36)
 
 ---
 
@@ -73,7 +73,7 @@
     Company name
 
 ??? info "Source Location"
-    `lib/sqa/data_frame/data.rb:36`
+    [`lib/sqa/data_frame/data.rb:36`](https://github.com/madbomber/sqa/blob/main/lib/sqa/data_frame/data.rb#L36)
 
 ---
 
@@ -89,7 +89,7 @@
     Exchange where stock trades (e.g., 'NASDAQ', 'NYSE')
 
 ??? info "Source Location"
-    `lib/sqa/data_frame/data.rb:36`
+    [`lib/sqa/data_frame/data.rb:36`](https://github.com/madbomber/sqa/blob/main/lib/sqa/data_frame/data.rb#L36)
 
 ---
 
@@ -105,7 +105,7 @@
     Exchange where stock trades (e.g., 'NASDAQ', 'NYSE')
 
 ??? info "Source Location"
-    `lib/sqa/data_frame/data.rb:36`
+    [`lib/sqa/data_frame/data.rb:36`](https://github.com/madbomber/sqa/blob/main/lib/sqa/data_frame/data.rb#L36)
 
 ---
 
@@ -121,7 +121,7 @@
     Data source (:alpha_vantage, :yahoo_finance)
 
 ??? info "Source Location"
-    `lib/sqa/data_frame/data.rb:36`
+    [`lib/sqa/data_frame/data.rb:36`](https://github.com/madbomber/sqa/blob/main/lib/sqa/data_frame/data.rb#L36)
 
 ---
 
@@ -137,7 +137,7 @@
     Data source (:alpha_vantage, :yahoo_finance)
 
 ??? info "Source Location"
-    `lib/sqa/data_frame/data.rb:36`
+    [`lib/sqa/data_frame/data.rb:36`](https://github.com/madbomber/sqa/blob/main/lib/sqa/data_frame/data.rb#L36)
 
 ---
 
@@ -153,7 +153,7 @@
     Technical indicators configuration and cached values
 
 ??? info "Source Location"
-    `lib/sqa/data_frame/data.rb:36`
+    [`lib/sqa/data_frame/data.rb:36`](https://github.com/madbomber/sqa/blob/main/lib/sqa/data_frame/data.rb#L36)
 
 ---
 
@@ -169,7 +169,7 @@
     Technical indicators configuration and cached values
 
 ??? info "Source Location"
-    `lib/sqa/data_frame/data.rb:36`
+    [`lib/sqa/data_frame/data.rb:36`](https://github.com/madbomber/sqa/blob/main/lib/sqa/data_frame/data.rb#L36)
 
 ---
 
@@ -185,7 +185,7 @@
     Company overview data from API
 
 ??? info "Source Location"
-    `lib/sqa/data_frame/data.rb:36`
+    [`lib/sqa/data_frame/data.rb:36`](https://github.com/madbomber/sqa/blob/main/lib/sqa/data_frame/data.rb#L36)
 
 ---
 
@@ -201,7 +201,7 @@ Sets the attribute overview
 
 
 ??? info "Source Location"
-    `lib/sqa/data_frame/data.rb:36`
+    [`lib/sqa/data_frame/data.rb:36`](https://github.com/madbomber/sqa/blob/main/lib/sqa/data_frame/data.rb#L36)
 
 ---
 
@@ -233,7 +233,7 @@ Can be called in two ways:
     a new instance of Data
 
 ??? info "Source Location"
-    `lib/sqa/data_frame/data.rb:52`
+    [`lib/sqa/data_frame/data.rb:52`](https://github.com/madbomber/sqa/blob/main/lib/sqa/data_frame/data.rb#L52)
 
 ---
 
@@ -251,7 +251,7 @@ Serialize to JSON string
     JSON representation
 
 ??? info "Source Location"
-    `lib/sqa/data_frame/data.rb:78`
+    [`lib/sqa/data_frame/data.rb:78`](https://github.com/madbomber/sqa/blob/main/lib/sqa/data_frame/data.rb#L78)
 
 ---
 
@@ -269,7 +269,7 @@ Convert to hash
     Hash representation
 
 ??? info "Source Location"
-    `lib/sqa/data_frame/data.rb:85`
+    [`lib/sqa/data_frame/data.rb:85`](https://github.com/madbomber/sqa/blob/main/lib/sqa/data_frame/data.rb#L85)
 
 ---
 
@@ -287,7 +287,7 @@ String representation
     Human-readable representation
 
 ??? info "Source Location"
-    `lib/sqa/data_frame/data.rb:99`
+    [`lib/sqa/data_frame/data.rb:99`](https://github.com/madbomber/sqa/blob/main/lib/sqa/data_frame/data.rb#L99)
 
 ---
 
@@ -305,7 +305,7 @@ String representation
     Human-readable representation
 
 ??? info "Source Location"
-    `lib/sqa/data_frame/data.rb:102`
+    [`lib/sqa/data_frame/data.rb:102`](https://github.com/madbomber/sqa/blob/main/lib/sqa/data_frame/data.rb#L102)
 
 ---
 

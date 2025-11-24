@@ -5,7 +5,7 @@
      Desc:  Monkey to the String class.
 
 !!! abstract "Source Information"
-    **Defined in:** `lib/patches/string.rb:10`
+    **Defined in:** [`lib/patches/string.rb:10`](https://github.com/madbomber/sqa/blob/main/lib/patches/string.rb#L10)
     
     **Inherits from:** `Object`
 
@@ -19,7 +19,7 @@ Convert CamelCase to camel_case
 
 
 ??? info "Source Location"
-    `lib/patches/string.rb:14`
+    [`lib/patches/string.rb:14`](https://github.com/madbomber/sqa/blob/main/lib/patches/string.rb#L14)
 
 ---
 
@@ -31,7 +31,7 @@ Convert CamelCase to camel_case
 
 
 ??? info "Source Location"
-    `lib/patches/string.rb:21`
+    [`lib/patches/string.rb:21`](https://github.com/madbomber/sqa/blob/main/lib/patches/string.rb#L21)
 
 ---
 
@@ -43,7 +43,7 @@ Convert CamelCase to camel_case
 
 
 ??? info "Source Location"
-    `lib/patches/string.rb:22`
+    [`lib/patches/string.rb:22`](https://github.com/madbomber/sqa/blob/main/lib/patches/string.rb#L22)
 
 ---
 
@@ -55,7 +55,7 @@ Convert CamelCase to camel_case
 
 
 ??? info "Source Location"
-    `lib/patches/string.rb:23`
+    [`lib/patches/string.rb:23`](https://github.com/madbomber/sqa/blob/main/lib/patches/string.rb#L23)
 
 ---
 
@@ -67,7 +67,7 @@ Convert CamelCase to camel_case
 
 
 ??? info "Source Location"
-    `lib/patches/string.rb:24`
+    [`lib/patches/string.rb:24`](https://github.com/madbomber/sqa/blob/main/lib/patches/string.rb#L24)
 
 ---
 
@@ -79,7 +79,7 @@ Convert camel_case to CamelCase
 
 
 ??? info "Source Location"
-    `lib/patches/string.rb:29`
+    [`lib/patches/string.rb:29`](https://github.com/madbomber/sqa/blob/main/lib/patches/string.rb#L29)
 
 ---
 
@@ -91,7 +91,7 @@ Convert camel_case to CamelCase
 
 
 ??? info "Source Location"
-    `lib/patches/string.rb:34`
+    [`lib/patches/string.rb:34`](https://github.com/madbomber/sqa/blob/main/lib/patches/string.rb#L34)
 
 ---
 
@@ -103,7 +103,7 @@ Convert camel_case to CamelCase
 
 
 ??? info "Source Location"
-    `lib/patches/string.rb:35`
+    [`lib/patches/string.rb:35`](https://github.com/madbomber/sqa/blob/main/lib/patches/string.rb#L35)
 
 ---
 
@@ -115,7 +115,7 @@ Convert "CamelCase" into CamelCase
 
 
 ??? info "Source Location"
-    `lib/patches/string.rb:40`
+    [`lib/patches/string.rb:40`](https://github.com/madbomber/sqa/blob/main/lib/patches/string.rb#L40)
 
 ---
 
@@ -127,7 +127,7 @@ Convert "CamelCase" into CamelCase
 
 
 ??? info "Source Location"
-    `lib/patches/string.rb:55`
+    [`lib/patches/string.rb:55`](https://github.com/madbomber/sqa/blob/main/lib/patches/string.rb#L55)
 
 ---
 

@@ -1,5 +1,41 @@
 ## [Unreleased]
 
+## [0.0.38] - 2025-11-24
+
+### Added
+- **Integrated YARD Documentation into MkDocs**:
+  - Created `bin/generate_api_docs.rb` script to convert YARD comments to markdown
+  - Generates 51+ API reference markdown files in `docs/api-reference/`
+  - Unified Material theme across all documentation pages
+  - Auto-generated documentation includes timestamp and complete class/module information
+
+### Changed
+- **Enhanced Documentation Formatting**:
+  - Markdown generation now uses Material Design admonitions (note, info, success, example)
+  - Added emojis for visual hierarchy (📦 classes, 🔧 modules, 🏭 class methods, 🔨 instance methods, 📝 attributes, 🔢 constants)
+  - Parameters displayed in formatted tables instead of lists
+  - Return values in green success boxes with type badges
+  - Usage examples in purple example boxes with proper syntax highlighting
+  - Collapsible source location sections to reduce visual clutter
+  - Attribute access indicators (🔄 read/write, 👁️ read-only, ✍️ write-only)
+
+- **Simplified Rake Tasks**:
+  - Consolidated documentation tasks under `docs:` namespace
+  - `docs:build` - Generate API markdown from YARD + build MkDocs site
+  - `docs:serve` - Serve documentation locally with live reload
+  - `docs:clean` - Clean generated documentation files
+  - `docs:deploy` - Deploy to GitHub Pages
+  - Removed legacy tasks: `yard`, `yard_server`, `api_docs`
+
+- **Documentation Visual Improvements**:
+  - Updated `docs/index.md` with flexbox layout (logo left, features right)
+  - Converted 6 mermaid diagrams to colorful SVG images with transparent backgrounds
+  - High-contrast colors for better readability
+  - Added namespace icons (🎯 SQA, 📊 strategies) in API index
+
+### Dependencies
+- Added `yard` and `yard-markdown` gems for API documentation generation
+
 ## [0.0.36] - 2025-11-24
 
 ### Changed

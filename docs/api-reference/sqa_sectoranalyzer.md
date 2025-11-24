@@ -1,7 +1,7 @@
 # 📦 SQA::SectorAnalyzer
 
 !!! abstract "Source Information"
-    **Defined in:** `lib/sqa/sector_analyzer.rb:26`
+    **Defined in:** [`lib/sqa/sector_analyzer.rb:26`](https://github.com/madbomber/sqa/blob/main/lib/sqa/sector_analyzer.rb#L26)
     
     **Inherits from:** `Object`
 
@@ -15,7 +15,7 @@ Returns the value of attribute blackboards.
 
 
 ??? info "Source Location"
-    `lib/sqa/sector_analyzer.rb:40`
+    [`lib/sqa/sector_analyzer.rb:40`](https://github.com/madbomber/sqa/blob/main/lib/sqa/sector_analyzer.rb#L40)
 
 ---
 
@@ -27,7 +27,7 @@ Returns the value of attribute stocks_by_sector.
 
 
 ??? info "Source Location"
-    `lib/sqa/sector_analyzer.rb:40`
+    [`lib/sqa/sector_analyzer.rb:40`](https://github.com/madbomber/sqa/blob/main/lib/sqa/sector_analyzer.rb#L40)
 
 ---
 
@@ -43,7 +43,7 @@ Returns the value of attribute stocks_by_sector.
     a new instance of SectorAnalyzer
 
 ??? info "Source Location"
-    `lib/sqa/sector_analyzer.rb:42`
+    [`lib/sqa/sector_analyzer.rb:42`](https://github.com/madbomber/sqa/blob/main/lib/sqa/sector_analyzer.rb#L42)
 
 ---
 
@@ -60,7 +60,7 @@ Add a stock to sector analysis
 
 
 ??? info "Source Location"
-    `lib/sqa/sector_analyzer.rb:62`
+    [`lib/sqa/sector_analyzer.rb:62`](https://github.com/madbomber/sqa/blob/main/lib/sqa/sector_analyzer.rb#L62)
 
 ---
 
@@ -84,7 +84,7 @@ Discover patterns for an entire sector
     Sector-wide patterns
 
 ??? info "Source Location"
-    `lib/sqa/sector_analyzer.rb:86`
+    [`lib/sqa/sector_analyzer.rb:86`](https://github.com/madbomber/sqa/blob/main/lib/sqa/sector_analyzer.rb#L86)
 
 ---
 
@@ -107,7 +107,7 @@ Detect sector regime
     Sector regime information
 
 ??? info "Source Location"
-    `lib/sqa/sector_analyzer.rb:146`
+    [`lib/sqa/sector_analyzer.rb:146`](https://github.com/madbomber/sqa/blob/main/lib/sqa/sector_analyzer.rb#L146)
 
 ---
 
@@ -131,7 +131,7 @@ Query sector blackboard
     Matching facts
 
 ??? info "Source Location"
-    `lib/sqa/sector_analyzer.rb:190`
+    [`lib/sqa/sector_analyzer.rb:190`](https://github.com/madbomber/sqa/blob/main/lib/sqa/sector_analyzer.rb#L190)
 
 ---
 
@@ -147,7 +147,7 @@ Print sector summary
 
 
 ??? info "Source Location"
-    `lib/sqa/sector_analyzer.rb:202`
+    [`lib/sqa/sector_analyzer.rb:202`](https://github.com/madbomber/sqa/blob/main/lib/sqa/sector_analyzer.rb#L202)
 
 ---
 

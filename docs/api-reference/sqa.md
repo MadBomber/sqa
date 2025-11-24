@@ -40,7 +40,7 @@
     Note: Use 'kb.assert' (not just 'assert') in perform blocks to access the knowledge base.
 
 !!! abstract "Source Information"
-    **Defined in:** `lib/sqa/gp.rb:34`
+    **Defined in:** [`lib/sqa/gp.rb:34`](https://github.com/madbomber/sqa/blob/main/lib/sqa/gp.rb#L34)
 
 ## 🏭 Class Methods
 
@@ -56,7 +56,7 @@ Sets the attribute config
 
 
 ??? info "Source Location"
-    `lib/sqa/init.rb:22`
+    [`lib/sqa/init.rb:22`](https://github.com/madbomber/sqa/blob/main/lib/sqa/init.rb#L22)
 
 ---
 
@@ -84,7 +84,7 @@ Should be called once at application startup.
     SQA.init("--debug --verbose")
     ```
 ??? info "Source Location"
-    `lib/sqa/init.rb:34`
+    [`lib/sqa/init.rb:34`](https://github.com/madbomber/sqa/blob/main/lib/sqa/init.rb#L34)
 
 ---
 
@@ -103,7 +103,7 @@ Reads from AV_API_KEY or ALPHAVANTAGE_API_KEY environment variables.
     The API key
 
 ??? info "Source Location"
-    `lib/sqa/init.rb:61`
+    [`lib/sqa/init.rb:61`](https://github.com/madbomber/sqa/blob/main/lib/sqa/init.rb#L61)
 
 ---
 
@@ -125,7 +125,7 @@ Sets the Alpha Vantage API key.
     The key that was set
 
 ??? info "Source Location"
-    `lib/sqa/init.rb:70`
+    [`lib/sqa/init.rb:70`](https://github.com/madbomber/sqa/blob/main/lib/sqa/init.rb#L70)
 
 ---
 
@@ -143,7 +143,7 @@ Legacy accessor for backward compatibility with SQA.av.key usage.
     Self, to allow SQA.av.key calls
 
 ??? info "Source Location"
-    `lib/sqa/init.rb:77`
+    [`lib/sqa/init.rb:77`](https://github.com/madbomber/sqa/blob/main/lib/sqa/init.rb#L77)
 
 ---
 
@@ -161,7 +161,7 @@ Returns the API key for compatibility with old SQA.av.key usage.
     The API key
 
 ??? info "Source Location"
-    `lib/sqa/init.rb:85`
+    [`lib/sqa/init.rb:85`](https://github.com/madbomber/sqa/blob/main/lib/sqa/init.rb#L85)
 
 ---
 
@@ -179,7 +179,7 @@ Returns whether debug mode is enabled.
     true if debug mode is on
 
 ??? info "Source Location"
-    `lib/sqa/init.rb:91`
+    [`lib/sqa/init.rb:91`](https://github.com/madbomber/sqa/blob/main/lib/sqa/init.rb#L91)
 
 ---
 
@@ -197,7 +197,7 @@ Returns whether verbose mode is enabled.
     true if verbose mode is on
 
 ??? info "Source Location"
-    `lib/sqa/init.rb:95`
+    [`lib/sqa/init.rb:95`](https://github.com/madbomber/sqa/blob/main/lib/sqa/init.rb#L95)
 
 ---
 
@@ -219,7 +219,7 @@ Expands ~ to user's home directory in filepath.
     Path with ~ expanded
 
 ??? info "Source Location"
-    `lib/sqa/init.rb:101`
+    [`lib/sqa/init.rb:101`](https://github.com/madbomber/sqa/blob/main/lib/sqa/init.rb#L101)
 
 ---
 
@@ -237,7 +237,7 @@ Returns the data directory as a Pathname.
     Data directory path
 
 ??? info "Source Location"
-    `lib/sqa/init.rb:106`
+    [`lib/sqa/init.rb:106`](https://github.com/madbomber/sqa/blob/main/lib/sqa/init.rb#L106)
 
 ---
 
@@ -255,7 +255,7 @@ Returns the current configuration.
     Configuration instance
 
 ??? info "Source Location"
-    `lib/sqa/init.rb:111`
+    [`lib/sqa/init.rb:111`](https://github.com/madbomber/sqa/blob/main/lib/sqa/init.rb#L111)
 
 ---
 

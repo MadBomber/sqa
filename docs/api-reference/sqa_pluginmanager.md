@@ -1,7 +1,7 @@
 # 📦 SQA::PluginManager
 
 !!! abstract "Source Information"
-    **Defined in:** `lib/sqa/plugin_manager.rb:7`
+    **Defined in:** [`lib/sqa/plugin_manager.rb:7`](https://github.com/madbomber/sqa/blob/main/lib/sqa/plugin_manager.rb#L7)
     
     **Inherits from:** `Object`
 
@@ -15,7 +15,7 @@ Returns the value of attribute registered_properties.
 
 
 ??? info "Source Location"
-    `lib/sqa/plugin_manager.rb:11`
+    [`lib/sqa/plugin_manager.rb:11`](https://github.com/madbomber/sqa/blob/main/lib/sqa/plugin_manager.rb#L11)
 
 ---
 
@@ -31,7 +31,7 @@ Sets the attribute registered_properties
 
 
 ??? info "Source Location"
-    `lib/sqa/plugin_manager.rb:11`
+    [`lib/sqa/plugin_manager.rb:11`](https://github.com/madbomber/sqa/blob/main/lib/sqa/plugin_manager.rb#L11)
 
 ---
 
@@ -43,7 +43,7 @@ name (Symbol)
 
 
 ??? info "Source Location"
-    `lib/sqa/plugin_manager.rb:15`
+    [`lib/sqa/plugin_manager.rb:15`](https://github.com/madbomber/sqa/blob/main/lib/sqa/plugin_manager.rb#L15)
 
 ---
 

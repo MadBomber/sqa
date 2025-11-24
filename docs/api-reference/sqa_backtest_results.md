@@ -4,7 +4,7 @@
     Represents the results of a backtest
 
 !!! abstract "Source Information"
-    **Defined in:** `lib/sqa/backtest.rb:11`
+    **Defined in:** [`lib/sqa/backtest.rb:11`](https://github.com/madbomber/sqa/blob/main/lib/sqa/backtest.rb#L11)
     
     **Inherits from:** `Object`
 
@@ -18,7 +18,7 @@ Returns the value of attribute total_return.
 
 
 ??? info "Source Location"
-    `lib/sqa/backtest.rb:12`
+    [`lib/sqa/backtest.rb:12`](https://github.com/madbomber/sqa/blob/main/lib/sqa/backtest.rb#L12)
 
 ---
 
@@ -34,7 +34,7 @@ Sets the attribute total_return
 
 
 ??? info "Source Location"
-    `lib/sqa/backtest.rb:12`
+    [`lib/sqa/backtest.rb:12`](https://github.com/madbomber/sqa/blob/main/lib/sqa/backtest.rb#L12)
 
 ---
 
@@ -46,7 +46,7 @@ Returns the value of attribute annualized_return.
 
 
 ??? info "Source Location"
-    `lib/sqa/backtest.rb:12`
+    [`lib/sqa/backtest.rb:12`](https://github.com/madbomber/sqa/blob/main/lib/sqa/backtest.rb#L12)
 
 ---
 
@@ -62,7 +62,7 @@ Sets the attribute annualized_return
 
 
 ??? info "Source Location"
-    `lib/sqa/backtest.rb:12`
+    [`lib/sqa/backtest.rb:12`](https://github.com/madbomber/sqa/blob/main/lib/sqa/backtest.rb#L12)
 
 ---
 
@@ -74,7 +74,7 @@ Returns the value of attribute sharpe_ratio.
 
 
 ??? info "Source Location"
-    `lib/sqa/backtest.rb:12`
+    [`lib/sqa/backtest.rb:12`](https://github.com/madbomber/sqa/blob/main/lib/sqa/backtest.rb#L12)
 
 ---
 
@@ -90,7 +90,7 @@ Sets the attribute sharpe_ratio
 
 
 ??? info "Source Location"
-    `lib/sqa/backtest.rb:12`
+    [`lib/sqa/backtest.rb:12`](https://github.com/madbomber/sqa/blob/main/lib/sqa/backtest.rb#L12)
 
 ---
 
@@ -102,7 +102,7 @@ Returns the value of attribute max_drawdown.
 
 
 ??? info "Source Location"
-    `lib/sqa/backtest.rb:12`
+    [`lib/sqa/backtest.rb:12`](https://github.com/madbomber/sqa/blob/main/lib/sqa/backtest.rb#L12)
 
 ---
 
@@ -118,7 +118,7 @@ Sets the attribute max_drawdown
 
 
 ??? info "Source Location"
-    `lib/sqa/backtest.rb:12`
+    [`lib/sqa/backtest.rb:12`](https://github.com/madbomber/sqa/blob/main/lib/sqa/backtest.rb#L12)
 
 ---
 
@@ -130,7 +130,7 @@ Returns the value of attribute total_trades.
 
 
 ??? info "Source Location"
-    `lib/sqa/backtest.rb:12`
+    [`lib/sqa/backtest.rb:12`](https://github.com/madbomber/sqa/blob/main/lib/sqa/backtest.rb#L12)
 
 ---
 
@@ -146,7 +146,7 @@ Sets the attribute total_trades
 
 
 ??? info "Source Location"
-    `lib/sqa/backtest.rb:12`
+    [`lib/sqa/backtest.rb:12`](https://github.com/madbomber/sqa/blob/main/lib/sqa/backtest.rb#L12)
 
 ---
 
@@ -158,7 +158,7 @@ Returns the value of attribute winning_trades.
 
 
 ??? info "Source Location"
-    `lib/sqa/backtest.rb:12`
+    [`lib/sqa/backtest.rb:12`](https://github.com/madbomber/sqa/blob/main/lib/sqa/backtest.rb#L12)
 
 ---
 
@@ -174,7 +174,7 @@ Sets the attribute winning_trades
 
 
 ??? info "Source Location"
-    `lib/sqa/backtest.rb:12`
+    [`lib/sqa/backtest.rb:12`](https://github.com/madbomber/sqa/blob/main/lib/sqa/backtest.rb#L12)
 
 ---
 
@@ -186,7 +186,7 @@ Returns the value of attribute losing_trades.
 
 
 ??? info "Source Location"
-    `lib/sqa/backtest.rb:12`
+    [`lib/sqa/backtest.rb:12`](https://github.com/madbomber/sqa/blob/main/lib/sqa/backtest.rb#L12)
 
 ---
 
@@ -202,7 +202,7 @@ Sets the attribute losing_trades
 
 
 ??? info "Source Location"
-    `lib/sqa/backtest.rb:12`
+    [`lib/sqa/backtest.rb:12`](https://github.com/madbomber/sqa/blob/main/lib/sqa/backtest.rb#L12)
 
 ---
 
@@ -214,7 +214,7 @@ Returns the value of attribute win_rate.
 
 
 ??? info "Source Location"
-    `lib/sqa/backtest.rb:12`
+    [`lib/sqa/backtest.rb:12`](https://github.com/madbomber/sqa/blob/main/lib/sqa/backtest.rb#L12)
 
 ---
 
@@ -230,7 +230,7 @@ Sets the attribute win_rate
 
 
 ??? info "Source Location"
-    `lib/sqa/backtest.rb:12`
+    [`lib/sqa/backtest.rb:12`](https://github.com/madbomber/sqa/blob/main/lib/sqa/backtest.rb#L12)
 
 ---
 
@@ -242,7 +242,7 @@ Returns the value of attribute average_win.
 
 
 ??? info "Source Location"
-    `lib/sqa/backtest.rb:12`
+    [`lib/sqa/backtest.rb:12`](https://github.com/madbomber/sqa/blob/main/lib/sqa/backtest.rb#L12)
 
 ---
 
@@ -258,7 +258,7 @@ Sets the attribute average_win
 
 
 ??? info "Source Location"
-    `lib/sqa/backtest.rb:12`
+    [`lib/sqa/backtest.rb:12`](https://github.com/madbomber/sqa/blob/main/lib/sqa/backtest.rb#L12)
 
 ---
 
@@ -270,7 +270,7 @@ Returns the value of attribute average_loss.
 
 
 ??? info "Source Location"
-    `lib/sqa/backtest.rb:12`
+    [`lib/sqa/backtest.rb:12`](https://github.com/madbomber/sqa/blob/main/lib/sqa/backtest.rb#L12)
 
 ---
 
@@ -286,7 +286,7 @@ Sets the attribute average_loss
 
 
 ??? info "Source Location"
-    `lib/sqa/backtest.rb:12`
+    [`lib/sqa/backtest.rb:12`](https://github.com/madbomber/sqa/blob/main/lib/sqa/backtest.rb#L12)
 
 ---
 
@@ -298,7 +298,7 @@ Returns the value of attribute profit_factor.
 
 
 ??? info "Source Location"
-    `lib/sqa/backtest.rb:12`
+    [`lib/sqa/backtest.rb:12`](https://github.com/madbomber/sqa/blob/main/lib/sqa/backtest.rb#L12)
 
 ---
 
@@ -314,7 +314,7 @@ Sets the attribute profit_factor
 
 
 ??? info "Source Location"
-    `lib/sqa/backtest.rb:12`
+    [`lib/sqa/backtest.rb:12`](https://github.com/madbomber/sqa/blob/main/lib/sqa/backtest.rb#L12)
 
 ---
 
@@ -326,7 +326,7 @@ Returns the value of attribute start_date.
 
 
 ??? info "Source Location"
-    `lib/sqa/backtest.rb:12`
+    [`lib/sqa/backtest.rb:12`](https://github.com/madbomber/sqa/blob/main/lib/sqa/backtest.rb#L12)
 
 ---
 
@@ -342,7 +342,7 @@ Sets the attribute start_date
 
 
 ??? info "Source Location"
-    `lib/sqa/backtest.rb:12`
+    [`lib/sqa/backtest.rb:12`](https://github.com/madbomber/sqa/blob/main/lib/sqa/backtest.rb#L12)
 
 ---
 
@@ -354,7 +354,7 @@ Returns the value of attribute end_date.
 
 
 ??? info "Source Location"
-    `lib/sqa/backtest.rb:12`
+    [`lib/sqa/backtest.rb:12`](https://github.com/madbomber/sqa/blob/main/lib/sqa/backtest.rb#L12)
 
 ---
 
@@ -370,7 +370,7 @@ Sets the attribute end_date
 
 
 ??? info "Source Location"
-    `lib/sqa/backtest.rb:12`
+    [`lib/sqa/backtest.rb:12`](https://github.com/madbomber/sqa/blob/main/lib/sqa/backtest.rb#L12)
 
 ---
 
@@ -382,7 +382,7 @@ Returns the value of attribute initial_capital.
 
 
 ??? info "Source Location"
-    `lib/sqa/backtest.rb:12`
+    [`lib/sqa/backtest.rb:12`](https://github.com/madbomber/sqa/blob/main/lib/sqa/backtest.rb#L12)
 
 ---
 
@@ -398,7 +398,7 @@ Sets the attribute initial_capital
 
 
 ??? info "Source Location"
-    `lib/sqa/backtest.rb:12`
+    [`lib/sqa/backtest.rb:12`](https://github.com/madbomber/sqa/blob/main/lib/sqa/backtest.rb#L12)
 
 ---
 
@@ -410,7 +410,7 @@ Returns the value of attribute final_value.
 
 
 ??? info "Source Location"
-    `lib/sqa/backtest.rb:12`
+    [`lib/sqa/backtest.rb:12`](https://github.com/madbomber/sqa/blob/main/lib/sqa/backtest.rb#L12)
 
 ---
 
@@ -426,7 +426,7 @@ Sets the attribute final_value
 
 
 ??? info "Source Location"
-    `lib/sqa/backtest.rb:12`
+    [`lib/sqa/backtest.rb:12`](https://github.com/madbomber/sqa/blob/main/lib/sqa/backtest.rb#L12)
 
 ---
 
@@ -442,7 +442,7 @@ Sets the attribute final_value
     a new instance of Results
 
 ??? info "Source Location"
-    `lib/sqa/backtest.rb:17`
+    [`lib/sqa/backtest.rb:17`](https://github.com/madbomber/sqa/blob/main/lib/sqa/backtest.rb#L17)
 
 ---
 
@@ -452,7 +452,7 @@ Sets the attribute final_value
 
 
 ??? info "Source Location"
-    `lib/sqa/backtest.rb:31`
+    [`lib/sqa/backtest.rb:31`](https://github.com/madbomber/sqa/blob/main/lib/sqa/backtest.rb#L31)
 
 ---
 
@@ -462,7 +462,7 @@ Sets the attribute final_value
 
 
 ??? info "Source Location"
-    `lib/sqa/backtest.rb:51`
+    [`lib/sqa/backtest.rb:51`](https://github.com/madbomber/sqa/blob/main/lib/sqa/backtest.rb#L51)
 
 ---
 

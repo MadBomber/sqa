@@ -5,7 +5,7 @@
     Automatically logs using debug_me before raising.
 
 !!! abstract "Source Information"
-    **Defined in:** `lib/sqa/errors.rb:84`
+    **Defined in:** [`lib/sqa/errors.rb:84`](https://github.com/madbomber/sqa/blob/main/lib/sqa/errors.rb#L84)
     
     **Inherits from:** `RuntimeError`
 
@@ -19,7 +19,7 @@ Raises a NotImplemented error with debug logging.
 
 
 ??? info "Source Location"
-    `lib/sqa/errors.rb:88`
+    [`lib/sqa/errors.rb:88`](https://github.com/madbomber/sqa/blob/main/lib/sqa/errors.rb#L88)
 
 ---
 

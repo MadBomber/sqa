@@ -11,7 +11,7 @@
     - Confidence-based aggregation
 
 !!! abstract "Source Information"
-    **Defined in:** `lib/sqa/ensemble.rb:22`
+    **Defined in:** [`lib/sqa/ensemble.rb:22`](https://github.com/madbomber/sqa/blob/main/lib/sqa/ensemble.rb#L22)
     
     **Inherits from:** `Object`
 
@@ -35,7 +35,7 @@ Make ensemble compatible with Backtest (acts like a strategy)
     Trading signal
 
 ??? info "Source Location"
-    `lib/sqa/ensemble.rb:275`
+    [`lib/sqa/ensemble.rb:275`](https://github.com/madbomber/sqa/blob/main/lib/sqa/ensemble.rb#L275)
 
 ---
 
@@ -49,7 +49,7 @@ Returns the value of attribute strategies.
 
 
 ??? info "Source Location"
-    `lib/sqa/ensemble.rb:23`
+    [`lib/sqa/ensemble.rb:23`](https://github.com/madbomber/sqa/blob/main/lib/sqa/ensemble.rb#L23)
 
 ---
 
@@ -65,7 +65,7 @@ Sets the attribute strategies
 
 
 ??? info "Source Location"
-    `lib/sqa/ensemble.rb:23`
+    [`lib/sqa/ensemble.rb:23`](https://github.com/madbomber/sqa/blob/main/lib/sqa/ensemble.rb#L23)
 
 ---
 
@@ -77,7 +77,7 @@ Returns the value of attribute weights.
 
 
 ??? info "Source Location"
-    `lib/sqa/ensemble.rb:23`
+    [`lib/sqa/ensemble.rb:23`](https://github.com/madbomber/sqa/blob/main/lib/sqa/ensemble.rb#L23)
 
 ---
 
@@ -93,7 +93,7 @@ Sets the attribute weights
 
 
 ??? info "Source Location"
-    `lib/sqa/ensemble.rb:23`
+    [`lib/sqa/ensemble.rb:23`](https://github.com/madbomber/sqa/blob/main/lib/sqa/ensemble.rb#L23)
 
 ---
 
@@ -105,7 +105,7 @@ Returns the value of attribute performance_history.
 
 
 ??? info "Source Location"
-    `lib/sqa/ensemble.rb:23`
+    [`lib/sqa/ensemble.rb:23`](https://github.com/madbomber/sqa/blob/main/lib/sqa/ensemble.rb#L23)
 
 ---
 
@@ -121,7 +121,7 @@ Sets the attribute performance_history
 
 
 ??? info "Source Location"
-    `lib/sqa/ensemble.rb:23`
+    [`lib/sqa/ensemble.rb:23`](https://github.com/madbomber/sqa/blob/main/lib/sqa/ensemble.rb#L23)
 
 ---
 
@@ -145,7 +145,7 @@ Initialize ensemble
     a new instance of Ensemble
 
 ??? info "Source Location"
-    `lib/sqa/ensemble.rb:32`
+    [`lib/sqa/ensemble.rb:32`](https://github.com/madbomber/sqa/blob/main/lib/sqa/ensemble.rb#L32)
 
 ---
 
@@ -167,7 +167,7 @@ Generate ensemble signal
     :buy, :sell, or :hold
 
 ??? info "Source Location"
-    `lib/sqa/ensemble.rb:46`
+    [`lib/sqa/ensemble.rb:46`](https://github.com/madbomber/sqa/blob/main/lib/sqa/ensemble.rb#L46)
 
 ---
 
@@ -189,7 +189,7 @@ Majority voting
     Signal with most votes
 
 ??? info "Source Location"
-    `lib/sqa/ensemble.rb:67`
+    [`lib/sqa/ensemble.rb:67`](https://github.com/madbomber/sqa/blob/main/lib/sqa/ensemble.rb#L67)
 
 ---
 
@@ -211,7 +211,7 @@ Weighted voting based on strategy performance
     Weighted signal
 
 ??? info "Source Location"
-    `lib/sqa/ensemble.rb:84`
+    [`lib/sqa/ensemble.rb:84`](https://github.com/madbomber/sqa/blob/main/lib/sqa/ensemble.rb#L84)
 
 ---
 
@@ -233,7 +233,7 @@ Unanimous voting (all strategies must agree)
     :buy/:sell only if unanimous, otherwise :hold
 
 ??? info "Source Location"
-    `lib/sqa/ensemble.rb:104`
+    [`lib/sqa/ensemble.rb:104`](https://github.com/madbomber/sqa/blob/main/lib/sqa/ensemble.rb#L104)
 
 ---
 
@@ -257,7 +257,7 @@ Weight votes by strategy confidence scores.
     Signal weighted by confidence
 
 ??? info "Source Location"
-    `lib/sqa/ensemble.rb:125`
+    [`lib/sqa/ensemble.rb:125`](https://github.com/madbomber/sqa/blob/main/lib/sqa/ensemble.rb#L125)
 
 ---
 
@@ -276,7 +276,7 @@ Adjust weights to favor better-performing strategies.
 
 
 ??? info "Source Location"
-    `lib/sqa/ensemble.rb:147`
+    [`lib/sqa/ensemble.rb:147`](https://github.com/madbomber/sqa/blob/main/lib/sqa/ensemble.rb#L147)
 
 ---
 
@@ -293,7 +293,7 @@ Update confidence score for strategy
 
 
 ??? info "Source Location"
-    `lib/sqa/ensemble.rb:160`
+    [`lib/sqa/ensemble.rb:160`](https://github.com/madbomber/sqa/blob/main/lib/sqa/ensemble.rb#L160)
 
 ---
 
@@ -318,7 +318,7 @@ Meta-learning approach: choose the strategy most likely to succeed.
     Best strategy class for conditions
 
 ??? info "Source Location"
-    `lib/sqa/ensemble.rb:181`
+    [`lib/sqa/ensemble.rb:181`](https://github.com/madbomber/sqa/blob/main/lib/sqa/ensemble.rb#L181)
 
 ---
 
@@ -340,7 +340,7 @@ Rotate strategies based on market conditions
     Strategy to use
 
 ??? info "Source Location"
-    `lib/sqa/ensemble.rb:213`
+    [`lib/sqa/ensemble.rb:213`](https://github.com/madbomber/sqa/blob/main/lib/sqa/ensemble.rb#L213)
 
 ---
 
@@ -358,7 +358,7 @@ Get ensemble statistics
     Performance statistics
 
 ??? info "Source Location"
-    `lib/sqa/ensemble.rb:227`
+    [`lib/sqa/ensemble.rb:227`](https://github.com/madbomber/sqa/blob/main/lib/sqa/ensemble.rb#L227)
 
 ---
 
@@ -381,7 +381,7 @@ Backtest ensemble vs individual strategies
     Comparison results
 
 ??? info "Source Location"
-    `lib/sqa/ensemble.rb:245`
+    [`lib/sqa/ensemble.rb:245`](https://github.com/madbomber/sqa/blob/main/lib/sqa/ensemble.rb#L245)
 
 ---
 
@@ -393,7 +393,7 @@ Instance method for compatibility
 
 
 ??? info "Source Location"
-    `lib/sqa/ensemble.rb:283`
+    [`lib/sqa/ensemble.rb:283`](https://github.com/madbomber/sqa/blob/main/lib/sqa/ensemble.rb#L283)
 
 ---
 

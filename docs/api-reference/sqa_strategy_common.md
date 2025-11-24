@@ -1,7 +1,7 @@
 # 🔧 SQA::Strategy::Common
 
 !!! abstract "Source Information"
-    **Defined in:** `lib/sqa/strategy/common.rb:8`
+    **Defined in:** [`lib/sqa/strategy/common.rb:8`](https://github.com/madbomber/sqa/blob/main/lib/sqa/strategy/common.rb#L8)
 
 ## 🔨 Instance Methods
 
@@ -11,7 +11,7 @@
 
 
 ??? info "Source Location"
-    `lib/sqa/strategy/common.rb:9`
+    [`lib/sqa/strategy/common.rb:9`](https://github.com/madbomber/sqa/blob/main/lib/sqa/strategy/common.rb#L9)
 
 ---
 
@@ -21,7 +21,7 @@
 
 
 ??? info "Source Location"
-    `lib/sqa/strategy/common.rb:23`
+    [`lib/sqa/strategy/common.rb:23`](https://github.com/madbomber/sqa/blob/main/lib/sqa/strategy/common.rb#L23)
 
 ---
 

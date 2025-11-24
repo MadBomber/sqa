@@ -1,7 +1,7 @@
 # 📦 SQA::Stream
 
 !!! abstract "Source Information"
-    **Defined in:** `lib/sqa/stream.rb:39`
+    **Defined in:** [`lib/sqa/stream.rb:39`](https://github.com/madbomber/sqa/blob/main/lib/sqa/stream.rb#L39)
     
     **Inherits from:** `Object`
 
@@ -15,7 +15,7 @@ Returns the value of attribute ticker.
 
 
 ??? info "Source Location"
-    `lib/sqa/stream.rb:40`
+    [`lib/sqa/stream.rb:40`](https://github.com/madbomber/sqa/blob/main/lib/sqa/stream.rb#L40)
 
 ---
 
@@ -27,7 +27,7 @@ Returns the value of attribute window_size.
 
 
 ??? info "Source Location"
-    `lib/sqa/stream.rb:40`
+    [`lib/sqa/stream.rb:40`](https://github.com/madbomber/sqa/blob/main/lib/sqa/stream.rb#L40)
 
 ---
 
@@ -39,7 +39,7 @@ Returns the value of attribute strategies.
 
 
 ??? info "Source Location"
-    `lib/sqa/stream.rb:40`
+    [`lib/sqa/stream.rb:40`](https://github.com/madbomber/sqa/blob/main/lib/sqa/stream.rb#L40)
 
 ---
 
@@ -51,7 +51,7 @@ Returns the value of attribute data_buffer.
 
 
 ??? info "Source Location"
-    `lib/sqa/stream.rb:40`
+    [`lib/sqa/stream.rb:40`](https://github.com/madbomber/sqa/blob/main/lib/sqa/stream.rb#L40)
 
 ---
 
@@ -63,7 +63,7 @@ Returns the value of attribute indicator_cache.
 
 
 ??? info "Source Location"
-    `lib/sqa/stream.rb:40`
+    [`lib/sqa/stream.rb:40`](https://github.com/madbomber/sqa/blob/main/lib/sqa/stream.rb#L40)
 
 ---
 
@@ -79,7 +79,7 @@ Returns the value of attribute indicator_cache.
     a new instance of Stream
 
 ??? info "Source Location"
-    `lib/sqa/stream.rb:42`
+    [`lib/sqa/stream.rb:42`](https://github.com/madbomber/sqa/blob/main/lib/sqa/stream.rb#L42)
 
 ---
 
@@ -91,7 +91,7 @@ Add a strategy to the stream processor
 
 
 ??? info "Source Location"
-    `lib/sqa/stream.rb:65`
+    [`lib/sqa/stream.rb:65`](https://github.com/madbomber/sqa/blob/main/lib/sqa/stream.rb#L65)
 
 ---
 
@@ -108,7 +108,7 @@ Example:
 
 
 ??? info "Source Location"
-    `lib/sqa/stream.rb:78`
+    [`lib/sqa/stream.rb:78`](https://github.com/madbomber/sqa/blob/main/lib/sqa/stream.rb#L78)
 
 ---
 
@@ -125,7 +125,7 @@ Example:
 
 
 ??? info "Source Location"
-    `lib/sqa/stream.rb:89`
+    [`lib/sqa/stream.rb:89`](https://github.com/madbomber/sqa/blob/main/lib/sqa/stream.rb#L89)
 
 ---
 
@@ -140,7 +140,7 @@ Optional fields: volume, high, low, timestamp
 
 
 ??? info "Source Location"
-    `lib/sqa/stream.rb:98`
+    [`lib/sqa/stream.rb:98`](https://github.com/madbomber/sqa/blob/main/lib/sqa/stream.rb#L98)
 
 ---
 
@@ -152,7 +152,7 @@ Get current price
 
 
 ??? info "Source Location"
-    `lib/sqa/stream.rb:136`
+    [`lib/sqa/stream.rb:136`](https://github.com/madbomber/sqa/blob/main/lib/sqa/stream.rb#L136)
 
 ---
 
@@ -164,7 +164,7 @@ Get recent prices
 
 
 ??? info "Source Location"
-    `lib/sqa/stream.rb:141`
+    [`lib/sqa/stream.rb:141`](https://github.com/madbomber/sqa/blob/main/lib/sqa/stream.rb#L141)
 
 ---
 
@@ -176,7 +176,7 @@ Get recent volumes
 
 
 ??? info "Source Location"
-    `lib/sqa/stream.rb:148`
+    [`lib/sqa/stream.rb:148`](https://github.com/madbomber/sqa/blob/main/lib/sqa/stream.rb#L148)
 
 ---
 
@@ -192,7 +192,7 @@ Example:
 
 
 ??? info "Source Location"
-    `lib/sqa/stream.rb:159`
+    [`lib/sqa/stream.rb:159`](https://github.com/madbomber/sqa/blob/main/lib/sqa/stream.rb#L159)
 
 ---
 
@@ -204,7 +204,7 @@ Get current trading signal from last strategy execution
 
 
 ??? info "Source Location"
-    `lib/sqa/stream.rb:177`
+    [`lib/sqa/stream.rb:177`](https://github.com/madbomber/sqa/blob/main/lib/sqa/stream.rb#L177)
 
 ---
 
@@ -216,7 +216,7 @@ Get statistics about the stream
 
 
 ??? info "Source Location"
-    `lib/sqa/stream.rb:182`
+    [`lib/sqa/stream.rb:182`](https://github.com/madbomber/sqa/blob/main/lib/sqa/stream.rb#L182)
 
 ---
 
@@ -228,7 +228,7 @@ Reset the stream (clear all data)
 
 
 ??? info "Source Location"
-    `lib/sqa/stream.rb:199`
+    [`lib/sqa/stream.rb:199`](https://github.com/madbomber/sqa/blob/main/lib/sqa/stream.rb#L199)
 
 ---
 

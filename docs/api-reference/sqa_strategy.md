@@ -6,7 +6,7 @@
     methods are available in every trading strategy.
 
 !!! abstract "Source Information"
-    **Defined in:** `lib/sqa/strategy.rb:16`
+    **Defined in:** [`lib/sqa/strategy.rb:16`](https://github.com/madbomber/sqa/blob/main/lib/sqa/strategy.rb#L16)
     
     **Inherits from:** `Object`
 
@@ -24,7 +24,7 @@
     Collection of strategy trade methods
 
 ??? info "Source Location"
-    `lib/sqa/strategy.rb:19`
+    [`lib/sqa/strategy.rb:19`](https://github.com/madbomber/sqa/blob/main/lib/sqa/strategy.rb#L19)
 
 ---
 
@@ -40,7 +40,7 @@ Sets the attribute strategies
 
 
 ??? info "Source Location"
-    `lib/sqa/strategy.rb:19`
+    [`lib/sqa/strategy.rb:19`](https://github.com/madbomber/sqa/blob/main/lib/sqa/strategy.rb#L19)
 
 ---
 
@@ -58,7 +58,7 @@ Creates a new Strategy instance with an empty strategies collection.
     a new instance of Strategy
 
 ??? info "Source Location"
-    `lib/sqa/strategy.rb:22`
+    [`lib/sqa/strategy.rb:22`](https://github.com/madbomber/sqa/blob/main/lib/sqa/strategy.rb#L22)
 
 ---
 
@@ -89,7 +89,7 @@ Strategies must be either a Class with a .trade method or a Method object.
     strategy.add(MyModule.method(:custom_trade))
     ```
 ??? info "Source Location"
-    `lib/sqa/strategy.rb:39`
+    [`lib/sqa/strategy.rb:39`](https://github.com/madbomber/sqa/blob/main/lib/sqa/strategy.rb#L39)
 
 ---
 
@@ -116,7 +116,7 @@ Executes all registered strategies with the given data vector.
     signals = strategy.execute(vector)  # => [:buy, :hold, :sell]
     ```
 ??? info "Source Location"
-    `lib/sqa/strategy.rb:60`
+    [`lib/sqa/strategy.rb:60`](https://github.com/madbomber/sqa/blob/main/lib/sqa/strategy.rb#L60)
 
 ---
 
@@ -145,7 +145,7 @@ Auto-loads strategy files from the strategy directory.
     strategy.auto_load(only: [:rsi, :macd])
     ```
 ??? info "Source Location"
-    `lib/sqa/strategy.rb:79`
+    [`lib/sqa/strategy.rb:79`](https://github.com/madbomber/sqa/blob/main/lib/sqa/strategy.rb#L79)
 
 ---
 
@@ -168,7 +168,7 @@ Returns all available strategy classes in the SQA::Strategy namespace.
     # => [SQA::Strategy::RSI, SQA::Strategy::MACD, ...]
     ```
 ??? info "Source Location"
-    `lib/sqa/strategy.rb:108`
+    [`lib/sqa/strategy.rb:108`](https://github.com/madbomber/sqa/blob/main/lib/sqa/strategy.rb#L108)
 
 ---
 

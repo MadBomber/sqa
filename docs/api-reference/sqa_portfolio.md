@@ -1,7 +1,7 @@
 # 📦 SQA::Portfolio
 
 !!! abstract "Source Information"
-    **Defined in:** `lib/sqa/portfolio.rb:7`
+    **Defined in:** [`lib/sqa/portfolio.rb:7`](https://github.com/madbomber/sqa/blob/main/lib/sqa/portfolio.rb#L7)
     
     **Inherits from:** `Object`
 
@@ -19,7 +19,7 @@ Load portfolio from CSV file
 
 
 ??? info "Source Location"
-    `lib/sqa/portfolio.rb:236`
+    [`lib/sqa/portfolio.rb:236`](https://github.com/madbomber/sqa/blob/main/lib/sqa/portfolio.rb#L236)
 
 ---
 
@@ -33,7 +33,7 @@ Returns the value of attribute positions.
 
 
 ??? info "Source Location"
-    `lib/sqa/portfolio.rb:8`
+    [`lib/sqa/portfolio.rb:8`](https://github.com/madbomber/sqa/blob/main/lib/sqa/portfolio.rb#L8)
 
 ---
 
@@ -49,7 +49,7 @@ Sets the attribute positions
 
 
 ??? info "Source Location"
-    `lib/sqa/portfolio.rb:8`
+    [`lib/sqa/portfolio.rb:8`](https://github.com/madbomber/sqa/blob/main/lib/sqa/portfolio.rb#L8)
 
 ---
 
@@ -61,7 +61,7 @@ Returns the value of attribute trades.
 
 
 ??? info "Source Location"
-    `lib/sqa/portfolio.rb:8`
+    [`lib/sqa/portfolio.rb:8`](https://github.com/madbomber/sqa/blob/main/lib/sqa/portfolio.rb#L8)
 
 ---
 
@@ -77,7 +77,7 @@ Sets the attribute trades
 
 
 ??? info "Source Location"
-    `lib/sqa/portfolio.rb:8`
+    [`lib/sqa/portfolio.rb:8`](https://github.com/madbomber/sqa/blob/main/lib/sqa/portfolio.rb#L8)
 
 ---
 
@@ -89,7 +89,7 @@ Returns the value of attribute cash.
 
 
 ??? info "Source Location"
-    `lib/sqa/portfolio.rb:8`
+    [`lib/sqa/portfolio.rb:8`](https://github.com/madbomber/sqa/blob/main/lib/sqa/portfolio.rb#L8)
 
 ---
 
@@ -105,7 +105,7 @@ Sets the attribute cash
 
 
 ??? info "Source Location"
-    `lib/sqa/portfolio.rb:8`
+    [`lib/sqa/portfolio.rb:8`](https://github.com/madbomber/sqa/blob/main/lib/sqa/portfolio.rb#L8)
 
 ---
 
@@ -117,7 +117,7 @@ Returns the value of attribute initial_cash.
 
 
 ??? info "Source Location"
-    `lib/sqa/portfolio.rb:8`
+    [`lib/sqa/portfolio.rb:8`](https://github.com/madbomber/sqa/blob/main/lib/sqa/portfolio.rb#L8)
 
 ---
 
@@ -133,7 +133,7 @@ Sets the attribute initial_cash
 
 
 ??? info "Source Location"
-    `lib/sqa/portfolio.rb:8`
+    [`lib/sqa/portfolio.rb:8`](https://github.com/madbomber/sqa/blob/main/lib/sqa/portfolio.rb#L8)
 
 ---
 
@@ -145,7 +145,7 @@ Returns the value of attribute commission.
 
 
 ??? info "Source Location"
-    `lib/sqa/portfolio.rb:8`
+    [`lib/sqa/portfolio.rb:8`](https://github.com/madbomber/sqa/blob/main/lib/sqa/portfolio.rb#L8)
 
 ---
 
@@ -161,7 +161,7 @@ Sets the attribute commission
 
 
 ??? info "Source Location"
-    `lib/sqa/portfolio.rb:8`
+    [`lib/sqa/portfolio.rb:8`](https://github.com/madbomber/sqa/blob/main/lib/sqa/portfolio.rb#L8)
 
 ---
 
@@ -177,7 +177,7 @@ Sets the attribute commission
     a new instance of Portfolio
 
 ??? info "Source Location"
-    `lib/sqa/portfolio.rb:41`
+    [`lib/sqa/portfolio.rb:41`](https://github.com/madbomber/sqa/blob/main/lib/sqa/portfolio.rb#L41)
 
 ---
 
@@ -202,7 +202,7 @@ Buy shares of a stock
     The executed trade
 
 ??? info "Source Location"
-    `lib/sqa/portfolio.rb:55`
+    [`lib/sqa/portfolio.rb:55`](https://github.com/madbomber/sqa/blob/main/lib/sqa/portfolio.rb#L55)
 
 ---
 
@@ -227,7 +227,7 @@ Sell shares of a stock
     The executed trade
 
 ??? info "Source Location"
-    `lib/sqa/portfolio.rb:98`
+    [`lib/sqa/portfolio.rb:98`](https://github.com/madbomber/sqa/blob/main/lib/sqa/portfolio.rb#L98)
 
 ---
 
@@ -249,7 +249,7 @@ Get current position for a ticker
     The position or nil if not found
 
 ??? info "Source Location"
-    `lib/sqa/portfolio.rb:135`
+    [`lib/sqa/portfolio.rb:135`](https://github.com/madbomber/sqa/blob/main/lib/sqa/portfolio.rb#L135)
 
 ---
 
@@ -267,7 +267,7 @@ Get all current positions
     Hash of ticker => Position
 
 ??? info "Source Location"
-    `lib/sqa/portfolio.rb:141`
+    [`lib/sqa/portfolio.rb:141`](https://github.com/madbomber/sqa/blob/main/lib/sqa/portfolio.rb#L141)
 
 ---
 
@@ -289,7 +289,7 @@ Calculate total portfolio value
     Total portfolio value (cash + positions)
 
 ??? info "Source Location"
-    `lib/sqa/portfolio.rb:148`
+    [`lib/sqa/portfolio.rb:148`](https://github.com/madbomber/sqa/blob/main/lib/sqa/portfolio.rb#L148)
 
 ---
 
@@ -311,7 +311,7 @@ Calculate total profit/loss across all positions
     Total P&L
 
 ??? info "Source Location"
-    `lib/sqa/portfolio.rb:160`
+    [`lib/sqa/portfolio.rb:160`](https://github.com/madbomber/sqa/blob/main/lib/sqa/portfolio.rb#L160)
 
 ---
 
@@ -333,7 +333,7 @@ Calculate profit/loss percentage
     P&L percentage
 
 ??? info "Source Location"
-    `lib/sqa/portfolio.rb:167`
+    [`lib/sqa/portfolio.rb:167`](https://github.com/madbomber/sqa/blob/main/lib/sqa/portfolio.rb#L167)
 
 ---
 
@@ -355,7 +355,7 @@ Calculate total return (including dividends if tracked)
     Total return as decimal (e.g., 0.15 for 15%)
 
 ??? info "Source Location"
-    `lib/sqa/portfolio.rb:175`
+    [`lib/sqa/portfolio.rb:175`](https://github.com/madbomber/sqa/blob/main/lib/sqa/portfolio.rb#L175)
 
 ---
 
@@ -373,7 +373,7 @@ Get trade history
     Array of all trades
 
 ??? info "Source Location"
-    `lib/sqa/portfolio.rb:182`
+    [`lib/sqa/portfolio.rb:182`](https://github.com/madbomber/sqa/blob/main/lib/sqa/portfolio.rb#L182)
 
 ---
 
@@ -395,7 +395,7 @@ Get summary statistics
     Summary statistics
 
 ??? info "Source Location"
-    `lib/sqa/portfolio.rb:189`
+    [`lib/sqa/portfolio.rb:189`](https://github.com/madbomber/sqa/blob/main/lib/sqa/portfolio.rb#L189)
 
 ---
 
@@ -411,7 +411,7 @@ Save portfolio to CSV file
 
 
 ??? info "Source Location"
-    `lib/sqa/portfolio.rb:206`
+    [`lib/sqa/portfolio.rb:206`](https://github.com/madbomber/sqa/blob/main/lib/sqa/portfolio.rb#L206)
 
 ---
 
@@ -427,7 +427,7 @@ Save trade history to CSV file
 
 
 ??? info "Source Location"
-    `lib/sqa/portfolio.rb:217`
+    [`lib/sqa/portfolio.rb:217`](https://github.com/madbomber/sqa/blob/main/lib/sqa/portfolio.rb#L217)
 
 ---
 

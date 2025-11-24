@@ -5,7 +5,7 @@
     Automatically logs the error using debug_me before raising.
 
 !!! abstract "Source Information"
-    **Defined in:** `lib/sqa/errors.rb:67`
+    **Defined in:** [`lib/sqa/errors.rb:67`](https://github.com/madbomber/sqa/blob/main/lib/sqa/errors.rb#L67)
     
     **Inherits from:** `RuntimeError`
 
@@ -23,7 +23,7 @@ Raises an ApiError with debug logging.
 
 
 ??? info "Source Location"
-    `lib/sqa/errors.rb:72`
+    [`lib/sqa/errors.rb:72`](https://github.com/madbomber/sqa/blob/main/lib/sqa/errors.rb#L72)
 
 ---
 

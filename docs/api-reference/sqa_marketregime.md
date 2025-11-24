@@ -1,7 +1,7 @@
 # 🔧 SQA::MarketRegime
 
 !!! abstract "Source Information"
-    **Defined in:** `lib/sqa/market_regime.rb:17`
+    **Defined in:** [`lib/sqa/market_regime.rb:17`](https://github.com/madbomber/sqa/blob/main/lib/sqa/market_regime.rb#L17)
 
 ## 🏭 Class Methods
 
@@ -25,7 +25,7 @@ Detect current market regime for a stock
     Regime metadata with both symbolic and numeric values
 
 ??? info "Source Location"
-    `lib/sqa/market_regime.rb:26`
+    [`lib/sqa/market_regime.rb:26`](https://github.com/madbomber/sqa/blob/main/lib/sqa/market_regime.rb#L26)
 
 ---
 
@@ -50,7 +50,7 @@ Splits historical data into regime periods
     Array of regime periods
 
 ??? info "Source Location"
-    `lib/sqa/market_regime.rb:61`
+    [`lib/sqa/market_regime.rb:61`](https://github.com/madbomber/sqa/blob/main/lib/sqa/market_regime.rb#L61)
 
 ---
 
@@ -72,7 +72,7 @@ Classify regime type based on trend with numeric score
     { type: Symbol, score: Float }
 
 ??? info "Source Location"
-    `lib/sqa/market_regime.rb:109`
+    [`lib/sqa/market_regime.rb:109`](https://github.com/madbomber/sqa/blob/main/lib/sqa/market_regime.rb#L109)
 
 ---
 
@@ -94,7 +94,7 @@ Classify regime type based on trend (backward compatibility)
     :bull, :bear, or :sideways
 
 ??? info "Source Location"
-    `lib/sqa/market_regime.rb:136`
+    [`lib/sqa/market_regime.rb:136`](https://github.com/madbomber/sqa/blob/main/lib/sqa/market_regime.rb#L136)
 
 ---
 
@@ -116,7 +116,7 @@ Detect volatility regime with numeric score
     { type: Symbol, score: Float }
 
 ??? info "Source Location"
-    `lib/sqa/market_regime.rb:145`
+    [`lib/sqa/market_regime.rb:145`](https://github.com/madbomber/sqa/blob/main/lib/sqa/market_regime.rb#L145)
 
 ---
 
@@ -138,7 +138,7 @@ Detect volatility regime (backward compatibility)
     :low, :medium, or :high
 
 ??? info "Source Location"
-    `lib/sqa/market_regime.rb:170`
+    [`lib/sqa/market_regime.rb:170`](https://github.com/madbomber/sqa/blob/main/lib/sqa/market_regime.rb#L170)
 
 ---
 
@@ -160,7 +160,7 @@ Detect trend strength with numeric score
     { type: Symbol, score: Float }
 
 ??? info "Source Location"
-    `lib/sqa/market_regime.rb:179`
+    [`lib/sqa/market_regime.rb:179`](https://github.com/madbomber/sqa/blob/main/lib/sqa/market_regime.rb#L179)
 
 ---
 
@@ -182,7 +182,7 @@ Detect trend strength (backward compatibility)
     :weak, :moderate, or :strong
 
 ??? info "Source Location"
-    `lib/sqa/market_regime.rb:211`
+    [`lib/sqa/market_regime.rb:211`](https://github.com/madbomber/sqa/blob/main/lib/sqa/market_regime.rb#L211)
 
 ---
 
@@ -204,7 +204,7 @@ Split data by regime
     Data grouped by regime type
 
 ??? info "Source Location"
-    `lib/sqa/market_regime.rb:220`
+    [`lib/sqa/market_regime.rb:220`](https://github.com/madbomber/sqa/blob/main/lib/sqa/market_regime.rb#L220)
 
 ---
 

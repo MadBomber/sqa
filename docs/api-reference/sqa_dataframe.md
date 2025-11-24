@@ -6,7 +6,7 @@
       to scrape the webpage.
 
 !!! abstract "Source Information"
-    **Defined in:** `lib/sqa/data_frame.rb:28`
+    **Defined in:** [`lib/sqa/data_frame.rb:28`](https://github.com/madbomber/sqa/blob/main/lib/sqa/data_frame.rb#L28)
     
     **Inherits from:** `Object`
 
@@ -30,7 +30,7 @@ Checks if a value appears to be a date string.
     true if value matches YYYY-MM-DD format
 
 ??? info "Source Location"
-    `lib/sqa/data_frame.rb:246`
+    [`lib/sqa/data_frame.rb:246`](https://github.com/madbomber/sqa/blob/main/lib/sqa/data_frame.rb#L246)
 
 ---
 
@@ -59,7 +59,7 @@ We only apply them if the CSV has old-format column names that need migration.
     Loaded DataFrame
 
 ??? info "Source Location"
-    `lib/sqa/data_frame.rb:283`
+    [`lib/sqa/data_frame.rb:283`](https://github.com/madbomber/sqa/blob/main/lib/sqa/data_frame.rb#L283)
 
 ---
 
@@ -88,7 +88,7 @@ Creates a DataFrame from an array of hashes.
     df = SQA::DataFrame.from_aofh(data)
     ```
 ??? info "Source Location"
-    `lib/sqa/data_frame.rb:302`
+    [`lib/sqa/data_frame.rb:302`](https://github.com/madbomber/sqa/blob/main/lib/sqa/data_frame.rb#L302)
 
 ---
 
@@ -112,7 +112,7 @@ Creates a DataFrame from a CSV file.
     New DataFrame instance
 
 ??? info "Source Location"
-    `lib/sqa/data_frame.rb:324`
+    [`lib/sqa/data_frame.rb:324`](https://github.com/madbomber/sqa/blob/main/lib/sqa/data_frame.rb#L324)
 
 ---
 
@@ -136,7 +136,7 @@ Creates a DataFrame from a JSON file.
     New DataFrame instance
 
 ??? info "Source Location"
-    `lib/sqa/data_frame.rb:335`
+    [`lib/sqa/data_frame.rb:335`](https://github.com/madbomber/sqa/blob/main/lib/sqa/data_frame.rb#L335)
 
 ---
 
@@ -158,7 +158,7 @@ Generates a mapping of original keys to underscored keys.
     Mapping from original to underscored keys
 
 ??? info "Source Location"
-    `lib/sqa/data_frame.rb:344`
+    [`lib/sqa/data_frame.rb:344`](https://github.com/madbomber/sqa/blob/main/lib/sqa/data_frame.rb#L344)
 
 ---
 
@@ -185,7 +185,7 @@ Converts a key string to underscored snake_case format.
     underscore_key("Close Price") # => :close_price
     ```
 ??? info "Source Location"
-    `lib/sqa/data_frame.rb:359`
+    [`lib/sqa/data_frame.rb:359`](https://github.com/madbomber/sqa/blob/main/lib/sqa/data_frame.rb#L359)
 
 ---
 
@@ -212,7 +212,7 @@ Converts a key string to underscored snake_case format.
     underscore_key("Close Price") # => :close_price
     ```
 ??? info "Source Location"
-    `lib/sqa/data_frame.rb:371`
+    [`lib/sqa/data_frame.rb:371`](https://github.com/madbomber/sqa/blob/main/lib/sqa/data_frame.rb#L371)
 
 ---
 
@@ -235,7 +235,7 @@ Normalizes all keys in a hash to snake_case format.
     Hash with normalized keys
 
 ??? info "Source Location"
-    `lib/sqa/data_frame.rb:378`
+    [`lib/sqa/data_frame.rb:378`](https://github.com/madbomber/sqa/blob/main/lib/sqa/data_frame.rb#L378)
 
 ---
 
@@ -258,7 +258,7 @@ Renames keys in a hash according to a mapping.
     Modified hash
 
 ??? info "Source Location"
-    `lib/sqa/data_frame.rb:389`
+    [`lib/sqa/data_frame.rb:389`](https://github.com/madbomber/sqa/blob/main/lib/sqa/data_frame.rb#L389)
 
 ---
 
@@ -282,7 +282,7 @@ Converts array of hashes to hash of arrays format.
     Hash with column names as keys and arrays as values
 
 ??? info "Source Location"
-    `lib/sqa/data_frame.rb:400`
+    [`lib/sqa/data_frame.rb:400`](https://github.com/madbomber/sqa/blob/main/lib/sqa/data_frame.rb#L400)
 
 ---
 
@@ -300,7 +300,7 @@ Converts array of hashes to hash of arrays format.
     The underlying Polars DataFrame
 
 ??? info "Source Location"
-    `lib/sqa/data_frame.rb:33`
+    [`lib/sqa/data_frame.rb:33`](https://github.com/madbomber/sqa/blob/main/lib/sqa/data_frame.rb#L33)
 
 ---
 
@@ -316,7 +316,7 @@ Sets the attribute data
 
 
 ??? info "Source Location"
-    `lib/sqa/data_frame.rb:33`
+    [`lib/sqa/data_frame.rb:33`](https://github.com/madbomber/sqa/blob/main/lib/sqa/data_frame.rb#L33)
 
 ---
 
@@ -348,7 +348,7 @@ Creates a new DataFrame instance.
     df = SQA::DataFrame.new(data, transformers: { "price" => ->(v) { v.to_f } })
     ```
 ??? info "Source Location"
-    `lib/sqa/data_frame.rb:47`
+    [`lib/sqa/data_frame.rb:47`](https://github.com/madbomber/sqa/blob/main/lib/sqa/data_frame.rb#L47)
 
 ---
 
@@ -372,7 +372,7 @@ Applies transformer functions to specified columns in place.
     df.apply_transformers!({ "price" => ->(v) { v.to_f }, "volume" => ->(v) { v.to_i } })
     ```
 ??? info "Source Location"
-    `lib/sqa/data_frame.rb:65`
+    [`lib/sqa/data_frame.rb:65`](https://github.com/madbomber/sqa/blob/main/lib/sqa/data_frame.rb#L65)
 
 ---
 
@@ -396,7 +396,7 @@ Renames columns according to the provided mapping in place.
     df.rename_columns!({ "open" => "open_price", "close" => "close_price" })
     ```
 ??? info "Source Location"
-    `lib/sqa/data_frame.rb:82`
+    [`lib/sqa/data_frame.rb:82`](https://github.com/madbomber/sqa/blob/main/lib/sqa/data_frame.rb#L82)
 
 ---
 
@@ -420,7 +420,7 @@ Appends another DataFrame to this one in place.
     df1.append!(df2)
     ```
 ??? info "Source Location"
-    `lib/sqa/data_frame.rb:107`
+    [`lib/sqa/data_frame.rb:107`](https://github.com/madbomber/sqa/blob/main/lib/sqa/data_frame.rb#L107)
 
 ---
 
@@ -444,7 +444,7 @@ Appends another DataFrame to this one in place.
     df1.append!(df2)
     ```
 ??? info "Source Location"
-    `lib/sqa/data_frame.rb:124`
+    [`lib/sqa/data_frame.rb:124`](https://github.com/madbomber/sqa/blob/main/lib/sqa/data_frame.rb#L124)
 
 ---
 
@@ -466,7 +466,7 @@ will produce a warning and force ascending order to prevent silent calculation e
 
 
 ??? info "Source Location"
-    `lib/sqa/data_frame.rb:135`
+    [`lib/sqa/data_frame.rb:135`](https://github.com/madbomber/sqa/blob/main/lib/sqa/data_frame.rb#L135)
 
 ---
 
@@ -484,7 +484,7 @@ Returns the column names of the DataFrame.
     List of column names
 
 ??? info "Source Location"
-    `lib/sqa/data_frame.rb:159`
+    [`lib/sqa/data_frame.rb:159`](https://github.com/madbomber/sqa/blob/main/lib/sqa/data_frame.rb#L159)
 
 ---
 
@@ -503,7 +503,7 @@ Alias for {#columns}.
     List of column names
 
 ??? info "Source Location"
-    `lib/sqa/data_frame.rb:167`
+    [`lib/sqa/data_frame.rb:167`](https://github.com/madbomber/sqa/blob/main/lib/sqa/data_frame.rb#L167)
 
 ---
 
@@ -522,7 +522,7 @@ Alias for {#columns}.
     List of column names
 
 ??? info "Source Location"
-    `lib/sqa/data_frame.rb:170`
+    [`lib/sqa/data_frame.rb:170`](https://github.com/madbomber/sqa/blob/main/lib/sqa/data_frame.rb#L170)
 
 ---
 
@@ -544,7 +544,7 @@ Converts the DataFrame to a Ruby Hash.
     df.to_h  # => { timestamp: ["2024-01-01", ...], close_price: [100.0, ...] }
     ```
 ??? info "Source Location"
-    `lib/sqa/data_frame.rb:179`
+    [`lib/sqa/data_frame.rb:179`](https://github.com/madbomber/sqa/blob/main/lib/sqa/data_frame.rb#L179)
 
 ---
 
@@ -564,7 +564,7 @@ Writes the DataFrame to a CSV file.
     
 
 ??? info "Source Location"
-    `lib/sqa/data_frame.rb:187`
+    [`lib/sqa/data_frame.rb:187`](https://github.com/madbomber/sqa/blob/main/lib/sqa/data_frame.rb#L187)
 
 ---
 
@@ -582,7 +582,7 @@ Returns the number of rows in the DataFrame.
     Row count
 
 ??? info "Source Location"
-    `lib/sqa/data_frame.rb:194`
+    [`lib/sqa/data_frame.rb:194`](https://github.com/madbomber/sqa/blob/main/lib/sqa/data_frame.rb#L194)
 
 ---
 
@@ -600,7 +600,7 @@ Returns the number of rows in the DataFrame.
     Row count
 
 ??? info "Source Location"
-    `lib/sqa/data_frame.rb:197`
+    [`lib/sqa/data_frame.rb:197`](https://github.com/madbomber/sqa/blob/main/lib/sqa/data_frame.rb#L197)
 
 ---
 
@@ -618,7 +618,7 @@ Returns the number of rows in the DataFrame.
     Row count
 
 ??? info "Source Location"
-    `lib/sqa/data_frame.rb:198`
+    [`lib/sqa/data_frame.rb:198`](https://github.com/madbomber/sqa/blob/main/lib/sqa/data_frame.rb#L198)
 
 ---
 
@@ -636,7 +636,7 @@ Returns the number of columns in the DataFrame.
     Column count
 
 ??? info "Source Location"
-    `lib/sqa/data_frame.rb:203`
+    [`lib/sqa/data_frame.rb:203`](https://github.com/madbomber/sqa/blob/main/lib/sqa/data_frame.rb#L203)
 
 ---
 
@@ -664,7 +664,7 @@ FPL Analysis - Calculate Future Period Loss/Profit
     fpl_data = stock.df.fpl(fpop: 10)
     ```
 ??? info "Source Location"
-    `lib/sqa/data_frame.rb:218`
+    [`lib/sqa/data_frame.rb:218`](https://github.com/madbomber/sqa/blob/main/lib/sqa/data_frame.rb#L218)
 
 ---
 
@@ -694,7 +694,7 @@ FPL Analysis with risk metrics and classification
     analysis.first[:risk]       # => Volatility range
     ```
 ??? info "Source Location"
-    `lib/sqa/data_frame.rb:236`
+    [`lib/sqa/data_frame.rb:236`](https://github.com/madbomber/sqa/blob/main/lib/sqa/data_frame.rb#L236)
 
 ---
 
@@ -719,7 +719,7 @@ This allows direct access to Polars methods like filter, select, etc.
     Result from Polars DataFrame method
 
 ??? info "Source Location"
-    `lib/sqa/data_frame.rb:257`
+    [`lib/sqa/data_frame.rb:257`](https://github.com/madbomber/sqa/blob/main/lib/sqa/data_frame.rb#L257)
 
 ---
 
@@ -742,7 +742,7 @@ Checks if the DataFrame responds to a method.
     true if method is available
 
 ??? info "Source Location"
-    `lib/sqa/data_frame.rb:267`
+    [`lib/sqa/data_frame.rb:267`](https://github.com/madbomber/sqa/blob/main/lib/sqa/data_frame.rb#L267)
 
 ---
 
