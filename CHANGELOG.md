@@ -1,5 +1,31 @@
 ## [Unreleased]
 
+## [0.0.39] - 2025-11-24
+
+### Added
+- **YARD Documentation Examples**:
+  - Added comprehensive usage examples to 15+ critical methods across core classes
+  - `SQA::Portfolio`: Examples for `#buy`, `#sell`, `#value`, `#summary` methods
+  - `SQA::Backtest`: Examples for `#run` method showing RSI strategy, custom date ranges, and equity curve access
+  - `SQA::Stock`: Examples for `#update` method with API metadata fetching
+  - `SQA::DataFrame`: Examples for `#concat_and_deduplicate!` and `#to_csv` methods
+  - All examples demonstrate real-world usage with expected outputs
+
+- **File Formats Documentation**:
+  - Created comprehensive `docs/file_formats.md` documenting all CSV and JSON formats
+  - **Portfolio Positions CSV**: Schema and usage for `save_to_csv()` / `load_from_csv()`
+  - **Trade History CSV**: Schema and usage for `save_trades_to_csv()`
+  - **Stock Data CSV**: OHLCV format with critical TA-Lib ordering requirements
+  - **Stock Metadata JSON**: Company overview data structure
+  - **Configuration Files**: YAML/TOML format documentation
+  - Added to MkDocs navigation under User Guide > Core Concepts
+
+### Changed
+- **API Documentation Improvements**:
+  - Regenerated all 51+ API reference markdown files with new examples
+  - Examples now appear in purple Material Design admonition boxes
+  - Improved discoverability of common usage patterns
+
 ## [0.0.38] - 2025-11-24
 
 ### Added
