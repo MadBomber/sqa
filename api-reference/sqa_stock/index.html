@@ -652,6 +652,8 @@
       
         
       
+        
+      
     
     
     
@@ -749,6 +751,34 @@
     
   
     Trading Strategies
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../file_formats/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    File Formats
   
 
     
@@ -3578,6 +3608,17 @@ Silently handles errors since overview data is optional.</p>
 <p class="admonition-title">Returns</p>
 <p><strong>Type:</strong> <code>void</code></p>
 </div>
+<div class="admonition example">
+<p class="admonition-title">Usage Examples</p>
+<div class="language-ruby highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="n">stock</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="no">SQA</span><span class="o">::</span><span class="no">Stock</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="ss">ticker</span><span class="p">:</span><span class="w"> </span><span class="s1">&#39;AAPL&#39;</span><span class="p">)</span>
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="n">stock</span><span class="o">.</span><span class="n">update</span><span class="w">  </span><span class="c1"># Fetches latest company overview data</span>
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="n">stock</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">overview</span><span class="o">[</span><span class="s1">&#39;market_capitalization&#39;</span><span class="o">]</span><span class="w">  </span><span class="c1"># =&gt; 2500000000000</span>
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="n">stock</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">overview</span><span class="o">[</span><span class="s1">&#39;pe_ratio&#39;</span><span class="o">]</span><span class="w">  </span><span class="c1"># =&gt; 28.5</span>
+</span></code></pre></div>
+<div class="language-ruby highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="n">stock</span><span class="o">.</span><span class="n">update</span><span class="w">  </span><span class="c1"># No error raised if API is unavailable</span>
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="c1"># Warning logged but stock remains usable with cached data</span>
+</span></code></pre></div>
+</div>
 <details class="info">
 <summary>Source Location</summary>
 <p><a href="https://github.com/madbomber/sqa/blob/main/lib/sqa/stock.rb#L134"><code>lib/sqa/stock.rb:134</code></a></p>
@@ -3744,7 +3785,7 @@ or data is already current.</p>
 </div>
 <div class="admonition example">
 <p class="admonition-title">Usage Examples</p>
-<div class="language-ruby highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="n">stock</span><span class="o">.</span><span class="n">to_s</span><span class="w">  </span><span class="c1"># =&gt; &quot;aapl with 252 data points from 2023-01-03 to 2023-12-29&quot;</span>
+<div class="language-ruby highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="n">stock</span><span class="o">.</span><span class="n">to_s</span><span class="w">  </span><span class="c1"># =&gt; &quot;aapl with 252 data points from 2023-01-03 to 2023-12-29&quot;</span>
 </span></code></pre></div>
 </div>
 <details class="info">
@@ -3763,7 +3804,7 @@ This ensures compatibility with TA-Lib indicators which expect arrays in this or
 </div>
 <div class="admonition example">
 <p class="admonition-title">Usage Examples</p>
-<div class="language-ruby highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="n">stock</span><span class="o">.</span><span class="n">to_s</span><span class="w">  </span><span class="c1"># =&gt; &quot;aapl with 252 data points from 2023-01-03 to 2023-12-29&quot;</span>
+<div class="language-ruby highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="n">stock</span><span class="o">.</span><span class="n">to_s</span><span class="w">  </span><span class="c1"># =&gt; &quot;aapl with 252 data points from 2023-01-03 to 2023-12-29&quot;</span>
 </span></code></pre></div>
 </div>
 <details class="info">

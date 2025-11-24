@@ -652,6 +652,8 @@
       
         
       
+        
+      
     
     
     
@@ -749,6 +751,34 @@
     
   
     Trading Strategies
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../file_formats/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    File Formats
   
 
     
@@ -3191,9 +3221,9 @@
 <h1 id="sqadataframe">📦 SQA::DataFrame<a class="headerlink" href="#sqadataframe" title="Permanent link">&para;</a></h1>
 <div class="admonition note">
 <p class="admonition-title">Description</p>
-<p>The website financial.yahoo.com no longer supports an API.
-  To get recent stock historical price updates you have
-  to scrape the webpage.</p>
+<p>High-performance DataFrame wrapper around Polars for time series data manipulation.
+Provides convenience methods for stock market data while leveraging Polars' Rust-backed
+performance for vectorized operations.</p>
 </div>
 <div class="admonition abstract">
 <p class="admonition-title">Source Information</p>
@@ -3884,6 +3914,23 @@ will produce a warning and force ascending order to prevent silent calculation e
 </tbody>
 </table>
 </div>
+<div class="admonition example">
+<p class="admonition-title">Usage Examples</p>
+<div class="language-ruby highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="n">stock</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="no">SQA</span><span class="o">::</span><span class="no">Stock</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="ss">ticker</span><span class="p">:</span><span class="w"> </span><span class="s1">&#39;AAPL&#39;</span><span class="p">)</span>
+</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a><span class="n">df</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">stock</span><span class="o">.</span><span class="n">df</span>
+</span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a><span class="n">df</span><span class="o">.</span><span class="n">size</span><span class="w">  </span><span class="c1"># =&gt; 252</span>
+</span><span id="__span-9-4"><a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a>
+</span><span id="__span-9-5"><a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a><span class="c1"># Fetch recent data (may have overlapping dates)</span>
+</span><span id="__span-9-6"><a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a><span class="n">new_df</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="no">SQA</span><span class="o">::</span><span class="no">DataFrame</span><span class="o">::</span><span class="no">AlphaVantage</span><span class="o">.</span><span class="n">recent</span><span class="p">(</span><span class="s1">&#39;AAPL&#39;</span><span class="p">,</span><span class="w"> </span><span class="ss">from_date</span><span class="p">:</span><span class="w"> </span><span class="no">Date</span><span class="o">.</span><span class="n">today</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">7</span><span class="p">)</span>
+</span><span id="__span-9-7"><a id="__codelineno-9-7" name="__codelineno-9-7" href="#__codelineno-9-7"></a><span class="n">df</span><span class="o">.</span><span class="n">concat_and_deduplicate!</span><span class="p">(</span><span class="n">new_df</span><span class="p">)</span>
+</span><span id="__span-9-8"><a id="__codelineno-9-8" name="__codelineno-9-8" href="#__codelineno-9-8"></a><span class="c1"># Duplicates removed, data sorted ascending (oldest first)</span>
+</span><span id="__span-9-9"><a id="__codelineno-9-9" name="__codelineno-9-9" href="#__codelineno-9-9"></a><span class="n">df</span><span class="o">.</span><span class="n">size</span><span class="w">  </span><span class="c1"># =&gt; 255 (only 3 new unique dates added)</span>
+</span></code></pre></div>
+<div class="language-ruby highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="n">df</span><span class="o">.</span><span class="n">concat_and_deduplicate!</span><span class="p">(</span><span class="n">new_df</span><span class="p">)</span><span class="w">  </span><span class="c1"># Sorted ascending automatically</span>
+</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a><span class="n">prices</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">df</span><span class="o">[</span><span class="s2">&quot;adj_close_price&quot;</span><span class="o">].</span><span class="n">to_a</span>
+</span><span id="__span-10-3"><a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a><span class="n">rsi</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="no">SQAI</span><span class="o">.</span><span class="n">rsi</span><span class="p">(</span><span class="n">prices</span><span class="p">,</span><span class="w"> </span><span class="ss">period</span><span class="p">:</span><span class="w"> </span><span class="mi">14</span><span class="p">)</span><span class="w">  </span><span class="c1"># Works correctly with ascending data</span>
+</span></code></pre></div>
+</div>
 <details class="info">
 <summary>Source Location</summary>
 <p><a href="https://github.com/madbomber/sqa/blob/main/lib/sqa/data_frame.rb#L135"><code>lib/sqa/data_frame.rb:135</code></a></p>
@@ -3936,7 +3983,7 @@ Alias for {#columns}.</p>
 </div>
 <div class="admonition example">
 <p class="admonition-title">Usage Examples</p>
-<div class="language-ruby highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="n">df</span><span class="o">.</span><span class="n">to_h</span><span class="w">  </span><span class="c1"># =&gt; { timestamp: [&quot;2024-01-01&quot;, ...], close_price: [100.0, ...] }</span>
+<div class="language-ruby highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="n">df</span><span class="o">.</span><span class="n">to_h</span><span class="w">  </span><span class="c1"># =&gt; { timestamp: [&quot;2024-01-01&quot;, ...], close_price: [100.0, ...] }</span>
 </span></code></pre></div>
 </div>
 <details class="info">
@@ -3968,6 +4015,14 @@ Alias for {#columns}.</p>
 <div class="admonition success">
 <p class="admonition-title">Returns</p>
 <p><strong>Type:</strong> <code>void</code></p>
+</div>
+<div class="admonition example">
+<p class="admonition-title">Usage Examples</p>
+<div class="language-ruby highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="n">stock</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="no">SQA</span><span class="o">::</span><span class="no">Stock</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="ss">ticker</span><span class="p">:</span><span class="w"> </span><span class="s1">&#39;AAPL&#39;</span><span class="p">)</span>
+</span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a><span class="n">stock</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="s1">&#39;aapl_prices.csv&#39;</span><span class="p">)</span>
+</span></code></pre></div>
+<div class="language-ruby highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="n">df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="no">Pathname</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="s1">&#39;data/exports/prices.csv&#39;</span><span class="p">))</span>
+</span></code></pre></div>
 </div>
 <details class="info">
 <summary>Source Location</summary>
@@ -4055,8 +4110,8 @@ Alias for {#columns}.</p>
 </div>
 <div class="admonition example">
 <p class="admonition-title">Usage Examples</p>
-<div class="language-ruby highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="n">stock</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="no">SQA</span><span class="o">::</span><span class="no">Stock</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="ss">ticker</span><span class="p">:</span><span class="w"> </span><span class="s1">&#39;AAPL&#39;</span><span class="p">)</span>
-</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a><span class="n">fpl_data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">stock</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">fpl</span><span class="p">(</span><span class="ss">fpop</span><span class="p">:</span><span class="w"> </span><span class="mi">10</span><span class="p">)</span>
+<div class="language-ruby highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a><span class="n">stock</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="no">SQA</span><span class="o">::</span><span class="no">Stock</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="ss">ticker</span><span class="p">:</span><span class="w"> </span><span class="s1">&#39;AAPL&#39;</span><span class="p">)</span>
+</span><span id="__span-14-2"><a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a><span class="n">fpl_data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">stock</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">fpl</span><span class="p">(</span><span class="ss">fpop</span><span class="p">:</span><span class="w"> </span><span class="mi">10</span><span class="p">)</span>
 </span></code></pre></div>
 </div>
 <details class="info">
@@ -4097,10 +4152,10 @@ Alias for {#columns}.</p>
 </div>
 <div class="admonition example">
 <p class="admonition-title">Usage Examples</p>
-<div class="language-ruby highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="n">analysis</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">stock</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">fpl_analysis</span><span class="p">(</span><span class="ss">fpop</span><span class="p">:</span><span class="w"> </span><span class="mi">10</span><span class="p">)</span>
-</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a><span class="n">analysis</span><span class="o">.</span><span class="n">first</span><span class="o">[</span><span class="ss">:direction</span><span class="o">]</span><span class="w">  </span><span class="c1"># =&gt; :UP, :DOWN, :UNCERTAIN, or :FLAT</span>
-</span><span id="__span-11-3"><a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a><span class="n">analysis</span><span class="o">.</span><span class="n">first</span><span class="o">[</span><span class="ss">:magnitude</span><span class="o">]</span><span class="w">  </span><span class="c1"># =&gt; Average expected movement percentage</span>
-</span><span id="__span-11-4"><a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a><span class="n">analysis</span><span class="o">.</span><span class="n">first</span><span class="o">[</span><span class="ss">:risk</span><span class="o">]</span><span class="w">       </span><span class="c1"># =&gt; Volatility range</span>
+<div class="language-ruby highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a><span class="n">analysis</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">stock</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">fpl_analysis</span><span class="p">(</span><span class="ss">fpop</span><span class="p">:</span><span class="w"> </span><span class="mi">10</span><span class="p">)</span>
+</span><span id="__span-15-2"><a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a><span class="n">analysis</span><span class="o">.</span><span class="n">first</span><span class="o">[</span><span class="ss">:direction</span><span class="o">]</span><span class="w">  </span><span class="c1"># =&gt; :UP, :DOWN, :UNCERTAIN, or :FLAT</span>
+</span><span id="__span-15-3"><a id="__codelineno-15-3" name="__codelineno-15-3" href="#__codelineno-15-3"></a><span class="n">analysis</span><span class="o">.</span><span class="n">first</span><span class="o">[</span><span class="ss">:magnitude</span><span class="o">]</span><span class="w">  </span><span class="c1"># =&gt; Average expected movement percentage</span>
+</span><span id="__span-15-4"><a id="__codelineno-15-4" name="__codelineno-15-4" href="#__codelineno-15-4"></a><span class="n">analysis</span><span class="o">.</span><span class="n">first</span><span class="o">[</span><span class="ss">:risk</span><span class="o">]</span><span class="w">       </span><span class="c1"># =&gt; Volatility range</span>
 </span></code></pre></div>
 </div>
 <details class="info">
