@@ -4,7 +4,7 @@ Complete API documentation for all SQA classes and modules.
 
 !!! tip "Auto-Generated Documentation"
     This documentation is automatically generated from YARD comments in the source code.
-    Last updated: 2025-11-24 14:30:24
+    Last updated: 2025-11-24 14:46:25
 
 ## 🎯 SQA
 
