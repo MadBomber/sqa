@@ -1,0 +1,88 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 450" width="1400" height="450">
+  <defs>
+    <style>
+      .box { stroke: #ffffff; stroke-width: 3; }
+      .text { fill: #ffffff; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 15px; font-weight: 600; text-anchor: middle; }
+      .small-text { fill: #ffffff; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 13px; font-weight: 500; text-anchor: middle; }
+      .arrow { stroke: #ffffff; stroke-width: 2.5; fill: none; marker-end: url(#arrowhead); }
+      .diamond { stroke: #ffffff; stroke-width: 3; }
+      .label { fill: #ffffff; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 14px; font-weight: 500; }
+    </style>
+    <marker id="arrowhead" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <polygon points="0 0, 10 3, 0 6" fill="#ffffff" />
+    </marker>
+  </defs>
+
+  <!-- Install SQA -->
+  <rect x="30" y="180" width="150" height="70" rx="8" class="box" fill="#2E86DE"/>
+  <text x="105" y="210" class="text">Install</text>
+  <text x="105" y="230" class="text">SQA</text>
+
+  <!-- Configure API Keys -->
+  <rect x="220" y="180" width="150" height="70" rx="8" class="box" fill="#3867D6"/>
+  <text x="295" y="210" class="text">Configure</text>
+  <text x="295" y="230" class="text">API Keys</text>
+
+  <!-- Load Stock Data -->
+  <rect x="410" y="180" width="150" height="70" rx="8" class="box" fill="#10AC84"/>
+  <text x="485" y="210" class="text">Load Stock</text>
+  <text x="485" y="230" class="text">Data</text>
+
+  <!-- Calculate Indicators -->
+  <rect x="600" y="180" width="150" height="70" rx="8" class="box" fill="#EE5A6F"/>
+  <text x="675" y="210" class="text">Calculate</text>
+  <text x="675" y="230" class="text">Indicators</text>
+
+  <!-- Apply Strategies -->
+  <rect x="790" y="180" width="150" height="70" rx="8" class="box" fill="#F368E0"/>
+  <text x="865" y="210" class="text">Apply</text>
+  <text x="865" y="230" class="text">Strategies</text>
+
+  <!-- Analysis Type Diamond -->
+  <g transform="translate(1030, 215)">
+    <polygon points="0,-50 70,0 0,50 -70,0" class="diamond" fill="#FD79A8"/>
+    <text x="0" y="-5" class="small-text">Analysis</text>
+    <text x="0" y="12" class="small-text">Type</text>
+  </g>
+
+  <!-- Run Backtest -->
+  <rect x="1155" y="50" width="150" height="70" rx="8" class="box" fill="#FF9F43"/>
+  <text x="1230" y="80" class="text">Run</text>
+  <text x="1230" y="100" class="text">Backtest</text>
+
+  <!-- Stream Real-Time -->
+  <rect x="1155" y="180" width="150" height="70" rx="8" class="box" fill="#FFA502"/>
+  <text x="1230" y="210" class="text">Stream</text>
+  <text x="1230" y="230" class="text">Real-Time</text>
+
+  <!-- Explore in Console -->
+  <rect x="1155" y="310" width="150" height="70" rx="8" class="box" fill="#FF6348"/>
+  <text x="1230" y="333" class="text">Explore in</text>
+  <text x="1230" y="353" class="text">Console</text>
+
+  <!-- Review Results -->
+  <rect x="1155" y="420" width="150" height="50" rx="8" class="box" fill="#26DE81"/>
+  <text x="1230" y="450" class="text">Review Results</text>
+
+  <!-- Arrows - Main flow -->
+  <path d="M 180 215 L 220 215" class="arrow"/>
+  <path d="M 370 215 L 410 215" class="arrow"/>
+  <path d="M 560 215 L 600 215" class="arrow"/>
+  <path d="M 750 215 L 790 215" class="arrow"/>
+  <path d="M 940 215 L 960 215" class="arrow"/>
+
+  <!-- Arrows from diamond -->
+  <path d="M 1030 165 L 1030 85 L 1155 85" class="arrow"/>
+  <path d="M 1100 215 L 1155 215" class="arrow"/>
+  <path d="M 1030 265 L 1030 345 L 1155 345" class="arrow"/>
+
+  <!-- Arrows to Review Results -->
+  <path d="M 1230 120 L 1230 420" class="arrow"/>
+  <path d="M 1230 250 L 1230 420" class="arrow"/>
+  <path d="M 1230 380 L 1230 420" class="arrow"/>
+
+  <!-- Labels on decision paths -->
+  <text x="1090" y="115" class="label">Backtest</text>
+  <text x="1120" y="210" class="label">Live</text>
+  <text x="1090" y="305" class="label">Research</text>
+</svg>

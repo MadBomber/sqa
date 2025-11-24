@@ -1,0 +1,138 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 800" width="1100" height="800">
+  <defs>
+    <style>
+      .participant { stroke: #ffffff; stroke-width: 3; }
+      .text { fill: #ffffff; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 15px; font-weight: 600; text-anchor: middle; }
+      .small-text { fill: #ffffff; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 13px; font-weight: 500; }
+      .arrow { stroke: #ffffff; stroke-width: 2.5; marker-end: url(#arrowhead); }
+      .return-arrow { stroke: #ffffff; stroke-width: 2; stroke-dasharray: 5,5; marker-end: url(#arrowhead-dashed); }
+      .lifeline { stroke: #888888; stroke-width: 1; stroke-dasharray: 5,5; }
+    </style>
+    <marker id="arrowhead" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <polygon points="0 0, 10 3, 0 6" fill="#ffffff" />
+    </marker>
+    <marker id="arrowhead-dashed" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <polygon points="0 0, 10 3, 0 6" fill="#ffffff" />
+    </marker>
+  </defs>
+
+  <!-- Participants -->
+  <rect x="30" y="20" width="120" height="60" rx="8" class="participant" fill="#2E86DE"/>
+  <text x="90" y="55" class="text">User</text>
+
+  <rect x="210" y="20" width="120" height="60" rx="8" class="participant" fill="#10AC84"/>
+  <text x="270" y="55" class="text">Stock</text>
+
+  <rect x="390" y="20" width="140" height="60" rx="8" class="participant" fill="#EE5A6F"/>
+  <text x="460" y="55" class="text">DataFrame</text>
+
+  <rect x="590" y="20" width="140" height="60" rx="8" class="participant" fill="#F368E0"/>
+  <text x="660" y="55" class="text">Indicators</text>
+
+  <rect x="790" y="20" width="120" height="60" rx="8" class="participant" fill="#FF9F43"/>
+  <text x="850" y="55" class="text">Strategy</text>
+
+  <rect x="970" y="20" width="120" height="60" rx="8" class="participant" fill="#5F27CD"/>
+  <text x="1030" y="55" class="text">Portfolio</text>
+
+  <!-- Lifelines -->
+  <line x1="90" y1="80" x2="90" y2="760" class="lifeline"/>
+  <line x1="270" y1="80" x2="270" y2="760" class="lifeline"/>
+  <line x1="460" y1="80" x2="460" y2="760" class="lifeline"/>
+  <line x1="660" y1="80" x2="660" y2="760" class="lifeline"/>
+  <line x1="850" y1="80" x2="850" y2="760" class="lifeline"/>
+  <line x1="1030" y1="80" x2="1030" y2="760" class="lifeline"/>
+
+  <!-- Sequence Messages -->
+
+  <!-- 1. User -> Stock: new(ticker: 'AAPL') -->
+  <line x1="90" y1="120" x2="270" y2="120" class="arrow" fill="none"/>
+  <text x="140" y="115" class="small-text">new(ticker: 'AAPL')</text>
+
+  <!-- 2. Stock -> DataFrame: Load/fetch data -->
+  <line x1="270" y1="160" x2="460" y2="160" class="arrow" fill="none"/>
+  <text x="330" y="155" class="small-text">Load/fetch data</text>
+
+  <!-- 3. DataFrame -> Stock: Price/volume data (return) -->
+  <line x1="460" y1="200" x2="270" y2="200" class="return-arrow" fill="none"/>
+  <text x="330" y="195" class="small-text">Price/volume data</text>
+
+  <!-- 4. User -> DataFrame: Extract prices array -->
+  <line x1="90" y1="260" x2="460" y2="260" class="arrow" fill="none"/>
+  <text x="240" y="255" class="small-text">Extract prices array</text>
+
+  <!-- 5. DataFrame -> User: prices[] (return) -->
+  <line x1="460" y1="300" x2="90" y2="300" class="return-arrow" fill="none"/>
+  <text x="240" y="295" class="small-text">prices[]</text>
+
+  <!-- 6. User -> Indicators: Calculate RSI, MACD, etc. -->
+  <line x1="90" y1="360" x2="660" y2="360" class="arrow" fill="none"/>
+  <text x="330" y="355" class="small-text">Calculate RSI, MACD, etc.</text>
+
+  <!-- 7. Indicators -> User: indicator values[] (return) -->
+  <line x1="660" y1="400" x2="90" y2="400" class="return-arrow" fill="none"/>
+  <text x="330" y="395" class="small-text">indicator values[]</text>
+
+  <!-- 8. User -> Strategy: Create vector, execute -->
+  <line x1="90" y1="460" x2="850" y2="460" class="arrow" fill="none"/>
+  <text x="430" y="455" class="small-text">Create vector, execute</text>
+
+  <!-- 9. Strategy -> User: :buy/:sell/:hold (return) -->
+  <line x1="850" y1="500" x2="90" y2="500" class="return-arrow" fill="none"/>
+  <text x="430" y="495" class="small-text">:buy/:sell/:hold</text>
+
+  <!-- 10. User -> Portfolio: Execute trade -->
+  <line x1="90" y1="560" x2="1030" y2="560" class="arrow" fill="none"/>
+  <text x="520" y="555" class="small-text">Execute trade</text>
+
+  <!-- 11. Portfolio -> User: Updated positions (return) -->
+  <line x1="1030" y1="600" x2="90" y2="600" class="return-arrow" fill="none"/>
+  <text x="520" y="595" class="small-text">Updated positions</text>
+
+  <!-- Activation bars -->
+  <rect x="85" y="115" width="10" height="15" fill="#2E86DE" opacity="0.7"/>
+  <rect x="265" y="155" width="10" height="15" fill="#10AC84" opacity="0.7"/>
+  <rect x="455" y="195" width="10" height="15" fill="#EE5A6F" opacity="0.7"/>
+  <rect x="85" y="255" width="10" height="55" fill="#2E86DE" opacity="0.7"/>
+  <rect x="455" y="255" width="10" height="55" fill="#EE5A6F" opacity="0.7"/>
+  <rect x="85" y="355" width="10" height="55" fill="#2E86DE" opacity="0.7"/>
+  <rect x="655" y="355" width="10" height="55" fill="#F368E0" opacity="0.7"/>
+  <rect x="85" y="455" width="10" height="55" fill="#2E86DE" opacity="0.7"/>
+  <rect x="845" y="455" width="10" height="55" fill="#FF9F43" opacity="0.7"/>
+  <rect x="85" y="555" width="10" height="55" fill="#2E86DE" opacity="0.7"/>
+  <rect x="1025" y="555" width="10" height="55" fill="#5F27CD" opacity="0.7"/>
+
+  <!-- Step numbers -->
+  <circle cx="180" cy="120" r="12" fill="#FFFFFF" opacity="0.3"/>
+  <text x="180" y="125" class="small-text" text-anchor="middle">1</text>
+
+  <circle cx="365" cy="160" r="12" fill="#FFFFFF" opacity="0.3"/>
+  <text x="365" y="165" class="small-text" text-anchor="middle">2</text>
+
+  <circle cx="365" cy="200" r="12" fill="#FFFFFF" opacity="0.3"/>
+  <text x="365" y="205" class="small-text" text-anchor="middle">3</text>
+
+  <circle cx="275" cy="260" r="12" fill="#FFFFFF" opacity="0.3"/>
+  <text x="275" y="265" class="small-text" text-anchor="middle">4</text>
+
+  <circle cx="275" cy="300" r="12" fill="#FFFFFF" opacity="0.3"/>
+  <text x="275" y="305" class="small-text" text-anchor="middle">5</text>
+
+  <circle cx="375" cy="360" r="12" fill="#FFFFFF" opacity="0.3"/>
+  <text x="375" y="365" class="small-text" text-anchor="middle">6</text>
+
+  <circle cx="375" cy="400" r="12" fill="#FFFFFF" opacity="0.3"/>
+  <text x="375" y="405" class="small-text" text-anchor="middle">7</text>
+
+  <circle cx="470" cy="460" r="12" fill="#FFFFFF" opacity="0.3"/>
+  <text x="470" y="465" class="small-text" text-anchor="middle">8</text>
+
+  <circle cx="470" cy="500" r="12" fill="#FFFFFF" opacity="0.3"/>
+  <text x="470" y="505" class="small-text" text-anchor="middle">9</text>
+
+  <circle cx="560" cy="560" r="12" fill="#FFFFFF" opacity="0.3"/>
+  <text x="560" y="565" class="small-text" text-anchor="middle">10</text>
+
+  <circle cx="560" cy="600" r="12" fill="#FFFFFF" opacity="0.3"/>
+  <text x="560" y="605" class="small-text" text-anchor="middle">11</text>
+</svg>
