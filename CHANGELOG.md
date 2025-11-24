@@ -1,6 +1,22 @@
 ## [Unreleased]
 
-## [0.0.32] 2025-11-12
+## [0.0.33] - 2025-11-23
+
+### Removed
+- **Sinatra Example App**: Removed `examples/sinatra_app/` directory
+  - Functionality moved to separate gem: [sqa_demo-sinatra](https://github.com/MadBomber/sqa_demo-sinatra)
+  - Cleaner separation between library and demo application
+
+### Added
+- **Documentation**: Added links to sqa_demo-sinatra demo application
+  - Updated README.md with Web Demo Application section
+  - Updated docs/index.md with Demo Application section
+  - Updated examples/README.md with reference to web demo
+- **LLM Documentation**: Added llms.txt for AI assistant compatibility
+- **Improvement Plan**: Added docs/IMPROVEMENT_PLAN.md for upcoming code quality improvements
+
+## [0.0.32] - 2024-11-12
+
 ### Added
 - **CSV Updates**: Conditional CSV updates based on timestamp
   - Only updates CSV files when new data is available

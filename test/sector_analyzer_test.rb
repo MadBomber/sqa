@@ -61,7 +61,8 @@ class SectorAnalyzerTest < Minitest::Test
     assert stock_facts.size > 0
     apple_fact = stock_facts.find { |f| f.attributes[:ticker] == 'AAPL' }
     assert apple_fact
-    assert_equal :technology, apple_fact.attributes[:sector]
+    # Blackboard may store sector as string or symbol depending on serialization
+    assert_equal :technology, apple_fact.attributes[:sector].to_sym
   end
 
   def test_add_stock_no_duplicates

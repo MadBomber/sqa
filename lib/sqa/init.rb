@@ -31,7 +31,7 @@ module SQA
 		end
 
 		def av_api_key
-			@@av_api_key || raise('Alpha Vantage API key not set. Set AV_API_KEY or ALPHAVANTAGE_API_KEY environment variable.')
+			@@av_api_key || raise(SQA::ConfigurationError, 'Alpha Vantage API key not set. Set AV_API_KEY or ALPHAVANTAGE_API_KEY environment variable.')
 		end
 
 		# Legacy accessor for backward compatibility

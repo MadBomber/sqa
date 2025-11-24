@@ -51,7 +51,7 @@ class SQA::Stock
   def update
     begin
       merge_overview
-    rescue => e
+    rescue StandardError => e
       # Log warning but don't fail - overview data is optional
       # Common causes: rate limits, network issues, API errors
       warn "Warning: Could not fetch overview data for #{@ticker} (#{e.class}: #{e.message}). Continuing without it."
@@ -103,9 +103,12 @@ class SQA::Stock
         @df = @klass.recent(@ticker, full: true)
         @df.to_csv(@df_path)
         return
-      rescue => e
+      rescue StandardError => e
         # If we can't fetch data, raise a more helpful error
-        raise "Unable to fetch data for #{@ticker}. Please ensure API key is set or provide cached CSV file at #{@df_path}. Error: #{e.message}"
+        raise SQA::DataFetchError.new(
+          "Unable to fetch data for #{@ticker}. Please ensure API key is set or provide cached CSV file at #{@df_path}. Error: #{e.message}",
+          original: e
+        )
       end
     end
 
@@ -125,7 +128,7 @@ class SQA::Stock
         @df.concat_and_deduplicate!(df2)
         @df.to_csv(@df_path)
       end
-    rescue => e
+    rescue StandardError => e
       # Log warning but don't fail - we have cached data
       # Common causes: rate limits, network issues, API errors
       warn "Warning: Could not update #{@ticker} from API (#{e.class}: #{e.message}). Using cached data."
@@ -140,7 +143,7 @@ class SQA::Stock
     if @source == :alpha_vantage
       begin
         SQA.av_api_key
-      rescue
+      rescue SQA::ConfigurationError
         return false
       end
     end
@@ -151,7 +154,7 @@ class SQA::Stock
       begin
         last_timestamp = Date.parse(@df["timestamp"].to_a.last)
         return false if last_timestamp >= Date.today
-      rescue => e
+      rescue ArgumentError, Date::Error => e
         # If we can't parse the date, assume we need to update
         warn "Warning: Could not parse last timestamp for #{@ticker} (#{e.message}). Will attempt update." if $VERBOSE
       end
@@ -173,7 +176,7 @@ class SQA::Stock
       .to_hash[:body]
     )
 
-    if temp.has_key? "Information"
+    if temp.key?("Information")
       ApiError.raise(temp["Information"])
     end
 

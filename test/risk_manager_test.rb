@@ -181,6 +181,6 @@ class RiskManagerTest < Minitest::Test
 
   def test_cvar_with_empty_returns
     cvar = SQA::RiskManager.cvar([], confidence: 0.95)
-    assert_nil var
+    assert_nil cvar
   end
 end

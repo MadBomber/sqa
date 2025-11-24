@@ -26,12 +26,13 @@ class AlphaVantageTest < Minitest::Test
   def test_header_mapping_has_required_keys
     mapping = SQA::DataFrame::AlphaVantage::HEADER_MAPPING
 
-    assert mapping.key?("date")
+    assert mapping.key?("timestamp")
     assert mapping.key?("open")
     assert mapping.key?("high")
     assert mapping.key?("low")
     assert mapping.key?("close")
-    assert mapping.key?("adjusted_close")
+    # Note: Alpha Vantage CSV doesn't provide adjusted_close separately
+    # (close IS the adjusted close in their API)
     assert mapping.key?("volume")
   end
 
@@ -92,6 +93,6 @@ class AlphaVantageTest < Minitest::Test
 
   def test_connection_url
     connection = SQA::DataFrame::AlphaVantage::CONNECTION
-    assert_equal 'https://www.alphavantage.co', connection.url_prefix.to_s
+    assert_equal 'https://www.alphavantage.co', connection.url_prefix.to_s.chomp('/')
   end
 end

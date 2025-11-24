@@ -4,14 +4,14 @@ require_relative 'test_helper'
 
 class StockTest < Minitest::Test
   def test_invalid_ticker_raises_error
-    assert_raises RuntimeError do
+    assert_raises SQA::DataFetchError do
       SQA::Stock.new(ticker: 'INVALID_TICKER_9999')
     end
   end
 
   def test_ticker_validation_on_initialization
     # Test with a known invalid ticker format
-    assert_raises RuntimeError do
+    assert_raises SQA::DataFetchError do
       SQA::Stock.new(ticker: '!!!!')
     end
   end

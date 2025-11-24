@@ -38,7 +38,7 @@ class SQA::Ticker
       if files.empty?
         begin
           download
-        rescue => e
+        rescue StandardError => e
           warn "Warning: Could not download ticker list: #{e.message}" if $VERBOSE
         end
         tries += 1
@@ -71,5 +71,5 @@ class SQA::Ticker
 
   def self.data           = @@data.empty? ? load : @@data
   def self.lookup(ticker) = data[ticker.upcase]
-  def self.valid?(ticker) = data.has_key?(ticker.upcase)
+  def self.valid?(ticker) = data.key?(ticker.upcase)
 end

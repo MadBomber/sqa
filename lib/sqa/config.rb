@@ -6,6 +6,7 @@
 #   config file ..... overrides envar
 #   command line parameters ...... overrides config file
 
+require 'fileutils'
 require 'yaml'
 require 'toml-rb'
 
@@ -71,6 +72,14 @@ module SQA
       end
     end
 
+    coerce_key :log_level, ->(v) do
+      v.is_a?(String) ? v.to_sym : v
+    end
+
+    coerce_key :plotting_library, ->(v) do
+      v.is_a?(String) ? v.to_sym : v
+    end
+
     ########################################################
     def initialize(a_hash={})
       super(a_hash)
@@ -108,7 +117,7 @@ module SQA
         raise BadParameterError, "Invalid Config File: #{config_file}"
       end
 
-      if incoming.has_key? :data_dir
+      if incoming.key?(:data_dir)
         incoming[:data_dir] = incoming[:data_dir].gsub(/^~/, Nenv.home)
       end
 
@@ -120,7 +129,7 @@ module SQA
         raise BadParameterError, "No config file given"
       end
 
-      `touch #{config_file}`
+      FileUtils.touch(config_file)
       # unless  File.exist?(config_file)
 
       type = File.extname(config_file).downcase
