@@ -132,6 +132,23 @@ class SQA::DataFrame
   #
   # NOTE: TA-Lib requires data in ascending (oldest-first) order. Using descending: true
   # will produce a warning and force ascending order to prevent silent calculation errors.
+  #
+  # @example Merge new data with deduplication
+  #   stock = SQA::Stock.new(ticker: 'AAPL')
+  #   df = stock.df
+  #   df.size  # => 252
+  #
+  #   # Fetch recent data (may have overlapping dates)
+  #   new_df = SQA::DataFrame::AlphaVantage.recent('AAPL', from_date: Date.today - 7)
+  #   df.concat_and_deduplicate!(new_df)
+  #   # Duplicates removed, data sorted ascending (oldest first)
+  #   df.size  # => 255 (only 3 new unique dates added)
+  #
+  # @example Maintains TA-Lib compatibility
+  #   df.concat_and_deduplicate!(new_df)  # Sorted ascending automatically
+  #   prices = df["adj_close_price"].to_a
+  #   rsi = SQAI.rsi(prices, period: 14)  # Works correctly with ascending data
+  #
   def concat_and_deduplicate!(other_df, sort_column: "timestamp", descending: false)
     # Enforce ascending order for TA-Lib compatibility
     if descending
@@ -184,6 +201,14 @@ class SQA::DataFrame
   #
   # @param path_to_file [String, Pathname] Path to output CSV file
   # @return [void]
+  #
+  # @example Save stock data to CSV
+  #   stock = SQA::Stock.new(ticker: 'AAPL')
+  #   stock.df.to_csv('aapl_prices.csv')
+  #
+  # @example Export with custom path
+  #   df.to_csv(Pathname.new('data/exports/prices.csv'))
+  #
   def to_csv(path_to_file)
     @data.write_csv(path_to_file)
   end

@@ -107,7 +107,41 @@ Run the backtest
     
 
     Backtest results
+!!! example "Usage Examples"
 
+    ```ruby
+    stock = SQA::Stock.new(ticker: 'AAPL')
+    backtest = SQA::Backtest.new(
+      stock: stock,
+      strategy: SQA::Strategy::RSI,
+      initial_capital: 10_000,
+      commission: 1.0
+    )
+    results = backtest.run
+    puts results.summary
+    # => Total Return: 15.5%
+    #    Sharpe Ratio: 1.2
+    #    Max Drawdown: -8.3%
+    #    Win Rate: 65%
+    ```
+    
+    ```ruby
+    backtest = SQA::Backtest.new(
+      stock: stock,
+      strategy: SQA::Strategy::MACD,
+      start_date: '2023-01-01',
+      end_date: '2023-12-31'
+    )
+    results = backtest.run
+    results.total_return  # => 0.155 (15.5%)
+    ```
+    
+    ```ruby
+    results = backtest.run
+    backtest.equity_curve.each do |point|
+      puts "#{point[:date]}: $#{point[:value]}"
+    end
+    ```
 ??? info "Source Location"
     [`lib/sqa/backtest.rb:102`](https://github.com/madbomber/sqa/blob/main/lib/sqa/backtest.rb#L102)
 

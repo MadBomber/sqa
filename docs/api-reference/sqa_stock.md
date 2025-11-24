@@ -367,7 +367,19 @@ Silently handles errors since overview data is optional.
     **Type:** `void`
 
     
+!!! example "Usage Examples"
 
+    ```ruby
+    stock = SQA::Stock.new(ticker: 'AAPL')
+    stock.update  # Fetches latest company overview data
+    stock.data.overview['market_capitalization']  # => 2500000000000
+    stock.data.overview['pe_ratio']  # => 28.5
+    ```
+    
+    ```ruby
+    stock.update  # No error raised if API is unavailable
+    # Warning logged but stock remains usable with cached data
+    ```
 ??? info "Source Location"
     [`lib/sqa/stock.rb:134`](https://github.com/madbomber/sqa/blob/main/lib/sqa/stock.rb#L134)
 

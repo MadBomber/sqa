@@ -200,7 +200,21 @@ Buy shares of a stock
     
 
     The executed trade
+!!! example "Usage Examples"
 
+    ```ruby
+    portfolio = SQA::Portfolio.new(initial_cash: 10_000, commission: 1.0)
+    trade = portfolio.buy('AAPL', shares: 10, price: 150.0)
+    trade.action  # => :buy
+    trade.total   # => 1500.0
+    portfolio.cash  # => 8499.0 (10_000 - 1500 - 1.0 commission)
+    ```
+    
+    ```ruby
+    portfolio.buy('AAPL', shares: 10, price: 150.0)
+    portfolio.buy('MSFT', shares: 5, price: 300.0)
+    portfolio.positions.size  # => 2
+    ```
 ??? info "Source Location"
     [`lib/sqa/portfolio.rb:55`](https://github.com/madbomber/sqa/blob/main/lib/sqa/portfolio.rb#L55)
 
@@ -225,7 +239,21 @@ Sell shares of a stock
     
 
     The executed trade
+!!! example "Usage Examples"
 
+    ```ruby
+    portfolio = SQA::Portfolio.new(initial_cash: 10_000, commission: 1.0)
+    portfolio.buy('AAPL', shares: 10, price: 150.0)
+    trade = portfolio.sell('AAPL', shares: 10, price: 160.0)
+    trade.total  # => 1600.0
+    portfolio.cash  # => 8498.0 + 1599.0 = 10097.0 (after commissions)
+    ```
+    
+    ```ruby
+    portfolio.buy('AAPL', shares: 100, price: 150.0)
+    portfolio.sell('AAPL', shares: 50, price: 160.0)  # Sell half
+    portfolio.position('AAPL').shares  # => 50
+    ```
 ??? info "Source Location"
     [`lib/sqa/portfolio.rb:98`](https://github.com/madbomber/sqa/blob/main/lib/sqa/portfolio.rb#L98)
 
@@ -287,7 +315,20 @@ Calculate total portfolio value
     
 
     Total portfolio value (cash + positions)
+!!! example "Usage Examples"
 
+    ```ruby
+    portfolio = SQA::Portfolio.new(initial_cash: 10_000)
+    portfolio.buy('AAPL', shares: 10, price: 150.0)
+    portfolio.buy('MSFT', shares: 5, price: 300.0)
+    
+    current_prices = { 'AAPL' => 160.0, 'MSFT' => 310.0 }
+    portfolio.value(current_prices)  # => 10_000 - 1500 - 1500 + 1600 + 1550 = 10_150
+    ```
+    
+    ```ruby
+    portfolio.value  # Uses purchase prices if no current prices provided
+    ```
 ??? info "Source Location"
     [`lib/sqa/portfolio.rb:148`](https://github.com/madbomber/sqa/blob/main/lib/sqa/portfolio.rb#L148)
 
@@ -393,7 +434,23 @@ Get summary statistics
     
 
     Summary statistics
+!!! example "Usage Examples"
 
+    ```ruby
+    portfolio = SQA::Portfolio.new(initial_cash: 10_000, commission: 1.0)
+    portfolio.buy('AAPL', shares: 10, price: 150.0)
+    portfolio.sell('AAPL', shares: 5, price: 160.0)
+    
+    summary = portfolio.summary({ 'AAPL' => 165.0 })
+    summary[:initial_cash]        # => 10_000.0
+    summary[:current_cash]        # => 8798.0
+    summary[:positions_count]     # => 1
+    summary[:total_value]         # => 9623.0
+    summary[:profit_loss_percent] # => -3.77%
+    summary[:total_trades]        # => 2
+    summary[:buy_trades]          # => 1
+    summary[:sell_trades]         # => 1
+    ```
 ??? info "Source Location"
     [`lib/sqa/portfolio.rb:189`](https://github.com/madbomber/sqa/blob/main/lib/sqa/portfolio.rb#L189)
 

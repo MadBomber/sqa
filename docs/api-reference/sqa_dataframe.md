@@ -1,9 +1,9 @@
 # 📦 SQA::DataFrame
 
 !!! note "Description"
-    The website financial.yahoo.com no longer supports an API.
-      To get recent stock historical price updates you have
-      to scrape the webpage.
+    High-performance DataFrame wrapper around Polars for time series data manipulation.
+    Provides convenience methods for stock market data while leveraging Polars' Rust-backed
+    performance for vectorized operations.
 
 !!! abstract "Source Information"
     **Defined in:** [`lib/sqa/data_frame.rb:28`](https://github.com/madbomber/sqa/blob/main/lib/sqa/data_frame.rb#L28)
@@ -464,7 +464,25 @@ will produce a warning and force ascending order to prevent silent calculation e
     | `sort_column` | `String` | Column to use for deduplication and sorting (default: "timestamp") |
     | `descending` | `Boolean` | Sort order - false for ascending (oldest first, TA-Lib compatible), true for descending |
 
+!!! example "Usage Examples"
 
+    ```ruby
+    stock = SQA::Stock.new(ticker: 'AAPL')
+    df = stock.df
+    df.size  # => 252
+    
+    # Fetch recent data (may have overlapping dates)
+    new_df = SQA::DataFrame::AlphaVantage.recent('AAPL', from_date: Date.today - 7)
+    df.concat_and_deduplicate!(new_df)
+    # Duplicates removed, data sorted ascending (oldest first)
+    df.size  # => 255 (only 3 new unique dates added)
+    ```
+    
+    ```ruby
+    df.concat_and_deduplicate!(new_df)  # Sorted ascending automatically
+    prices = df["adj_close_price"].to_a
+    rsi = SQAI.rsi(prices, period: 14)  # Works correctly with ascending data
+    ```
 ??? info "Source Location"
     [`lib/sqa/data_frame.rb:135`](https://github.com/madbomber/sqa/blob/main/lib/sqa/data_frame.rb#L135)
 
@@ -562,7 +580,16 @@ Writes the DataFrame to a CSV file.
     **Type:** `void`
 
     
+!!! example "Usage Examples"
 
+    ```ruby
+    stock = SQA::Stock.new(ticker: 'AAPL')
+    stock.df.to_csv('aapl_prices.csv')
+    ```
+    
+    ```ruby
+    df.to_csv(Pathname.new('data/exports/prices.csv'))
+    ```
 ??? info "Source Location"
     [`lib/sqa/data_frame.rb:187`](https://github.com/madbomber/sqa/blob/main/lib/sqa/data_frame.rb#L187)
 

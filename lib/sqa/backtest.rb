@@ -99,6 +99,38 @@ class SQA::Backtest
 
   # Run the backtest
   # @return [Results] Backtest results
+  #
+  # @example Run backtest with RSI strategy
+  #   stock = SQA::Stock.new(ticker: 'AAPL')
+  #   backtest = SQA::Backtest.new(
+  #     stock: stock,
+  #     strategy: SQA::Strategy::RSI,
+  #     initial_capital: 10_000,
+  #     commission: 1.0
+  #   )
+  #   results = backtest.run
+  #   puts results.summary
+  #   # => Total Return: 15.5%
+  #   #    Sharpe Ratio: 1.2
+  #   #    Max Drawdown: -8.3%
+  #   #    Win Rate: 65%
+  #
+  # @example Backtest with custom date range
+  #   backtest = SQA::Backtest.new(
+  #     stock: stock,
+  #     strategy: SQA::Strategy::MACD,
+  #     start_date: '2023-01-01',
+  #     end_date: '2023-12-31'
+  #   )
+  #   results = backtest.run
+  #   results.total_return  # => 0.155 (15.5%)
+  #
+  # @example Access equity curve for plotting
+  #   results = backtest.run
+  #   backtest.equity_curve.each do |point|
+  #     puts "#{point[:date]}: $#{point[:value]}"
+  #   end
+  #
   def run
     # Get data for the backtest period
     df = @stock.df.data
