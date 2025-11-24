@@ -209,8 +209,8 @@ class DataFrameTest < Minitest::Test
     assert_equal [1, 2, 3, 4], ids
   end
 
-  def test_concat_and_deduplicate_descending_order
-    # Create initial DataFrame in descending order
+  def test_concat_and_deduplicate_forces_ascending_order
+    # Create initial DataFrame
     data1 = {
       'timestamp' => ['2024-11-12', '2024-11-11', '2024-11-10'],
       'close_price' => [150.0, 149.0, 148.0]
@@ -224,12 +224,13 @@ class DataFrameTest < Minitest::Test
     }
     df2 = SQA::DataFrame.new(data2)
 
-    # Concatenate with explicit descending order
+    # Even when requesting descending order, data should be forced to ascending
+    # (A warning is issued to stderr, but we focus on verifying the behavior)
     df1.concat_and_deduplicate!(df2, descending: true)
 
-    # Check descending order (newest to oldest)
+    # Verify data is in ASCENDING order (not descending) due to TA-Lib enforcement
     timestamps = df1['timestamp'].to_a
-    assert_equal ['2024-11-14', '2024-11-13', '2024-11-12', '2024-11-11', '2024-11-10'], timestamps
+    assert_equal ['2024-11-10', '2024-11-11', '2024-11-12', '2024-11-13', '2024-11-14'], timestamps
   end
 
   # Phase 2 Tests

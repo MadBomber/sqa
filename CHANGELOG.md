@@ -1,5 +1,32 @@
 ## [Unreleased]
 
+## [0.0.35] - 2025-11-23
+
+### Changed
+- **Phase 2 Code Quality & Best Practices**:
+  - Replaced class variables (`@@var`) with class instance variables (`@var`) for thread safety
+    - `SQA::init.rb`: `@@config`, `@@av_api_key` → `@config`, `@av_api_key`
+    - `SQA::Ticker`: Restructured with `class << self` block, added `reset!` method
+    - `SQA::Stock`: `@@top` → `@top`, added `reset_top!` method
+  - Replaced `puts` statements with `debug_me` in `SQA::SectorAnalyzer`
+  - Simplified `method_missing` in `SQA::DataFrame` (no longer dynamically defines methods)
+  - Fixed type checking pattern in `SQA::Strategy#add` to use `is_a?` instead of `.class ==`
+  - Fixed `SQA::Strategy#available` to use `.name` instead of `.to_s` (avoids pretty_please gem conflict)
+  - Removed magic placeholder "xyzzy" from `SQA::Stock#create_data`
+
+### Fixed
+- **DataFrame.from_aofh**: Fixed Polars compatibility by converting to hash-of-arrays format
+- **DataFrame.from_aofh**: Now properly passes `mapping:` and `transformers:` parameters
+- **Ticker.valid?**: Now handles nil and empty string inputs gracefully
+- **Ticker.lookup**: Now handles nil and empty string inputs gracefully
+
+### Added
+- **Test Coverage for Phase 2**:
+  - New `test/ticker_test.rb` with 10 tests for Ticker class
+  - New `test/strategy_test.rb` with 10 tests for Strategy class
+  - Added 4 tests to `test/data_frame_test.rb` for `from_aofh` and `method_missing`
+  - Added 2 tests to `test/stock_test.rb` for `reset_top!` method
+
 ## [0.0.34] - 2025-11-23
 
 ### Fixed

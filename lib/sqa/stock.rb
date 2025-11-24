@@ -3,7 +3,41 @@
 class SQA::Stock
   extend Forwardable
 
-  CONNECTION = Faraday.new(url: "https://www.alphavantage.co")
+  # Default Alpha Vantage API URL
+  ALPHA_VANTAGE_URL = "https://www.alphavantage.co".freeze
+
+  # Backward compatibility - deprecated, use connection method instead
+  # Will be removed in v1.0.0
+  CONNECTION = Faraday.new(url: ALPHA_VANTAGE_URL)
+
+  class << self
+    # Configurable Faraday connection for API requests
+    # Allows injection of custom connections for testing or different configurations
+    #
+    # @return [Faraday::Connection] The current connection
+    def connection
+      @connection ||= default_connection
+    end
+
+    # Set a custom connection (useful for testing with mocks/stubs)
+    #
+    # @param conn [Faraday::Connection] Custom Faraday connection
+    def connection=(conn)
+      @connection = conn
+    end
+
+    # Create the default Faraday connection
+    #
+    # @return [Faraday::Connection] Default connection to Alpha Vantage
+    def default_connection
+      Faraday.new(url: ALPHA_VANTAGE_URL)
+    end
+
+    # Reset connection to default (useful for testing cleanup)
+    def reset_connection!
+      @connection = nil
+    end
+  end
 
   attr_accessor :data, :df, :klass, :transformers, :strategy
 
@@ -172,7 +206,7 @@ class SQA::Stock
 
   def merge_overview
     temp = JSON.parse(
-      CONNECTION.get("/query?function=OVERVIEW&symbol=#{ticker.upcase}&apikey=#{SQA.av.key}")
+      self.class.connection.get("/query?function=OVERVIEW&symbol=#{ticker.upcase}&apikey=#{SQA.av.key}")
       .to_hash[:body]
     )
 
@@ -198,7 +232,7 @@ class SQA::Stock
     def top
       return @top if @top
 
-      a_hash = JSON.parse(CONNECTION.get("/query?function=TOP_GAINERS_LOSERS&apikey=#{SQA.av.key}").to_hash[:body])
+      a_hash = JSON.parse(connection.get("/query?function=TOP_GAINERS_LOSERS&apikey=#{SQA.av.key}").to_hash[:body])
 
       mash = Hashie::Mash.new(a_hash)
 

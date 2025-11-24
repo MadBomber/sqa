@@ -195,10 +195,21 @@ module SQA
     #####################################
     class << self
       def reset
+        @initialized = true
         SQA.config = new
+      end
+
+      def initialized?
+        @initialized ||= false
       end
     end
   end
 end
 
-SQA::Config.reset
+# Auto-initialization with deprecation warning
+# This will be removed in v1.0.0 - applications should call SQA.init explicitly
+unless SQA::Config.initialized?
+  warn "[SQA DEPRECATION] Auto-initialization at require time will be removed in v1.0. " \
+       "Please call SQA.init explicitly in your application startup." if $VERBOSE
+  SQA::Config.reset
+end

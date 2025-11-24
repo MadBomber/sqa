@@ -236,4 +236,50 @@ class StockTest < Minitest::Test
   def test_reset_top_method_exists
     assert SQA::Stock.respond_to?(:reset_top!)
   end
+
+  # Phase 3 Tests - Configurable Connection
+
+  def test_connection_class_method_exists
+    assert SQA::Stock.respond_to?(:connection)
+  end
+
+  def test_connection_returns_faraday_connection
+    conn = SQA::Stock.connection
+    assert_kind_of Faraday::Connection, conn
+  end
+
+  def test_connection_setter_exists
+    assert SQA::Stock.respond_to?(:connection=)
+  end
+
+  def test_reset_connection_method_exists
+    assert SQA::Stock.respond_to?(:reset_connection!)
+  end
+
+  def test_connection_can_be_injected
+    # Save original connection
+    original_conn = SQA::Stock.connection
+
+    # Inject custom connection
+    custom_conn = Faraday.new(url: "https://example.com")
+    SQA::Stock.connection = custom_conn
+
+    # Verify custom connection is used
+    assert_equal custom_conn, SQA::Stock.connection
+
+    # Reset to default
+    SQA::Stock.reset_connection!
+
+    # Verify default connection is restored (new instance)
+    refute_equal custom_conn, SQA::Stock.connection
+    assert_kind_of Faraday::Connection, SQA::Stock.connection
+  end
+
+  def test_default_connection_method_exists
+    assert SQA::Stock.respond_to?(:default_connection)
+  end
+
+  def test_alpha_vantage_url_constant_exists
+    assert_equal "https://www.alphavantage.co", SQA::Stock::ALPHA_VANTAGE_URL
+  end
 end

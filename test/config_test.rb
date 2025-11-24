@@ -252,4 +252,16 @@ class ConfigTest < Minitest::Test
       assert_equal Nenv.home + "/custom_data", config.data_dir
     end
   end
+
+  # Phase 3 Tests - Initialization tracking
+
+  def test_initialized_class_method_exists
+    assert SQA::Config.respond_to?(:initialized?)
+  end
+
+  def test_initialized_returns_true_after_reset
+    # Config.reset sets @initialized = true
+    SQA::Config.reset
+    assert SQA::Config.initialized?
+  end
 end

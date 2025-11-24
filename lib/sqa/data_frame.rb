@@ -76,7 +76,16 @@ class SQA::DataFrame
   # @param other_df [SQA::DataFrame] DataFrame to append
   # @param sort_column [String] Column to use for deduplication and sorting (default: "timestamp")
   # @param descending [Boolean] Sort order - false for ascending (oldest first, TA-Lib compatible), true for descending
+  #
+  # NOTE: TA-Lib requires data in ascending (oldest-first) order. Using descending: true
+  # will produce a warning and force ascending order to prevent silent calculation errors.
   def concat_and_deduplicate!(other_df, sort_column: "timestamp", descending: false)
+    # Enforce ascending order for TA-Lib compatibility
+    if descending
+      warn "[SQA WARNING] TA-Lib requires ascending (oldest-first) order. Forcing descending: false"
+      descending = false
+    end
+
     # Concatenate the dataframes
     @data = if @data.shape[0] == 0
               other_df.data
