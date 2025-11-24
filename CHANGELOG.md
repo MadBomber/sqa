@@ -1,5 +1,27 @@
 ## [Unreleased]
 
+## [0.0.36] - 2025-11-24
+
+### Changed
+- **Phase 3 Architecture & Design Improvements**:
+  - Added deprecation warning for auto-initialization at require time (will be removed in v1.0)
+    - Added `SQA::Config.initialized?` class method to track initialization state
+    - Warning only shows when `$VERBOSE` is set
+  - `concat_and_deduplicate!` now enforces ascending order for TA-Lib compatibility
+    - Warns and forces `descending: false` if `descending: true` is passed
+    - Prevents silent calculation errors from incorrect data ordering
+  - Extracted Faraday connection to configurable dependency in `SQA::Stock`
+    - Added `ALPHA_VANTAGE_URL` constant
+    - Added class methods: `connection`, `connection=`, `default_connection`, `reset_connection!`
+    - Allows injection of custom connections for testing/mocking
+    - Deprecated `CONNECTION` constant (will be removed in v1.0)
+
+### Added
+- **Test Coverage for Phase 3**:
+  - Added 2 tests to `test/config_test.rb` for `initialized?` method
+  - Added 7 tests to `test/stock_test.rb` for configurable connection
+  - Updated `test/data_frame_test.rb` to verify ascending order enforcement
+
 ## [0.0.35] - 2025-11-23
 
 ### Changed
