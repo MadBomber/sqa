@@ -2,7 +2,7 @@
 
 ## Overview
 
-Advanced rule-based trading system using RETE forward-chaining inference engine. Combines multiple indicators with custom logic rules.
+Advanced rule-based trading system using RETE forward-chaining inference engine. Combines multiple indicators with custom logic rules using the `kbs` (knowledge-based system) ruby gem.  A complete [documentation website for the `kbs` ruby gem is available.](https://madbomber.github.io/kbs)
 
 ## How It Works
 
@@ -29,6 +29,7 @@ end
 ## Default Rules
 
 The KBS strategy includes 10 default rules:
+
 1. Buy on RSI oversold in uptrend
 2. Sell on RSI overbought in downtrend
 3. Buy on bullish MACD crossover
@@ -71,10 +72,10 @@ strategy.add_rule :strong_buy do
   without :position  # Don't buy if already holding
 
   perform do
-    kb.assert(:signal, { 
-      action: :buy, 
+    kb.assert(:signal, {
+      action: :buy,
       confidence: :high,
-      reason: :triple_confirmation 
+      reason: :triple_confirmation
     })
   end
 end
@@ -100,18 +101,18 @@ Multiple rules can fire, with aggregate confidence determining final signal.
 
 ## Strengths
 
-✅ Highly customizable  
-✅ Combines multiple indicators  
-✅ Confidence scoring  
-✅ Forward-chaining inference  
-✅ Can encode expert knowledge  
+- ✅ Highly customizable
+- ✅ Combines multiple indicators
+- ✅ Confidence scoring
+- ✅ Forward-chaining inference
+- ✅ Can encode expert knowledge
 
 ## Weaknesses
 
-❌ Complex to configure  
-❌ Requires domain knowledge  
-❌ Can be slow with many rules  
-❌ Overfitting risk  
+- ❌ Complex to configure
+- ❌ Requires domain knowledge
+- ❌ Can be slow with many rules
+- ❌ Overfitting risk
 
 ## Tips
 
@@ -124,6 +125,7 @@ Multiple rules can fire, with aggregate confidence determining final signal.
 ## Available Facts
 
 The KBS strategy processes these fact types:
+
 - `:rsi` - RSI indicator data
 - `:macd` - MACD crossovers
 - `:trend` - Price trend analysis
@@ -161,4 +163,3 @@ end
 
 - [Strategy Generator](../advanced/strategy-generator.md) - Auto-generate rules
 - [Genetic Programming](../genetic_programming.md) - Optimize rule parameters
-

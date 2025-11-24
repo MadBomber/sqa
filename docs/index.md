@@ -1,8 +1,25 @@
 # SQA - Simple Qualitative Analysis
 
-<p align="center">
-  <strong>A Powerful Ruby Library for Stock Market Technical Analysis</strong>
-</p>
+<div style="display: flex; align-items: flex-start; gap: 2rem; margin-bottom: 2rem;">
+  <div style="flex: 0 0 400px;">
+    <img src="assets/images/sqa.jpg" alt="SQA - Simple Qualitative Analysis" style="width: 100%; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+  </div>
+  <div style="flex: 1;">
+    <h2 style="margin-top: 0;">Key Features</h2>
+    <ul>
+      <li><strong>High Performance</strong> - Rust-backed Polars DataFrames (30x faster)</li>
+      <li><strong>150+ Technical Indicators</strong> - TA-Lib integration via sqa-tai</li>
+      <li><strong>13+ Trading Strategies</strong> - RSI, MACD, Bollinger Bands, and more</li>
+      <li><strong>Portfolio Management</strong> - Track positions, P&L, commissions</li>
+      <li><strong>Backtesting Framework</strong> - Comprehensive performance metrics</li>
+      <li><strong>Real-Time Streaming</strong> - Live price data with callbacks</li>
+      <li><strong>Strategy Generation</strong> - Discover patterns from profitable trades</li>
+      <li><strong>Genetic Programming</strong> - Evolve optimal parameters</li>
+      <li><strong>Risk Management</strong> - VaR, CVaR, position sizing</li>
+      <li><strong>Pattern Matching</strong> - Find similar historical patterns</li>
+    </ul>
+  </div>
+</div>
 
 ---
 
@@ -97,26 +114,7 @@ puts "Max Drawdown: #{results.max_drawdown}%"
 
 ## Architecture
 
-```mermaid
-graph TD
-    A[Stock Data] --> B[SQA::DataFrame]
-    B --> C[Technical Indicators]
-    C --> D[Trading Strategies]
-    D --> E{Strategy Type}
-    E -->|Simple| F[SMA/EMA/RSI]
-    E -->|Advanced| G[MACD/Bollinger]
-    E -->|Rule-Based| H[KBS Strategy]
-    D --> I[Portfolio Management]
-    I --> J[Backtesting]
-    J --> K[Performance Metrics]
-
-    L[Real-Time Data] --> M[SQA::Stream]
-    M --> D
-
-    N[Pattern Discovery] --> O[StrategyGenerator]
-    O --> P[Generated Strategies]
-    P --> D
-```
+![SQA Architecture](assets/images/architecture.svg)
 
 ## Getting Started
 

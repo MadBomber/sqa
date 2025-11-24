@@ -76,19 +76,7 @@ Future Period of Performance analysis for risk/reward calculations.
 
 ## Example Workflow
 
-```mermaid
-graph LR
-    A[Historical Data] --> B[Strategy Generator]
-    B --> C[Discovered Patterns]
-    C --> D[Generated Strategies]
-    D --> E[Genetic Programming]
-    E --> F[Optimized Parameters]
-    F --> G[Backtest]
-    G --> H{Results Good?}
-    H -->|Yes| I[Live Stream]
-    H -->|No| D
-    I --> J[Portfolio Management]
-```
+![Advanced Workflow](../assets/images/advanced-workflow.svg)
 
 ## Use Cases
 

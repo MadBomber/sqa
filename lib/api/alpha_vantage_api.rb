@@ -3,13 +3,9 @@
 require 'faraday'
 require 'json'
 
-# TODO: Reorganize the methods by category
-#         Market Data
-#         Technical Indicators
-#         Trading
-#         Economic Indicators
-#         Digital and Forex
-#
+# Alpha Vantage API wrapper
+# Categories: Market Data, Technical Indicators, Trading, Economic Indicators, Digital/Forex
+# See: https://www.alphavantage.co/documentation/
 
 
 class AlphaVantageAPI

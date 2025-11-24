@@ -1,7 +1,8 @@
 # lib/sqa.rb
 # frozen_string_literal: true
 
-# TODO: Create a new gem for the dumbstockapi website
+# NOTE: The dumbstockapi integration is handled by SQA::Ticker class.
+# A separate gem could be created if more extensive API coverage is needed.
 
 #############################################
 ## Standard Libraries
@@ -13,9 +14,8 @@ unless defined?(HOME)
 	HOME = Pathname.new(ENV['HOME'])
 end
 
-# TODO: do we want to move the debug_me gem out of the
-# 			development dependencies into the required?
-#
+# NOTE: debug_me is optional - loaded if available, otherwise a no-op is defined.
+# This keeps it as a development dependency while allowing production use if installed.
 if defined?(DebugMe)
 	unless respond_to?(:debug_me)
 		include DebugMe

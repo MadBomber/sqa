@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    sqa (0.0.36)
+    sqa (0.0.37)
       alphavantage
       csv
       eps
@@ -273,6 +273,10 @@ GEM
     versionaire (14.5.0)
       refinements (~> 13.6)
     xdg (9.5.0)
+    yard (0.9.37)
+    yard-markdown (0.5.0)
+      csv
+      yard
     zeitwerk (2.7.3)
 
 PLATFORMS
@@ -291,6 +295,8 @@ DEPENDENCIES
   simplecov
   sqa!
   tocer
+  yard
+  yard-markdown
 
 BUNDLED WITH
    2.7.2
