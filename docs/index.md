@@ -143,10 +143,15 @@ Ready to dive in? Check out our guides:
 - [Data Sources](data-sources/index.md) - Working with data
 - [Terms of Use](terms_of_use.md) - Important legal information
 
+## Demo Application
+
+Want to see SQA in action? Check out the **[sqa_demo-sinatra](https://github.com/MadBomber/sqa_demo-sinatra)** gem - a web-based demonstration application that provides a visual interface for exploring stock analysis, technical indicators, and trading strategies.
+
 ## Community & Support
 
 - **GitHub**: [github.com/madbomber/sqa](https://github.com/madbomber/sqa)
 - **RubyGems**: [rubygems.org/gems/sqa](https://rubygems.org/gems/sqa)
+- **Demo App**: [sqa_demo-sinatra](https://github.com/MadBomber/sqa_demo-sinatra) - Web-based SQA demonstration
 - **Issues**: Report bugs or request features on [GitHub Issues](https://github.com/madbomber/sqa/issues)
 
 ## License

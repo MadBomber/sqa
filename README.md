@@ -913,6 +913,10 @@ ruby examples/strategy_generator_example.rb
 
 See `examples/README.md` for detailed documentation and integration patterns.
 
+### Web Demo Application
+
+For a complete web-based demonstration of SQA's capabilities, see the **[sqa_demo-sinatra](https://github.com/MadBomber/sqa_demo-sinatra)** gem. This Sinatra application provides a visual interface for exploring stock analysis, technical indicators, and trading strategies.
+
 ## Architecture
 
 **Core Components:**
