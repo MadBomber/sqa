@@ -31,7 +31,9 @@
 #
 
 module SQA
-  class StrategyGenerator
+  # Long by breadth: ~20 small, independent indicator-state extractors and
+  # pattern-mining helpers rather than deep logic.
+  class StrategyGenerator # rubocop:disable Metrics/ClassLength
     # Represents a profitable trade opportunity discovered in historical data
     class ProfitablePoint
       attr_accessor :entry_index, :entry_price, :exit_index, :exit_price,
@@ -722,6 +724,8 @@ module SQA
       return unless cache[:rsi] && idx < cache[:rsi].size
 
       rsi_val = cache[:rsi][idx]
+      return if rsi_val.nil? # TA-Lib warmup padding
+
       rsi_config = @indicators_config[:rsi]
 
       states[:rsi] = if rsi_val < rsi_config[:oversold]
@@ -743,6 +747,10 @@ module SQA
       macd_prev = cache[:macd_line][idx - 1]
       signal_prev = cache[:macd_signal][idx - 1]
 
+      # TA-Lib pads the warmup period (and out-of-range indices) with nil;
+      # skip the MACD state until all four values are present.
+      return if macd_curr.nil? || signal_curr.nil? || macd_prev.nil? || signal_prev.nil?
+
       states[:macd_crossover] = if macd_prev <= signal_prev && macd_curr > signal_curr
                                   :bullish
                                 elsif macd_prev >= signal_prev && macd_curr < signal_curr
@@ -758,6 +766,8 @@ module SQA
       return unless cache[:stoch_k] && idx < cache[:stoch_k].size
 
       stoch_k_val = cache[:stoch_k][idx]
+      return if stoch_k_val.nil? # TA-Lib warmup padding
+
       stoch_config = @indicators_config[:stoch]
 
       states[:stoch] = if stoch_k_val < stoch_config[:oversold]
@@ -775,6 +785,7 @@ module SQA
 
       sma_short = cache[:sma_short][idx]
       sma_long = cache[:sma_long][idx]
+      return if sma_short.nil? || sma_long.nil? # TA-Lib warmup padding
 
       states[:sma_cross] = sma_short > sma_long ? :golden : :death
     end
@@ -786,6 +797,7 @@ module SQA
       price = prices[idx]
       upper = cache[:bb_upper][idx]
       lower = cache[:bb_lower][idx]
+      return if upper.nil? || lower.nil? # TA-Lib warmup padding
 
       states[:bb_position] = if price < lower
                                :below_lower
@@ -802,6 +814,7 @@ module SQA
 
       price = prices[idx]
       ema = cache[:ema][idx]
+      return if ema.nil? # TA-Lib warmup padding
 
       states[:price_vs_ema] = price > ema ? :above : :below
     end

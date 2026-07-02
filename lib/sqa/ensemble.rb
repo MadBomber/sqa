@@ -14,7 +14,7 @@ module SQA
   #
   # @example Simple majority voting
   #   ensemble = SQA::Ensemble.new(
-  #     strategies: [SQA::Strategy::RSI, SQA::Strategy::MACD, SQA::Strategy::Bollinger]
+  #     strategies: [SQA::Strategy::RSI, SQA::Strategy::MACD, SQA::Strategy::BollingerBands]
   #   )
   #   signal = ensemble.vote(vector)
   #   # => :buy (if 2 out of 3 say :buy)
@@ -184,17 +184,17 @@ module SQA
         bull: {
           low: SQA::Strategy::EMA,
           medium: SQA::Strategy::MACD,
-          high: SQA::Strategy::Bollinger
+          high: SQA::Strategy::BollingerBands
         },
         bear: {
           low: SQA::Strategy::RSI,
           medium: SQA::Strategy::RSI,
-          high: SQA::Strategy::Bollinger
+          high: SQA::Strategy::BollingerBands
         },
         sideways: {
           low: SQA::Strategy::MR,
           medium: SQA::Strategy::MR,
-          high: SQA::Strategy::Bollinger
+          high: SQA::Strategy::BollingerBands
         }
       }
 

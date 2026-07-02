@@ -371,7 +371,8 @@ module SQA
 
         # Valley between them?
         valley_prices = @prices[(peak_1[:index] + 1)...peak_2[:index]]
-        valley_low = valley_prices.min
+        valley_low = valley_prices&.min
+        next if valley_low.nil? # adjacent peaks — no valley between them
 
         # Valley should be significantly lower
         valley_drop = (peak_1[:price] - valley_low) / peak_1[:price]
@@ -404,7 +405,8 @@ module SQA
         next if price_diff > 0.05
 
         peak_prices = @prices[(valley_1[:index] + 1)...valley_2[:index]]
-        peak_high = peak_prices.max
+        peak_high = peak_prices&.max
+        next if peak_high.nil? # adjacent valleys — no peak between them
 
         peak_rise = (peak_high - valley_1[:price]) / valley_1[:price]
         next if peak_rise < 0.03
