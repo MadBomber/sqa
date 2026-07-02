@@ -7,7 +7,7 @@
 #
 class SQA::Strategy::Stochastic
   def self.trade(vector)
-    return :hold unless vector.respond_to?(:prices) && vector.prices&.size >= 14
+    return :hold unless vector.respond_to?(:prices) && (vector.prices&.size&.>= 14)
 
     prices = vector.prices
 

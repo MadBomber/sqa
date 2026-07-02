@@ -106,7 +106,7 @@ class PortfolioOptimizerTest < Minitest::Test
   def test_equal_weight
     weights = SQA::PortfolioOptimizer.equal_weight(3)
 
-    assert_equal [1.0/3, 1.0/3, 1.0/3], weights
+    assert_equal [1.0 / 3, 1.0 / 3, 1.0 / 3], weights
   end
 
   def test_rebalance
@@ -122,11 +122,11 @@ class PortfolioOptimizerTest < Minitest::Test
     )
 
     assert_instance_of Hash, trades
-    trades.each do |ticker, trade|
+    trades.each_value do |trade|
       assert trade.key?(:action)
       assert trade.key?(:shares)
       assert trade.key?(:value)
-      assert [:buy, :sell].include?(trade[:action])
+      assert %i[buy sell].include?(trade[:action])
     end
   end
 end

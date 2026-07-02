@@ -31,13 +31,13 @@ class AlphaVantageTest < Minitest::Test
     assert mapping.key?("high")
     assert mapping.key?("low")
     assert mapping.key?("close")
-    # Note: Alpha Vantage CSV doesn't provide adjusted_close separately
+    # NOTE: Alpha Vantage CSV doesn't provide adjusted_close separately
     # (close IS the adjusted close in their API)
     assert mapping.key?("volume")
   end
 
   def test_transformers_are_procs
-    SQA::DataFrame::AlphaVantage::TRANSFORMERS.values.each do |transformer|
+    SQA::DataFrame::AlphaVantage::TRANSFORMERS.each_value do |transformer|
       assert_kind_of Proc, transformer
     end
   end
@@ -61,7 +61,7 @@ class AlphaVantageTest < Minitest::Test
 
     refute_nil df
     assert_kind_of SQA::DataFrame, df
-    assert df.height > 0
+    assert df.height.positive?
   end
 
   def test_recent_with_full_option

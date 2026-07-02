@@ -122,7 +122,7 @@ class StrategyGeneratorTest < Minitest::Test
     generator.export_patterns(file.path)
 
     assert File.exist?(file.path)
-    assert File.size(file.path) > 0
+    assert File.size(file.path).positive?
 
     file.close
     file.unlink

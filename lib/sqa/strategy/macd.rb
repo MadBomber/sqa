@@ -7,12 +7,12 @@
 #
 class SQA::Strategy::MACD
   def self.trade(vector)
-    return :hold unless vector.respond_to?(:prices) && vector.prices&.size >= 35
+    return :hold unless vector.respond_to?(:prices) && (vector.prices&.size&.>= 35)
 
     prices = vector.prices
 
     # Calculate MACD using SQAI (returns macd, signal, histogram)
-    macd_line, signal_line, histogram = SQAI.macd(
+    macd_line, signal_line, = SQAI.macd(
       prices,
       fast_period: 12,
       slow_period: 26,

@@ -24,6 +24,7 @@ Gem::Specification.new do |spec|
   spec.metadata["homepage_uri"]     = spec.homepage
   spec.metadata["source_code_uri"]  = spec.homepage
   spec.metadata["changelog_uri"]    = spec.homepage
+  spec.metadata['rubygems_mfa_required'] = 'true'
 
   # Specify which files should be added to the gem when it is released.
   # The `git ls-files -z` loads the files in the RubyGem that have been added into git.
@@ -44,7 +45,9 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'hashie'
   spec.add_dependency 'kbs'
   spec.add_dependency 'lite-statistics'
+  spec.add_dependency 'logger'  # Required for Ruby 3.5+; hashie requires 'logger' internally
   spec.add_dependency 'nenv'
+  spec.add_dependency 'ostruct'  # Required for Ruby 3.5+; used by Strategy/Backtest/Stream vectors
   spec.add_dependency 'redis'  # Required for KBS blackboard persistence
   spec.add_dependency 'ruby_llm'
   spec.add_dependency 'ruby_llm-mcp'
@@ -56,13 +59,16 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'toml-rb'
   spec.add_dependency 'regent'
 
-
-
   spec.add_development_dependency 'amazing_print'
   spec.add_development_dependency 'bundler'
   spec.add_development_dependency 'debug_me'
+  spec.add_development_dependency 'flay'
+  spec.add_development_dependency 'flog'
+  spec.add_development_dependency 'racc' # flog/flay transitively need this on Ruby 4+
   spec.add_development_dependency 'minitest'
+  spec.add_development_dependency 'minitest-mock' # Minitest::Mock split into its own gem in minitest 5.27+
   spec.add_development_dependency 'rake'
+  spec.add_development_dependency 'rubocop'
   spec.add_development_dependency 'simplecov'
   spec.add_development_dependency 'tocer'
   spec.add_development_dependency 'yard'

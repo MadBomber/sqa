@@ -49,7 +49,7 @@ module SQA
       FileUtils.mkdir_p(@db_dir)
 
       # Initialize blackboard for each sector
-      SECTORS.keys.each do |sector|
+      SECTORS.each_key do |sector|
         init_sector_blackboard(sector)
       end
     end
@@ -83,19 +83,19 @@ module SQA
     # @param options [Hash] Pattern discovery options
     # @return [Array<Hash>] Sector-wide patterns
     #
-    def discover_sector_patterns(sector, stocks, **options)
+    def discover_sector_patterns(sector, stocks, **)
       raise ArgumentError, "Unknown sector: #{sector}" unless SECTORS.key?(sector)
 
       kb = @blackboards[sector]
       all_patterns = []
 
-      debug_me {"Discovering patterns for #{sector.to_s.upcase} sector - #{stocks.size} stocks"}
+      debug_me { "Discovering patterns for #{sector.to_s.upcase} sector - #{stocks.size} stocks" }
 
       # Discover patterns for each stock
       stocks.each do |stock|
-        debug_me {"Analyzing #{stock.ticker}..."}
+        debug_me { "Analyzing #{stock.ticker}..." }
 
-        generator = SQA::StrategyGenerator.new(stock: stock, **options)
+        generator = SQA::StrategyGenerator.new(stock: stock, **)
         patterns = generator.discover_patterns
 
         # Assert pattern facts in blackboard
@@ -132,7 +132,7 @@ module SQA
         })
       end
 
-      debug_me {"Sector Analysis Complete - #{all_patterns.size} individual, #{sector_patterns.size} sector-wide patterns"}
+      debug_me { "Sector Analysis Complete - #{all_patterns.size} individual, #{sector_patterns.size} sector-wide patterns" }
 
       sector_patterns
     end
@@ -202,42 +202,52 @@ module SQA
     def print_sector_summary(sector)
       kb = @blackboards[sector]
 
-      puts "\n" + "=" * 70
+      puts "\n" + ("=" * 70)
       puts "#{sector.to_s.upcase} SECTOR SUMMARY"
       puts "=" * 70
 
-      # Count facts by type
+      print_sector_fact_counts(kb)
+      print_sector_regime(sector)
+      print_sector_patterns(sector)
+
+      puts "=" * 70
+    end
+
+    private
+
+    # Print the count of facts in the blackboard, grouped by type
+    def print_sector_fact_counts(kb)
       fact_counts = kb.working_memory.facts.group_by(&:type).transform_values(&:size)
 
       puts "\nFacts in Blackboard:"
       fact_counts.each do |type, count|
         puts "  #{type}: #{count}"
       end
-
-      # Show sector regime if available
-      regime_facts = query_sector(sector, :sector_regime)
-      if regime_facts.any?
-        latest = regime_facts.last
-        puts "\nCurrent Sector Regime:"
-        puts "  Type: #{latest[:regime]}"
-        puts "  Strength: #{latest[:strength]}%"
-      end
-
-      # Show sector patterns if available
-      pattern_facts = query_sector(sector, :sector_pattern)
-      if pattern_facts.any?
-        puts "\nSector-Wide Patterns: #{pattern_facts.size}"
-        pattern_facts.first(3).each_with_index do |fact, i|
-          puts "  #{i + 1}. Conditions: #{fact[:conditions]}"
-          puts "     Stocks: #{fact[:stocks].join(', ')}"
-          puts "     Avg Gain: #{fact[:avg_gain].round(2)}%"
-        end
-      end
-
-      puts "=" * 70
     end
 
-    private
+    # Print the current sector regime, if one has been asserted
+    def print_sector_regime(sector)
+      regime_facts = query_sector(sector, :sector_regime)
+      return unless regime_facts.any?
+
+      latest = regime_facts.last
+      puts "\nCurrent Sector Regime:"
+      puts "  Type: #{latest[:regime]}"
+      puts "  Strength: #{latest[:strength]}%"
+    end
+
+    # Print up to the top 3 sector-wide patterns, if any have been discovered
+    def print_sector_patterns(sector)
+      pattern_facts = query_sector(sector, :sector_pattern)
+      return unless pattern_facts.any?
+
+      puts "\nSector-Wide Patterns: #{pattern_facts.size}"
+      pattern_facts.first(3).each_with_index do |fact, i|
+        puts "  #{i + 1}. Conditions: #{fact[:conditions]}"
+        puts "     Stocks: #{fact[:stocks].join(', ')}"
+        puts "     Avg Gain: #{fact[:avg_gain].round(2)}%"
+      end
+    end
 
     # Initialize KBS blackboard for a sector
     def init_sector_blackboard(sector)

@@ -8,11 +8,11 @@ require 'yard'
 require 'fileutils'
 
 # Output directory for generated markdown
-OUTPUT_DIR = 'docs/api-reference'
+OUTPUT_DIR = 'docs/api-reference'.freeze
 
 # GitHub repository URL for source links
-GITHUB_REPO = 'https://github.com/madbomber/sqa'
-GITHUB_BRANCH = 'main'
+GITHUB_REPO = 'https://github.com/madbomber/sqa'.freeze
+GITHUB_BRANCH = 'main'.freeze
 
 # Clean and create output directory
 FileUtils.rm_rf(OUTPUT_DIR)
@@ -24,7 +24,7 @@ YARD.parse('lib/**/*.rb')
 
 # Helper to sanitize filenames
 def sanitize_filename(name)
-  name.gsub('::', '_').gsub(/[^\w\-]/, '_').downcase
+  name.gsub('::', '_').gsub(/[^\w-]/, '_').downcase
 end
 
 # Helper to create GitHub source link
@@ -142,7 +142,7 @@ def generate_class_doc(code_object)
     end
 
     # Class Methods
-    class_methods = code_object.meths(scope: :class, visibility: [:public, :protected])
+    class_methods = code_object.meths(scope: :class, visibility: %i[public protected])
     if class_methods.any?
       f.puts "## 🏭 Class Methods"
       f.puts
@@ -173,7 +173,7 @@ def generate_class_doc(code_object)
     end
 
     # Instance Methods
-    instance_methods = code_object.meths(scope: :instance, visibility: [:public, :protected])
+    instance_methods = code_object.meths(scope: :instance, visibility: %i[public protected])
     if instance_methods.any?
       f.puts "## 🔨 Instance Methods"
       f.puts
@@ -210,26 +210,33 @@ def generate_class_doc(code_object)
         f.puts "## 📝 Attributes"
         f.puts
 
-        all_attrs.each do |scope, attrs|
+        all_attrs.each_value do |attrs|
           next unless attrs
           attrs.each do |name, rw|
-            access_type = rw[:read] && rw[:write] ? 'read/write' : rw[:read] ? 'read-only' : 'write-only'
-            access_badge = rw[:read] && rw[:write] ? '🔄' : rw[:read] ? '👁️' : '✍️'
+            access_type = if rw[:read] && rw[:write]
+                            'read/write'
+                          else
+                            rw[:read] ? 'read-only' : 'write-only'
+                          end
+            access_badge = if rw[:read] && rw[:write]
+                             '🔄'
+                           else
+                             rw[:read] ? '👁️' : '✍️'
+                           end
 
             f.puts "### #{access_badge} `#{name}` <small>#{access_type}</small>"
             f.puts
 
             method = rw[:read] || rw[:write]
-            if method && method.docstring && !method.docstring.empty?
-              method.docstring.to_s.each_line do |line|
-                f.puts line.rstrip
-              end
-              f.puts
+            next unless method && method.docstring && !method.docstring.empty?
+            method.docstring.to_s.each_line do |line|
+              f.puts line.rstrip
             end
+            f.puts
           end
         end
       end
-    rescue => e
+    rescue
       # Skip attributes if there's an error
     end
   end
@@ -251,27 +258,28 @@ def generate_index(classes_by_namespace)
 
     classes_by_namespace.each do |namespace, objects|
       # Add icon based on namespace
-      namespace_icon = namespace == "SQA" ? "🎯" : namespace.include?("Strategy") ? "📊" : "📦"
+      namespace_icon = if namespace == "SQA"
+                         "🎯"
+                       else
+                         namespace.include?("Strategy") ? "📊" : "📦"
+                       end
       f.puts "## #{namespace_icon} #{namespace}"
       f.puts
 
       objects.sort_by(&:name).each do |obj|
         type_icon = obj.type == :class ? "📦" : "🔧"
-        type_text = obj.type == :class ? "Class" : "Module"
         filename = "#{sanitize_filename(obj.path)}.md"
 
         f.puts "### [#{type_icon} **#{obj.name}**](#{filename})"
         f.puts
 
         # Add brief description if available
-        if obj.docstring && !obj.docstring.empty?
-          brief = obj.docstring.split("\n").first
-          if brief && brief.length < 120
-            f.puts "!!! abstract \"\""
-            f.puts "    #{brief}"
-            f.puts
-          end
-        end
+        next unless obj.docstring && !obj.docstring.empty?
+        brief = obj.docstring.split("\n").first
+        next unless brief && brief.length < 120
+        f.puts "!!! abstract \"\""
+        f.puts "    #{brief}"
+        f.puts
       end
       f.puts
     end

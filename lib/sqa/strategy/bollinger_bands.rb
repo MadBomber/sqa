@@ -7,7 +7,7 @@
 #
 class SQA::Strategy::BollingerBands
   def self.trade(vector)
-    return :hold unless vector.respond_to?(:prices) && vector.prices&.size >= 20
+    return :hold unless vector.respond_to?(:prices) && (vector.prices&.size&.>= 20)
 
     prices = vector.prices
     period = 20
@@ -21,7 +21,7 @@ class SQA::Strategy::BollingerBands
     current_price = prices.last
     upper_band = upper.last
     lower_band = lower.last
-    middle_band = middle.last
+    middle.last
 
     # Buy signal: price at or below lower band (oversold)
     if current_price <= lower_band

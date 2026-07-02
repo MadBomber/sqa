@@ -17,7 +17,7 @@ class PatternContextIntegrationTest < Minitest::Test
     regime = SQA::MarketRegime.detect(@stock)
 
     assert regime.is_a?(Hash)
-    assert_includes [:bull, :bear, :sideways], regime[:type]
+    assert_includes %i[bull bear sideways], regime[:type]
     puts "  ✓ Regime detected: #{regime[:type]}"
 
     # Step 2: Seasonal Analysis
@@ -61,16 +61,15 @@ class PatternContextIntegrationTest < Minitest::Test
     end
 
     # Step 4: Runtime Validation
-    if patterns.any?
-      pattern = patterns.first
-      valid_now = pattern.context.valid_for?(
-        date: Date.today,
-        regime: regime[:type],
-        sector: :technology
-      )
+    return unless patterns.any?
+    pattern = patterns.first
+    valid_now = pattern.context.valid_for?(
+      date: Date.today,
+      regime: regime[:type],
+      sector: :technology
+    )
 
-      puts "  ✓ Pattern valid for today: #{valid_now}"
-    end
+    puts "  ✓ Pattern valid for today: #{valid_now}"
   end
 
   def test_sector_analysis_integration
@@ -79,7 +78,7 @@ class PatternContextIntegrationTest < Minitest::Test
     analyzer = SQA::SectorAnalyzer.new
 
     # Add technology stocks
-    tech_tickers = ['AAPL', 'MSFT']
+    tech_tickers = %w[AAPL MSFT]
     tech_stocks = tech_tickers.map { |t| SQA::Stock.new(ticker: t) }
 
     tech_stocks.each do |stock|
@@ -92,7 +91,7 @@ class PatternContextIntegrationTest < Minitest::Test
     regime = analyzer.detect_sector_regime(:technology, tech_stocks)
 
     assert regime.is_a?(Hash)
-    assert_includes [:bull, :bear, :sideways], regime[:consensus_regime]
+    assert_includes %i[bull bear sideways], regime[:consensus_regime]
     assert regime[:sector_strength] >= 0
     assert regime[:sector_strength] <= 100
 
@@ -111,12 +110,11 @@ class PatternContextIntegrationTest < Minitest::Test
     puts "  ✓ Discovered #{patterns.size} sector-wide patterns"
 
     # Verify sector patterns
-    if patterns.any?
-      pattern = patterns.first
-      assert pattern[:stocks].is_a?(Array)
-      assert pattern[:stocks].size >= 2
-      puts "    Pattern found in: #{pattern[:stocks].join(', ')}"
-    end
+    return unless patterns.any?
+    pattern = patterns.first
+    assert pattern[:stocks].is_a?(Array)
+    assert pattern[:stocks].size >= 2
+    puts "    Pattern found in: #{pattern[:stocks].join(', ')}"
   end
 
   def test_walk_forward_validation_integration
@@ -145,16 +143,15 @@ class PatternContextIntegrationTest < Minitest::Test
     puts "    Patterns validated: #{results[:validated_patterns].size}"
 
     # Check validation results structure
-    if results[:validation_results].any?
-      result = results[:validation_results].first
-      assert result.key?(:iteration)
-      assert result.key?(:pattern)
-      assert result.key?(:train_period)
-      assert result.key?(:test_period)
-      assert result.key?(:test_return)
-      assert result.key?(:test_sharpe)
-      assert result.key?(:test_max_drawdown)
-    end
+    return unless results[:validation_results].any?
+    result = results[:validation_results].first
+    assert result.key?(:iteration)
+    assert result.key?(:pattern)
+    assert result.key?(:train_period)
+    assert result.key?(:test_period)
+    assert result.key?(:test_return)
+    assert result.key?(:test_sharpe)
+    assert result.key?(:test_max_drawdown)
   end
 
   def test_regime_history_and_splits
@@ -164,14 +161,14 @@ class PatternContextIntegrationTest < Minitest::Test
     regimes = SQA::MarketRegime.detect_history(@stock, window: 60)
 
     assert regimes.is_a?(Array)
-    assert regimes.size > 0
+    assert regimes.size.positive?
     puts "  ✓ Detected #{regimes.size} regime periods"
 
     # Verify structure
     regimes.each do |regime|
-      assert_includes [:bull, :bear, :sideways], regime[:type]
+      assert_includes %i[bull bear sideways], regime[:type]
       assert regime[:start_index] < regime[:end_index]
-      assert regime[:duration] > 0
+      assert regime[:duration].positive?
     end
 
     # Split by regime
@@ -199,7 +196,7 @@ class PatternContextIntegrationTest < Minitest::Test
     q4_data = SQA::SeasonalAnalyzer.filter_by_quarters(@stock, [4])
 
     assert q4_data.is_a?(Hash)
-    assert q4_data[:dates].size > 0
+    assert q4_data[:dates].size.positive?
     puts "  ✓ Q4 data points: #{q4_data[:dates].size}"
 
     # Verify all dates are in Q4
@@ -212,7 +209,7 @@ class PatternContextIntegrationTest < Minitest::Test
     dec_data = SQA::SeasonalAnalyzer.filter_by_months(@stock, [12])
 
     assert dec_data.is_a?(Hash)
-    assert dec_data[:dates].size > 0
+    assert dec_data[:dates].size.positive?
     puts "  ✓ December data points: #{dec_data[:dates].size}"
 
     # Verify all dates are in December
@@ -236,23 +233,22 @@ class PatternContextIntegrationTest < Minitest::Test
       sector: :technology
     )
 
-    if patterns.any?
-      pattern = patterns.first
+    return unless patterns.any?
+    pattern = patterns.first
 
-      # Test various scenarios
-      scenarios = [
-        { date: Date.new(2024, 12, 15), regime: :bull, sector: :technology },
-        { date: Date.new(2024, 6, 15), regime: :bull, sector: :technology },
-        { date: Date.new(2024, 12, 15), regime: :bear, sector: :technology },
-        { date: Date.new(2024, 12, 15), regime: :bull, sector: :finance }
-      ]
+    # Test various scenarios
+    scenarios = [
+      { date: Date.new(2024, 12, 15), regime: :bull, sector: :technology },
+      { date: Date.new(2024, 6, 15), regime: :bull, sector: :technology },
+      { date: Date.new(2024, 12, 15), regime: :bear, sector: :technology },
+      { date: Date.new(2024, 12, 15), regime: :bull, sector: :finance }
+    ]
 
-      puts "  ✓ Testing pattern validity for different scenarios:"
-      scenarios.each do |scenario|
-        valid = pattern.context.valid_for?(**scenario)
-        month = Date::MONTHNAMES[scenario[:date].month] if scenario[:date]
-        puts "    #{month} #{scenario[:regime]} #{scenario[:sector]}: #{valid ? '✓' : '✗'}"
-      end
+    puts "  ✓ Testing pattern validity for different scenarios:"
+    scenarios.each do |scenario|
+      valid = pattern.context.valid_for?(**scenario)
+      month = Date::MONTHNAMES[scenario[:date].month] if scenario[:date]
+      puts "    #{month} #{scenario[:regime]} #{scenario[:sector]}: #{valid ? '✓' : '✗'}"
     end
   end
 end

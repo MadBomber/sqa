@@ -3,17 +3,17 @@
 require_relative 'common'
 
 class SQA::Strategy::EMA
-	extend SQA::Strategy::Common
+  extend SQA::Strategy::Common
 
-	def self.trade(vector)
-		ema_trend = vector.ema[:trend]
+  def self.trade(vector)
+    ema_trend = vector.ema[:trend]
 
-		if :up == ema_trend
-			:buy
-		elsif :down == ema_trend
-			:sell
-		else
-			:hold
-		end
-	end
+    if ema_trend == :up
+      :buy
+    elsif ema_trend == :down
+      :sell
+    else
+      :hold
+    end
+  end
 end

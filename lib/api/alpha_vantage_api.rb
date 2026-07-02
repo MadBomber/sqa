@@ -7,7 +7,6 @@ require 'json'
 # Categories: Market Data, Technical Indicators, Trading, Economic Indicators, Digital/Forex
 # See: https://www.alphavantage.co/documentation/
 
-
 class AlphaVantageAPI
   BASE_URL = 'https://www.alphavantage.co/query'.freeze
 
@@ -16,15 +15,13 @@ class AlphaVantageAPI
     @connection = Faraday.new(url: BASE_URL)
   end
 
-  def query(  function:,
-      symbol:       nil,
-      interval:     nil,
-      time_period:  nil,
-      series_type:  nil,
-      market:       nil,
-      **extra
-    )
-
+  def query(function:,
+            symbol:       nil,
+            interval:     nil,
+            time_period:  nil,
+            series_type:  nil,
+            market:       nil,
+            **extra)
     response = @connection.get do |req|
       req.params['apikey']      = @api_key
       req.params['function']    = function
@@ -99,7 +96,8 @@ class AlphaVantageAPI
   end
 
   def bbands(symbol:, interval:, time_period:, series_type:, nbdevup:, nbdevdn:, matype: nil)
-    query(function: 'BBANDS', symbol: symbol, interval: interval, time_period: time_period, series_type: series_type, nbdevup: nbdevup, nbdevdn: nbdevdn, matype: matype)
+    query(function: 'BBANDS', symbol: symbol, interval: interval, time_period: time_period, series_type: series_type, nbdevup: nbdevup,
+          nbdevdn: nbdevdn, matype: matype)
   end
 
   def bop(symbol:, interval:)
@@ -165,7 +163,6 @@ class AlphaVantageAPI
   def income_statement(symbol:)
     query(function: 'INCOME_STATEMENT', symbol: symbol)
   end
-
 
   def aronosc(symbol:, interval:, time_period:)
     query(function: 'AROONOSC', symbol: symbol, interval: interval, time_period: time_period)
@@ -288,12 +285,13 @@ class AlphaVantageAPI
   end
 
   def macd(symbol:, interval:, series_type:, fastperiod: nil, slowperiod: nil, signalperiod: nil, datatype: 'json')
-    query(function: 'MACD', symbol: symbol, interval: interval, series_type: series_type, fastperiod: fastperiod, slowperiod: slowperiod, signalperiod: signalperiod, datatype: datatype)
+    query(function: 'MACD', symbol: symbol, interval: interval, series_type: series_type, fastperiod: fastperiod, slowperiod: slowperiod,
+          signalperiod: signalperiod, datatype: datatype)
   end
 
-
   def fx_intraday(from_symbol:, to_symbol:, interval:, outputsize: nil, datatype: 'json')
-    query(function: 'FX_INTRADAY', from_symbol: from_symbol, to_symbol: to_symbol, interval: interval, outputsize: outputsize, datatype: datatype)
+    query(function: 'FX_INTRADAY', from_symbol: from_symbol, to_symbol: to_symbol, interval: interval, outputsize: outputsize,
+          datatype: datatype)
   end
 
   def digital_currency_monthly(symbol:, market:, datatype: 'json')
@@ -317,11 +315,8 @@ class AlphaVantageAPI
   end
 
   def macd_ext(symbol:, interval:, series_type:, fastperiod: nil, slowperiod: nil, signalperiod: nil, matype: nil, datatype: 'json')
-    query(function: 'MACDEXT', symbol: symbol, interval: interval, series_type: series_type, fastperiod: fastperiod, slowperiod: slowperiod, signalperiod: signalperiod, matype: matype, datatype: datatype)
-  end
-
-  def macd(symbol:, interval:, series_type:, time_period:, datatype: 'json')
-    query(function: 'MACD', symbol: symbol, interval: interval, series_type: series_type, time_period: time_period, datatype: datatype)
+    query(function: 'MACDEXT', symbol: symbol, interval: interval, series_type: series_type, fastperiod: fastperiod,
+          slowperiod: slowperiod, signalperiod: signalperiod, matype: matype, datatype: datatype)
   end
 
   def rsi(symbol:, interval:, time_period:, series_type:, datatype: 'json')
@@ -337,7 +332,8 @@ class AlphaVantageAPI
   end
 
   def mama(symbol:, interval:, series_type:, fastlimit:, slowlimit:, datatype: 'json')
-    query(function: 'MAMA', symbol: symbol, interval: interval, series_type: series_type, fastlimit: fastlimit, slowlimit: slowlimit, datatype: datatype)
+    query(function: 'MAMA', symbol: symbol, interval: interval, series_type: series_type, fastlimit: fastlimit, slowlimit: slowlimit,
+          datatype: datatype)
   end
 
   def mfi(symbol:, interval:, time_period:, datatype: 'json')
@@ -385,7 +381,8 @@ class AlphaVantageAPI
   end
 
   def ppo(symbol:, interval:, series_type:, fastperiod:, slowperiod: nil, matype: nil, datatype: 'json')
-    query(function: 'PPO', symbol: symbol, interval: interval, series_type: series_type, fastperiod: fastperiod, slowperiod: slowperiod, matype: matype, datatype: datatype)
+    query(function: 'PPO', symbol: symbol, interval: interval, series_type: series_type, fastperiod: fastperiod, slowperiod: slowperiod,
+          matype: matype, datatype: datatype)
   end
 
   def roc(symbol:, interval:, time_period:, series_type:, datatype: 'json')
@@ -397,7 +394,8 @@ class AlphaVantageAPI
   end
 
   def stoch(symbol:, interval:, fastkperiod: nil, slowkperiod: nil, slowdperiod: nil, slowkmatype: nil, slowdmatype: nil, datatype: 'json')
-    query(function: 'STOCH', symbol: symbol, interval: interval, fastkperiod: fastkperiod, slowkperiod: slowkperiod, slowdperiod: slowdperiod, slowkmatype: slowkmatype, slowdmatype: slowdmatype, datatype: datatype)
+    query(function: 'STOCH', symbol: symbol, interval: interval, fastkperiod: fastkperiod, slowkperiod: slowkperiod,
+          slowdperiod: slowdperiod, slowkmatype: slowkmatype, slowdmatype: slowdmatype, datatype: datatype)
   end
 
   def sar(symbol:, interval:, acceleration:, maximum:, datatype: 'json')
@@ -409,7 +407,8 @@ class AlphaVantageAPI
   end
 
   def stochf(symbol:, interval:, fastkperiod: nil, fastdperiod: nil, fastdmatype: nil, datatype: 'json')
-    query(function: 'STOCHF', symbol: symbol, interval: interval, fastkperiod: fastkperiod, fastdperiod: fastdperiod, fastdmatype: fastdmatype, datatype: datatype)
+    query(function: 'STOCHF', symbol: symbol, interval: interval, fastkperiod: fastkperiod, fastdperiod: fastdperiod,
+          fastdmatype: fastdmatype, datatype: datatype)
   end
 
   def t3(symbol:, interval:, time_period:, series_type:, datatype: 'json')
@@ -441,7 +440,8 @@ class AlphaVantageAPI
   end
 
   def ultosc(symbol:, interval:, timeperiod1: nil, timeperiod2: nil, timeperiod3: nil, datatype: 'json')
-    query(function: 'ULTOSC', symbol: symbol, interval: interval, timeperiod1: timeperiod1, timeperiod2: timeperiod2, timeperiod3: timeperiod3, datatype: datatype)
+    query(function: 'ULTOSC', symbol: symbol, interval: interval, timeperiod1: timeperiod1, timeperiod2: timeperiod2,
+          timeperiod3: timeperiod3, datatype: datatype)
   end
 
   def vwap(symbol:, interval:, datatype: 'json')

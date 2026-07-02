@@ -47,13 +47,13 @@ class StrategyTest < Minitest::Test
 
   def test_add_raises_for_proc
     # Procs are not Method objects, should raise
-    a_proc = -> (v) { :hold }
+    a_proc = ->(_v) { :hold }
     assert_raises(SQA::BadParameterError) { @strategy.add(a_proc) }
   end
 
   def test_add_raises_for_lambda
     # Lambdas are not Method objects, should raise
-    a_lambda = lambda { |v| :hold }
+    a_lambda = ->(_v) { :hold }
     assert_raises(SQA::BadParameterError) { @strategy.add(a_lambda) }
   end
 
@@ -89,7 +89,7 @@ class StrategyTest < Minitest::Test
 
     result = @strategy.execute(OpenStruct.new(price: 100))
 
-    assert_equal [:buy, :sell], result
+    assert_equal %i[buy sell], result
   end
 
   def test_available_returns_strategy_classes
@@ -98,7 +98,7 @@ class StrategyTest < Minitest::Test
 
     assert_kind_of Array, available
     # Should include built-in strategies (check by name to avoid pretty_please gem conflict)
-    assert available.any? { |klass| klass.name&.start_with?("SQA::Strategy::") }
+    assert(available.any? { |klass| klass.name&.start_with?("SQA::Strategy::") })
   end
 
   def test_strategies_accessor

@@ -8,7 +8,7 @@ class ConsensusTest < Minitest::Test
     vector = OpenStruct.new
     signal = SQA::Strategy::Consensus.trade(vector)
 
-    assert_includes [:buy, :sell, :hold], signal
+    assert_includes %i[buy sell hold], signal
   end
 
   def test_uses_consensus_from_multiple_strategies

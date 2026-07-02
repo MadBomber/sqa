@@ -28,12 +28,12 @@ class MultiTimeframeTest < Minitest::Test
     assert alignment.key?(:aligned)
     assert alignment.key?(:direction)
 
-    [:up, :down, :sideways].each do |timeframe|
-      assert [:up, :down, :sideways].include?(alignment[timeframe]) if alignment.key?(timeframe)
+    %i[up down sideways].each do |timeframe|
+      assert %i[up down sideways].include?(alignment[timeframe]) if alignment.key?(timeframe)
     end
 
     assert [true, false].include?(alignment[:aligned])
-    assert [:bullish, :bearish, :mixed].include?(alignment[:direction])
+    assert %i[bullish bearish mixed].include?(alignment[:direction])
   end
 
   def test_signal_generation
@@ -43,7 +43,7 @@ class MultiTimeframeTest < Minitest::Test
       lower_timeframe: :daily
     )
 
-    assert [:buy, :sell, :hold].include?(signal)
+    assert %i[buy sell hold].include?(signal)
   end
 
   def test_support_resistance
@@ -66,7 +66,7 @@ class MultiTimeframeTest < Minitest::Test
     assert results.key?(:weekly)
     assert results.key?(:monthly)
 
-    results.each do |_timeframe, values|
+    results.each_value do |values|
       assert_instance_of Array, values
     end
   end
@@ -76,8 +76,8 @@ class MultiTimeframeTest < Minitest::Test
 
     assert_instance_of Hash, divergences
 
-    divergences.each do |_timeframe, divergence|
-      assert [:bearish_divergence, :bullish_divergence, :no_divergence].include?(divergence)
+    divergences.each_value do |divergence|
+      assert %i[bearish_divergence bullish_divergence no_divergence].include?(divergence)
     end
   end
 
@@ -91,6 +91,6 @@ class MultiTimeframeTest < Minitest::Test
 
     assert_instance_of Hash, confirmation[:signals]
     assert [true, false].include?(confirmation[:confirmed])
-    assert [:buy, :sell, :hold].include?(confirmation[:consensus])
+    assert %i[buy sell hold].include?(confirmation[:consensus])
   end
 end

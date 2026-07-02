@@ -65,7 +65,7 @@ class GeneticProgramTest < Minitest::Test
     gp = SQA::GeneticProgram.new(stock: @stock)
 
     fitness_called = false
-    gp.fitness do |genes|
+    gp.fitness do |_genes|
       fitness_called = true
       10.0
     end
@@ -101,7 +101,7 @@ class GeneticProgramTest < Minitest::Test
 
     gp = SQA::GeneticProgram.new(stock: @stock, population_size: 5, generations: 3)
     gp.define_genes(period: [10, 14, 20])
-    gp.fitness { |genes| rand(0.0..10.0) }
+    gp.fitness { |_genes| rand(0.0..10.0) }
 
     gp.evolve
 

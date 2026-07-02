@@ -70,7 +70,7 @@ class ApiError < RuntimeError
   # @param why [String] The error message from the API
   # @raise [ApiError] Always raises after logging
   def self.raise(why)
-    debug_me {"API Error: #{why}"}
+    debug_me { "API Error: #{why}" }
     super
   end
 end
@@ -86,7 +86,7 @@ class NotImplemented < RuntimeError
   #
   # @raise [NotImplemented] Always raises after logging
   def self.raise
-    debug_me {"Not Yet Implemented"}
+    debug_me { "Not Yet Implemented" }
     super
   end
 end

@@ -5,7 +5,7 @@ require 'ostruct'
 
 class MPTest < Minitest::Test
   def test_buy_signal_at_support
-    # Note: There's a syntax error in mp.rb line 9 with the assignment operator
+    # NOTE: There's a syntax error in mp.rb line 9 with the assignment operator
     # This test documents expected behavior once bug is fixed
     vector = OpenStruct.new(market_profile: :support)
 

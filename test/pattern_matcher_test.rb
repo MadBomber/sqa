@@ -14,7 +14,7 @@ class PatternMatcherTest < Minitest::Test
   def test_initialization
     assert_instance_of SQA::PatternMatcher, @matcher
     assert_instance_of Array, @matcher.prices
-    assert @matcher.prices.size > 0
+    assert @matcher.prices.size.positive?
   end
 
   def test_find_similar_euclidean
@@ -61,7 +61,7 @@ class PatternMatcherTest < Minitest::Test
     assert forecast.key?(:num_matches)
     assert forecast.key?(:current_price)
 
-    assert forecast[:forecast_price] > 0
+    assert forecast[:forecast_price].positive?
     assert_instance_of Array, forecast[:confidence_interval_95]
     assert_equal 2, forecast[:confidence_interval_95].size
 
@@ -142,7 +142,7 @@ class PatternMatcherTest < Minitest::Test
     assert quality.key?(:strength)
 
     assert quality[:volatility] >= 0
-    assert quality[:smoothness] >= -1 && quality[:smoothness] <= 1
+    assert quality[:smoothness].between?(-1, 1)
   end
 end
 
@@ -150,7 +150,7 @@ end
 class PatternMatcherUnitTest < Minitest::Test
   def setup
     # Create mock stock
-    prices = (0...100).map { |i| 100 + 10 * Math.sin(i / 10.0) + rand(-2.0..2.0) }
+    prices = (0...100).map { |i| 100 + (10 * Math.sin(i / 10.0)) + rand(-2.0..2.0) }
 
     mock_df = Minitest::Mock.new
     mock_data = Minitest::Mock.new
@@ -173,7 +173,7 @@ class PatternMatcherUnitTest < Minitest::Test
     uptrend = [100, 102, 104, 106, 108, 110]
     quality = @matcher.pattern_quality(uptrend)
 
-    assert quality[:trend] > 0, "Uptrend should have positive trend"
+    assert quality[:trend].positive?, "Uptrend should have positive trend"
     assert quality[:smoothness] > 0.9, "Linear uptrend should be smooth"
   end
 
@@ -181,6 +181,6 @@ class PatternMatcherUnitTest < Minitest::Test
     downtrend = [110, 108, 106, 104, 102, 100]
     quality = @matcher.pattern_quality(downtrend)
 
-    assert quality[:trend] < 0, "Downtrend should have negative trend"
+    assert quality[:trend].negative?, "Downtrend should have negative trend"
   end
 end

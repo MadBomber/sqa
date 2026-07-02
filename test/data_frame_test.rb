@@ -17,7 +17,7 @@ class DataFrameTest < Minitest::Test
   end
 
   def test_column_names
-    expected_columns = ["Column1", "Column2", "Column3"]
+    expected_columns = %w[Column1 Column2 Column3]
     assert_equal expected_columns, @df.columns
   end
 
@@ -31,8 +31,8 @@ class DataFrameTest < Minitest::Test
   end
 
   def test_rename_columns
-    @df.rename_columns!({'column1': 'First', 'column2': 'Second', 'column3': 'Third'})
-    expected_columns = ["First", "Second", "Third"]
+    @df.rename_columns!({ column1: 'First', column2: 'Second', column3: 'Third' })
+    expected_columns = %w[First Second Third]
     assert_equal expected_columns, @df.columns
   end
 
@@ -51,15 +51,15 @@ class DataFrameTest < Minitest::Test
 
   def test_apply_transformers
     transformers = {
-      'Column1': ->(v) { v * 10 },
-      'Column2': ->(v) { v + 100 },
-      'Column3': ->(v) { v.to_s }
+      Column1: ->(v) { v * 10 },
+      Column2: ->(v) { v + 100 },
+      Column3: lambda(&:to_s)
     }
     @df.apply_transformers!(transformers)
     transformed_hash = {
       Column1: [10, 20, 30],
       Column2: [104, 105, 106],
-      Column3: ['7', '8', '9']
+      Column3: %w[7 8 9]
     }
     assert_equal transformed_hash, @df.to_h
   end
@@ -69,7 +69,7 @@ class DataFrameTest < Minitest::Test
     file = Tempfile.new('test.csv')
     @df.to_csv(file.path)
     csv_contents = CSV.read(file.path)
-    assert_equal ['Column1', 'Column2', 'Column3'], csv_contents.first
+    assert_equal %w[Column1 Column2 Column3], csv_contents.first
   end
 
   def test_size_methods
@@ -85,7 +85,7 @@ class DataFrameTest < Minitest::Test
   def test_concat_and_deduplicate_removes_duplicates
     # Create initial DataFrame with timestamps (ascending order - TA-Lib compatible)
     data1 = {
-      'timestamp' => ['2024-11-10', '2024-11-11', '2024-11-12'],
+      'timestamp' => %w[2024-11-10 2024-11-11 2024-11-12],
       'close_price' => [148.0, 149.0, 150.0],
       'volume' => [1200, 1100, 1000]
     }
@@ -93,7 +93,7 @@ class DataFrameTest < Minitest::Test
 
     # Create new DataFrame with overlapping timestamp
     data2 = {
-      'timestamp' => ['2024-11-12', '2024-11-13'],  # 2024-11-12 is duplicate
+      'timestamp' => %w[2024-11-12 2024-11-13],  # 2024-11-12 is duplicate
       'close_price' => [150.0, 151.0],
       'volume' => [1000, 900]
     }
@@ -113,14 +113,14 @@ class DataFrameTest < Minitest::Test
   def test_concat_and_deduplicate_maintains_ascending_order
     # Create initial DataFrame (ascending order - oldest first, TA-Lib compatible)
     data1 = {
-      'timestamp' => ['2024-11-10', '2024-11-11', '2024-11-12'],
+      'timestamp' => %w[2024-11-10 2024-11-11 2024-11-12],
       'close_price' => [148.0, 149.0, 150.0]
     }
     df1 = SQA::DataFrame.new(data1)
 
     # Create new DataFrame with newer dates
     data2 = {
-      'timestamp' => ['2024-11-13', '2024-11-14', '2024-11-15'],
+      'timestamp' => %w[2024-11-13 2024-11-14 2024-11-15],
       'close_price' => [151.0, 152.0, 153.0]
     }
     df2 = SQA::DataFrame.new(data2)
@@ -130,13 +130,13 @@ class DataFrameTest < Minitest::Test
 
     # Check ascending order (oldest to newest - TA-Lib compatible)
     timestamps = df1['timestamp'].to_a
-    assert_equal ['2024-11-10', '2024-11-11', '2024-11-12', '2024-11-13', '2024-11-14', '2024-11-15'], timestamps
+    assert_equal %w[2024-11-10 2024-11-11 2024-11-12 2024-11-13 2024-11-14 2024-11-15], timestamps
   end
 
   def test_concat_and_deduplicate_keeps_first_occurrence
     # Create initial DataFrame (ascending order)
     data1 = {
-      'timestamp' => ['2024-11-11', '2024-11-12'],
+      'timestamp' => %w[2024-11-11 2024-11-12],
       'close_price' => [149.0, 150.0],
       'volume' => [1100, 1000]
     }
@@ -144,7 +144,7 @@ class DataFrameTest < Minitest::Test
 
     # Create new DataFrame with duplicate timestamp but different values
     data2 = {
-      'timestamp' => ['2024-11-12', '2024-11-13'],  # 2024-11-12 is duplicate
+      'timestamp' => %w[2024-11-12 2024-11-13],  # 2024-11-12 is duplicate
       'close_price' => [999.0, 151.0],  # Different value for duplicate
       'volume' => [9999, 900]
     }
@@ -170,7 +170,7 @@ class DataFrameTest < Minitest::Test
 
     # Create new DataFrame
     data2 = {
-      'timestamp' => ['2024-11-12', '2024-11-13'],
+      'timestamp' => %w[2024-11-12 2024-11-13],
       'close_price' => [150.0, 151.0]
     }
     df2 = SQA::DataFrame.new(data2)
@@ -180,21 +180,21 @@ class DataFrameTest < Minitest::Test
 
     # Should have all data from df2 in ascending order
     assert_equal 2, df1.nrows
-    assert_equal ['2024-11-12', '2024-11-13'], df1['timestamp'].to_a
+    assert_equal %w[2024-11-12 2024-11-13], df1['timestamp'].to_a
   end
 
   def test_concat_and_deduplicate_custom_sort_column
     # Create DataFrame with custom sort column
     data1 = {
       'id' => [1, 2, 3],
-      'value' => ['a', 'b', 'c']
+      'value' => %w[a b c]
     }
     df1 = SQA::DataFrame.new(data1)
 
     # Create new DataFrame with overlapping id
     data2 = {
       'id' => [3, 4],  # 3 is duplicate
-      'value' => ['c_duplicate', 'd']
+      'value' => %w[c_duplicate d]
     }
     df2 = SQA::DataFrame.new(data2)
 
@@ -212,14 +212,14 @@ class DataFrameTest < Minitest::Test
   def test_concat_and_deduplicate_forces_ascending_order
     # Create initial DataFrame
     data1 = {
-      'timestamp' => ['2024-11-12', '2024-11-11', '2024-11-10'],
+      'timestamp' => %w[2024-11-12 2024-11-11 2024-11-10],
       'close_price' => [150.0, 149.0, 148.0]
     }
     df1 = SQA::DataFrame.new(data1)
 
     # Create new DataFrame
     data2 = {
-      'timestamp' => ['2024-11-14', '2024-11-13'],
+      'timestamp' => %w[2024-11-14 2024-11-13],
       'close_price' => [152.0, 151.0]
     }
     df2 = SQA::DataFrame.new(data2)
@@ -230,7 +230,7 @@ class DataFrameTest < Minitest::Test
 
     # Verify data is in ASCENDING order (not descending) due to TA-Lib enforcement
     timestamps = df1['timestamp'].to_a
-    assert_equal ['2024-11-10', '2024-11-11', '2024-11-12', '2024-11-13', '2024-11-14'], timestamps
+    assert_equal %w[2024-11-10 2024-11-11 2024-11-12 2024-11-13 2024-11-14], timestamps
   end
 
   # Phase 2 Tests
@@ -256,8 +256,8 @@ class DataFrameTest < Minitest::Test
     ]
 
     transformers = {
-      'price' => ->(v) { v.to_f },
-      'quantity' => ->(v) { v.to_i }
+      'price' => lambda(&:to_f),
+      'quantity' => lambda(&:to_i)
     }
 
     df = SQA::DataFrame.from_aofh(aofh, transformers: transformers)

@@ -259,7 +259,7 @@ class SQA::Portfolio
   # @param filename [String] Path to CSV file
   def save_to_csv(filename)
     CSV.open(filename, 'wb') do |csv|
-      csv << ['ticker', 'shares', 'avg_cost', 'total_cost']
+      csv << %w[ticker shares avg_cost total_cost]
       @positions.each do |ticker, pos|
         csv << [ticker, pos.shares, pos.avg_cost, pos.total_cost]
       end
@@ -270,7 +270,7 @@ class SQA::Portfolio
   # @param filename [String] Path to CSV file
   def save_trades_to_csv(filename)
     CSV.open(filename, 'wb') do |csv|
-      csv << ['date', 'ticker', 'action', 'shares', 'price', 'total', 'commission']
+      csv << %w[date ticker action shares price total commission]
       @trades.each do |trade|
         csv << [
           trade.date,

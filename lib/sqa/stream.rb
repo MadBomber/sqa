@@ -1,39 +1,35 @@
 # frozen_string_literal: true
 
-require 'thread'
-
-=begin
-
-Real-Time Stock Price Stream Processor
-
-This module provides real-time processing of stock price updates,
-calculating indicators on-the-fly and generating trading signals
-as new market data arrives.
-
-Key Features:
-- Event-driven architecture for live data processing
-- Rolling window of recent prices and indicators
-- On-demand indicator calculation
-- Strategy execution on price updates
-- Thread-safe operations
-- Callback system for signal notifications
-
-Example:
-  stream = SQA::Stream.new(
-    ticker: 'AAPL',
-    window_size: 100,
-    strategies: [SQA::Strategy::RSI, SQA::Strategy::MACD]
-  )
-
-  # Add callback for signals
-  stream.on_signal do |signal, data|
-    puts "Signal: #{signal} at price #{data[:price]}"
-  end
-
-  # Feed live price data
-  stream.update(price: 150.25, volume: 1_000_000, timestamp: Time.now)
-
-=end
+#
+# Real-Time Stock Price Stream Processor
+#
+# This module provides real-time processing of stock price updates,
+# calculating indicators on-the-fly and generating trading signals
+# as new market data arrives.
+#
+# Key Features:
+# - Event-driven architecture for live data processing
+# - Rolling window of recent prices and indicators
+# - On-demand indicator calculation
+# - Strategy execution on price updates
+# - Thread-safe operations
+# - Callback system for signal notifications
+#
+# Example:
+#   stream = SQA::Stream.new(
+#     ticker: 'AAPL',
+#     window_size: 100,
+#     strategies: [SQA::Strategy::RSI, SQA::Strategy::MACD]
+#   )
+#
+#   # Add callback for signals
+#   stream.on_signal do |signal, data|
+#     puts "Signal: #{signal} at price #{data[:price]}"
+#   end
+#
+#   # Feed live price data
+#   stream.update(price: 150.25, volume: 1_000_000, timestamp: Time.now)
+#
 
 module SQA
   class Stream
@@ -129,7 +125,7 @@ module SQA
       # Process strategies if we have enough data
       process_strategies if sufficient_data?
 
-      true
+      nil
     end
 
     # Get current price
@@ -198,7 +194,7 @@ module SQA
     # Reset the stream (clear all data)
     def reset
       @mutex.synchronize do
-        @data_buffer.each { |_, v| v.clear }
+        @data_buffer.each_value(&:clear)
         @indicator_cache.clear
         @last_signal = :hold
         @update_count = 0
@@ -215,7 +211,7 @@ module SQA
 
     # Trim buffers to maintain window size
     def trim_buffers
-      @data_buffer.each do |key, buffer|
+      @data_buffer.each_value do |buffer|
         buffer.shift while buffer.size > @window_size
       end
     end
@@ -229,37 +225,34 @@ module SQA
 
       # Execute each strategy
       signals = @strategies.map do |strategy|
-        begin
-          if strategy.is_a?(Class)
-            strategy.trade(vector)
-          elsif strategy.respond_to?(:call)
-            strategy.call(vector)
-          else
-            :hold
-          end
-        rescue => e
-          puts "Warning: Strategy #{strategy} failed: #{e.message}"
+        if strategy.is_a?(Class)
+          strategy.trade(vector)
+        elsif strategy.respond_to?(:call)
+          strategy.call(vector)
+        else
           :hold
         end
+      rescue => e
+        puts "Warning: Strategy #{strategy} failed: #{e.message}"
+        :hold
       end
 
       # Determine consensus signal
       signal = consensus_signal(signals)
 
       # Only emit if signal changed
-      if signal != @last_signal
-        @last_signal = signal
+      return unless signal != @last_signal
+      @last_signal = signal
 
-        signal_data = {
-          signal: signal,
-          price: current_price,
-          timestamp: @data_buffer[:timestamps].last,
-          strategies_vote: signals.tally
-        }
+      signal_data = {
+        signal: signal,
+        price: current_price,
+        timestamp: @data_buffer[:timestamps].last,
+        strategies_vote: signals.tally
+      }
 
-        # Notify signal callbacks
-        @signal_callbacks.each { |callback| callback.call(signal, signal_data) }
-      end
+      # Notify signal callbacks
+      @signal_callbacks.each { |callback| callback.call(signal, signal_data) }
     end
 
     # Build data vector for strategy execution
@@ -293,41 +286,39 @@ module SQA
     end
 
     # Lazy indicator calculation (only if accessed)
-    def lazy_indicator(name, *args, **kwargs, &extractor)
+    def lazy_indicator(name, *, **, &extractor)
       lambda do
-        result = calculate_indicator(name, *args, **kwargs)
+        result = calculate_indicator(name, *, **)
         extractor ? extractor.call(result) : result
       end.call
-    rescue => e
+    rescue
       nil
     end
 
     # Calculate technical indicator
-    def calculate_indicator(name, prices, volumes = nil, highs = nil, lows = nil, **options)
+    def calculate_indicator(name, prices, volumes = nil, highs = nil, lows = nil, **)
       case name
       when :rsi
-        SQAI.rsi(prices, **options)
+        SQAI.rsi(prices, **)
       when :sma
-        SQAI.sma(prices, **options)
+        SQAI.sma(prices, **)
       when :ema
-        SQAI.ema(prices, **options)
+        SQAI.ema(prices, **)
       when :macd
-        SQAI.macd(prices, **options)
+        SQAI.macd(prices, **)
       when :stoch
-        SQAI.stoch(highs, lows, prices, **options)
+        SQAI.stoch(highs, lows, prices, **)
       when :bbands
-        SQAI.bbands(prices, **options)
+        SQAI.bbands(prices, **)
       when :adx
-        SQAI.adx(highs, lows, prices, **options)
+        SQAI.adx(highs, lows, prices, **)
       when :atr
-        SQAI.atr(highs, lows, prices, **options)
+        SQAI.atr(highs, lows, prices, **)
       else
         # Try to call indicator directly
-        if SQAI.respond_to?(name)
-          SQAI.send(name, prices, **options)
-        else
-          raise "Unknown indicator: #{name}"
-        end
+        raise "Unknown indicator: #{name}" unless SQAI.respond_to?(name)
+        SQAI.send(name, prices, **)
+
       end
     end
 

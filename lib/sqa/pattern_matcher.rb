@@ -46,53 +46,18 @@ module SQA
     def find_similar(lookback: 10, num_matches: 5, method: :euclidean, normalize: true)
       return [] if @prices.size < lookback * 2
 
-      # Current pattern (most recent)
-      current_pattern = @prices[-lookback..-1]
+      current_pattern = @prices[-lookback..]
       current_pattern = normalize_pattern(current_pattern) if normalize
 
       similarities = []
 
-      # Search through historical data
       (@prices.size - lookback - 20).times do |start_idx|
         next if start_idx + lookback >= @prices.size - lookback  # Don't compare to recent data
 
-        historical_pattern = @prices[start_idx, lookback]
-        historical_pattern = normalize_pattern(historical_pattern) if normalize
-
-        distance = case method
-                   when :euclidean
-                     euclidean_distance(current_pattern, historical_pattern)
-                   when :dtw
-                     dtw_distance(current_pattern, historical_pattern)
-                   when :correlation
-                     -correlation(current_pattern, historical_pattern)  # Negative so lower is better
-                   else
-                     euclidean_distance(current_pattern, historical_pattern)
-                   end
-
-        # What happened next?
-        future_start = start_idx + lookback
-        future_end = [future_start + lookback, @prices.size - 1].min
-        future_prices = @prices[future_start..future_end]
-
-        next if future_prices.empty?
-
-        future_return = (future_prices.last - @prices[start_idx + lookback - 1]) /
-                        @prices[start_idx + lookback - 1]
-
-        similarities << {
-          start_index: start_idx,
-          end_index: start_idx + lookback - 1,
-          distance: distance,
-          pattern: historical_pattern,
-          future_return: future_return,
-          future_prices: future_prices,
-          pattern_start_price: @prices[start_idx],
-          pattern_end_price: @prices[start_idx + lookback - 1]
-        }
+        candidate = build_similarity_candidate(start_idx, lookback, current_pattern, method, normalize)
+        similarities << candidate if candidate
       end
 
-      # Sort by distance and return top matches
       similarities.sort_by { |s| s[:distance] }.first(num_matches)
     end
 
@@ -123,8 +88,8 @@ module SQA
         forecast_price: forecast_price,
         forecast_return: mean_return,
         confidence_interval_95: [
-          current_price * (1 + mean_return - 1.96 * std_return),
-          current_price * (1 + mean_return + 1.96 * std_return)
+          current_price * (1 + mean_return - (1.96 * std_return)),
+          current_price * (1 + mean_return + (1.96 * std_return))
         ],
         num_matches: similar.size,
         similar_patterns: similar,
@@ -163,43 +128,14 @@ module SQA
     def cluster_patterns(pattern_length: 10, num_clusters: 5)
       return [] if @prices.size < pattern_length * num_clusters
 
-      # Extract all patterns
-      patterns = []
-      (@prices.size - pattern_length).times do |start_idx|
-        pattern = @prices[start_idx, pattern_length]
-        patterns << {
-          start_index: start_idx,
-          pattern: normalize_pattern(pattern),
-          raw_pattern: pattern
-        }
-      end
-
-      # Simple k-means clustering
-      clusters = Array.new(num_clusters) { [] }
-
-      # Initialize centroids randomly
+      patterns = extract_all_patterns(pattern_length)
       centroids = patterns.sample(num_clusters).map { |p| p[:pattern] }
+      clusters = []
 
-      # Iterate until convergence
+      # Simple k-means clustering: iterate until convergence
       10.times do
-        # Assign to nearest centroid
-        clusters = Array.new(num_clusters) { [] }
-
-        patterns.each do |pattern|
-          distances = centroids.map { |centroid| euclidean_distance(pattern[:pattern], centroid) }
-          nearest_cluster = distances.index(distances.min)
-          clusters[nearest_cluster] << pattern
-        end
-
-        # Update centroids
-        centroids = clusters.map do |cluster|
-          next centroids[0] if cluster.empty?
-
-          # Average pattern
-          pattern_length.times.map do |i|
-            cluster.map { |p| p[:pattern][i] }.sum / cluster.size.to_f
-          end
-        end
+        clusters = assign_patterns_to_clusters(patterns, centroids, num_clusters)
+        centroids = update_cluster_centroids(clusters, centroids, pattern_length)
       end
 
       clusters.reject(&:empty?)
@@ -238,6 +174,100 @@ module SQA
     private
 
     ##
+    # Extract every pattern_length-window pattern from the price series,
+    # normalized for clustering plus the raw values for reference.
+    #
+    def extract_all_patterns(pattern_length)
+      patterns = []
+
+      (@prices.size - pattern_length).times do |start_idx|
+        pattern = @prices[start_idx, pattern_length]
+        patterns << {
+          start_index: start_idx,
+          pattern: normalize_pattern(pattern),
+          raw_pattern: pattern
+        }
+      end
+
+      patterns
+    end
+
+    ##
+    # Assign each pattern to its nearest centroid (one k-means iteration step)
+    #
+    def assign_patterns_to_clusters(patterns, centroids, num_clusters)
+      clusters = Array.new(num_clusters) { [] }
+
+      patterns.each do |pattern|
+        distances = centroids.map { |centroid| euclidean_distance(pattern[:pattern], centroid) }
+        nearest_cluster = distances.index(distances.min)
+        clusters[nearest_cluster] << pattern
+      end
+
+      clusters
+    end
+
+    ##
+    # Recompute each cluster's centroid as the average pattern of its
+    # members; empty clusters keep their previous centroid.
+    #
+    def update_cluster_centroids(clusters, previous_centroids, pattern_length)
+      clusters.map do |cluster|
+        next previous_centroids[0] if cluster.empty?
+
+        pattern_length.times.map do |i|
+          cluster.map { |p| p[:pattern][i] }.sum / cluster.size.to_f
+        end
+      end
+    end
+
+    ##
+    # Build one similarity-search candidate at start_idx, or nil if there
+    # isn't enough future data to measure what happened next.
+    #
+    def build_similarity_candidate(start_idx, lookback, current_pattern, method, normalize)
+      historical_pattern = @prices[start_idx, lookback]
+      historical_pattern = normalize_pattern(historical_pattern) if normalize
+
+      distance = distance_between(current_pattern, historical_pattern, method)
+
+      future_start = start_idx + lookback
+      future_end = [future_start + lookback, @prices.size - 1].min
+      future_prices = @prices[future_start..future_end]
+
+      return nil if future_prices.empty?
+
+      future_return = (future_prices.last - @prices[start_idx + lookback - 1]) /
+                      @prices[start_idx + lookback - 1]
+
+      {
+        start_index: start_idx,
+        end_index: start_idx + lookback - 1,
+        distance: distance,
+        pattern: historical_pattern,
+        future_return: future_return,
+        future_prices: future_prices,
+        pattern_start_price: @prices[start_idx],
+        pattern_end_price: @prices[start_idx + lookback - 1]
+      }
+    end
+
+    ##
+    # Dispatch to the configured distance/similarity method
+    #
+    def distance_between(pattern_1, pattern_2, method)
+      case method
+      when :dtw
+        dtw_distance(pattern_1, pattern_2)
+      when :correlation
+        -correlation(pattern_1, pattern_2)  # Negative so lower is better
+      else
+        # :euclidean and any unrecognized method both fall back to euclidean distance
+        euclidean_distance(pattern_1, pattern_2)
+      end
+    end
+
+    ##
     # Normalize pattern to 0-1 range
     #
     def normalize_pattern(pattern)
@@ -253,10 +283,10 @@ module SQA
     ##
     # Euclidean distance between two patterns
     #
-    def euclidean_distance(pattern1, pattern2)
-      return Float::INFINITY if pattern1.size != pattern2.size
+    def euclidean_distance(pattern_1, pattern_2)
+      return Float::INFINITY if pattern_1.size != pattern_2.size
 
-      sum_squares = pattern1.zip(pattern2).sum { |a, b| (a - b)**2 }
+      sum_squares = pattern_1.zip(pattern_2).sum { |a, b| (a - b)**2 }
       Math.sqrt(sum_squares)
     end
 
@@ -265,9 +295,9 @@ module SQA
     #
     # Allows patterns to be stretched in time for better matching.
     #
-    def dtw_distance(pattern1, pattern2)
-      n = pattern1.size
-      m = pattern2.size
+    def dtw_distance(pattern_1, pattern_2)
+      n = pattern_1.size
+      m = pattern_2.size
 
       # Initialize DTW matrix
       dtw = Array.new(n + 1) { Array.new(m + 1, Float::INFINITY) }
@@ -276,7 +306,7 @@ module SQA
       # Fill matrix
       (1..n).each do |i|
         (1..m).each do |j|
-          cost = (pattern1[i - 1] - pattern2[j - 1]).abs
+          cost = (pattern_1[i - 1] - pattern_2[j - 1]).abs
           dtw[i][j] = cost + [dtw[i - 1][j], dtw[i][j - 1], dtw[i - 1][j - 1]].min
         end
       end
@@ -287,8 +317,8 @@ module SQA
     ##
     # Correlation between two patterns
     #
-    def correlation(pattern1, pattern2)
-      pearson_correlation(pattern1, pattern2)
+    def correlation(pattern_1, pattern_2)
+      pearson_correlation(pattern_1, pattern_2)
     end
 
     ##
@@ -301,11 +331,13 @@ module SQA
       sum_x = x.sum
       sum_y = y.sum
       sum_xy = x.zip(y).sum { |a, b| a * b }
+      # rubocop:disable Naming/VariableNumber -- sum_x2/sum_y2 denote Sum(x^2)/Sum(y^2), not "x, item 2"
       sum_x2 = x.sum { |a| a**2 }
       sum_y2 = y.sum { |a| a**2 }
 
       numerator = (n * sum_xy) - (sum_x * sum_y)
-      denominator = Math.sqrt(((n * sum_x2) - sum_x**2) * ((n * sum_y2) - sum_y**2))
+      denominator = Math.sqrt(((n * sum_x2) - (sum_x**2)) * ((n * sum_y2) - (sum_y**2)))
+      # rubocop:enable Naming/VariableNumber
 
       return 0.0 if denominator.zero?
 
@@ -330,26 +362,26 @@ module SQA
       peaks = find_peaks
       patterns = []
 
-      peaks.each_cons(2) do |peak1, peak2|
-        next if (peak2[:index] - peak1[:index]) > 60  # Too far apart
+      peaks.each_cons(2) do |peak_1, peak_2|
+        next if (peak_2[:index] - peak_1[:index]) > 60  # Too far apart
 
         # Similar heights?
-        price_diff = (peak1[:price] - peak2[:price]).abs / peak1[:price]
+        price_diff = (peak_1[:price] - peak_2[:price]).abs / peak_1[:price]
         next if price_diff > 0.05  # More than 5% difference
 
         # Valley between them?
-        valley_prices = @prices[(peak1[:index] + 1)...peak2[:index]]
+        valley_prices = @prices[(peak_1[:index] + 1)...peak_2[:index]]
         valley_low = valley_prices.min
 
         # Valley should be significantly lower
-        valley_drop = (peak1[:price] - valley_low) / peak1[:price]
+        valley_drop = (peak_1[:price] - valley_low) / peak_1[:price]
         next if valley_drop < 0.03  # Less than 3% drop
 
         patterns << {
           type: :double_top,
-          peak1_index: peak1[:index],
-          peak2_index: peak2[:index],
-          peak_price: (peak1[:price] + peak2[:price]) / 2.0,
+          peak1_index: peak_1[:index],
+          peak2_index: peak_2[:index],
+          peak_price: (peak_1[:price] + peak_2[:price]) / 2.0,
           valley_price: valley_low,
           strength: valley_drop
         }
@@ -365,23 +397,23 @@ module SQA
       valleys = find_valleys
       patterns = []
 
-      valleys.each_cons(2) do |valley1, valley2|
-        next if (valley2[:index] - valley1[:index]) > 60
+      valleys.each_cons(2) do |valley_1, valley_2|
+        next if (valley_2[:index] - valley_1[:index]) > 60
 
-        price_diff = (valley1[:price] - valley2[:price]).abs / valley1[:price]
+        price_diff = (valley_1[:price] - valley_2[:price]).abs / valley_1[:price]
         next if price_diff > 0.05
 
-        peak_prices = @prices[(valley1[:index] + 1)...valley2[:index]]
+        peak_prices = @prices[(valley_1[:index] + 1)...valley_2[:index]]
         peak_high = peak_prices.max
 
-        peak_rise = (peak_high - valley1[:price]) / valley1[:price]
+        peak_rise = (peak_high - valley_1[:price]) / valley_1[:price]
         next if peak_rise < 0.03
 
         patterns << {
           type: :double_bottom,
-          valley1_index: valley1[:index],
-          valley2_index: valley2[:index],
-          valley_price: (valley1[:price] + valley2[:price]) / 2.0,
+          valley1_index: valley_1[:index],
+          valley2_index: valley_2[:index],
+          valley_price: (valley_1[:price] + valley_2[:price]) / 2.0,
           peak_price: peak_high,
           strength: peak_rise
         }
@@ -425,73 +457,72 @@ module SQA
       recent = @prices.last(60)
       return [] if recent.size < 30
 
-      peaks = []
-      valleys = []
-
-      window = 5
-      (window...(recent.size - window)).each do |i|
-        left = recent[(i - window)...i]
-        right = recent[(i + 1)..(i + window)]
-
-        if left.all? { |p| recent[i] >= p } && right.all? { |p| recent[i] >= p }
-          peaks << { index: i, price: recent[i] }
-        elsif left.all? { |p| recent[i] <= p } && right.all? { |p| recent[i] <= p }
-          valleys << { index: i, price: recent[i] }
-        end
-      end
+      peaks = find_extrema(recent, :>=)
+      valleys = find_extrema(recent, :<=)
 
       return [] if peaks.size < 2 || valleys.size < 2
 
-      # Check if peaks trending down and valleys trending up
-      peak_slope = (peaks.last[:price] - peaks.first[:price]) / (peaks.last[:index] - peaks.first[:index])
-      valley_slope = (valleys.last[:price] - valleys.first[:price]) / (valleys.last[:index] - valleys.first[:index])
+      converging_triangle_pattern(peaks, valleys)
+    end
 
-      if peak_slope < 0 && valley_slope > 0
-        [{
-          type: :symmetrical_triangle,
-          apex: peaks.last[:index]
-        }]
-      else
-        []
-      end
+    ##
+    # Build the triangle pattern result if peaks are trending down and
+    # valleys are trending up (converging), otherwise return no patterns.
+    #
+    def converging_triangle_pattern(peaks, valleys)
+      peak_slope = extrema_slope(peaks)
+      valley_slope = extrema_slope(valleys)
+
+      return [] unless peak_slope.negative? && valley_slope.positive?
+
+      [{
+        type: :symmetrical_triangle,
+        apex: peaks.last[:index]
+      }]
+    end
+
+    ##
+    # Slope of price change between the first and last extrema points
+    #
+    def extrema_slope(points)
+      (points.last[:price] - points.first[:price]) / (points.last[:index] - points.first[:index])
     end
 
     ##
     # Find peaks (local maxima)
     #
     def find_peaks
-      peaks = []
-      window = 5
-
-      (window...(@prices.size - window)).each do |i|
-        left = @prices[(i - window)...i]
-        right = @prices[(i + 1)..(i + window)]
-
-        if left.all? { |p| @prices[i] >= p } && right.all? { |p| @prices[i] >= p }
-          peaks << { index: i, price: @prices[i] }
-        end
-      end
-
-      peaks
+      find_extrema(@prices, :>=)
     end
 
     ##
     # Find valleys (local minima)
     #
     def find_valleys
-      valleys = []
+      find_extrema(@prices, :<=)
+    end
+
+    ##
+    # Shared local-extrema scan used by both find_peaks and find_valleys.
+    # A point at index i is an extremum when it satisfies `comparator`
+    # (:>= for peaks, :<= for valleys) against every price in its
+    # surrounding window on both sides.
+    #
+    def find_extrema(series, comparator)
+      extrema = []
       window = 5
 
-      (window...(@prices.size - window)).each do |i|
-        left = @prices[(i - window)...i]
-        right = @prices[(i + 1)..(i + window)]
+      (window...(series.size - window)).each do |i|
+        left = series[(i - window)...i]
+        right = series[(i + 1)..(i + window)]
+        current = series[i]
 
-        if left.all? { |p| @prices[i] <= p } && right.all? { |p| @prices[i] <= p }
-          valleys << { index: i, price: @prices[i] }
+        if left.all? { |p| current.send(comparator, p) } && right.all? { |p| current.send(comparator, p) }
+          extrema << { index: i, price: current }
         end
       end
 
-      valleys
+      extrema
     end
   end
 end

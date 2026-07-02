@@ -68,11 +68,11 @@ class SeasonalAnalyzerTest < Minitest::Test
     assert_equal 3, result[:worst_months].size
 
     result[:best_months].each do |month|
-      assert month >= 1 && month <= 12
+      assert month.between?(1, 12)
     end
 
     result[:worst_months].each do |month|
-      assert month >= 1 && month <= 12
+      assert month.between?(1, 12)
     end
   end
 
@@ -85,11 +85,11 @@ class SeasonalAnalyzerTest < Minitest::Test
     assert_equal 2, result[:worst_quarters].size
 
     result[:best_quarters].each do |quarter|
-      assert quarter >= 1 && quarter <= 4
+      assert quarter.between?(1, 4)
     end
 
     result[:worst_quarters].each do |quarter|
-      assert quarter >= 1 && quarter <= 4
+      assert quarter.between?(1, 4)
     end
   end
 
@@ -109,7 +109,7 @@ class SeasonalAnalyzerTest < Minitest::Test
       12 => { avg_return: 9.0 }
     }
 
-    result = SQA::SeasonalAnalyzer.detect_seasonality(monthly_returns)
+    result = SQA::SeasonalAnalyzer.detect_seasonality?(monthly_returns)
     assert result, "Should detect seasonality with high variance"
   end
 
@@ -120,7 +120,7 @@ class SeasonalAnalyzerTest < Minitest::Test
       monthly_returns[m] = { avg_return: 1.0 }
     end
 
-    result = SQA::SeasonalAnalyzer.detect_seasonality(monthly_returns)
+    result = SQA::SeasonalAnalyzer.detect_seasonality?(monthly_returns)
     refute result, "Should not detect seasonality with flat returns"
   end
 
@@ -206,7 +206,7 @@ class SeasonalAnalyzerTest < Minitest::Test
       end
 
       # Add random noise
-      prices << base_price + rand(-2..2)
+      prices << (base_price + rand(-2..2))
       dates << date.to_s
     end
 
@@ -221,7 +221,7 @@ class SeasonalAnalyzerTest < Minitest::Test
 
     730.times do |i|
       date = start_date + i
-      prices << 100 + rand(-1..1)
+      prices << rand(99..101)
       dates << date.to_s
     end
 

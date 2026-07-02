@@ -216,60 +216,18 @@ module SQA
       #
       def multi_objective(returns_matrix, objectives: {})
         num_assets = returns_matrix.size
+        objectives = normalize_multi_objective_weights(objectives)
 
         best_score = -Float::INFINITY
         best_portfolio = nil
 
-        # Default objectives
-        objectives = {
-          maximize_return: 0.33,
-          minimize_volatility: 0.33,
-          minimize_drawdown: 0.34
-        } if objectives.empty?
-
-        # Normalize objective weights
-        total_weight = objectives.values.sum
-        objectives = objectives.transform_values { |v| v / total_weight }
-
-        # Grid search
         10_000.times do
           weights = random_weights(num_assets, {})
+          candidate = evaluate_multi_objective_candidate(returns_matrix, weights, objectives)
 
-          port_returns = portfolio_returns(returns_matrix, weights)
-          mean_return = port_returns.sum / port_returns.size.to_f
-          variance = portfolio_variance(returns_matrix, weights)
-          volatility = Math.sqrt(variance)
-
-          # Convert to prices for drawdown
-          prices = port_returns.inject([100.0]) { |acc, r| acc << acc.last * (1 + r) }
-          max_dd = SQA::RiskManager.max_drawdown(prices)[:max_drawdown].abs
-
-          # Calculate composite score
-          score = 0.0
-
-          # Normalize and combine objectives
-          if objectives[:maximize_return]
-            score += (mean_return * 252) * objectives[:maximize_return] * 10  # Scale up
-          end
-
-          if objectives[:minimize_volatility]
-            score -= (volatility * Math.sqrt(252)) * objectives[:minimize_volatility] * 10
-          end
-
-          if objectives[:minimize_drawdown]
-            score -= max_dd * objectives[:minimize_drawdown] * 10
-          end
-
-          if score > best_score
-            best_score = score
-            best_portfolio = {
-              weights: weights,
-              return: mean_return * 252,
-              volatility: volatility * Math.sqrt(252),
-              max_drawdown: max_dd,
-              sharpe: SQA::RiskManager.sharpe_ratio(port_returns),
-              composite_score: score
-            }
+          if candidate[:composite_score] > best_score
+            best_score = candidate[:composite_score]
+            best_portfolio = candidate
           end
         end
 
@@ -311,7 +269,7 @@ module SQA
           shares = (difference / price).round
 
           trades[ticker] = {
-            action: shares > 0 ? :buy : :sell,
+            action: shares.positive? ? :buy : :sell,
             shares: shares.abs,
             value: shares * price,
             current_weight: current_value / total_value,
@@ -325,30 +283,87 @@ module SQA
       private
 
       ##
+      # Fill in default objectives (if none given) and normalize their
+      # weights so they sum to 1.0.
+      def normalize_multi_objective_weights(objectives)
+        if objectives.empty?
+          objectives = {
+            maximize_return: 0.33,
+            minimize_volatility: 0.33,
+            minimize_drawdown: 0.34
+          }
+        end
+
+        total_weight = objectives.values.sum
+        objectives.transform_values { |v| v / total_weight }
+      end
+
+      ##
+      # Evaluate one candidate weight set against the multi-objective
+      # scoring function, returning the full portfolio result hash.
+      def evaluate_multi_objective_candidate(returns_matrix, weights, objectives)
+        port_returns = portfolio_returns(returns_matrix, weights)
+        mean_return = port_returns.sum / port_returns.size.to_f
+        variance = portfolio_variance(returns_matrix, weights)
+        volatility = Math.sqrt(variance)
+
+        prices = port_returns.inject([100.0]) { |acc, r| acc << (acc.last * (1 + r)) }
+        max_dd = SQA::RiskManager.max_drawdown(prices)[:max_drawdown].abs
+
+        score = multi_objective_score(objectives, mean_return, volatility, max_dd)
+
+        {
+          weights: weights,
+          return: mean_return * 252,
+          volatility: volatility * Math.sqrt(252),
+          max_drawdown: max_dd,
+          sharpe: SQA::RiskManager.sharpe_ratio(port_returns),
+          composite_score: score
+        }
+      end
+
+      ##
+      # Composite score combining return, volatility, and drawdown objectives
+      def multi_objective_score(objectives, mean_return, volatility, max_dd)
+        score = 0.0
+
+        if objectives[:maximize_return]
+          score += (mean_return * 252) * objectives[:maximize_return] * 10  # Scale up
+        end
+
+        if objectives[:minimize_volatility]
+          score -= (volatility * Math.sqrt(252)) * objectives[:minimize_volatility] * 10
+        end
+
+        if objectives[:minimize_drawdown]
+          score -= max_dd * objectives[:minimize_drawdown] * 10
+        end
+
+        score
+      end
+
+      ##
       # Calculate covariance matrix
       def calculate_covariance_matrix(returns_matrix)
         num_assets = returns_matrix.size
         num_periods = returns_matrix.first.size
+        means = returns_matrix.map { |returns| returns.sum / returns.size.to_f }
 
-        # Calculate means
-        means = returns_matrix.map do |returns|
-          returns.sum / returns.size.to_f
-        end
-
-        # Calculate covariance
-        covariance = Array.new(num_assets) { Array.new(num_assets, 0.0) }
-
-        num_assets.times do |i|
-          num_assets.times do |j|
-            cov = 0.0
-            num_periods.times do |t|
-              cov += (returns_matrix[i][t] - means[i]) * (returns_matrix[j][t] - means[j])
-            end
-            covariance[i][j] = cov / (num_periods - 1).to_f
+        Array.new(num_assets) do |i|
+          Array.new(num_assets) do |j|
+            covariance_between(returns_matrix, means, i, j, num_periods)
           end
         end
+      end
 
-        covariance
+      ##
+      # Sample covariance between asset i and asset j over num_periods
+      def covariance_between(returns_matrix, means, i, j, num_periods)
+        cov = 0.0
+        num_periods.times do |t|
+          cov += (returns_matrix[i][t] - means[i]) * (returns_matrix[j][t] - means[j])
+        end
+        cov / (num_periods - 1).to_f
       end
 
       ##
@@ -364,9 +379,7 @@ module SQA
         max_weight = constraints[:max_weight] || 1.0
 
         # Adjust if constraints violated
-        weights = weights.map do |w|
-          [[w, min_weight].max, max_weight].min
-        end
+        weights = weights.map { |w| w.clamp(min_weight, max_weight) }
 
         # Renormalize
         sum = weights.sum

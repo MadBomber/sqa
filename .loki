@@ -1,0 +1,30 @@
+# frozen_string_literal: true
+# sqa — core gem: DataFrame, strategies, backtesting, portfolio, KBS, streaming, risk management.
+
+import_up "repo_dev.loki"
+
+class Tasks
+  @@gem_name ||= "sqa".freeze
+
+  header "sqa v#{gem_version} — core SQA library"
+
+  desc "Launch the sqa-console IRB session"
+  def console
+    sh "bin/sqa-console"
+  end
+
+  class DocsCommands < Tasks
+    desc "Build YARD + MkDocs documentation"
+    def build
+      sh "bundle exec rake docs:build"
+    end
+
+    desc "Serve MkDocs documentation locally"
+    def serve
+      sh "bundle exec rake docs:serve"
+    end
+  end
+
+  desc "docs SUBCOMMAND", "Documentation tasks (build, serve)"
+  subcommand "docs", DocsCommands
+end

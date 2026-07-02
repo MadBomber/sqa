@@ -22,7 +22,7 @@ class KBSStrategyTest < Minitest::Test
     vector = OpenStruct.new(rsi: [50.0])
     signal = SQA::Strategy::KBS.trade(vector)
 
-    assert_includes [:buy, :sell, :hold], signal
+    assert_includes %i[buy sell hold], signal
   end
 
   def test_execute_returns_valid_signal
@@ -30,7 +30,7 @@ class KBSStrategyTest < Minitest::Test
     vector = OpenStruct.new(rsi: [50.0])
     signal = strategy.execute(vector)
 
-    assert_includes [:buy, :sell, :hold], signal
+    assert_includes %i[buy sell hold], signal
   end
 
   def test_add_rule_returns_self
@@ -38,7 +38,7 @@ class KBSStrategyTest < Minitest::Test
 
     result = strategy.add_rule(:test_rule) do
       on :rsi, { level: :oversold }
-      perform { }  # Empty perform block for testing
+      perform {}  # Empty perform block for testing
     end
 
     assert_equal strategy, result
@@ -52,7 +52,7 @@ class KBSStrategyTest < Minitest::Test
     # Add a custom rule that doesn't conflict with defaults
     strategy.add_rule(:custom_test_rule) do
       on :rsi, { level: :neutral }
-      perform { }  # Empty perform block for testing
+      perform {}  # Empty perform block for testing
     end
 
     # RSI value of 50 is neutral
@@ -60,7 +60,7 @@ class KBSStrategyTest < Minitest::Test
     signal = strategy.execute(vector)
 
     # Should return a valid signal (default behavior is :hold for neutral)
-    assert_includes [:buy, :sell, :hold], signal
+    assert_includes %i[buy sell hold], signal
   end
 
   def test_default_rules_handle_oversold
@@ -99,7 +99,7 @@ class KBSStrategyTest < Minitest::Test
     vector = OpenStruct.new(rsi: [50.0])
 
     signal = strategy.execute(vector)
-    assert_includes [:buy, :sell, :hold], signal
+    assert_includes %i[buy sell hold], signal
   end
 
   def test_handles_macd_facts
@@ -111,7 +111,7 @@ class KBSStrategyTest < Minitest::Test
     vector = OpenStruct.new(macd: [macd_line, signal_line, histogram])
 
     signal = strategy.execute(vector)
-    assert_includes [:buy, :sell, :hold], signal
+    assert_includes %i[buy sell hold], signal
   end
 
   def test_handles_price_trend_facts
@@ -121,7 +121,7 @@ class KBSStrategyTest < Minitest::Test
     vector = OpenStruct.new(prices: prices)
 
     signal = strategy.execute(vector)
-    assert_includes [:buy, :sell, :hold], signal
+    assert_includes %i[buy sell hold], signal
   end
 
   def test_handles_volume_facts
@@ -131,7 +131,7 @@ class KBSStrategyTest < Minitest::Test
     vector = OpenStruct.new(volume: volumes)
 
     signal = strategy.execute(vector)
-    assert_includes [:buy, :sell, :hold], signal
+    assert_includes %i[buy sell hold], signal
   end
 
   def test_handles_empty_vector
@@ -147,19 +147,19 @@ class KBSStrategyTest < Minitest::Test
 
     strategy.add_rule(:rule1) do
       on :rsi, { level: :oversold }
-      perform { }  # Empty perform block for testing
+      perform {}  # Empty perform block for testing
     end
 
     strategy.add_rule(:rule2) do
       on :rsi, { level: :overbought }
-      perform { }  # Empty perform block for testing
+      perform {}  # Empty perform block for testing
     end
 
     # Should not raise error
     vector = OpenStruct.new(rsi: [50.0])
     signal = strategy.execute(vector)
 
-    assert_includes [:buy, :sell, :hold], signal
+    assert_includes %i[buy sell hold], signal
   end
 
   def test_responds_to_print_facts

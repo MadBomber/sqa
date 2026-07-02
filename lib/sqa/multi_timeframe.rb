@@ -104,7 +104,7 @@ module SQA
       higher_data = @timeframes[higher_timeframe]
       higher_prices = higher_data["adj_close_price"].to_a
 
-      higher_trend = if higher_prices.last > higher_prices[-10..-1].sum / 10.0
+      higher_trend = if higher_prices.last > higher_prices[-10..].sum / 10.0
                        :up
                      else
                        :down
@@ -164,7 +164,7 @@ module SQA
     # @param options [Hash] Indicator options
     # @return [Hash] Indicator values for each timeframe
     #
-    def indicators(indicator:, **options)
+    def indicators(indicator:, **)
       results = {}
 
       @timeframes.each do |timeframe, data|
@@ -172,15 +172,13 @@ module SQA
 
         results[timeframe] = case indicator
                              when :sma
-                               SQAI.sma(prices, **options)
+                               SQAI.sma(prices, **)
                              when :ema
-                               SQAI.ema(prices, **options)
+                               SQAI.ema(prices, **)
                              when :rsi
-                               SQAI.rsi(prices, **options)
+                               SQAI.rsi(prices, **)
                              when :macd
-                               SQAI.macd(prices, **options)
-                             else
-                               nil
+                               SQAI.macd(prices, **)
                              end
       end
 
@@ -342,7 +340,7 @@ module SQA
           cluster[:timeframes] << level[:timeframe]
           cluster[:count] += 1
           # Update average price
-          cluster[:price] = (cluster[:price] * (cluster[:count] - 1) + level[:price]) / cluster[:count]
+          cluster[:price] = ((cluster[:price] * (cluster[:count] - 1)) + level[:price]) / cluster[:count]
         else
           # Create new cluster
           clusters << {

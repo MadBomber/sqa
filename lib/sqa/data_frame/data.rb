@@ -75,8 +75,8 @@ class SQA::DataFrame
     # Serialize to JSON string
     #
     # @return [String] JSON representation
-    def to_json(*args)
-      to_h.to_json(*args)
+    def to_json(*)
+      to_h.to_json(*)
     end
 
     # Convert to hash
@@ -99,6 +99,6 @@ class SQA::DataFrame
     def to_s
       "#{@ticker || 'Unknown'} (#{@exchange || 'N/A'}) via #{@source}"
     end
-    alias_method :inspect, :to_s
+    alias inspect to_s
   end
 end

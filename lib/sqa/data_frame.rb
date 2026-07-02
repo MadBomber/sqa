@@ -5,7 +5,6 @@ require 'forwardable'
 require 'csv'
 require 'polars'
 
-
 require_relative 'data_frame/data'
 require_relative 'data_frame/yahoo_finance'
 require_relative 'data_frame/alpha_vantage'
@@ -53,7 +52,6 @@ class SQA::DataFrame
     apply_transformers!(transformers) unless transformers.empty?
   end
 
-
   # Applies transformer functions to specified columns in place.
   #
   # @param transformers [Hash{String, Symbol => Proc}] Column name to transformer mapping
@@ -65,8 +63,8 @@ class SQA::DataFrame
   def apply_transformers!(transformers)
     transformers.each do |col, transformer|
       col_name = col.to_s
-      @data = @data.with_column(
-        @data[col_name].apply(&transformer).alias(col_name)
+      @data = @data.with_columns(
+        @data[col_name].map_elements(&transformer).alias(col_name)
       )
     end
   end
@@ -84,16 +82,15 @@ class SQA::DataFrame
     # mapping can have string or symbol keys, columns are always strings
     string_mapping = mapping.transform_keys(&:to_s)
 
-    rename_mapping = @data.columns.each_with_index.map do |col, _|
+    rename_mapping = @data.columns.each_with_index.to_h do |col, _|
       # Try exact match first, then lowercase match
       new_name = string_mapping[col] || string_mapping[col.downcase] || col
       # Polars requires both keys and values to be strings
       [col, new_name.to_s]
-    end.to_h
+    end
 
     @data = @data.rename(rename_mapping)
   end
-
 
   # Appends another DataFrame to this one in place.
   #
@@ -108,7 +105,7 @@ class SQA::DataFrame
     self_row_count = @data.shape[0]
     other_row_count = other_df.data.shape[0]
 
-    @data = if self_row_count == 0
+    @data = if self_row_count.zero?
               other_df.data
             else
               @data.vstack(other_df.data)
@@ -119,7 +116,6 @@ class SQA::DataFrame
     return if post_append_row_count == expected_row_count
 
     raise "Append Error: expected #{expected_row_count}, got #{post_append_row_count} "
-
   end
   alias concat! append!
 
@@ -157,7 +153,7 @@ class SQA::DataFrame
     end
 
     # Concatenate the dataframes
-    @data = if @data.shape[0] == 0
+    @data = if @data.shape[0].zero?
               other_df.data
             else
               @data.vstack(other_df.data)
@@ -166,8 +162,8 @@ class SQA::DataFrame
     # Remove duplicates based on sort_column, keeping first occurrence
     @data = @data.unique(subset: [sort_column], keep: "first")
 
-    # Sort by the specified column (Polars uses 'reverse' for descending)
-    @data = @data.sort(sort_column, reverse: descending)
+    # Sort by the specified column
+    @data = @data.sort(sort_column, descending: descending)
   end
 
   # Returns the column names of the DataFrame.
@@ -194,7 +190,7 @@ class SQA::DataFrame
   #   df.to_h  # => { timestamp: ["2024-01-01", ...], close_price: [100.0, ...] }
   #
   def to_h
-    @data.columns.map { |col| [col.to_sym, @data[col].to_a] }.to_h
+    @data.columns.to_h { |col| [col.to_sym, @data[col].to_a] }
   end
 
   # Writes the DataFrame to a CSV file.
@@ -229,7 +225,6 @@ class SQA::DataFrame
     @data.width
   end
 
-
   # FPL Analysis - Calculate Future Period Loss/Profit
   #
   # @param column [String, Symbol] Column name containing prices (default: "adj_close_price")
@@ -244,7 +239,6 @@ class SQA::DataFrame
     prices = @data[column.to_s].to_a
     SQA::FPOP.fpl(prices, fpop: fpop)
   end
-
 
   # FPL Analysis with risk metrics and classification
   #
@@ -263,7 +257,6 @@ class SQA::DataFrame
     SQA::FPOP.fpl_analysis(prices, fpop: fpop)
   end
 
-
   # Checks if a value appears to be a date string.
   #
   # @param value [Object] Value to check
@@ -279,9 +272,9 @@ class SQA::DataFrame
   # @param args [Array] Method arguments
   # @param block [Proc] Optional block
   # @return [Object] Result from Polars DataFrame method
-  def method_missing(method_name, *args, &block)
+  def method_missing(method_name, *, &)
     return super unless @data.respond_to?(method_name)
-    @data.send(method_name, *args, &block)
+    @data.send(method_name, *, &)
   end
 
   # Checks if the DataFrame responds to a method.
@@ -332,8 +325,8 @@ class SQA::DataFrame
       columns = aoh_sanitized.first.keys
 
       # Convert array-of-hashes to hash-of-arrays for Polars
-      hofa = columns.each_with_object({}) do |col, hash|
-        hash[col] = aoh_sanitized.map { |row| row[col] }
+      hofa = columns.to_h do |col|
+        [col, aoh_sanitized.map { |row| row[col] }]
       end
 
       df = Polars::DataFrame.new(hofa)
@@ -367,8 +360,8 @@ class SQA::DataFrame
     # @param keys [Array<String>] Original key names
     # @return [Hash{String => Symbol}] Mapping from original to underscored keys
     def generate_mapping(keys)
-      keys.each_with_object({}) do |key, hash|
-        hash[key.to_s] = underscore_key(key.to_s)
+      keys.to_h do |key|
+        [key.to_s, underscore_key(key.to_s)]
       end
     end
 

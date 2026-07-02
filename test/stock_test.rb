@@ -258,7 +258,7 @@ class StockTest < Minitest::Test
 
   def test_connection_can_be_injected
     # Save original connection
-    original_conn = SQA::Stock.connection
+    SQA::Stock.connection
 
     # Inject custom connection
     custom_conn = Faraday.new(url: "https://example.com")

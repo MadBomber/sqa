@@ -25,7 +25,6 @@ module SQA
       def analyze(stock)
         df = stock.df
 
-
         # Extract dates and prices (handle both 'date' and 'timestamp' column names)
         date_column = df.data.columns.include?("date") ? "date" : "timestamp"
         dates = df[date_column].to_a.map { |d| Date.parse(d.to_s) }
@@ -43,7 +42,7 @@ module SQA
           worst_months: rank_months(monthly_returns).last(3),
           best_quarters: rank_quarters(quarterly_returns).first(2),
           worst_quarters: rank_quarters(quarterly_returns).last(2),
-          has_seasonal_pattern: detect_seasonality(monthly_returns)
+          has_seasonal_pattern: detect_seasonality?(monthly_returns)
         }
       end
 
@@ -96,7 +95,7 @@ module SQA
       # @param monthly_returns [Hash] Monthly return statistics
       # @return [Boolean] True if significant seasonal pattern exists
       #
-      def detect_seasonality(monthly_returns)
+      def detect_seasonality?(monthly_returns)
         returns = monthly_returns.values.map { |stats| stats[:avg_return] }
 
         # Check variance in monthly returns
@@ -130,79 +129,63 @@ module SQA
 
       # Calculate average returns by month
       def calculate_monthly_returns(dates, prices)
-        monthly_data = Hash.new { |h, k| h[k] = [] }
-
-        # Group returns by month
-        dates.each_cons(2).with_index do |(d1, d2), i|
-          return_pct = ((prices[i + 1] - prices[i]) / prices[i] * 100.0)
-          monthly_data[d2.month] << return_pct
-        end
-
-        # Calculate statistics per month
-        result = {}
-        (1..12).each do |month|
-          returns = monthly_data[month]
-          if returns.any?
-            result[month] = {
-              avg_return: returns.sum / returns.size,
-              count: returns.size,
-              positive_days: returns.count { |r| r > 0 },
-              negative_days: returns.count { |r| r < 0 }
-            }
-          else
-            result[month] = {
-              avg_return: 0.0,
-              count: 0,
-              positive_days: 0,
-              negative_days: 0
-            }
-          end
-        end
-
-        result
+        monthly_data = group_returns_by_period(dates, prices, &:month)
+        build_period_stats(1..12, monthly_data)
       end
 
       # Calculate average returns by quarter
       def calculate_quarterly_returns(dates, prices)
-        quarterly_data = Hash.new { |h, k| h[k] = [] }
+        quarterly_data = group_returns_by_period(dates, prices) { |date| ((date.month - 1) / 3) + 1 }
+        build_period_stats(1..4, quarterly_data)
+      end
 
-        dates.each_cons(2).with_index do |(d1, d2), i|
+      # Group day-over-day percentage returns by a calendar period (month or
+      # quarter), as derived from each day's date by the given block.
+      def group_returns_by_period(dates, prices)
+        period_data = Hash.new { |h, k| h[k] = [] }
+
+        dates.each_cons(2).with_index do |(_d_1, d_2), i|
           return_pct = ((prices[i + 1] - prices[i]) / prices[i] * 100.0)
-          quarter = ((d2.month - 1) / 3) + 1
-          quarterly_data[quarter] << return_pct
+          period_data[yield(d_2)] << return_pct
         end
 
+        period_data
+      end
+
+      # Build the avg_return/count/positive_days/negative_days stats hash
+      # for every period in `period_range`, defaulting to zeros when a
+      # period has no observed returns.
+      def build_period_stats(period_range, period_data)
         result = {}
-        (1..4).each do |quarter|
-          returns = quarterly_data[quarter]
-          if returns.any?
-            result[quarter] = {
-              avg_return: returns.sum / returns.size,
-              count: returns.size,
-              positive_days: returns.count { |r| r > 0 },
-              negative_days: returns.count { |r| r < 0 }
-            }
-          else
-            result[quarter] = {
-              avg_return: 0.0,
-              count: 0,
-              positive_days: 0,
-              negative_days: 0
-            }
-          end
+
+        period_range.each do |period|
+          returns = period_data[period]
+          result[period] = period_returns_stats(returns)
         end
 
         result
       end
 
+      # Stats for a single period's collected returns (or zeroed defaults)
+      def period_returns_stats(returns)
+        return { avg_return: 0.0, count: 0, positive_days: 0, negative_days: 0 } if returns.empty?
+
+        {
+          avg_return: returns.sum / returns.size,
+          count: returns.size,
+          positive_days: returns.count(&:positive?),
+          negative_days: returns.count(&:negative?)
+        }
+      end
+
       # Rank months by performance
       def rank_months(monthly_returns)
-        monthly_returns.sort_by { |month, stats| -stats[:avg_return] }.map(&:first)
+        monthly_returns.sort_by { |_month, stats| -stats[:avg_return] }.map(&:first)
       end
 
       # Rank quarters by performance
       def rank_quarters(quarterly_returns)
-        quarterly_returns.sort_by { |quarter, stats| -stats[:avg_return] }.map(&:first)
+        quarterly_returns.sort_by { |_quarter, stats| -stats[:avg_return] }.map(&:first)
       end
     end
   end

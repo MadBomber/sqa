@@ -7,51 +7,51 @@
 #
 class SQA::Strategy::VolumeBreakout
   def self.trade(vector)
-    return :hold unless vector.respond_to?(:prices) &&
-                        vector.respond_to?(:volumes) &&
-                        vector.prices&.size >= 20 &&
-                        vector.volumes&.size >= 20
+    return :hold unless sufficient_data?(vector)
 
     prices = vector.prices
     volumes = vector.volumes
 
-    # Calculate moving averages
-    sma_20 = SQAI.sma(prices, period: 20)
-    return :hold if sma_20.nil?
+    return :hold if SQAI.sma(prices, period: 20).nil?
 
-    current_price = prices.last
-    prev_price = prices[-2]
-    current_volume = volumes.last
-
-    # Calculate average volume
-    avg_volume = volumes.last(20).sum / 20.0
-
-    # High volume threshold (1.5x average)
-    volume_threshold = avg_volume * 1.5
-
-    # Get recent high and low (resistance and support) from previous prices
-    # Exclude current price to allow breakout detection
-    lookback_prices = prices[...-1].last(20)  # Last 20 prices excluding current
-    recent_high = lookback_prices.max
-    recent_low = lookback_prices.min
-
-    # Buy signal: price breaks above recent high with high volume
-    if current_price > recent_high &&
-       prev_price <= recent_high &&
-       current_volume > volume_threshold
-      :buy
-
-    # Sell signal: price breaks below recent low with high volume
-    elsif current_price < recent_low &&
-          prev_price >= recent_low &&
-          current_volume > volume_threshold
-      :sell
-
-    else
-      :hold
-    end
+    breakout_signal(prices, volumes)
   rescue => e
     warn "VolumeBreakout strategy error: #{e.message}"
     :hold
   end
+
+  # Guard: do we have enough price/volume history to evaluate a breakout?
+  def self.sufficient_data?(vector)
+    vector.respond_to?(:prices) &&
+      vector.respond_to?(:volumes) &&
+      (vector.prices&.size&.>= 20) &&
+      (vector.volumes&.size&.>= 20)
+  end
+  private_class_method :sufficient_data?
+
+  # Determine :buy/:sell/:hold from the current price/volume breakout state
+  def self.breakout_signal(prices, volumes)
+    current_price = prices.last
+    prev_price = prices[-2]
+    current_volume = volumes.last
+
+    avg_volume = volumes.last(20).sum / 20.0
+    volume_threshold = avg_volume * 1.5  # High volume threshold (1.5x average)
+
+    # Recent high/low (resistance/support), excluding the current price
+    lookback_prices = prices[...-1].last(20)
+    recent_high = lookback_prices.max
+    recent_low = lookback_prices.min
+
+    high_volume = current_volume > volume_threshold
+
+    if current_price > recent_high && prev_price <= recent_high && high_volume
+      :buy
+    elsif current_price < recent_low && prev_price >= recent_low && high_volume
+      :sell
+    else
+      :hold
+    end
+  end
+  private_class_method :breakout_signal
 end

@@ -43,7 +43,7 @@ class BacktestTest < Minitest::Test
   def test_backtest_with_proc_strategy
     skip "Requires network access" unless ENV['RUN_INTEGRATION_TESTS']
 
-    simple_strategy = lambda { |vector| :hold }
+    simple_strategy = ->(_vector) { :hold }
 
     backtest = SQA::Backtest.new(
       stock: @stock,
@@ -96,8 +96,7 @@ class BacktestTest < Minitest::Test
     results2 = backtest2.run
 
     # Commission should reduce returns (if there are any trades)
-    if results1.total_trades > 0
-      assert results1.total_return >= results2.total_return
-    end
+    return unless results1.total_trades.positive?
+    assert results1.total_return >= results2.total_return
   end
 end

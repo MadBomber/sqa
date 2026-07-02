@@ -1,5 +1,6 @@
 # lib/sqa/data_frame/alpha_vantage.rb
 # frozen_string_literal: true
+
 #
 # Using the Alpha Vantage JSON interface
 #
@@ -20,18 +21,18 @@ class SQA::DataFrame
       "low"       => HEADERS[3],  # :low_price
       "close"     => HEADERS[4],  # :close_price (AND :adj_close_price - AV doesn't split these)
       "volume"    => HEADERS[6]   # :volume
-    }
+    }.freeze
 
     # Transformers applied AFTER column renaming
     # Alpha Vantage CSV doesn't have adjusted_close, so we only transform what exists
     TRANSFORMERS  = {
-      HEADERS[1] => -> (v) { v.to_f.round(3) },  # :open_price
-      HEADERS[2] => -> (v) { v.to_f.round(3) },  # :high_price
-      HEADERS[3] => -> (v) { v.to_f.round(3) },  # :low_price
-      HEADERS[4] => -> (v) { v.to_f.round(3) },  # :close_price
+      HEADERS[1] => ->(v) { v.to_f.round(3) },  # :open_price
+      HEADERS[2] => ->(v) { v.to_f.round(3) },  # :high_price
+      HEADERS[3] => ->(v) { v.to_f.round(3) },  # :low_price
+      HEADERS[4] => ->(v) { v.to_f.round(3) },  # :close_price
       # HEADERS[5] - :adj_close_price doesn't exist in Alpha Vantage CSV
-      HEADERS[6] => -> (v) { v.to_i }            # :volume
-    }
+      HEADERS[6] => lambda(&:to_i)            # :volume
+    }.freeze
 
     ################################################################
 
@@ -45,22 +46,23 @@ class SQA::DataFrame
     # Note: Alpha Vantage returns data newest-first, but we sort ascending for TA-Lib compatibility
     def self.recent(ticker, full: false, from_date: nil)
       response  = CONNECTION.get(
-        "/query?" +
-        "function=TIME_SERIES_DAILY&" +
-        "symbol=#{ticker.upcase}&" +
-        "apikey=#{SQA.av.key}&" +
-        "datatype=csv&" +
+        "/query?" \
+        "function=TIME_SERIES_DAILY&" \
+        "symbol=#{ticker.upcase}&" \
+        "apikey=#{SQA.av.key}&" \
+        "datatype=csv&" \
         "outputsize=#{full ? 'full' : 'compact'}"
       ).to_hash
 
-      unless 200 == response[:status]
+      unless response[:status] == 200
         raise "Bad Response: #{response[:status]}"
       end
 
       # Read CSV into Polars DataFrame directly
+      # rubocop:disable Naming/VariableNumber -- :f64/:i64 are Polars dtype names, not our naming choice
       df = Polars.read_csv(
         StringIO.new(response[:body]),
-        dtypes: {
+        schema_overrides: {
           "open" => :f64,
           "high" => :f64,
           "low" => :f64,
@@ -68,6 +70,7 @@ class SQA::DataFrame
           "volume" => :i64
         }
       )
+      # rubocop:enable Naming/VariableNumber
 
       # Handle date criteria if applicable
       if from_date
@@ -82,13 +85,13 @@ class SQA::DataFrame
 
       # Alpha Vantage doesn't split close/adjusted_close, so duplicate for compatibility
       # This ensures adj_close_price exists for strategies that expect it
-      sqa_df.data = sqa_df.data.with_column(
+      sqa_df.data = sqa_df.data.with_columns(
         sqa_df.data["close_price"].alias("adj_close_price")
       )
 
       # Sort data in ascending chronological order (oldest to newest) for TA-Lib compatibility
       # Alpha Vantage returns data newest-first, but TA-Lib expects oldest-first
-      sqa_df.data = sqa_df.data.sort("timestamp", reverse: false)
+      sqa_df.data = sqa_df.data.sort("timestamp", descending: false)
 
       sqa_df
     end

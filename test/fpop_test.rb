@@ -31,7 +31,7 @@ class FPOPTest < Minitest::Test
     # Min: (95-100)/100 = -5%
     # Max: (110-100)/100 = 10%
     min_delta, max_delta = fpl_results.first
-    assert_in_delta -5.0, min_delta, 0.1
+    assert_in_delta(-5.0, min_delta, 0.1)
     assert_in_delta 10.0, max_delta, 0.1
   end
 
@@ -75,9 +75,9 @@ class FPOPTest < Minitest::Test
 
   def test_build_interpretation
     interp = SQA::FPOP.build_interpretation(-5.0, 15.0)
-    assert_match /UNCERTAIN/, interp
-    assert_match /5\.0%/, interp  # magnitude
-    assert_match /10\.0% risk/, interp  # ±(risk/2)
+    assert_match(/UNCERTAIN/, interp)
+    assert_match(/5\.0%/, interp)  # magnitude
+    assert_match(/10\.0% risk/, interp)  # ±(risk/2)
   end
 
   def test_filter_by_quality_min_magnitude

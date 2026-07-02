@@ -40,7 +40,7 @@ class StochasticTest < Minitest::Test
     vector = OpenStruct.new(prices: prices)
     signal = SQA::Strategy::Stochastic.trade(vector)
 
-    assert_includes [:buy, :sell, :hold], signal
+    assert_includes %i[buy sell hold], signal
   end
 
   def test_responds_to_trade

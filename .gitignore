@@ -1,3 +1,5 @@
+*_output.txt
+site/
 Gemfile.lock
 .DS_Store
 .irbrc

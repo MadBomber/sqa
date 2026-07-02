@@ -30,19 +30,19 @@ class EnsembleTest < Minitest::Test
   def test_majority_vote
     signal = @ensemble.majority_vote(@vector)
 
-    assert [:buy, :sell, :hold].include?(signal)
+    assert %i[buy sell hold].include?(signal)
   end
 
   def test_weighted_vote
     signal = @ensemble.weighted_vote(@vector)
 
-    assert [:buy, :sell, :hold].include?(signal)
+    assert %i[buy sell hold].include?(signal)
   end
 
   def test_unanimous_vote
     signal = @ensemble.unanimous_vote(@vector)
 
-    assert [:buy, :sell, :hold].include?(signal)
+    assert %i[buy sell hold].include?(signal)
     # Most of the time should be :hold unless all agree
   end
 
@@ -53,7 +53,7 @@ class EnsembleTest < Minitest::Test
 
     signal = @ensemble.confidence_vote(@vector)
 
-    assert [:buy, :sell, :hold].include?(signal)
+    assert %i[buy sell hold].include?(signal)
   end
 
   def test_update_weight
@@ -88,15 +88,15 @@ class EnsembleTest < Minitest::Test
   def test_trade_method
     signal = @ensemble.trade(@vector)
 
-    assert [:buy, :sell, :hold].include?(signal)
+    assert %i[buy sell hold].include?(signal)
   end
 
   def test_different_voting_methods
-    [:majority, :weighted, :unanimous, :confidence].each do |method|
+    %i[majority weighted unanimous confidence].each do |method|
       ensemble = SQA::Ensemble.new(strategies: @strategies, voting_method: method)
       signal = ensemble.signal(@vector)
 
-      assert [:buy, :sell, :hold].include?(signal), "#{method} voting failed"
+      assert %i[buy sell hold].include?(signal), "#{method} voting failed"
     end
   end
 

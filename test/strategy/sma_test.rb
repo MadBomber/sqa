@@ -5,7 +5,7 @@ require 'ostruct'
 
 class SMATest < Minitest::Test
   def test_buy_signal_when_trend_up
-    # Note: There's a bug in sma.rb line 9 - it uses vector.rsi instead of vector.sma
+    # NOTE: There's a bug in sma.rb line 9 - it uses vector.rsi instead of vector.sma
     # Testing actual behavior, not intended behavior
     sma_data = { trend: :up }
     vector = OpenStruct.new(rsi: sma_data)  # Using rsi due to bug

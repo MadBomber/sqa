@@ -86,10 +86,8 @@ class SQA::Stock
     @df_path = SQA.data_dir + "#{@ticker}.csv"
 
     # Validate ticker if validation data is available and cached data doesn't exist
-    unless @data_path.exist? && @df_path.exist?
-      unless SQA::Ticker.valid?(ticker)
-        warn "Warning: Ticker #{ticker} could not be validated. Proceeding anyway." if $VERBOSE
-      end
+    if !(@data_path.exist? && @df_path.exist?) && !SQA::Ticker.valid?(ticker) && $VERBOSE
+      warn "Warning: Ticker #{ticker} could not be validated. Proceeding anyway."
     end
 
     @klass = "SQA::DataFrame::#{@source.to_s.camelize}".constantize
@@ -143,13 +141,11 @@ class SQA::Stock
   #   # Warning logged but stock remains usable with cached data
   #
   def update
-    begin
-      merge_overview
-    rescue StandardError => e
-      # Log warning but don't fail - overview data is optional
-      # Common causes: rate limits, network issues, API errors
-      warn "Warning: Could not fetch overview data for #{@ticker} (#{e.class}: #{e.message}). Continuing without it."
-    end
+    merge_overview
+  rescue StandardError => e
+    # Log warning but don't fail - overview data is optional
+    # Common causes: rate limits, network issues, API errors
+    warn "Warning: Could not fetch overview data for #{@ticker} (#{e.class}: #{e.message}). Continuing without it."
   end
 
   # Persists the stock's metadata to a JSON file.
@@ -206,7 +202,7 @@ class SQA::Stock
       # Migration 2: Add adj_close_price column if missing (for old cached files)
       # This ensures compatibility when appending new data that includes this column
       unless @df.columns.include?("adj_close_price")
-        @df.data = @df.data.with_column(
+        @df.data = @df.data.with_columns(
           @df.data["close_price"].alias("adj_close_price")
         )
         migrated = true
@@ -223,7 +219,8 @@ class SQA::Stock
       rescue StandardError => e
         # If we can't fetch data, raise a more helpful error
         raise SQA::DataFetchError.new(
-          "Unable to fetch data for #{@ticker}. Please ensure API key is set or provide cached CSV file at #{@df_path}. Error: #{e.message}",
+          "Unable to fetch data for #{@ticker}. Please ensure API key is set or provide cached CSV " \
+          "file at #{@df_path}. Error: #{e.message}",
           original: e
         )
       end
@@ -242,11 +239,11 @@ class SQA::Stock
     begin
       # CSV is sorted ascending (oldest first, TA-Lib compatible), so .last gets the most recent date
       from_date = Date.parse(@df["timestamp"].to_a.last)
-      df2 = @klass.recent(@ticker, from_date: from_date)
+      df_2 = @klass.recent(@ticker, from_date: from_date)
 
-      if df2 && (df2.size > 0)
+      if df_2 && df_2.size.positive?
         # Use concat_and_deduplicate! to prevent duplicate timestamps and maintain ascending sort
-        @df.concat_and_deduplicate!(df2)
+        @df.concat_and_deduplicate!(df_2)
         @df.to_csv(@df_path)
       end
     rescue StandardError => e
@@ -283,11 +280,11 @@ class SQA::Stock
 
     # Don't update if CSV data is already current (last timestamp is today or later)
     # This prevents unnecessary API calls when we already have today's data
-    if @df && @df.size > 0
+    if @df && @df.size.positive?
       begin
         last_timestamp = Date.parse(@df["timestamp"].to_a.last)
         return false if last_timestamp >= Date.today
-      rescue ArgumentError, Date::Error => e
+      rescue ArgumentError => e
         # If we can't parse the date, assume we need to update
         warn "Warning: Could not parse last timestamp for #{@ticker} (#{e.message}). Will attempt update." if $VERBOSE
       end
@@ -305,9 +302,9 @@ class SQA::Stock
   def to_s
     "#{ticker} with #{@df.size} data points from #{@df["timestamp"].to_a.first} to #{@df["timestamp"].to_a.last}"
   end
-  # Note: CSV data is stored in ascending chronological order (oldest to newest)
+  # NOTE: CSV data is stored in ascending chronological order (oldest to newest)
   # This ensures compatibility with TA-Lib indicators which expect arrays in this order
-  alias_method :inspect, :to_s
+  alias inspect to_s
 
   # Fetches and merges company overview data from Alpha Vantage API.
   # Converts API response keys to snake_case and appropriate data types.
@@ -324,15 +321,16 @@ class SQA::Stock
       ApiError.raise(temp["Information"])
     end
 
-    temp2 = {}
-    string_values = %w[address asset_type cik country currency description dividend_date ex_dividend_date exchange fiscal_year_end industry latest_quarter name sector symbol]
+    temp_2 = {}
+    string_values = %w[address asset_type cik country currency description dividend_date ex_dividend_date exchange fiscal_year_end industry
+                       latest_quarter name sector symbol]
 
-    temp.keys.each do |k|
+    temp.each_key do |k|
       new_k = k.underscore
-      temp2[new_k] = string_values.include?(new_k) ? temp[k] : temp[k].to_f
+      temp_2[new_k] = string_values.include?(new_k) ? temp[k] : temp[k].to_f
     end
 
-    @data.overview = temp2
+    @data.overview = temp_2
   end
 
   #############################################

@@ -58,10 +58,8 @@ class SQA::Strategy
   #   signals = strategy.execute(vector)  # => [:buy, :hold, :sell]
   #
   def execute(v)
-    result = []
     # NOTE: Could be parallelized with Parallel gem for large strategy sets
-    @strategies.each { |signal| result << signal.call(v) }
-    result
+    @strategies.map { |signal| signal.call(v) }
   end
 
   # Auto-loads strategy files from the strategy directory.
@@ -78,16 +76,16 @@ class SQA::Strategy
   #
   def auto_load(except: [:common], only: [])
     dir_path  = Pathname.new(__dir__) + "strategy"
-    except    = Array(except).map{|f| f.to_s.downcase}
-    only      = Array(only).map{|f| f.to_s.downcase}
+    except    = Array(except).map { |f| f.to_s.downcase }
+    only      = Array(only).map { |f| f.to_s.downcase }
 
     dir_path.children.each do |child|
-      next unless ".rb" == child.extname.downcase
+      next unless child.extname.downcase == ".rb"
 
       basename = child.basename.to_s.split('.').first.downcase
 
       next if except.include? basename
-      next if !only.empty?  && !only.include?(basename)
+      next if !only.empty? && !only.include?(basename)
 
       print "loading #{basename} ... "
       load child
@@ -106,9 +104,9 @@ class SQA::Strategy
   #   # => [SQA::Strategy::RSI, SQA::Strategy::MACD, ...]
   #
   def available
-    ObjectSpace.each_object(Class).select { |klass|
+    ObjectSpace.each_object(Class).select do |klass|
       klass.name&.start_with?("SQA::Strategy::")
-    }
+    end
   end
 end
 
@@ -125,4 +123,3 @@ require_relative 'strategy/macd'
 require_relative 'strategy/stochastic'
 require_relative 'strategy/volume_breakout'
 require_relative 'strategy/kbs_strategy'
-

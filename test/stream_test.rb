@@ -78,13 +78,13 @@ class StreamTest < Minitest::Test
     signal_called = false
     received_signal = nil
 
-    @stream.on_signal do |signal, data|
+    @stream.on_signal do |signal, _data|
       signal_called = true
       received_signal = signal
     end
 
     # Add strategy
-    @stream.add_strategy(lambda { |v| :buy })
+    @stream.add_strategy(->(_v) { :buy })
 
     # Need enough data for strategy to run
     35.times { |i| @stream.update(price: 100.0 + i) }

@@ -6,10 +6,10 @@ require_relative 'test_helper'
 class MarketRegimeTest < Minitest::Test
   def setup
     # Create test price data
-    @bull_prices = (1..100).map { |i| 100 + i * 0.5 }  # Uptrend
-    @bear_prices = (1..100).map { |i| 100 - i * 0.5 }  # Downtrend
-    @sideways_prices = (1..100).map { |i| 100 + Math.sin(i * 0.1) * 2 }  # Oscillating
-    @volatile_prices = (1..100).map { |i| 100 + rand(-10..10) }  # High volatility
+    @bull_prices = (1..100).map { |i| 100 + (i * 0.5) }  # Uptrend
+    @bear_prices = (1..100).map { |i| 100 - (i * 0.5) }  # Downtrend
+    @sideways_prices = (1..100).map { |i| 100 + (Math.sin(i * 0.1) * 2) }  # Oscillating
+    @volatile_prices = (1..100).map { |_i| rand(90..110) }  # High volatility
   end
 
   def test_detect_trend_bull
@@ -33,14 +33,14 @@ class MarketRegimeTest < Minitest::Test
   end
 
   def test_detect_volatility_low
-    low_vol_prices = (1..100).map { |i| 100 + i * 0.1 }  # Gentle trend
+    low_vol_prices = (1..100).map { |i| 100 + (i * 0.1) }  # Gentle trend
     volatility = SQA::MarketRegime.detect_volatility(low_vol_prices)
     assert_equal :low, volatility
   end
 
   def test_detect_volatility_high
     volatility = SQA::MarketRegime.detect_volatility(@volatile_prices)
-    assert_includes [:medium, :high], volatility
+    assert_includes %i[medium high], volatility
   end
 
   def test_detect_volatility_unknown_short_array
@@ -71,9 +71,9 @@ class MarketRegimeTest < Minitest::Test
     regime = SQA::MarketRegime.detect(stock)
 
     assert regime.is_a?(Hash)
-    assert_includes [:bull, :bear, :sideways, :unknown], regime[:type]
-    assert_includes [:low, :medium, :high, :unknown], regime[:volatility]
-    assert_includes [:weak, :moderate, :strong, :unknown], regime[:strength]
+    assert_includes %i[bull bear sideways unknown], regime[:type]
+    assert_includes %i[low medium high unknown], regime[:volatility]
+    assert_includes %i[weak moderate strong unknown], regime[:strength]
     assert_equal 60, regime[:lookback_days]
     assert_instance_of Time, regime[:detected_at]
   end
@@ -84,8 +84,8 @@ class MarketRegimeTest < Minitest::Test
     # Create alternating bull/bear prices
     alternating = []
     5.times do
-      50.times { |i| alternating << 100 + i }  # Bull
-      50.times { |i| alternating << 150 - i }  # Bear
+      50.times { |i| alternating << (100 + i) }  # Bull
+      50.times { |i| alternating << (150 - i) }  # Bear
     end
 
     stock = create_mock_stock(alternating)
@@ -95,7 +95,7 @@ class MarketRegimeTest < Minitest::Test
     assert regimes.size > 1, "Should detect multiple regime changes"
 
     regimes.each do |regime|
-      assert_includes [:bull, :bear, :sideways], regime[:type]
+      assert_includes %i[bull bear sideways], regime[:type]
       assert regime[:start_index] < regime[:end_index]
       assert_equal regime[:end_index] - regime[:start_index], regime[:duration]
     end
@@ -105,8 +105,8 @@ class MarketRegimeTest < Minitest::Test
     skip "Requires stock object" unless ENV['RUN_INTEGRATION_TESTS']
 
     alternating = []
-    50.times { |i| alternating << 100 + i }  # Bull
-    50.times { |i| alternating << 150 - i }  # Bear
+    50.times { |i| alternating << (100 + i) }  # Bull
+    50.times { |i| alternating << (150 - i) }  # Bear
 
     stock = create_mock_stock(alternating)
     splits = SQA::MarketRegime.split_by_regime(stock)
@@ -116,7 +116,7 @@ class MarketRegimeTest < Minitest::Test
     assert_includes splits.keys, :bear
     assert_includes splits.keys, :sideways
 
-    splits.each do |regime, periods|
+    splits.each_value do |periods|
       assert periods.is_a?(Array)
       periods.each do |period|
         assert period.key?(:prices)

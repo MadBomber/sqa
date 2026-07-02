@@ -70,21 +70,20 @@ module SQA
           volatility = detect_volatility(window_prices)
 
           # Check if regime changed
-          if current_regime != regime_type
-            # Save previous regime
-            if current_regime
-              regimes << {
-                type: current_regime,
-                start_index: regime_start,
-                end_index: i - 1,
-                duration: i - regime_start,
-                volatility: volatility
-              }
-            end
-
-            current_regime = regime_type
-            regime_start = i
+          next unless current_regime != regime_type
+          # Save previous regime
+          if current_regime
+            regimes << {
+              type: current_regime,
+              start_index: regime_start,
+              end_index: i - 1,
+              duration: i - regime_start,
+              volatility: volatility
+            }
           end
+
+          current_regime = regime_type
+          regime_start = i
         end
 
         # Add final regime
@@ -94,7 +93,7 @@ module SQA
             start_index: regime_start,
             end_index: prices.size - 1,
             duration: prices.size - regime_start,
-            volatility: detect_volatility(prices[regime_start..-1])
+            volatility: detect_volatility(prices[regime_start..])
           }
         end
 

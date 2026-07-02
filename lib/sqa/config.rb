@@ -51,7 +51,7 @@ module SQA
   # @!attribute [rw] lazy_update
   #   @return [Boolean] Skip API updates if cached data exists
   #
-	class Config < Hashie::Dash
+  class Config < Hashie::Dash
     include Hashie::Extensions::Dash::PropertyTranslation
     include Hashie::Extensions::MethodAccess
     include Hashie::Extensions::Coercion
@@ -80,36 +80,35 @@ module SQA
     property :plotting_library, from: :plot_lib,  default: :gruff, coerce: Symbol
     property :lazy_update,      from: :lazy,      default: false
 
-
-    coerce_key :debug, ->(v) do
+    coerce_key :debug, lambda { |v|
       case v
       when String
-        !!(v =~ /\A(true|t|yes|y|1)\z/i)
+        !(v =~ /\A(true|t|yes|y|1)\z/i).nil?
       when Numeric
         !v.to_i.zero?
       else
         v == true
       end
-    end
+    }
 
-    coerce_key :verbose, ->(v) do
+    coerce_key :verbose, lambda { |v|
       case v
       when String
-        !!(v =~ /\A(true|t|yes|y|1)\z/i)
+        !(v =~ /\A(true|t|yes|y|1)\z/i).nil?
       when Numeric
         !v.to_i.zero?
       else
         v == true
       end
-    end
+    }
 
-    coerce_key :log_level, ->(v) do
+    coerce_key :log_level, lambda { |v|
       v.is_a?(String) ? v.to_sym : v
-    end
+    }
 
-    coerce_key :plotting_library, ->(v) do
+    coerce_key :plotting_library, lambda { |v|
       v.is_a?(String) ? v.to_sym : v
-    end
+    }
 
     ########################################################
 
@@ -117,8 +116,8 @@ module SQA
     # Automatically applies environment variable overrides.
     #
     # @param a_hash [Hash] Initial configuration values
-    def initialize(a_hash={})
-      super(a_hash)
+    def initialize(a_hash = {})
+      super
       override_with_envars
     end
 
@@ -130,7 +129,6 @@ module SQA
     # @return [Boolean] true if verbose mode is on
     def verbose?  = verbose
 
-
     ########################################################
 
     # Loads configuration from a file.
@@ -141,22 +139,22 @@ module SQA
     def from_file
       return if config_file.nil?
 
-      if  File.exist?(config_file)    &&
-          File.file?(config_file)     &&
-          File.readable?(config_file)
-        type = File.extname(config_file).downcase
-      else
-        type = "invalid"
-      end
+      type = if  File.exist?(config_file) &&
+                 File.file?(config_file) &&
+                 File.readable?(config_file)
+               File.extname(config_file).downcase
+             else
+               "invalid"
+             end
 
       # Config file format detection (YAML is most common)
-      if ".json" == type
+      if type == ".json"
         incoming = form_json
 
       elsif %w[.yml .yaml].include?(type)
         incoming = from_yaml
 
-      elsif ".toml" == type
+      elsif type == ".toml"
         incoming = from_toml
 
       else
@@ -185,13 +183,13 @@ module SQA
 
       type = File.extname(config_file).downcase
 
-      if ".json" == type
+      if type == ".json"
         dump_json
 
       elsif %w[.yml .yaml].include?(type)
         dump_yaml
 
-      elsif ".toml" == type
+      elsif type == ".toml"
         dump_toml
 
       else
@@ -209,23 +207,21 @@ module SQA
       end
     end
 
-
     ########################################################
     private
 
     def override_with_envars(prefix = "SQA_")
       keys.each do |key|
-        envar = ENV["#{prefix}#{key.to_s.upcase}"]
+        envar = ENV.fetch("#{prefix}#{key.to_s.upcase}", nil)
         send("#{key}=", envar) unless envar.nil?
       end
     end
-
 
     #####################################
     ## override values from a config file
 
     def from_json
-      ::JSON.load(File.open(config_file).read).symbolize_keys
+      ::JSON.parse(File.read(config_file)).symbolize_keys
     end
 
     def from_toml
@@ -236,15 +232,13 @@ module SQA
       ::YAML.load_file(config_file).symbolize_keys
     end
 
-
     #####################################
     ## dump values to a config file
 
-    def as_hash   = to_h.reject{|k, _| :config_file == k}
-    def dump_json = File.open(config_file, "w") { |f| f.write JSON.pretty_generate(as_hash)}
-    def dump_toml = File.open(config_file, "w") { |f| f.write TomlRB.dump(as_hash)}
-    def dump_yaml = File.open(config_file, "w") { |f| f.write as_hash.to_yaml}
-
+    def as_hash   = to_h.except(:config_file)
+    def dump_json = File.write(config_file, JSON.pretty_generate(as_hash))
+    def dump_toml = File.write(config_file, TomlRB.dump(as_hash))
+    def dump_yaml = File.write(config_file, as_hash.to_yaml)
 
     #####################################
     class << self
@@ -270,7 +264,9 @@ end
 # Auto-initialization with deprecation warning
 # This will be removed in v1.0.0 - applications should call SQA.init explicitly
 unless SQA::Config.initialized?
-  warn "[SQA DEPRECATION] Auto-initialization at require time will be removed in v1.0. " \
-       "Please call SQA.init explicitly in your application startup." if $VERBOSE
+  if $VERBOSE
+    warn "[SQA DEPRECATION] Auto-initialization at require time will be removed in v1.0. " \
+         "Please call SQA.init explicitly in your application startup."
+  end
   SQA::Config.reset
 end

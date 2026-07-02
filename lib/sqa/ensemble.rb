@@ -45,8 +45,6 @@ module SQA
     #
     def signal(vector)
       case @voting_method
-      when :majority
-        majority_vote(vector)
       when :weighted
         weighted_vote(vector)
       when :unanimous
@@ -54,6 +52,7 @@ module SQA
       when :confidence
         confidence_vote(vector)
       else
+        # :majority and any unrecognized voting_method both fall back to majority vote
         majority_vote(vector)
       end
     end
@@ -163,9 +162,9 @@ module SQA
       # Exponential moving average of correctness
       alpha = 0.1
       @confidence_scores[strategy_class] = if correct
-                                             current + alpha * (1.0 - current)
+                                             current + (alpha * (1.0 - current))
                                            else
-                                             current - alpha * current
+                                             current - (alpha * current)
                                            end
     end
 
@@ -291,12 +290,10 @@ module SQA
     #
     def collect_votes(vector)
       @strategies.map do |strategy_class|
-        begin
-          strategy_class.trade(vector)
-        rescue StandardError => e
-          # If strategy fails, default to :hold
-          :hold
-        end
+        strategy_class.trade(vector)
+      rescue StandardError
+        # If strategy fails, default to :hold
+        :hold
       end
     end
 
@@ -313,7 +310,7 @@ module SQA
 
       # Convert to positive values (shift if negative)
       min_perf = recent_performance.min
-      if min_perf < 0
+      if min_perf.negative?
         recent_performance = recent_performance.map { |p| p - min_perf + 0.01 }
       end
 

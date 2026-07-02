@@ -67,7 +67,7 @@ class YahooFinanceTest < Minitest::Test
 
       refute_nil df
       assert_kind_of SQA::DataFrame, df
-      assert df.height > 0
+      assert df.height.positive?
     rescue => e
       skip "Yahoo Finance scraping failed: #{e.message}"
     end

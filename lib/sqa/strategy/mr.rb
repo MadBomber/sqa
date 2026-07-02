@@ -3,13 +3,13 @@
 require_relative 'common'
 
 class SQA::Strategy::MR
-	extend SQA::Strategy::Common
+  extend SQA::Strategy::Common
 
-	def self.trade(vector)
-		if vector.mr
-			:sell
-		else
-			:hold
-		end
-	end
+  def self.trade(vector)
+    if vector.mr
+      :sell
+    else
+      :hold
+    end
+  end
 end

@@ -1,35 +1,33 @@
 # frozen_string_literal: true
 
-=begin
-
-Genetic Programming for Trading Strategy Evolution
-
-This module implements a genetic algorithm to evolve trading strategy parameters.
-It optimizes indicator parameters (like RSI periods, MA lengths, etc.) to find
-profitable trading strategies through natural selection.
-
-Key Concepts:
-- Individual: A set of strategy parameters (chromosome)
-- Population: Collection of individuals
-- Fitness: Profitability measured by backtesting
-- Selection: Choosing best individuals to reproduce
-- Crossover: Combining parameters from two parent strategies
-- Mutation: Random parameter changes for diversity
-
-Example:
-  gp = SQA::GeneticProgram.new(
-    stock: stock,
-    population_size: 50,
-    generations: 100,
-    mutation_rate: 0.1
-  )
-
-  best_strategy = gp.evolve do |params|
-    # Define how to evaluate fitness with given parameters
-    # params might be { indicator: :rsi, period: 14, buy_threshold: 30, sell_threshold: 70 }
-  end
-
-=end
+#
+# Genetic Programming for Trading Strategy Evolution
+#
+# This module implements a genetic algorithm to evolve trading strategy parameters.
+# It optimizes indicator parameters (like RSI periods, MA lengths, etc.) to find
+# profitable trading strategies through natural selection.
+#
+# Key Concepts:
+# - Individual: A set of strategy parameters (chromosome)
+# - Population: Collection of individuals
+# - Fitness: Profitability measured by backtesting
+# - Selection: Choosing best individuals to reproduce
+# - Crossover: Combining parameters from two parent strategies
+# - Mutation: Random parameter changes for diversity
+#
+# Example:
+#   gp = SQA::GeneticProgram.new(
+#     stock: stock,
+#     population_size: 50,
+#     generations: 100,
+#     mutation_rate: 0.1
+#   )
+#
+#   best_strategy = gp.evolve do |params|
+#     # Define how to evaluate fitness with given parameters
+#     # params might be { indicator: :rsi, period: 14, buy_threshold: 30, sell_threshold: 70 }
+#   end
+#
 
 module SQA
   class GeneticProgram
@@ -106,45 +104,19 @@ module SQA
 
     # Run the genetic algorithm evolution
     def evolve
-      raise "Gene constraints not defined. Call define_genes first." if @gene_constraints.empty?
-      raise "Fitness evaluator not defined. Call fitness with a block." unless @fitness_evaluator
+      validate_evolve_prerequisites!
 
       initialize_population
 
       @generations.times do |gen|
         @generation = gen + 1
-
-        # Evaluate fitness for each individual
-        evaluate_population
-
-        # Track best individual
-        current_best = @population.max_by(&:fitness)
-        if @best_individual.nil? || current_best.fitness > @best_individual.fitness
-          @best_individual = current_best.clone
-        end
-
-        # Record history
-        avg_fitness = @population.sum(&:fitness) / @population.size.to_f
-        @history << {
-          generation: @generation,
-          best_fitness: current_best.fitness,
-          avg_fitness: avg_fitness,
-          best_genes: current_best.genes.dup
-        }
-
-        # Print progress
-        puts "Generation #{@generation}: Best=#{current_best.fitness.round(2)}%, Avg=#{avg_fitness.round(2)}%"
-
-        # Create next generation
+        run_generation
         @population = create_next_generation
       end
 
       # Final evaluation
       evaluate_population
-      current_best = @population.max_by(&:fitness)
-      if @best_individual.nil? || current_best.fitness > @best_individual.fitness
-        @best_individual = current_best.clone
-      end
+      update_best_individual
 
       puts "\nEvolution complete!"
       puts "Best individual: #{@best_individual}"
@@ -153,6 +125,41 @@ module SQA
     end
 
     private
+
+    # Guard clause for evolve: ensure genes and fitness block are configured
+    def validate_evolve_prerequisites!
+      raise "Gene constraints not defined. Call define_genes first." if @gene_constraints.empty?
+      raise "Fitness evaluator not defined. Call fitness with a block." unless @fitness_evaluator
+    end
+
+    # Evaluate the current population, track the best individual, and
+    # record/print this generation's history entry.
+    def run_generation
+      evaluate_population
+      current_best = update_best_individual
+
+      avg_fitness = @population.sum(&:fitness) / @population.size.to_f
+      @history << {
+        generation: @generation,
+        best_fitness: current_best.fitness,
+        avg_fitness: avg_fitness,
+        best_genes: current_best.genes.dup
+      }
+
+      puts "Generation #{@generation}: Best=#{current_best.fitness.round(2)}%, Avg=#{avg_fitness.round(2)}%"
+    end
+
+    # Update @best_individual if the current population's best beats it.
+    # @return the current population's best individual (not necessarily
+    #   the same object as @best_individual)
+    def update_best_individual
+      current_best = @population.max_by(&:fitness)
+      if @best_individual.nil? || current_best.fitness > @best_individual.fitness
+        @best_individual = current_best.clone
+      end
+
+      current_best
+    end
 
     # Initialize population with random individuals
     def initialize_population
@@ -198,26 +205,27 @@ module SQA
       # Fill rest of population through crossover and mutation
       while new_population.size < @population_size
         # Selection
-        parent1 = tournament_selection
-        parent2 = tournament_selection
+        parent_1 = tournament_selection
+        parent_2 = tournament_selection
 
         # Crossover
         if rand < @crossover_rate
-          child1, child2 = crossover(parent1, parent2)
+          child_1, child_2 = crossover(parent_1, parent_2)
         else
-          child1, child2 = parent1.clone, parent2.clone
+          child_1 = parent_1.clone
+          child_2 = parent_2.clone
         end
 
         # Mutation
-        mutate(child1) if rand < @mutation_rate
-        mutate(child2) if rand < @mutation_rate
+        mutate(child_1) if rand < @mutation_rate
+        mutate(child_2) if rand < @mutation_rate
 
         # Reset fitness for new individuals
-        child1.fitness = nil
-        child2.fitness = nil
+        child_1.fitness = nil
+        child_2.fitness = nil
 
-        new_population << child1
-        new_population << child2 if new_population.size < @population_size
+        new_population << child_1
+        new_population << child_2 if new_population.size < @population_size
       end
 
       new_population[0...@population_size]
@@ -230,21 +238,21 @@ module SQA
     end
 
     # Single-point crossover: combine genes from two parents
-    def crossover(parent1, parent2)
-      child1_genes = {}
-      child2_genes = {}
+    def crossover(parent_1, parent_2)
+      child_1_genes = {}
+      child_2_genes = {}
 
-      @gene_constraints.keys.each do |gene_name|
+      @gene_constraints.each_key do |gene_name|
         if rand < 0.5
-          child1_genes[gene_name] = parent1.genes[gene_name]
-          child2_genes[gene_name] = parent2.genes[gene_name]
+          child_1_genes[gene_name] = parent_1.genes[gene_name]
+          child_2_genes[gene_name] = parent_2.genes[gene_name]
         else
-          child1_genes[gene_name] = parent2.genes[gene_name]
-          child2_genes[gene_name] = parent1.genes[gene_name]
+          child_1_genes[gene_name] = parent_2.genes[gene_name]
+          child_2_genes[gene_name] = parent_1.genes[gene_name]
         end
       end
 
-      [Individual.new(genes: child1_genes), Individual.new(genes: child2_genes)]
+      [Individual.new(genes: child_1_genes), Individual.new(genes: child_2_genes)]
     end
 
     # Mutation: randomly change some genes

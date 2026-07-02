@@ -14,28 +14,28 @@ class RiskManagerTest < Minitest::Test
     var = SQA::RiskManager.var(@returns, confidence: 0.95, method: :historical)
 
     assert_instance_of Float, var
-    assert var < 0, "VaR should be negative (represents loss)"
+    assert var.negative?, "VaR should be negative (represents loss)"
   end
 
   def test_parametric_var
     var = SQA::RiskManager.var(@returns, confidence: 0.95, method: :parametric)
 
     assert_instance_of Float, var
-    assert var < 0
+    assert var.negative?
   end
 
   def test_monte_carlo_var
     var = SQA::RiskManager.var(@returns, confidence: 0.95, method: :monte_carlo, simulations: 1000)
 
     assert_instance_of Float, var
-    assert var < 0
+    assert var.negative?
   end
 
   def test_cvar
     cvar = SQA::RiskManager.cvar(@returns, confidence: 0.95)
 
     assert_instance_of Float, cvar
-    assert cvar < 0
+    assert cvar.negative?
 
     # CVaR should be more extreme than VaR
     var = SQA::RiskManager.var(@returns, confidence: 0.95)
@@ -52,7 +52,7 @@ class RiskManagerTest < Minitest::Test
     )
 
     assert_instance_of Float, position
-    assert position > 0
+    assert position.positive?
     assert position <= 2500, "Should not exceed max_fraction * capital"
   end
 
@@ -171,7 +171,7 @@ class RiskManagerTest < Minitest::Test
     # Sanity checks
     assert result[:percentile_5] < result[:median]
     assert result[:median] < result[:percentile_95]
-    assert result[:mean] > 0
+    assert result[:mean].positive?
   end
 
   def test_var_with_empty_returns

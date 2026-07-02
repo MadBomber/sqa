@@ -120,7 +120,7 @@ module SQA
         win_loss_ratio = avg_win / avg_loss
 
         # Kelly formula
-        kelly_fraction = (win_rate * win_loss_ratio - lose_rate) / win_loss_ratio
+        kelly_fraction = ((win_rate * win_loss_ratio) - lose_rate) / win_loss_ratio
 
         # Cap at max_fraction (Kelly can be aggressive)
         kelly_fraction = [kelly_fraction, max_fraction].min
@@ -167,7 +167,7 @@ module SQA
       #     current_price: 150.0
       #   )
       #
-      def percent_volatility(capital:, returns:, target_volatility: 0.15, current_price:)
+      def percent_volatility(capital:, returns:, current_price:, target_volatility: 0.15)
         return 0 if returns.empty? || current_price.zero?
 
         # Calculate recent volatility (annualized)
@@ -237,11 +237,10 @@ module SQA
           end
 
           drawdown = (price - running_peak) / running_peak
-          if drawdown < max_dd
-            max_dd = drawdown
-            peak_idx = running_peak_idx
-            trough_idx = idx
-          end
+          next unless drawdown < max_dd
+          max_dd = drawdown
+          peak_idx = running_peak_idx
+          trough_idx = idx
         end
 
         {
@@ -298,7 +297,7 @@ module SQA
         mean_excess = excess_returns.sum / excess_returns.size.to_f
 
         # Downside deviation (only negative returns)
-        downside_returns = excess_returns.select { |r| r < 0 }
+        downside_returns = excess_returns.select(&:negative?)
         return Float::INFINITY if downside_returns.empty?
 
         downside_deviation = Math.sqrt(
@@ -328,10 +327,10 @@ module SQA
         # Annualized return
         total_return = returns.inject(1.0) { |product, r| product * (1 + r) }
         periods = returns.size
-        annualized_return = (total_return ** (periods_per_year.to_f / periods)) - 1.0
+        annualized_return = (total_return**(periods_per_year.to_f / periods)) - 1.0
 
         # Convert returns to prices for drawdown calculation
-        prices = returns.inject([100.0]) { |acc, r| acc << acc.last * (1 + r) }
+        prices = returns.inject([100.0]) { |acc, r| acc << (acc.last * (1 + r)) }
         max_dd = max_drawdown(prices)[:max_drawdown].abs
 
         return 0.0 if max_dd.zero?
@@ -360,31 +359,43 @@ module SQA
       def monte_carlo_simulation(initial_capital:, returns:, periods:, simulations: 1000)
         return nil if returns.empty?
 
-        final_values = simulations.times.map do
-          value = initial_capital
-          periods.times do
-            random_return = returns.sample
-            value *= (1 + random_return)
-          end
-          value
-        end
-
+        final_values = simulations.times.map { simulate_one_path(initial_capital, returns, periods) }
         final_values.sort!
 
-        {
-          mean: final_values.sum / final_values.size.to_f,
-          median: final_values[final_values.size / 2],
-          percentile_5: final_values[(final_values.size * 0.05).floor],
-          percentile_25: final_values[(final_values.size * 0.25).floor],
-          percentile_75: final_values[(final_values.size * 0.75).floor],
-          percentile_95: final_values[(final_values.size * 0.95).floor],
-          min: final_values.first,
-          max: final_values.last,
-          all_values: final_values
-        }
+        summarize_monte_carlo_results(final_values)
       end
 
       private
+
+      ##
+      # Simulate a single random walk of `periods` steps, compounding a
+      # randomly sampled historical return each step, starting from
+      # initial_capital.
+      def simulate_one_path(initial_capital, returns, periods)
+        value = initial_capital
+        periods.times do
+          random_return = returns.sample
+          value *= (1 + random_return)
+        end
+        value
+      end
+
+      ##
+      # Build the summary stats hash (mean/median/percentiles/min/max) from
+      # a sorted array of simulated final values.
+      def summarize_monte_carlo_results(sorted_final_values)
+        {
+          mean: sorted_final_values.sum / sorted_final_values.size.to_f,
+          median: sorted_final_values[sorted_final_values.size / 2],
+          percentile_5: sorted_final_values[(sorted_final_values.size * 0.05).floor],
+          percentile_25: sorted_final_values[(sorted_final_values.size * 0.25).floor],
+          percentile_75: sorted_final_values[(sorted_final_values.size * 0.75).floor],
+          percentile_95: sorted_final_values[(sorted_final_values.size * 0.95).floor],
+          min: sorted_final_values.first,
+          max: sorted_final_values.last,
+          all_values: sorted_final_values
+        }
+      end
 
       ##
       # Historical VaR calculation
@@ -419,9 +430,9 @@ module SQA
         # Generate random returns
         simulated = simulations.times.map do
           # Box-Muller transform for normal distribution
-          u1 = rand
-          u2 = rand
-          z = Math.sqrt(-2 * Math.log(u1)) * Math.cos(2 * Math::PI * u2)
+          u_1 = rand
+          u_2 = rand
+          z = Math.sqrt(-2 * Math.log(u_1)) * Math.cos(2 * Math::PI * u_2)
           mean + (std_dev * z)
         end
 

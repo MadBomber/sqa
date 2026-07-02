@@ -15,7 +15,7 @@ class MACDTest < Minitest::Test
     signal = SQA::Strategy::MACD.trade(vector)
 
     # May be buy or hold depending on exact crossover timing
-    assert_includes [:buy, :hold], signal
+    assert_includes %i[buy hold], signal
   end
 
   def test_sell_signal_on_bearish_crossover
@@ -29,7 +29,7 @@ class MACDTest < Minitest::Test
     signal = SQA::Strategy::MACD.trade(vector)
 
     # May be sell or hold depending on exact crossover timing
-    assert_includes [:sell, :hold], signal
+    assert_includes %i[sell hold], signal
   end
 
   def test_hold_when_insufficient_data

@@ -132,68 +132,87 @@ class SQA::Backtest
   #   end
   #
   def run
-    # Get data for the backtest period
     df = @stock.df.data
-
-    # Filter to backtest period
     timestamps = df["timestamp"].to_a
-    start_idx = timestamps.index { |t| Date.parse(t) >= @start_date } || 0
-    end_idx = timestamps.rindex { |t| Date.parse(t) <= @end_date } || timestamps.length - 1
+    start_idx, end_idx = backtest_index_range(timestamps)
 
     prices = df["adj_close_price"].to_a
     ticker = @stock.ticker.upcase
 
-    # Track current position
-    current_position = nil  # :long, :short, or nil
+    final_position = simulate_trading_days(start_idx, end_idx, timestamps, prices, ticker)
+    close_open_position(final_position, end_idx, timestamps, prices, ticker)
 
-    # Run through each day
-    (start_idx..end_idx).each do |i|
-      date = Date.parse(timestamps[i])
-      price = prices[i]
-
-      # Get historical prices up to this point for strategy
-      historical_prices = prices[0..i]
-
-      # Generate signal from strategy
-      signal = generate_signal(historical_prices)
-
-      # Execute trades based on signal
-      case signal
-      when :buy
-        if current_position.nil? && can_buy?(price)
-          shares = calculate_shares_to_buy(price)
-          @portfolio.buy(ticker, shares: shares, price: price, date: date)
-          current_position = :long
-        end
-
-      when :sell
-        if current_position == :long
-          pos = @portfolio.position(ticker)
-          @portfolio.sell(ticker, shares: pos.shares, price: price, date: date) if pos
-          current_position = nil
-        end
-      end
-
-      # Record equity curve
-      current_value = @portfolio.value(ticker => price)
-      @equity_curve << { date: date, value: current_value, price: price }
-    end
-
-    # Close any open positions at end
-    if current_position == :long
-      final_price = prices[end_idx]
-      final_date = Date.parse(timestamps[end_idx])
-      pos = @portfolio.position(ticker)
-      @portfolio.sell(ticker, shares: pos.shares, price: final_price, date: final_date) if pos
-    end
-
-    # Calculate results
     calculate_results
 
     @results
   end
 
   private
+
+  # Resolve the [start_idx, end_idx] range within `timestamps` that falls
+  # inside the configured backtest start/end dates.
+  def backtest_index_range(timestamps)
+    start_idx = timestamps.index { |t| Date.parse(t) >= @start_date } || 0
+    end_idx = timestamps.rindex { |t| Date.parse(t) <= @end_date } || (timestamps.length - 1)
+
+    [start_idx, end_idx]
+  end
+
+  # Walk each trading day in range, generating a signal and executing
+  # buy/sell trades, recording the equity curve as we go.
+  # @return [Symbol, nil] the position held (:long or nil) after the last day
+  def simulate_trading_days(start_idx, end_idx, timestamps, prices, ticker)
+    current_position = nil
+
+    (start_idx..end_idx).each do |i|
+      date = Date.parse(timestamps[i])
+      price = prices[i]
+      historical_prices = prices[0..i]
+
+      signal = generate_signal(historical_prices)
+      current_position = execute_signal(signal, current_position, ticker, price, date)
+
+      current_value = @portfolio.value(ticker => price)
+      @equity_curve << { date: date, value: current_value, price: price }
+    end
+
+    current_position
+  end
+
+  # Execute a buy or sell for the given signal/current position; returns
+  # the resulting position (:long or nil).
+  def execute_signal(signal, current_position, ticker, price, date)
+    case signal
+    when :buy
+      if current_position.nil? && can_buy?(price)
+        shares = calculate_shares_to_buy(price)
+        @portfolio.buy(ticker, shares: shares, price: price, date: date)
+        :long
+      else
+        current_position
+      end
+    when :sell
+      if current_position == :long
+        pos = @portfolio.position(ticker)
+        @portfolio.sell(ticker, shares: pos.shares, price: price, date: date) if pos
+        nil
+      else
+        current_position
+      end
+    else
+      current_position
+    end
+  end
+
+  # Close any open long position at the end of the backtest window
+  def close_open_position(final_position, end_idx, timestamps, prices, ticker)
+    return unless final_position == :long
+
+    final_price = prices[end_idx]
+    final_date = Date.parse(timestamps[end_idx])
+    pos = @portfolio.position(ticker)
+    @portfolio.sell(ticker, shares: pos.shares, price: final_price, date: final_date) if pos
+  end
 
   # Generate trading signal from strategy
   # @param historical_prices [Array<Float>] Price history
@@ -245,7 +264,7 @@ class SQA::Backtest
   # @return [Boolean] True if we can buy
   def can_buy?(price)
     shares = calculate_shares_to_buy(price)
-    shares > 0 && (shares * price + @commission) <= @portfolio.cash
+    shares.positive? && ((shares * price) + @commission) <= @portfolio.cash
   end
 
   # Calculate how many shares to buy
@@ -255,45 +274,50 @@ class SQA::Backtest
     if @position_size == :all_cash
       # Use all available cash
       max_shares = (@portfolio.cash - @commission) / price
-      max_shares.floor
     else
       # Use fraction of portfolio
       capital_to_use = @portfolio.cash * @position_size
       max_shares = (capital_to_use - @commission) / price
-      max_shares.floor
     end
+    max_shares.floor
   end
 
   # Calculate backtest results and metrics
   def calculate_results
+    populate_results_header
+    @results.total_return = (@results.final_value - @initial_capital) / @initial_capital
+    @results.annualized_return = calculate_annualized_return(@results.total_return)
+    @results.sharpe_ratio = calculate_sharpe_ratio
+    @results.max_drawdown = calculate_max_drawdown
+
+    calculate_trade_statistics
+  end
+
+  # Populate the header fields (dates, capital) on @results
+  def populate_results_header
     @results.initial_capital = @initial_capital
     @results.final_value = @equity_curve.last[:value]
     @results.start_date = @start_date
     @results.end_date = @end_date
+  end
 
-    # Total return
-    @results.total_return = (@results.final_value - @initial_capital) / @initial_capital
-
-    # Annualized return
+  # Annualized return derived from total return and the backtest's duration
+  def calculate_annualized_return(total_return)
     days = (@end_date - @start_date).to_i
     years = days / 365.0
-    if years > 0
-      @results.annualized_return = ((1 + @results.total_return) ** (1.0 / years)) - 1
-    end
+    return 0.0 unless years.positive?
 
-    # Sharpe ratio (simplified - assumes risk-free rate of 0)
+    ((1 + total_return)**(1.0 / years)) - 1
+  end
+
+  # Sharpe ratio (simplified - assumes risk-free rate of 0)
+  def calculate_sharpe_ratio
     returns = calculate_daily_returns
-    if returns.any? && returns.map { |r| r ** 2 }.sum > 0
-      avg_return = returns.sum / returns.size
-      std_dev = Math.sqrt(returns.map { |r| (r - avg_return) ** 2 }.sum / returns.size)
-      @results.sharpe_ratio = std_dev > 0 ? (avg_return / std_dev) * Math.sqrt(252) : 0.0
-    end
+    return 0.0 unless returns.any? && returns.map { |r| r**2 }.sum.positive?
 
-    # Maximum drawdown
-    @results.max_drawdown = calculate_max_drawdown
-
-    # Trade statistics
-    calculate_trade_statistics
+    avg_return = returns.sum / returns.size
+    std_dev = Math.sqrt(returns.map { |r| (r - avg_return)**2 }.sum / returns.size)
+    std_dev.positive? ? (avg_return / std_dev) * Math.sqrt(252) : 0.0
   end
 
   # Calculate daily returns from equity curve
@@ -301,7 +325,7 @@ class SQA::Backtest
   def calculate_daily_returns
     returns = []
     @equity_curve.each_cons(2) do |prev, curr|
-      returns << (curr[:value] - prev[:value]) / prev[:value]
+      returns << ((curr[:value] - prev[:value]) / prev[:value])
     end
     returns
   end
@@ -329,33 +353,39 @@ class SQA::Backtest
     trades = @portfolio.trade_history
     @results.total_trades = trades.count { |t| t.action == :sell }
 
-    # Match buys with sells to calculate P&L per trade
-    trade_pls = []
+    trade_pls = matched_trade_profit_and_losses(trades)
+    apply_trade_statistics(trade_pls) if trade_pls.any?
+  end
+
+  # Match buys with sells (by order) to calculate P&L per completed trade
+  def matched_trade_profit_and_losses(trades)
     buy_trades = trades.select { |t| t.action == :buy }
     sell_trades = trades.select { |t| t.action == :sell }
 
+    trade_pls = []
     sell_trades.each_with_index do |sell, i|
-      if i < buy_trades.size
-        buy = buy_trades[i]
-        pl = (sell.price - buy.price) * sell.shares - sell.commission - buy.commission
-        trade_pls << pl
-      end
+      next unless i < buy_trades.size
+
+      buy = buy_trades[i]
+      trade_pls << (((sell.price - buy.price) * sell.shares) - sell.commission - buy.commission)
     end
 
-    if trade_pls.any?
-      winning = trade_pls.select { |pl| pl > 0 }
-      losing = trade_pls.select { |pl| pl < 0 }
+    trade_pls
+  end
 
-      @results.winning_trades = winning.size
-      @results.losing_trades = losing.size
-      @results.win_rate = winning.size.to_f / trade_pls.size
-      @results.average_win = winning.any? ? winning.sum / winning.size : 0.0
-      @results.average_loss = losing.any? ? losing.sum / losing.size : 0.0
+  # Populate win/loss counts, rates, averages, and profit factor on @results
+  def apply_trade_statistics(trade_pls)
+    winning = trade_pls.select(&:positive?)
+    losing = trade_pls.select(&:negative?)
 
-      # Profit factor
-      total_wins = winning.sum
-      total_losses = losing.sum.abs
-      @results.profit_factor = total_losses > 0 ? total_wins / total_losses : 0.0
-    end
+    @results.winning_trades = winning.size
+    @results.losing_trades = losing.size
+    @results.win_rate = winning.size.to_f / trade_pls.size
+    @results.average_win = winning.any? ? winning.sum / winning.size : 0.0
+    @results.average_loss = losing.any? ? losing.sum / losing.size : 0.0
+
+    total_wins = winning.sum
+    total_losses = losing.sum.abs
+    @results.profit_factor = total_losses.positive? ? total_wins / total_losses : 0.0
   end
 end

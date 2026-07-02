@@ -1,36 +1,34 @@
 # frozen_string_literal: true
 
-=begin
-
-Strategy Generator - Reverse Engineering Profitable Trades
-
-This module analyzes historical price data to identify inflection points (turning points)
-that precede significant price movements. It discovers which indicator patterns were
-present at those inflection points.
-
-FPOP (Future Period of Performance): The number of days to look ahead from an
-inflection point to measure if the price change exceeds the threshold.
-
-Process:
-1. Detect inflection points (local minima for buys, local maxima for sells)
-2. Check if price change during fpop period exceeds threshold percentage
-3. Calculate all indicators at those profitable inflection points
-4. Identify which indicators were "active" (in buy/sell zones)
-5. Find common patterns across profitable trades
-6. Generate trading rules from discovered patterns
-7. Optionally create KBS rules or strategy classes
-
-Example:
-  generator = SQA::StrategyGenerator.new(
-    stock: stock,
-    min_gain_percent: 10.0,
-    fpop: 10  # Future Period of Performance (days)
-  )
-
-  patterns = generator.discover_patterns
-  strategy = generator.generate_strategy
-
-=end
+#
+# Strategy Generator - Reverse Engineering Profitable Trades
+#
+# This module analyzes historical price data to identify inflection points (turning points)
+# that precede significant price movements. It discovers which indicator patterns were
+# present at those inflection points.
+#
+# FPOP (Future Period of Performance): The number of days to look ahead from an
+# inflection point to measure if the price change exceeds the threshold.
+#
+# Process:
+# 1. Detect inflection points (local minima for buys, local maxima for sells)
+# 2. Check if price change during fpop period exceeds threshold percentage
+# 3. Calculate all indicators at those profitable inflection points
+# 4. Identify which indicators were "active" (in buy/sell zones)
+# 5. Find common patterns across profitable trades
+# 6. Generate trading rules from discovered patterns
+# 7. Optionally create KBS rules or strategy classes
+#
+# Example:
+#   generator = SQA::StrategyGenerator.new(
+#     stock: stock,
+#     min_gain_percent: 10.0,
+#     fpop: 10  # Future Period of Performance (days)
+#   )
+#
+#   patterns = generator.discover_patterns
+#   strategy = generator.generate_strategy
+#
 
 module SQA
   class StrategyGenerator
@@ -50,13 +48,12 @@ module SQA
         @indicators = {}
 
         # FPL quality metrics
-        if fpl_data
-          @fpl_min_delta = fpl_data[:min_delta]
-          @fpl_max_delta = fpl_data[:max_delta]
-          @fpl_risk = fpl_data[:risk]
-          @fpl_direction = fpl_data[:direction]
-          @fpl_magnitude = fpl_data[:magnitude]
-        end
+        return unless fpl_data
+        @fpl_min_delta = fpl_data[:min_delta]
+        @fpl_max_delta = fpl_data[:max_delta]
+        @fpl_risk = fpl_data[:risk]
+        @fpl_direction = fpl_data[:direction]
+        @fpl_magnitude = fpl_data[:magnitude]
       end
 
       def to_s
@@ -83,7 +80,8 @@ module SQA
 
       def to_s
         ctx_info = @context.valid? ? " [#{@context.summary}]" : ""
-        "Pattern(conditions=#{conditions.size}, freq=#{frequency}, gain=#{avg_gain.round(2)}%, success=#{success_rate.round(2)}%#{ctx_info})"
+        "Pattern(conditions=#{conditions.size}, freq=#{frequency}, gain=#{avg_gain.round(2)}%, " \
+          "success=#{success_rate.round(2)}%#{ctx_info})"
       end
     end
 
@@ -141,7 +139,8 @@ module SQA
                 :fpop, :min_loss_percent, :indicators_config, :inflection_window,
                 :max_fpl_risk, :required_fpl_directions
 
-    def initialize(stock:, min_gain_percent: 10.0, min_loss_percent: nil, fpop: 10, inflection_window: 3, max_fpl_risk: nil, required_fpl_directions: nil)
+    def initialize(stock:, min_gain_percent: 10.0, min_loss_percent: nil, fpop: 10, inflection_window: 3, max_fpl_risk: nil,
+                   required_fpl_directions: nil)
       @stock = stock
       @min_gain_percent = min_gain_percent
       @min_loss_percent = min_loss_percent || -min_gain_percent  # Symmetric loss threshold
@@ -212,14 +211,14 @@ module SQA
 
     # Generate multiple strategies from top N patterns
     def generate_strategies(top_n: 5, strategy_type: :class)
-      @patterns.take(top_n).map.with_index do |pattern, i|
+      @patterns.take(top_n).map.with_index do |_pattern, i|
         generate_strategy(pattern_index: i, strategy_type: strategy_type)
       end
     end
 
     # Print discovered patterns
     def print_patterns(max_patterns: 10)
-      puts "\n" + "=" * 70
+      puts "\n" + ("=" * 70)
       puts "Discovered Patterns (Top #{[max_patterns, @patterns.size].min})"
       puts "=" * 70
 
@@ -271,19 +270,10 @@ module SQA
     # @return [Hash] Validation results with patterns and performance
     #
     def walk_forward_validate(train_size: 250, test_size: 60, step_size: 30)
-      puts "\n" + "=" * 70
-      puts "Walk-Forward Validation"
-      puts "=" * 70
-      puts "Training window: #{train_size} days"
-      puts "Testing window: #{test_size} days"
-      puts "Step size: #{step_size} days"
-      puts
+      print_walk_forward_header(train_size, test_size, step_size)
 
       prices = @stock.df["adj_close_price"].to_a
-
-
-      date_column = @stock.df.data.columns.include?("date") ? "date" : "timestamp"
-      dates = @stock.df[date_column].to_a.map { |d| Date.parse(d.to_s) }
+      dates = walk_forward_dates
 
       validated_patterns = []
       validation_results = []
@@ -293,80 +283,118 @@ module SQA
 
       while start_idx + train_size + test_size < prices.size
         iteration += 1
-        train_start = start_idx
-        train_end = start_idx + train_size
-        test_start = train_end
-        test_end = test_start + test_size
+        window = walk_forward_window(start_idx, train_size, test_size)
 
-        puts "\nIteration #{iteration}:"
-        puts "  Train: #{dates[train_start]} to #{dates[train_end - 1]}"
-        puts "  Test:  #{dates[test_start]} to #{dates[test_end - 1]}"
+        print_walk_forward_iteration(iteration, window, dates)
 
-        # Create temporary stock with training data
-        train_data = create_stock_subset(train_start, train_end)
-
-        # Discover patterns on training data
-        temp_generator = SQA::StrategyGenerator.new(
-          stock: train_data,
-          min_gain_percent: @min_gain_percent,
-          fpop: @fpop,
-          inflection_window: @inflection_window,
-          max_fpl_risk: @max_fpl_risk,
-          required_fpl_directions: @required_fpl_directions
-        )
-
-        train_patterns = temp_generator.discover_patterns(min_pattern_frequency: 2)
-
-        # Test each pattern on out-of-sample data
-        test_data = create_stock_subset(test_start, test_end)
-
-        train_patterns.each do |pattern|
-          # Generate strategy from pattern
-          strategy = temp_generator.generate_strategy(
-            pattern_index: train_patterns.index(pattern),
-            strategy_type: :proc
-          )
-
-          # Backtest on test period
-          begin
-            backtest = SQA::Backtest.new(stock: test_data, strategy: strategy)
-            results = backtest.run
-
-            # Store validation result
-            validation_results << {
-              iteration: iteration,
-              pattern: pattern,
-              train_period: "#{dates[train_start]} to #{dates[train_end - 1]}",
-              test_period: "#{dates[test_start]} to #{dates[test_end - 1]}",
-              test_return: results.total_return,
-              test_sharpe: results.sharpe_ratio,
-              test_max_drawdown: results.max_drawdown
-            }
-
-            # Keep pattern if it performed well out-of-sample
-            if results.total_return > 0 && results.sharpe_ratio > 0.5
-              validated_patterns << pattern
-            end
-          rescue => e
-            puts "    Warning: Pattern validation failed: #{e.message}"
-          end
-        end
+        run_walk_forward_iteration(window, iteration, dates, validated_patterns, validation_results)
 
         start_idx += step_size
       end
 
-      puts "\n" + "=" * 70
-      puts "Validation Complete"
-      puts "  Total iterations: #{iteration}"
-      puts "  Total patterns tested: #{validation_results.size}"
-      puts "  Patterns validated: #{validated_patterns.size}"
-      puts "=" * 70
+      print_walk_forward_summary(iteration, validation_results, validated_patterns)
 
       {
         validated_patterns: validated_patterns,
         validation_results: validation_results,
         total_iterations: iteration
       }
+    end
+
+    # Print the walk-forward validation configuration header
+    def print_walk_forward_header(train_size, test_size, step_size)
+      puts "\n" + ("=" * 70)
+      puts "Walk-Forward Validation"
+      puts "=" * 70
+      puts "Training window: #{train_size} days"
+      puts "Testing window: #{test_size} days"
+      puts "Step size: #{step_size} days"
+      puts
+    end
+
+    # Parsed dates aligned with the stock's price array
+    def walk_forward_dates
+      date_column = @stock.df.data.columns.include?("date") ? "date" : "timestamp"
+      @stock.df[date_column].to_a.map { |d| Date.parse(d.to_s) }
+    end
+
+    # Compute the train/test index boundaries for one iteration
+    def walk_forward_window(start_idx, train_size, test_size)
+      train_start = start_idx
+      train_end = start_idx + train_size
+      test_start = train_end
+      test_end = test_start + test_size
+
+      { train_start: train_start, train_end: train_end, test_start: test_start, test_end: test_end }
+    end
+
+    def print_walk_forward_iteration(iteration, window, dates)
+      puts "\nIteration #{iteration}:"
+      puts "  Train: #{dates[window[:train_start]]} to #{dates[window[:train_end] - 1]}"
+      puts "  Test:  #{dates[window[:test_start]]} to #{dates[window[:test_end] - 1]}"
+    end
+
+    # Discover patterns on the training window, then validate each pattern
+    # against the out-of-sample test window, accumulating results in place.
+    def run_walk_forward_iteration(window, iteration, dates, validated_patterns, validation_results)
+      train_data = create_stock_subset(window[:train_start], window[:train_end])
+
+      temp_generator = SQA::StrategyGenerator.new(
+        stock: train_data,
+        min_gain_percent: @min_gain_percent,
+        fpop: @fpop,
+        inflection_window: @inflection_window,
+        max_fpl_risk: @max_fpl_risk,
+        required_fpl_directions: @required_fpl_directions
+      )
+
+      train_patterns = temp_generator.discover_patterns(min_pattern_frequency: 2)
+      test_data = create_stock_subset(window[:test_start], window[:test_end])
+
+      train_patterns.each do |pattern|
+        validate_pattern_out_of_sample(
+          pattern, train_patterns, temp_generator, test_data,
+          iteration, window, dates, validated_patterns, validation_results
+        )
+      end
+    end
+
+    # Backtest a single discovered pattern on the out-of-sample test window
+    # and record the result; keep the pattern if it performed well.
+    def validate_pattern_out_of_sample(pattern, train_patterns, temp_generator, test_data,
+                                       iteration, window, dates, validated_patterns, validation_results)
+      strategy = temp_generator.generate_strategy(
+        pattern_index: train_patterns.index(pattern),
+        strategy_type: :proc
+      )
+
+      backtest = SQA::Backtest.new(stock: test_data, strategy: strategy)
+      results = backtest.run
+
+      validation_results << {
+        iteration: iteration,
+        pattern: pattern,
+        train_period: "#{dates[window[:train_start]]} to #{dates[window[:train_end] - 1]}",
+        test_period: "#{dates[window[:test_start]]} to #{dates[window[:test_end] - 1]}",
+        test_return: results.total_return,
+        test_sharpe: results.sharpe_ratio,
+        test_max_drawdown: results.max_drawdown
+      }
+
+      if results.total_return.positive? && results.sharpe_ratio > 0.5
+        validated_patterns << pattern
+      end
+    rescue => e
+      puts "    Warning: Pattern validation failed: #{e.message}"
+    end
+
+    def print_walk_forward_summary(iteration, validation_results, validated_patterns)
+      puts "\n" + ("=" * 70)
+      puts "Validation Complete"
+      puts "  Total iterations: #{iteration}"
+      puts "  Total patterns tested: #{validation_results.size}"
+      puts "  Patterns validated: #{validated_patterns.size}"
+      puts "=" * 70
     end
 
     # Discover patterns with context (regime, seasonal, sector)
@@ -377,69 +405,77 @@ module SQA
     # @return [Array<Pattern>] Patterns with context metadata
     #
     def discover_context_aware_patterns(analyze_regime: true, analyze_seasonal: true, sector: nil)
-      puts "\n" + "=" * 70
+      puts "\n" + ("=" * 70)
       puts "Context-Aware Pattern Discovery"
       puts "=" * 70
 
-      # Step 1: Detect market regime
-      if analyze_regime
-        regime_data = SQA::MarketRegime.detect(@stock)
-        puts "Current regime: #{regime_data[:type]} (#{regime_data[:strength]} strength)"
+      regime_data = analyze_regime ? detect_and_print_regime : nil
+      seasonal_data = analyze_seasonal ? analyze_and_print_seasonality : nil
 
-        # Split data by regime
-        regime_splits = SQA::MarketRegime.split_by_regime(@stock)
-
-        puts "\nRegime periods:"
-        regime_splits.each do |regime, periods|
-          total_days = periods.sum { |p| p[:duration] }
-          puts "  #{regime}: #{total_days} days across #{periods.size} periods"
-        end
-      end
-
-      # Step 2: Analyze seasonality
-      if analyze_seasonal
-        seasonal_data = SQA::SeasonalAnalyzer.analyze(@stock)
-        puts "\nSeasonal analysis:"
-        puts "  Best months: #{seasonal_data[:best_months].join(', ')}"
-        puts "  Worst months: #{seasonal_data[:worst_months].join(', ')}"
-        puts "  Best quarters: Q#{seasonal_data[:best_quarters].join(', Q')}"
-        puts "  Has seasonal pattern: #{seasonal_data[:has_seasonal_pattern]}"
-      end
-
-      # Step 3: Discover patterns normally
       patterns = discover_patterns
 
-      # Step 4: Add context to each pattern
       patterns.each do |pattern|
-        if analyze_regime
-          pattern.context.market_regime = regime_data[:type]
-          pattern.context.volatility_regime = regime_data[:volatility]
-        end
-
-        if analyze_seasonal && seasonal_data[:has_seasonal_pattern]
-          pattern.context.valid_months = seasonal_data[:best_months]
-          pattern.context.valid_quarters = seasonal_data[:best_quarters]
-        end
-
-        if sector
-          pattern.context.sector = sector
-        end
-
-        # Add discovery period
-
-        date_column = @stock.df.data.columns.include?("date") ? "date" : "timestamp"
-        dates = @stock.df[date_column].to_a
-
-        pattern.context.discovered_period = "#{dates.first} to #{dates.last}"
+        tag_pattern_context(pattern, regime_data, seasonal_data, sector)
       end
 
-      puts "\n" + "=" * 70
+      print_context_aware_summary(patterns)
+
+      patterns
+    end
+
+    # Step 1: Detect market regime and print regime/period summary
+    def detect_and_print_regime
+      regime_data = SQA::MarketRegime.detect(@stock)
+      puts "Current regime: #{regime_data[:type]} (#{regime_data[:strength]} strength)"
+
+      regime_splits = SQA::MarketRegime.split_by_regime(@stock)
+
+      puts "\nRegime periods:"
+      regime_splits.each do |regime, periods|
+        total_days = periods.sum { |p| p[:duration] }
+        puts "  #{regime}: #{total_days} days across #{periods.size} periods"
+      end
+
+      regime_data
+    end
+
+    # Step 2: Analyze seasonality and print summary
+    def analyze_and_print_seasonality
+      seasonal_data = SQA::SeasonalAnalyzer.analyze(@stock)
+      puts "\nSeasonal analysis:"
+      puts "  Best months: #{seasonal_data[:best_months].join(', ')}"
+      puts "  Worst months: #{seasonal_data[:worst_months].join(', ')}"
+      puts "  Best quarters: Q#{seasonal_data[:best_quarters].join(', Q')}"
+      puts "  Has seasonal pattern: #{seasonal_data[:has_seasonal_pattern]}"
+
+      seasonal_data
+    end
+
+    # Step 4: Tag a single pattern with regime/seasonal/sector/discovery-period context
+    def tag_pattern_context(pattern, regime_data, seasonal_data, sector)
+      if regime_data
+        pattern.context.market_regime = regime_data[:type]
+        pattern.context.volatility_regime = regime_data[:volatility]
+      end
+
+      if seasonal_data && seasonal_data[:has_seasonal_pattern]
+        pattern.context.valid_months = seasonal_data[:best_months]
+        pattern.context.valid_quarters = seasonal_data[:best_quarters]
+      end
+
+      pattern.context.sector = sector if sector
+
+      date_column = @stock.df.data.columns.include?("date") ? "date" : "timestamp"
+      dates = @stock.df[date_column].to_a
+      pattern.context.discovered_period = "#{dates.first} to #{dates.last}"
+    end
+
+    def print_context_aware_summary(patterns)
+      puts "\n" + ("=" * 70)
       puts "Context-Aware Discovery Complete"
       puts "  Patterns found: #{patterns.size}"
       puts "  Patterns with context: #{patterns.count { |p| p.context.valid? }}"
       puts "=" * 70
-
-      patterns
     end
 
     private
@@ -449,93 +485,107 @@ module SQA
       puts "Step 1: Detecting inflection points and analyzing FPOP..."
 
       prices = @stock.df["adj_close_price"].to_a
-
-      # Step 1a: Calculate FPL analysis for all points
       fpl_analysis = SQA::FPOP.fpl_analysis(prices, fpop: @fpop)
-
-      # Step 1b: Detect inflection points (local minima and maxima)
       inflection_points = detect_inflection_points(prices)
       puts "  Found #{inflection_points.size} inflection points"
 
-      # Step 1c: Check which inflection points lead to profitable moves
-      profitable_count = 0
-      filtered_by_risk = 0
-      filtered_by_direction = 0
+      filter_counts = scan_inflection_points_for_profit(inflection_points, prices, fpl_analysis)
+
+      print_profitable_points_summary(inflection_points, filter_counts)
+    end
+
+    # Scan every inflection point, skipping/filtering as configured, and
+    # append a ProfitablePoint for each one that clears the gain/loss bar.
+    # Returns a hash of filter counters used for the summary report.
+    def scan_inflection_points_for_profit(inflection_points, prices, fpl_analysis)
+      filter_counts = { risk: 0, direction: 0 }
 
       inflection_points.each do |inflection_idx|
-        # Skip if not enough future data
         next if inflection_idx + @fpop >= prices.size
         next if inflection_idx >= fpl_analysis.size
 
-        entry_price = prices[inflection_idx]
         fpl_data = fpl_analysis[inflection_idx]
+        next if filtered_by_fpl_risk?(fpl_data, filter_counts)
+        next if filtered_by_fpl_direction?(fpl_data, filter_counts)
 
-        # Optional: Filter by FPL risk (volatility)
-        if @max_fpl_risk && fpl_data[:risk] > @max_fpl_risk
-          filtered_by_risk += 1
-          next
-        end
-
-        # Optional: Filter by FPL direction
-        if @required_fpl_directions && !@required_fpl_directions.include?(fpl_data[:direction])
-          filtered_by_direction += 1
-          next
-        end
-
-        # Calculate price change over fpop period
-        future_prices = prices[(inflection_idx + 1)..(inflection_idx + @fpop)]
-        max_future_price = future_prices.max
-        min_future_price = future_prices.min
-
-        # Calculate gain/loss percentages
-        max_gain_percent = ((max_future_price - entry_price) / entry_price * 100.0)
-        max_loss_percent = ((min_future_price - entry_price) / entry_price * 100.0)
-
-        # Check if gain exceeds threshold (buy opportunity)
-        if max_gain_percent >= @min_gain_percent
-          exit_idx = inflection_idx + 1 + future_prices.index(max_future_price)
-
-          @profitable_points << ProfitablePoint.new(
-            entry_index: inflection_idx,
-            entry_price: entry_price,
-            exit_index: exit_idx,
-            exit_price: max_future_price,
-            fpl_data: fpl_data
-          )
-          profitable_count += 1
-        # Check if loss exceeds threshold (sell opportunity)
-        elsif max_loss_percent <= @min_loss_percent
-          exit_idx = inflection_idx + 1 + future_prices.index(min_future_price)
-
-          @profitable_points << ProfitablePoint.new(
-            entry_index: inflection_idx,
-            entry_price: entry_price,
-            exit_index: exit_idx,
-            exit_price: min_future_price,
-            fpl_data: fpl_data
-          )
-          profitable_count += 1
-        end
+        record_profitable_point_if_any(inflection_idx, prices, fpl_data)
       end
 
+      filter_counts
+    end
+
+    # Optional: Filter by FPL risk (volatility)
+    def filtered_by_fpl_risk?(fpl_data, filter_counts)
+      return false unless @max_fpl_risk && fpl_data[:risk] > @max_fpl_risk
+
+      filter_counts[:risk] += 1
+      true
+    end
+
+    # Optional: Filter by FPL direction
+    def filtered_by_fpl_direction?(fpl_data, filter_counts)
+      return false unless @required_fpl_directions && !@required_fpl_directions.include?(fpl_data[:direction])
+
+      filter_counts[:direction] += 1
+      true
+    end
+
+    # Evaluate the future price window for one inflection point and record
+    # a ProfitablePoint if either the gain or loss threshold is cleared.
+    def record_profitable_point_if_any(inflection_idx, prices, fpl_data)
+      entry_price = prices[inflection_idx]
+      future_prices = prices[(inflection_idx + 1)..(inflection_idx + @fpop)]
+      max_future_price = future_prices.max
+      min_future_price = future_prices.min
+
+      max_gain_percent = ((max_future_price - entry_price) / entry_price * 100.0)
+      max_loss_percent = ((min_future_price - entry_price) / entry_price * 100.0)
+
+      if max_gain_percent >= @min_gain_percent
+        exit_idx = inflection_idx + 1 + future_prices.index(max_future_price)
+        append_profitable_point(inflection_idx, entry_price, exit_idx, max_future_price, fpl_data)
+      elsif max_loss_percent <= @min_loss_percent
+        exit_idx = inflection_idx + 1 + future_prices.index(min_future_price)
+        append_profitable_point(inflection_idx, entry_price, exit_idx, min_future_price, fpl_data)
+      end
+    end
+
+    # Build and store a ProfitablePoint from entry/exit data
+    def append_profitable_point(entry_index, entry_price, exit_index, exit_price, fpl_data)
+      @profitable_points << ProfitablePoint.new(
+        entry_index: entry_index,
+        entry_price: entry_price,
+        exit_index: exit_index,
+        exit_price: exit_price,
+        fpl_data: fpl_data
+      )
+    end
+
+    # Print the Step 1 summary report (counts, success rate, FPL quality stats)
+    def print_profitable_points_summary(inflection_points, filter_counts)
       puts "  Inflection points analyzed: #{inflection_points.size}"
-      puts "  Filtered by risk: #{filtered_by_risk}" if @max_fpl_risk
-      puts "  Filtered by direction: #{filtered_by_direction}" if @required_fpl_directions
+      puts "  Filtered by risk: #{filter_counts[:risk]}" if @max_fpl_risk
+      puts "  Filtered by direction: #{filter_counts[:direction]}" if @required_fpl_directions
       puts "  Profitable opportunities found: #{@profitable_points.size}"
-      if inflection_points.size > 0
+      if inflection_points.size.positive?
         puts "  Success rate: #{(@profitable_points.size.to_f / inflection_points.size * 100).round(2)}%"
       end
 
-      # Print FPL quality stats
-      if @profitable_points.any? && @profitable_points.first.fpl_direction
-        avg_risk = @profitable_points.map(&:fpl_risk).compact.sum / @profitable_points.size
-        avg_magnitude = @profitable_points.map(&:fpl_magnitude).compact.sum / @profitable_points.size
-        directions = @profitable_points.map(&:fpl_direction).compact.tally
-        puts "  Average FPL risk: #{avg_risk.round(2)}%"
-        puts "  Average FPL magnitude: #{avg_magnitude.round(2)}%"
-        puts "  Direction distribution: #{directions}"
-      end
+      print_fpl_quality_stats
+
       puts
+    end
+
+    # Print average FPL risk/magnitude and direction distribution, when available
+    def print_fpl_quality_stats
+      return unless @profitable_points.any? && @profitable_points.first.fpl_direction
+
+      avg_risk = @profitable_points.map(&:fpl_risk).compact.sum / @profitable_points.size
+      avg_magnitude = @profitable_points.map(&:fpl_magnitude).compact.sum / @profitable_points.size
+      directions = @profitable_points.map(&:fpl_direction).compact.tally
+      puts "  Average FPL risk: #{avg_risk.round(2)}%"
+      puts "  Average FPL magnitude: #{avg_magnitude.round(2)}%"
+      puts "  Direction distribution: #{directions}"
     end
 
     # Detect inflection points (local minima and maxima)
@@ -551,13 +601,10 @@ module SQA
         left_window = prices[(idx - window)...idx]
         right_window = prices[(idx + 1)..(idx + window)]
 
-        # Check if local minimum (potential buy point)
-        if left_window.all? { |p| current_price <= p } && right_window.all? { |p| current_price <= p }
-          inflection_points << idx
-        # Check if local maximum (potential sell point)
-        elsif left_window.all? { |p| current_price >= p } && right_window.all? { |p| current_price >= p }
-          inflection_points << idx
-        end
+        # Local minimum (potential buy point) or local maximum (potential sell point)
+        local_min = left_window.all? { |p| current_price <= p } && right_window.all? { |p| current_price <= p }
+        local_max = left_window.all? { |p| current_price >= p } && right_window.all? { |p| current_price >= p }
+        inflection_points << idx if local_min || local_max
       end
 
       inflection_points
@@ -588,11 +635,25 @@ module SQA
     def calculate_all_indicators(prices, volumes, highs, lows)
       cache = {}
 
-      # RSI
+      cache_rsi!(cache, prices)
+      cache_macd!(cache, prices)
+      cache_stoch!(cache, highs, lows, prices)
+      cache_smas!(cache, prices)
+      cache_ema!(cache, prices)
+      cache_bbands!(cache, prices)
+
+      cache
+    rescue => e
+      puts "  Warning: Indicator calculation failed: #{e.message}"
+      {}
+    end
+
+    def cache_rsi!(cache, prices)
       rsi_config = @indicators_config[:rsi]
       cache[:rsi] = SQAI.rsi(prices, period: rsi_config[:period])
+    end
 
-      # MACD
+    def cache_macd!(cache, prices)
       macd_config = @indicators_config[:macd]
       macd_line, signal_line, histogram = SQAI.macd(
         prices,
@@ -603,8 +664,9 @@ module SQA
       cache[:macd_line] = macd_line
       cache[:macd_signal] = signal_line
       cache[:macd_histogram] = histogram
+    end
 
-      # Stochastic
+    def cache_stoch!(cache, highs, lows, prices)
       stoch_config = @indicators_config[:stoch]
       stoch_k, stoch_d = SQAI.stoch(
         highs, lows, prices,
@@ -614,17 +676,20 @@ module SQA
       )
       cache[:stoch_k] = stoch_k
       cache[:stoch_d] = stoch_d
+    end
 
-      # SMAs
+    def cache_smas!(cache, prices)
       sma_config = @indicators_config[:sma_cross]
       cache[:sma_short] = SQAI.sma(prices, period: sma_config[:short])
       cache[:sma_long] = SQAI.sma(prices, period: sma_config[:long])
+    end
 
-      # EMA
+    def cache_ema!(cache, prices)
       ema_config = @indicators_config[:ema]
       cache[:ema] = SQAI.ema(prices, period: ema_config[:period])
+    end
 
-      # Bollinger Bands
+    def cache_bbands!(cache, prices)
       bb_config = @indicators_config[:bbands]
       upper, middle, lower = SQAI.bbands(
         prices,
@@ -635,110 +700,127 @@ module SQA
       cache[:bb_upper] = upper
       cache[:bb_middle] = middle
       cache[:bb_lower] = lower
-
-      cache
-    rescue => e
-      puts "  Warning: Indicator calculation failed: #{e.message}"
-      {}
     end
 
     # Extract indicator states at a specific index
     def extract_indicator_states(idx, cache, prices, volumes)
       states = {}
 
-      # RSI state
-      if cache[:rsi] && idx < cache[:rsi].size
-        rsi_val = cache[:rsi][idx]
-        rsi_config = @indicators_config[:rsi]
-
-        states[:rsi] = if rsi_val < rsi_config[:oversold]
-                        :oversold
-                      elsif rsi_val > rsi_config[:overbought]
-                        :overbought
-                      else
-                        :neutral
-                      end
-        states[:rsi_value] = rsi_val
-      end
-
-      # MACD state
-      if cache[:macd_line] && cache[:macd_signal] && idx >= 1
-        macd_curr = cache[:macd_line][idx]
-        signal_curr = cache[:macd_signal][idx]
-        macd_prev = cache[:macd_line][idx - 1]
-        signal_prev = cache[:macd_signal][idx - 1]
-
-        states[:macd_crossover] = if macd_prev <= signal_prev && macd_curr > signal_curr
-                                    :bullish
-                                  elsif macd_prev >= signal_prev && macd_curr < signal_curr
-                                    :bearish
-                                  else
-                                    :none
-                                  end
-        states[:macd_position] = macd_curr > signal_curr ? :above : :below
-      end
-
-      # Stochastic state
-      if cache[:stoch_k] && idx < cache[:stoch_k].size
-        stoch_k_val = cache[:stoch_k][idx]
-        stoch_config = @indicators_config[:stoch]
-
-        states[:stoch] = if stoch_k_val < stoch_config[:oversold]
-                          :oversold
-                        elsif stoch_k_val > stoch_config[:overbought]
-                          :overbought
-                        else
-                          :neutral
-                        end
-      end
-
-      # SMA crossover state
-      if cache[:sma_short] && cache[:sma_long] && idx < cache[:sma_short].size
-        sma_short = cache[:sma_short][idx]
-        sma_long = cache[:sma_long][idx]
-
-        states[:sma_cross] = sma_short > sma_long ? :golden : :death
-      end
-
-      # Bollinger Bands position
-      if cache[:bb_upper] && cache[:bb_lower] && idx < prices.size
-        price = prices[idx]
-        upper = cache[:bb_upper][idx]
-        lower = cache[:bb_lower][idx]
-
-        states[:bb_position] = if price < lower
-                                :below_lower
-                              elsif price > upper
-                                :above_upper
-                              else
-                                :inside
-                              end
-      end
-
-      # Price vs EMA
-      if cache[:ema] && idx < cache[:ema].size && idx < prices.size
-        price = prices[idx]
-        ema = cache[:ema][idx]
-
-        states[:price_vs_ema] = price > ema ? :above : :below
-      end
-
-      # Volume state
-      if idx >= 20 && volumes.size > idx
-        current_volume = volumes[idx]
-        avg_volume = volumes[(idx - 19)..idx].sum / 20.0
-        vol_config = @indicators_config[:volume]
-
-        states[:volume] = if current_volume > avg_volume * vol_config[:threshold]
-                           :high
-                         elsif current_volume < avg_volume * 0.5
-                           :low
-                         else
-                           :normal
-                         end
-      end
+      extract_rsi_state(states, idx, cache)
+      extract_macd_state(states, idx, cache)
+      extract_stoch_state(states, idx, cache)
+      extract_sma_cross_state(states, idx, cache)
+      extract_bb_position_state(states, idx, cache, prices)
+      extract_price_vs_ema_state(states, idx, cache, prices)
+      extract_volume_state(states, idx, volumes)
 
       states
+    end
+
+    # RSI state at idx
+    def extract_rsi_state(states, idx, cache)
+      return unless cache[:rsi] && idx < cache[:rsi].size
+
+      rsi_val = cache[:rsi][idx]
+      rsi_config = @indicators_config[:rsi]
+
+      states[:rsi] = if rsi_val < rsi_config[:oversold]
+                       :oversold
+                     elsif rsi_val > rsi_config[:overbought]
+                       :overbought
+                     else
+                       :neutral
+                     end
+      states[:rsi_value] = rsi_val
+    end
+
+    # MACD crossover/position state at idx
+    def extract_macd_state(states, idx, cache)
+      return unless cache[:macd_line] && cache[:macd_signal] && idx >= 1
+
+      macd_curr = cache[:macd_line][idx]
+      signal_curr = cache[:macd_signal][idx]
+      macd_prev = cache[:macd_line][idx - 1]
+      signal_prev = cache[:macd_signal][idx - 1]
+
+      states[:macd_crossover] = if macd_prev <= signal_prev && macd_curr > signal_curr
+                                  :bullish
+                                elsif macd_prev >= signal_prev && macd_curr < signal_curr
+                                  :bearish
+                                else
+                                  :none
+                                end
+      states[:macd_position] = macd_curr > signal_curr ? :above : :below
+    end
+
+    # Stochastic state at idx
+    def extract_stoch_state(states, idx, cache)
+      return unless cache[:stoch_k] && idx < cache[:stoch_k].size
+
+      stoch_k_val = cache[:stoch_k][idx]
+      stoch_config = @indicators_config[:stoch]
+
+      states[:stoch] = if stoch_k_val < stoch_config[:oversold]
+                         :oversold
+                       elsif stoch_k_val > stoch_config[:overbought]
+                         :overbought
+                       else
+                         :neutral
+                       end
+    end
+
+    # SMA crossover state at idx
+    def extract_sma_cross_state(states, idx, cache)
+      return unless cache[:sma_short] && cache[:sma_long] && idx < cache[:sma_short].size
+
+      sma_short = cache[:sma_short][idx]
+      sma_long = cache[:sma_long][idx]
+
+      states[:sma_cross] = sma_short > sma_long ? :golden : :death
+    end
+
+    # Bollinger Bands position state at idx
+    def extract_bb_position_state(states, idx, cache, prices)
+      return unless cache[:bb_upper] && cache[:bb_lower] && idx < prices.size
+
+      price = prices[idx]
+      upper = cache[:bb_upper][idx]
+      lower = cache[:bb_lower][idx]
+
+      states[:bb_position] = if price < lower
+                               :below_lower
+                             elsif price > upper
+                               :above_upper
+                             else
+                               :inside
+                             end
+    end
+
+    # Price vs EMA state at idx
+    def extract_price_vs_ema_state(states, idx, cache, prices)
+      return unless cache[:ema] && idx < cache[:ema].size && idx < prices.size
+
+      price = prices[idx]
+      ema = cache[:ema][idx]
+
+      states[:price_vs_ema] = price > ema ? :above : :below
+    end
+
+    # Volume state at idx
+    def extract_volume_state(states, idx, volumes)
+      return unless idx >= 20 && volumes.size > idx
+
+      current_volume = volumes[idx]
+      avg_volume = volumes[(idx - 19)..idx].sum / 20.0
+      vol_config = @indicators_config[:volume]
+
+      states[:volume] = if current_volume > avg_volume * vol_config[:threshold]
+                          :high
+                        elsif current_volume < avg_volume * 0.5
+                          :low
+                        else
+                          :normal
+                        end
     end
 
     # Step 3: Mine patterns from indicator states
@@ -747,39 +829,38 @@ module SQA
 
       pattern_map = Hash.new { |h, k| h[k] = Pattern.new(conditions: k) }
 
-      # Generate all possible pattern combinations
       @profitable_points.each do |point|
-        # Single indicator patterns
-        point.indicators.each do |indicator, state|
-          key = { indicator => state }
-          pattern_map[key].frequency += 1
-          pattern_map[key].occurrences << point
-        end
-
-        # Two-indicator patterns
-        indicators = point.indicators.to_a
-        indicators.combination(2).each do |combo|
-          key = combo.to_h
-          pattern_map[key].frequency += 1
-          pattern_map[key].occurrences << point
-        end
-
-        # Three-indicator patterns (for strong signals)
-        indicators.combination(3).each do |combo|
-          key = combo.to_h
-          pattern_map[key].frequency += 1
-          pattern_map[key].occurrences << point
-        end
+        record_pattern_combinations(pattern_map, point)
       end
 
-      # Filter patterns by minimum frequency
       @patterns = pattern_map.values.select { |p| p.frequency >= min_frequency }
-
-      # Sort by frequency (most common first)
       @patterns.sort_by! { |p| [-p.frequency, -p.conditions.size] }
 
       puts "  Found #{@patterns.size} patterns (min frequency: #{min_frequency})"
       puts
+    end
+
+    # Record single-, two-, and three-indicator pattern combinations for one point
+    def record_pattern_combinations(pattern_map, point)
+      indicators = point.indicators.to_a
+
+      point.indicators.each do |indicator, state|
+        record_pattern_occurrence(pattern_map, { indicator => state }, point)
+      end
+
+      indicators.combination(2).each do |combo|
+        record_pattern_occurrence(pattern_map, combo.to_h, point)
+      end
+
+      indicators.combination(3).each do |combo|
+        record_pattern_occurrence(pattern_map, combo.to_h, point)
+      end
+    end
+
+    # Increment frequency and track the occurrence for one pattern key
+    def record_pattern_occurrence(pattern_map, key, point)
+      pattern_map[key].frequency += 1
+      pattern_map[key].occurrences << point
     end
 
     # Step 4: Calculate pattern statistics
@@ -897,50 +978,60 @@ module SQA
     # Helper: Get current indicator state from vector
     def get_indicator_state(vector, indicator)
       case indicator
-      when :rsi
-        return :neutral unless vector.respond_to?(:rsi) && vector.rsi
-        rsi_val = Array(vector.rsi).last
-        rsi_config = @indicators_config[:rsi]
-        if rsi_val < rsi_config[:oversold]
-          :oversold
-        elsif rsi_val > rsi_config[:overbought]
-          :overbought
-        else
-          :neutral
-        end
+      when :rsi then indicator_state_rsi(vector)
+      when :macd_crossover then indicator_state_macd_crossover(vector)
+      when :stoch then indicator_state_stoch(vector)
+      else :unknown
+      end
+    end
 
-      when :macd_crossover
-        return :none unless vector.respond_to?(:macd) && vector.macd
-        macd_line, signal_line = vector.macd
-        return :none if macd_line.size < 2 || signal_line.size < 2
+    def indicator_state_rsi(vector)
+      return :neutral unless vector.respond_to?(:rsi) && vector.rsi
 
-        macd_curr = macd_line.last
-        signal_curr = signal_line.last
-        macd_prev = macd_line[-2]
-        signal_prev = signal_line[-2]
+      rsi_val = Array(vector.rsi).last
+      rsi_config = @indicators_config[:rsi]
 
-        if macd_prev <= signal_prev && macd_curr > signal_curr
-          :bullish
-        elsif macd_prev >= signal_prev && macd_curr < signal_curr
-          :bearish
-        else
-          :none
-        end
-
-      when :stoch
-        return :neutral unless vector.respond_to?(:stoch_k) && vector.stoch_k
-        stoch_k_val = Array(vector.stoch_k).last
-        stoch_config = @indicators_config[:stoch]
-        if stoch_k_val < stoch_config[:oversold]
-          :oversold
-        elsif stoch_k_val > stoch_config[:overbought]
-          :overbought
-        else
-          :neutral
-        end
-
+      if rsi_val < rsi_config[:oversold]
+        :oversold
+      elsif rsi_val > rsi_config[:overbought]
+        :overbought
       else
-        :unknown
+        :neutral
+      end
+    end
+
+    def indicator_state_macd_crossover(vector)
+      return :none unless vector.respond_to?(:macd) && vector.macd
+
+      macd_line, signal_line = vector.macd
+      return :none if macd_line.size < 2 || signal_line.size < 2
+
+      macd_curr = macd_line.last
+      signal_curr = signal_line.last
+      macd_prev = macd_line[-2]
+      signal_prev = signal_line[-2]
+
+      if macd_prev <= signal_prev && macd_curr > signal_curr
+        :bullish
+      elsif macd_prev >= signal_prev && macd_curr < signal_curr
+        :bearish
+      else
+        :none
+      end
+    end
+
+    def indicator_state_stoch(vector)
+      return :neutral unless vector.respond_to?(:stoch_k) && vector.stoch_k
+
+      stoch_k_val = Array(vector.stoch_k).last
+      stoch_config = @indicators_config[:stoch]
+
+      if stoch_k_val < stoch_config[:oversold]
+        :oversold
+      elsif stoch_k_val > stoch_config[:overbought]
+        :overbought
+      else
+        :neutral
       end
     end
   end

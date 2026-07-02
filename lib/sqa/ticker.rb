@@ -14,7 +14,7 @@
 #
 class SQA::Ticker
   # @return [String] Prefix for downloaded CSV filenames
-  FILENAME_PREFIX = "dumbstockapi"
+  FILENAME_PREFIX = "dumbstockapi".freeze
 
   # @return [Faraday::Connection] Connection to dumbstockapi.com
   CONNECTION      = Faraday.new(url: "https://dumbstockapi.com")
@@ -28,11 +28,11 @@ class SQA::Ticker
     # @example
     #   SQA::Ticker.download("US")  # => 200
     #
-    def download(country="US")
+    def download(country = "US")
       response = CONNECTION.get("/stock?format=csv&countries=#{country.upcase}").to_hash
 
-      if 200 == response[:status]
-        filename = response[:response_headers]["content-disposition"].split('=').last.gsub('"','')
+      if response[:status] == 200
+        filename = response[:response_headers]["content-disposition"].split('=').last.gsub('"', '')
         out_path = Pathname.new(SQA.config.data_dir) + filename
         out_path.write response[:body]
       end
@@ -48,8 +48,8 @@ class SQA::Ticker
       tries = 0
       found = false
 
-      until(found || tries >= 3) do
-        files     = Pathname.new(SQA.config.data_dir).children.select{|c| c.basename.to_s.start_with?(FILENAME_PREFIX)}.sort
+      until found || tries >= 3
+        files     = Pathname.new(SQA.config.data_dir).children.select { |c| c.basename.to_s.start_with?(FILENAME_PREFIX) }.sort
         if files.empty?
           begin
             download

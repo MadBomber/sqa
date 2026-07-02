@@ -106,7 +106,7 @@ class ConfigTest < Minitest::Test
 
   def test_log_level_values
     # Valid log levels
-    [:debug, :info, :warn, :error, :fatal].each do |level|
+    %i[debug info warn error fatal].each do |level|
       config = SQA::Config.new(log_level: level)
       assert_equal level, config.log_level
     end

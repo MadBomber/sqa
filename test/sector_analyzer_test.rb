@@ -21,7 +21,7 @@ class SectorAnalyzerTest < Minitest::Test
     assert @analyzer.stocks_by_sector.is_a?(Hash)
 
     # Should have blackboards for all sectors
-    SQA::SectorAnalyzer::SECTORS.keys.each do |sector|
+    SQA::SectorAnalyzer::SECTORS.each_key do |sector|
       assert @analyzer.blackboards.key?(sector)
       assert @analyzer.blackboards[sector].is_a?(KBS::Blackboard::Engine)
     end
@@ -58,7 +58,7 @@ class SectorAnalyzerTest < Minitest::Test
     kb = @analyzer.blackboards[:technology]
     stock_facts = kb.working_memory.facts.select { |f| f.type == :stock_registered }
 
-    assert stock_facts.size > 0
+    assert stock_facts.size.positive?
     apple_fact = stock_facts.find { |f| f.attributes[:ticker] == 'AAPL' }
     assert apple_fact
     # Blackboard may store sector as string or symbol depending on serialization
@@ -132,7 +132,7 @@ class SectorAnalyzerTest < Minitest::Test
     # Should be able to query persisted data
     results = analyzer2.query_sector(:technology, :stock_registered, { ticker: 'AAPL' })
 
-    assert results.size > 0, "Blackboard data should persist"
+    assert results.size.positive?, "Blackboard data should persist"
   end
 
   def test_multiple_sectors
@@ -149,12 +149,12 @@ class SectorAnalyzerTest < Minitest::Test
     finance_facts = @analyzer.query_sector(:finance, :stock_registered)
     health_facts = @analyzer.query_sector(:healthcare, :stock_registered)
 
-    assert tech_facts.any? { |f| f.attributes[:ticker] == 'AAPL' }
-    assert finance_facts.any? { |f| f.attributes[:ticker] == 'JPM' }
-    assert health_facts.any? { |f| f.attributes[:ticker] == 'JNJ' }
+    assert(tech_facts.any? { |f| f.attributes[:ticker] == 'AAPL' })
+    assert(finance_facts.any? { |f| f.attributes[:ticker] == 'JPM' })
+    assert(health_facts.any? { |f| f.attributes[:ticker] == 'JNJ' })
 
     # Cross-sector isolation
-    refute tech_facts.any? { |f| f.attributes[:ticker] == 'JPM' }
-    refute finance_facts.any? { |f| f.attributes[:ticker] == 'AAPL' }
+    refute(tech_facts.any? { |f| f.attributes[:ticker] == 'JPM' })
+    refute(finance_facts.any? { |f| f.attributes[:ticker] == 'AAPL' })
   end
 end

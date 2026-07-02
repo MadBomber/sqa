@@ -1,0 +1,213 @@
+AllCops:
+  NewCops: enable
+  SuggestExtensions: false
+  TargetRubyVersion: 4.0
+  Exclude:
+    - 'examples/**/*'
+    - 'docs/**/*'
+    - 'site/**/*'
+    - 'pkg/**/*'
+    - 'coverage/**/*'
+    # Untracked scratch/dev scripts left at repo root in sqa-tai (not part of the shipped gem)
+    - 'add_array_order_note.rb'
+    - 'complete_all_patterns.rb'
+    - 'generate_remaining_patterns.rb'
+
+# ── Style: disabled cops ───────────────────────────────────────────────────
+Style/StringLiterals:
+  Enabled: false
+
+Style/StringLiteralsInInterpolation:
+  Enabled: false
+
+Style/Documentation:
+  Enabled: false
+
+# Ruby 4.0 freezes string literals by default
+Style/FrozenStringLiteralComment:
+  Enabled: false
+
+Style/IfUnlessModifier:
+  Enabled: false
+
+Style/RescueModifier:
+  Enabled: false
+
+Style/TrivialAccessors:
+  Enabled: false
+
+Style/MultilineTernaryOperator:
+  Enabled: false
+
+Style/SafeNavigation:
+  Enabled: false
+
+Style/EmptyClassDefinition:
+  Enabled: false
+
+Style/ClassAndModuleChildren:
+  Enabled: false
+
+Style/RescueStandardError:
+  Enabled: false
+
+Style/OneClassPerFile:
+  Enabled: false
+
+# Both % and format/sprintf are acceptable
+Style/FormatString:
+  Enabled: false
+
+# String concatenation and interpolation are both acceptable
+Style/StringConcatenation:
+  Enabled: false
+
+# OpenStruct is a deliberate architectural choice throughout this ecosystem —
+# strategy/backtest/stream vectors are built as OpenStructs on purpose (see
+# sqa/CLAUDE.md). Not a candidate for a Struct/class/test-double rewrite.
+Style/OpenStructUse:
+  Enabled: false
+
+# $DEBUG_ME (debug_me gem convention) and test fixture globals like $data are
+# established patterns here, not accidental global-variable leaks.
+Style/GlobalVars:
+  Enabled: false
+
+# ── Layout ─────────────────────────────────────────────────────────────────
+Layout/LineLength:
+  Max: 140
+
+Layout/ExtraSpacing:
+  Enabled: false
+
+Layout/HashAlignment:
+  Enabled: false
+
+Layout/FirstHashElementIndentation:
+  Enabled: false
+
+Layout/EmptyLineAfterGuardClause:
+  Enabled: false
+
+# ── Naming ─────────────────────────────────────────────────────────────────
+# Single-char params (c, e, n) are acceptable throughout
+Naming/MethodParameterName:
+  Enabled: false
+
+# sma_20, percentile_95, and similar parameterized names are more readable
+# than the normalcase default (sma20, percentile95). alpha_vantage_api.rb is
+# excluded entirely: it mirrors Alpha Vantage's literal API function/parameter
+# names (t3, timeperiod1/2/3, ...) verbatim, which we can't rename. Same
+# reasoning for sqa-tai's overlap_studies.rb (t3) and momentum_indicators.rb
+# (ultosc's time_period1/2/3) — TA-Lib's own C function/parameter names.
+Naming/VariableNumber:
+  EnforcedStyle: snake_case
+  Exclude:
+    - 'test/**/*'
+    - 'lib/api/alpha_vantage_api.rb'
+    - 'lib/sqa/tai/overlap_studies.rb'
+    - 'lib/sqa/tai/momentum_indicators.rb'
+
+Naming/RescuedExceptionsVariableName:
+  Enabled: false
+
+# set_results and similar explicit setters are clear and conventional
+Naming/AccessorMethodName:
+  Enabled: false
+
+# has_tool_calls? and similar are clear and conventional
+Naming/PredicatePrefix:
+  Enabled: false
+
+# Test helper methods don't need to follow predicate naming rules
+Naming/PredicateMethod:
+  Exclude:
+    - 'test/**/*'
+
+# ── Lint: relax noisy cops on intentional patterns ─────────────────────────
+Lint/EmptyBlock:
+  Exclude:
+    - 'test/**/*'
+
+# Library and framework methods commonly accept args for API/documentation purposes
+Lint/UnusedMethodArgument:
+  Enabled: false
+
+Lint/ConstantDefinitionInBlock:
+  Exclude:
+    - 'Rakefile'
+    - 'test/**/*'
+
+# ── Gemspec ────────────────────────────────────────────────────────────────
+# All 5 sqa gem repos declare dev deps directly in the gemspec (not a Gemfile
+# group) — the opposite convention from robot_lab_project, so match reality.
+Gemspec/DevelopmentDependencies:
+  EnforcedStyle: gemspec
+
+Gemspec/RequiredRubyVersion:
+  Enabled: false
+
+Gemspec/OrderedDependencies:
+  Enabled: false
+
+# ── Metrics ────────────────────────────────────────────────────────────────
+# Flog is the primary complexity gate (see repo_dev.loki flog_check) — these
+# RuboCop thresholds catch only egregious outliers without duplicating flog's
+# more precise per-method scoring.
+
+Metrics/MethodLength:
+  Max: 35
+  CountAsOne:
+    - heredoc
+    - array
+    - hash
+  Exclude:
+    - 'test/**/*'
+    - 'bin/**/*'
+
+Metrics/AbcSize:
+  Max: 40
+  Exclude:
+    - 'test/**/*'
+    - 'bin/**/*'
+
+Metrics/ClassLength:
+  Max: 650 # matches robot_lab_project: central orchestrator classes are legitimately large
+  Exclude:
+    - 'test/**/*'
+    - 'bin/**/*'
+
+Metrics/ModuleLength:
+  Max: 200
+  Exclude:
+    - 'test/**/*'
+    - 'bin/**/*'
+    # Many independent thin TA-Lib indicator wrappers — naturally long by breadth, not complexity
+    - 'lib/sqa/tai/pattern_recognition.rb'
+    - 'lib/sqa/tai/momentum_indicators.rb'
+    # Cohesive groups of route helpers extracted during the flog complexity pass
+    - 'lib/sqa_demo/sinatra/helpers/api_helpers.rb'
+    - 'lib/sqa_demo/sinatra/helpers/stock_loader.rb'
+
+Metrics/CyclomaticComplexity:
+  Max: 20
+  Exclude:
+    - 'test/**/*'
+    - 'bin/**/*'
+
+Metrics/PerceivedComplexity:
+  Max: 20
+  Exclude:
+    - 'test/**/*'
+    - 'bin/**/*'
+
+# Long method signatures with keyword args are common in this codebase
+Metrics/ParameterLists:
+  Enabled: false
+
+Metrics/BlockLength:
+  Exclude:
+    - 'Rakefile'
+    - '*.gemspec'
+    - 'test/**/*'
+    - 'bin/**/*'

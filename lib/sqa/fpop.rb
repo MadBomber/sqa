@@ -52,7 +52,7 @@ module SQA
           break if future_prices.nil? || future_prices.empty?
 
           deltas = future_prices.map { |p| ((p - current_price) / current_price) * 100.0 }
-          result << [deltas.min, deltas.max]
+          result << deltas.minmax
         end
 
         result
@@ -106,11 +106,11 @@ module SQA
       # @return [Symbol] :UP, :DOWN, :UNCERTAIN, or :FLAT
       #
       def determine_direction(min_delta, max_delta)
-        if min_delta > 0 && max_delta > 0
+        if min_delta.positive? && max_delta.positive?
           :UP
-        elsif min_delta < 0 && max_delta < 0
+        elsif min_delta.negative? && max_delta.negative?
           :DOWN
-        elsif min_delta < 0 && max_delta > 0
+        elsif min_delta.negative? && max_delta.positive?
           :UNCERTAIN
         else
           :FLAT
@@ -160,7 +160,7 @@ module SQA
       #     directions: [:UP]
       #   )
       #
-      def filter_by_quality(analysis, min_magnitude: nil, max_risk: nil, directions: [:UP, :DOWN, :UNCERTAIN, :FLAT])
+      def filter_by_quality(analysis, min_magnitude: nil, max_risk: nil, directions: %i[UP DOWN UNCERTAIN FLAT])
         indices = []
 
         analysis.each_with_index do |result, idx|
@@ -181,7 +181,7 @@ module SQA
       #
       def risk_reward_ratios(analysis)
         analysis.map do |result|
-          result[:risk] > 0 ? result[:magnitude].abs / result[:risk] : 0.0
+          result[:risk].positive? ? result[:magnitude].abs / result[:risk] : 0.0
         end
       end
 
@@ -191,7 +191,7 @@ module SQA
       def validate_fpl_inputs(price, fpop)
         raise ArgumentError, "price must be an Array" unless price.is_a?(Array)
         raise ArgumentError, "price cannot be empty" if price.empty?
-        raise ArgumentError, "fpop must be a positive integer" unless fpop.is_a?(Integer) && fpop > 0
+        raise ArgumentError, "fpop must be a positive integer" unless fpop.is_a?(Integer) && fpop.positive?
         raise ArgumentError, "prices must not contain zero or negative values" if price.any? { |p| p <= 0 }
       end
     end
