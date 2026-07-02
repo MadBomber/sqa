@@ -1,0 +1,15 @@
+# frozen_string_literal: true
+
+# Local cross-repo development Gemfile.
+#
+# Same as Gemfile, but resolves the sibling SQA-ecosystem gems from their
+# local checkouts instead of released versions, so you can develop across
+# repos without a gem release workflow.
+#
+# Activate with:  BUNDLE_GEMFILE=Gemfile.local bundle <command>
+
+source "https://rubygems.org"
+
+gemspec
+
+gem "sqa-tai", path: "../sqa-tai"

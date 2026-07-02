@@ -65,6 +65,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'flay'
   spec.add_development_dependency 'flog'
   spec.add_development_dependency 'racc' # flog/flay transitively need this on Ruby 4+
+  spec.add_development_dependency 'reek' # code smell gate (rake reek_check)
   spec.add_development_dependency 'minitest'
   spec.add_development_dependency 'minitest-mock' # Minitest::Mock split into its own gem in minitest 5.27+
   spec.add_development_dependency 'rake'

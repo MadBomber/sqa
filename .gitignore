@@ -12,3 +12,6 @@ temp.*
 /pkg/
 /spec/reports/
 /tmp/
+
+# Local cross-repo dev lockfile (Gemfile.local)
+/Gemfile.local.lock
