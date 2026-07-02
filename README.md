@@ -900,15 +900,15 @@ sma = SQAI.sma(prices, period: 20)
 
 The `examples/` directory contains comprehensive demonstrations of advanced features:
 
-- **`genetic_programming_example.rb`** - Evolve RSI parameters through natural selection
-- **`kbs_strategy_example.rb`** - Build rule-based trading systems with RETE
-- **`realtime_stream_example.rb`** - Process live price streams with callbacks
-- **`strategy_generator_example.rb`** - Mine profitable patterns from history
+- **`03_genetic_programming.rb`** - Evolve RSI parameters through natural selection
+- **`04_kbs_strategy.rb`** - Build rule-based trading systems with RETE
+- **`05_realtime_stream.rb`** - Process live price streams with callbacks
+- **`02_strategy_generator.rb`** - Mine profitable patterns from history
 
 Run examples:
 ```bash
-ruby examples/genetic_programming_example.rb
-ruby examples/strategy_generator_example.rb
+ruby examples/03_genetic_programming.rb
+ruby examples/02_strategy_generator.rb
 ```
 
 See `examples/README.md` for detailed documentation and integration patterns.

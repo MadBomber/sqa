@@ -92,7 +92,7 @@ puts "=" * 60
 puts
 
 multi_stream = SQA::Stream.new(
-  ticker: 'MSFT',
+  ticker: 'AMZN',
   window_size: 100,
   strategies: [
     SQA::Strategy::RSI,
@@ -123,7 +123,7 @@ puts "Simulating market data stream..."
 puts "-" * 60
 
 # Simulate streaming
-stock2 = SQA::Stock.new(ticker: 'MSFT')
+stock2 = SQA::Stock.new(ticker: 'AMZN')
 prices2 = stock2.df["adj_close_price"].to_a
 volumes2 = stock2.df["volume"].to_a
 
@@ -150,12 +150,12 @@ puts "=" * 60
 puts
 
 indicator_stream = SQA::Stream.new(
-  ticker: 'GOOGL',
+  ticker: 'F',
   window_size: 50
 )
 
 # Stream some data first
-stock3 = SQA::Stock.new(ticker: 'GOOGL')
+stock3 = SQA::Stock.new(ticker: 'F')
 stock3.df["adj_close_price"].to_a.last(50).each do |price|
   indicator_stream.update(price: price)
 end

@@ -21,26 +21,29 @@ stock = SQA::Stock.new(ticker: 'AAPL')
 puts "Loaded #{stock.df.data.height} days of price history"
 puts
 
+# Evaluate every candidate over this recent window (not the full multi-decade
+# history) so the genetic search finishes in seconds rather than minutes.
+BACKTEST_START = '2024-01-01'
+
 # Define a simple RSI-based strategy factory
 def create_rsi_strategy(period:, buy_threshold:, sell_threshold:)
   Class.new do
     define_singleton_method(:trade) do |vector|
-      return :hold unless vector.respond_to?(:prices) && vector.prices&.size >= period
+      prices = vector.respond_to?(:prices) ? vector.prices : nil
+      return :hold unless prices && prices.size > period
 
-      # Calculate RSI with evolved period
-      prices = vector.prices
-      rsi = SQAI.rsi(prices, period: period)
-      current_rsi = rsi.last
+      # RSI only needs a recent window, not the full history. Slicing keeps the
+      # backtest fast when trade() is called once per simulated day (otherwise
+      # each call re-runs RSI over the entire growing price series — O(n^2)).
+      current_rsi = SQAI.rsi(prices.last(period * 3), period: period).last
+      return :hold if current_rsi.nil? # not enough data yet (warmup)
 
       # Use evolved thresholds
-      if current_rsi < buy_threshold
-        :buy
-      elsif current_rsi > sell_threshold
-        :sell
-      else
-        :hold
+      if    current_rsi < buy_threshold  then :buy
+      elsif current_rsi > sell_threshold then :sell
+      else  :hold
       end
-    rescue => e
+    rescue StandardError => e
       puts "  Strategy error: #{e.message}"
       :hold
     end
@@ -50,8 +53,8 @@ end
 # Create genetic program
 gp = SQA::GeneticProgram.new(
   stock: stock,
-  population_size: 20,     # Small population for faster example
-  generations: 10,         # Few generations for demo
+  population_size: 10,     # Small population for a fast demo
+  generations: 5,          # Few generations for a fast demo
   mutation_rate: 0.15,
   crossover_rate: 0.7
 )
@@ -78,12 +81,15 @@ gp.fitness do |genes|
     sell_threshold: genes[:sell_threshold]
   )
 
-  # Backtest the strategy
+  # Backtest the strategy. We evaluate over a recent window (not the full
+  # multi-decade history) so the fitness function stays fast — it runs once per
+  # individual, every generation.
   backtest = SQA::Backtest.new(
     stock: stock,
     strategy: strategy,
     initial_capital: 10_000.0,
-    commission: 1.0
+    commission: 1.0,
+    start_date: BACKTEST_START
   )
 
   results = backtest.run
@@ -132,7 +138,8 @@ backtest = SQA::Backtest.new(
   stock: stock,
   strategy: best_strategy,
   initial_capital: 10_000.0,
-  commission: 1.0
+  commission: 1.0,
+  start_date: BACKTEST_START
 )
 
 results = backtest.run

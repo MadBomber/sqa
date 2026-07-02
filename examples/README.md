@@ -1,10 +1,31 @@
 # SQA Examples
 
-This directory contains comprehensive examples demonstrating advanced features of the SQA (Simple Qualitative Analysis) library.
+This directory contains comprehensive examples demonstrating the SQA (Simple Qualitative Analysis) library. They are numbered so you can work through them in order — start with `01_basic_usage.rb`, then explore the advanced features.
 
 ## Available Examples
 
-### 1. Strategy Generator (`strategy_generator_example.rb`)
+### 1. Basic Usage (`01_basic_usage.rb`)
+
+**The everyday building blocks — start here**
+
+A gentle introduction to the core API, runnable out of the box:
+
+- Setup and configuration (`SQA.init`, data directory)
+- Technical indicators (SMA, EMA, RSI) via `SQAI`
+- Portfolio management (buy / sell / value / summary)
+- Working with `SQA::DataFrame`
+- Loading real market data and running a backtest
+
+**Run it:**
+```bash
+./examples/01_basic_usage.rb
+```
+
+Sections 1–4 run fully offline; section 5 uses cached data in `~/sqa_data` (or Alpha Vantage) and skips gracefully if none is available.
+
+---
+
+### 2. Strategy Generator (`02_strategy_generator.rb`)
 
 **Reverse engineer profitable trades to discover indicator patterns**
 
@@ -18,7 +39,7 @@ This example demonstrates how to mine historical data for profitable entry point
 
 **Run it:**
 ```bash
-./examples/strategy_generator_example.rb
+./examples/02_strategy_generator.rb
 ```
 
 **Key Examples:**
@@ -38,7 +59,7 @@ This example demonstrates how to mine historical data for profitable entry point
 
 ---
 
-### 2. Genetic Programming (`genetic_programming_example.rb`)
+### 3. Genetic Programming (`03_genetic_programming.rb`)
 
 **Evolve optimal trading strategy parameters through natural selection**
 
@@ -52,7 +73,7 @@ This example shows how to use genetic algorithms to automatically find the best 
 
 **Run it:**
 ```bash
-./examples/genetic_programming_example.rb
+./examples/03_genetic_programming.rb
 ```
 
 **What it demonstrates:**
@@ -70,7 +91,7 @@ This example shows how to use genetic algorithms to automatically find the best 
 
 ---
 
-### 3. Knowledge-Based Strategy (`kbs_strategy_example.rb`)
+### 4. Knowledge-Based Strategy (`04_kbs_strategy.rb`)
 
 **Build sophisticated rule-based trading systems with RETE forward chaining**
 
@@ -84,7 +105,7 @@ This example demonstrates the knowledge-based strategy system using RETE pattern
 
 **Run it:**
 ```bash
-./examples/kbs_strategy_example.rb
+./examples/04_kbs_strategy.rb
 ```
 
 **Key Examples:**
@@ -101,7 +122,7 @@ This example demonstrates the knowledge-based strategy system using RETE pattern
 
 ---
 
-### 4. Real-Time Streaming (`realtime_stream_example.rb`)
+### 5. Real-Time Streaming (`05_realtime_stream.rb`)
 
 **Process live stock price updates and generate on-the-fly trading signals**
 
@@ -115,7 +136,7 @@ This example shows how to build real-time trading signal systems:
 
 **Run it:**
 ```bash
-./examples/realtime_stream_example.rb
+./examples/05_realtime_stream.rb
 ```
 
 **Key Examples:**
@@ -132,7 +153,7 @@ This example shows how to build real-time trading signal systems:
 
 ---
 
-### 5. FPL Analysis (`fpop_analysis_example.rb`)
+### 6. FPL Analysis (`06_fpop_analysis.rb`)
 
 **Analyze Future Period Loss/Profit to identify high-quality trading opportunities**
 
@@ -146,7 +167,7 @@ This example demonstrates how to use the FPL (Future Period Loss/Profit) analysi
 
 **Run it:**
 ```bash
-./examples/fpop_analysis_example.rb
+./examples/06_fpop_analysis.rb
 ```
 
 **Key Examples:**
@@ -164,7 +185,7 @@ This example demonstrates how to use the FPL (Future Period Loss/Profit) analysi
 
 ---
 
-### 6. Pattern Context System (`pattern_context_example.rb`)
+### 7. Pattern Context System (`07_pattern_context.rb`)
 
 **Discover context-aware trading patterns with market regime, seasonal, and sector analysis**
 
@@ -178,7 +199,7 @@ This comprehensive example demonstrates the Pattern Context system that addresse
 
 **Run it:**
 ```bash
-./examples/pattern_context_example.rb
+./examples/07_pattern_context.rb
 ```
 
 **Key Examples:**
@@ -195,6 +216,54 @@ This comprehensive example demonstrates the Pattern Context system that addresse
 - Sector-wide patterns across multiple stocks
 - Validated patterns that work out-of-sample
 - Runtime validation results
+
+---
+
+### 8. Advanced Features (`08_advanced_features.rb`)
+
+**A comprehensive tour of the advanced modules in one script**
+
+Demonstrates the higher-level analysis and trading modules together:
+
+- Risk management (VaR, CVaR, position sizing, Sharpe/Sortino)
+- Portfolio optimization (max Sharpe, min variance, risk parity)
+- Ensemble strategies (voting and rotation)
+- Multi-timeframe analysis and pattern matching
+
+**Run it:**
+```bash
+./examples/08_advanced_features.rb
+```
+
+---
+
+### 9. Dividend Quality & Risk Screener (`09_dividend_quality_screener.rb`)
+
+**Rank a portfolio of dividend stocks by quality, risk, and yield**
+
+This example screens a list of dividend-paying tickers and ranks them with a
+weighted composite score:
+
+- Quality: payout ratio, profit margin, ROE, earnings growth (from Alpha
+  Vantage's OVERVIEW endpoint)
+- Risk: beta, annualized volatility, max drawdown over a trailing 3-year
+  window (via `SQA::RiskManager`)
+- Yield: dividend yield, capped to avoid an outlier yield (often a warning
+  sign, not free money) dominating the score
+
+**Run it:**
+```bash
+./examples/09_dividend_quality_screener.rb
+./examples/09_dividend_quality_screener.rb AAPL KO JNJ   # custom tickers
+```
+
+**Output:**
+- Raw fundamentals/risk table per ticker
+- Ranked table: highest quality, lowest risk, highest yield first
+
+**Note:** debt-to-equity and free cash flow coverage aren't included — Alpha
+Vantage's OVERVIEW endpoint doesn't provide either. See `sqa-advisor`'s
+Yahoo Finance tools for a deeper balance-sheet check.
 
 ---
 

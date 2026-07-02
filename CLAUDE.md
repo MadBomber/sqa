@@ -367,14 +367,16 @@ lib/
     └── version.rb                  # Version constant
 
 examples/
-├── README.md                       # ✨ NEW: Comprehensive examples guide
-├── advanced_features_example.rb    # ✨ NEW: All advanced features demo (396 lines)
-├── fpop_analysis_example.rb        # ✨ NEW: FPL analysis utilities (191 lines)
-├── genetic_programming_example.rb  # ✨ NEW: GP parameter evolution
-├── kbs_strategy_example.rb         # ✨ NEW: RETE rule-based trading
-├── pattern_context_example.rb      # ✨ NEW: Context-aware patterns (280 lines)
-├── realtime_stream_example.rb      # ✨ NEW: Live price processing
-└── strategy_generator_example.rb   # ✨ NEW: Pattern mining
+├── README.md                       # Comprehensive examples guide
+├── 01_basic_usage.rb          # Core API intro: setup, indicators, portfolio, dataframe, backtest
+├── 02_strategy_generator.rb   # Pattern mining
+├── 03_genetic_programming.rb  # GP parameter evolution
+├── 04_kbs_strategy.rb         # RETE rule-based trading
+├── 05_realtime_stream.rb      # Live price processing
+├── 06_fpop_analysis.rb        # FPL analysis utilities (191 lines)
+├── 07_pattern_context.rb      # Context-aware patterns (280 lines)
+├── 08_advanced_features.rb    # All advanced features demo (396 lines)
+└── 09_dividend_quality_screener.rb  # Dividend quality/risk ranking demo
 
 test/
 ├── backtest_test.rb                # ✨ NEW: Backtest tests
