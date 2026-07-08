@@ -376,7 +376,9 @@ examples/
 ├── 06_fpop_analysis.rb        # FPL analysis utilities (191 lines)
 ├── 07_pattern_context.rb      # Context-aware patterns (280 lines)
 ├── 08_advanced_features.rb    # All advanced features demo (396 lines)
-└── 09_dividend_quality_screener.rb  # Dividend quality/risk ranking demo
+├── 09_dividend_quality_screener.rb  # Dividend quality/risk ranking demo
+├── fetch_yahoo_cache.rb        # Chrome-driven (ferrum) fetch helper for #9's Yahoo cache
+└── download_prices.rb          # Chrome-driven bulk/incremental daily-price CSV downloader (Yahoo)
 
 test/
 ├── backtest_test.rb                # ✨ NEW: Backtest tests

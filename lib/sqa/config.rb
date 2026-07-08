@@ -1,18 +1,21 @@
 # lib/sqa/config.rb
 
-# Configuration management for SQA with hierarchical value resolution.
+# Configuration management for SQA, built on myway_config (which extends
+# anyway_config with XDG config-file loading and bundled defaults).
+#
 # Values are resolved in this order (later overrides earlier):
-#   1. default values
-#   2. environment variables (SQA_ prefix)
-#   3. config file (YAML, TOML, or JSON)
-#   4. command line parameters
+#   1. Bundled defaults      (lib/sqa/config/defaults.yml)
+#   2. XDG user config       (~/.config/sqa/sqa.yml)
+#   3. Project config        (./config/sqa.yml)
+#   4. Environment variables (SQA_ prefix, e.g. SQA_DATA_DIR)
+#   5. Programmatic values   (SQA::Config.new(...), CLI parameters)
 #
 # @example Basic configuration
 #   SQA.init
 #   SQA.config.data_dir = "~/my_data"
 #   SQA.config.debug = true
 #
-# @example Using config file
+# @example Loading an explicit config file
 #   SQA.config.config_file = "~/.sqa.yml"
 #   SQA.config.from_file
 #
@@ -22,18 +25,27 @@
 
 require 'fileutils'
 require 'yaml'
+require 'json'
 require 'toml-rb'
+require 'myway_config'
+
+# Register myway_config's XDG and bundled-defaults loaders with anyway_config.
+MywayConfig.setup!
 
 module SQA
   # Configuration class for SQA settings.
-  # Extends Hashie::Dash for property-based configuration with coercion.
+  #
+  # Subclasses {MywayConfig::Base} so that configuration is sourced from the
+  # bundled defaults, XDG user config, project config, and environment
+  # variables automatically, while retaining the historical SQA public API
+  # (property translations, boolean coercion, file load/dump).
   #
   # @!attribute [rw] command
   #   @return [String, nil] Current command (nil, 'analysis', or 'web')
   # @!attribute [rw] config_file
-  #   @return [String, nil] Path to configuration file
+  #   @return [String, nil] Path to an explicit configuration file
   # @!attribute [rw] dump_config
-  #   @return [String, nil] Path to dump current configuration
+  #   @return [String, nil] Path to dump the current configuration
   # @!attribute [rw] data_dir
   #   @return [String] Directory for data storage (default: ~/sqa_data)
   # @!attribute [rw] portfolio_filename
@@ -51,199 +63,176 @@ module SQA
   # @!attribute [rw] lazy_update
   #   @return [Boolean] Skip API updates if cached data exists
   #
-  class Config < Hashie::Dash
-    include Hashie::Extensions::Dash::PropertyTranslation
-    include Hashie::Extensions::MethodAccess
-    include Hashie::Extensions::Coercion
+  class Config < MywayConfig::Base
+    config_name :sqa
+    env_prefix  :sqa
+    defaults_path File.expand_path('config/defaults.yml', __dir__)
 
-    # NOTE: PredefinedValues extension disabled due to compatibility issues.
-    # Log level validation is handled via the `values:` option on the property instead.
-    # include Hashie::Extensions::Dash::PredefinedValues
+    # Attributes. Defaults for these come from the bundled defaults loader
+    # (config/defaults.yml); declaring them here only defines the accessors.
+    attr_config :command,
+                :config_file,
+                :dump_config,
+                :data_dir,
+                :portfolio_filename,
+                :trades_filename,
+                :log_level,
+                :debug,
+                :verbose,
+                :plotting_library,
+                :lazy_update
 
-    property :command       # a String currently, nil, analysis or web
-    property :config_file   # a String filepath for the current config overriden by cli options
-    property :dump_config   # a String filepath into which to dump the current config
+    # Legacy/short config keys accepted for backward compatibility, mapped to
+    # their canonical attribute names. Applies to both Hash construction and
+    # values read from a config file via {#from_file}.
+    LEGACY_KEYS = {
+      portfolio: :portfolio_filename,
+      trades:    :trades_filename,
+      plot_lib:  :plotting_library,
+      lazy:      :lazy_update
+    }.freeze
 
-    property :data_dir,     default: Nenv.home + "/sqa_data"
-
-    # Relative filenames are resolved against data_dir; absolute paths used as-is
-    property :portfolio_filename, from: :portfolio, default: "portfolio.csv"
-    property :trades_filename,    from: :trades,    default: "trades.csv"
-
-    property :log_level,    default: :info,  coerce: Symbol, values: %i[debug info warn error fatal]
-
-    # Boolean coercion handled via coerce_key blocks below (no Boolean class in Ruby)
-    property :debug,        default: false
-    property :verbose,      default: false
-
-    # Plotting library - gruff is default; svggraph support could be added in future
-    property :plotting_library, from: :plot_lib,  default: :gruff, coerce: Symbol
-    property :lazy_update,      from: :lazy,      default: false
-
-    coerce_key :debug, lambda { |v|
-      case v
-      when String
-        !(v =~ /\A(true|t|yes|y|1)\z/i).nil?
-      when Numeric
-        !v.to_i.zero?
-      else
-        v == true
+    # Coerces "truthy" strings/numbers to real booleans (env vars and file
+    # values arrive as strings). Mirrors the historical SQA coercion rules.
+    BOOLEAN_COERCION = lambda do |value|
+      case value
+      when String  then !(value =~ /\A(true|t|yes|y|1)\z/i).nil?
+      when Numeric then !value.to_i.zero?
+      else value == true
       end
-    }
+    end
 
-    coerce_key :verbose, lambda { |v|
-      case v
-      when String
-        !(v =~ /\A(true|t|yes|y|1)\z/i).nil?
-      when Numeric
-        !v.to_i.zero?
-      else
-        v == true
-      end
-    }
+    # Coerces strings to symbols, leaving symbols (and nil) untouched.
+    SYMBOL_COERCION = ->(value) { value.is_a?(String) ? value.to_sym : value }
 
-    coerce_key :log_level, lambda { |v|
-      v.is_a?(String) ? v.to_sym : v
-    }
+    # Expands a leading ~ to the user's home directory.
+    HOME_COERCION = ->(value) { value.is_a?(String) ? value.gsub(/^~/, Nenv.home) : value }
 
-    coerce_key :plotting_library, lambda { |v|
-      v.is_a?(String) ? v.to_sym : v
-    }
+    coerce_types(
+      debug:            BOOLEAN_COERCION,
+      verbose:          BOOLEAN_COERCION,
+      log_level:        SYMBOL_COERCION,
+      plotting_library: SYMBOL_COERCION,
+      data_dir:         HOME_COERCION
+    )
 
     ########################################################
 
-    # Creates a new Config instance with optional initial values.
-    # Automatically applies environment variable overrides.
+    # Creates a new Config instance.
     #
-    # @param a_hash [Hash] Initial configuration values
-    def initialize(a_hash = {})
+    # @param source [nil, String, Pathname, Hash] configuration source
+    #   - nil: bundled defaults + XDG/project/env overrides
+    #   - String/Pathname: path to a YAML config file
+    #   - Hash: programmatic overrides (legacy keys are translated)
+    def initialize(source = nil)
+      source = translate_keys(source) if source.is_a?(Hash)
       super
-      override_with_envars
     end
 
     # Returns whether debug mode is enabled.
     # @return [Boolean] true if debug mode is on
-    def debug?    = debug
+    def debug?    = !!debug
 
     # Returns whether verbose mode is enabled.
     # @return [Boolean] true if verbose mode is on
-    def verbose?  = verbose
+    def verbose?  = !!verbose
 
     ########################################################
 
-    # Loads configuration from a file.
-    # Supports YAML (.yml, .yaml), TOML (.toml), and JSON (.json) formats.
+    # Loads configuration from the file named by {#config_file}.
+    # Supports YAML (.yml, .yaml), TOML (.toml), and JSON (.json).
     #
     # @return [void]
-    # @raise [BadParameterError] If config file is invalid or unsupported format
+    # @raise [BadParameterError] If the config file is missing or unsupported
     def from_file
       return if config_file.nil?
 
-      type = if  File.exist?(config_file) &&
-                 File.file?(config_file) &&
-                 File.readable?(config_file)
-               File.extname(config_file).downcase
-             else
-               "invalid"
-             end
+      incoming =
+        case readable_extension
+        when '.json'         then from_json
+        when '.yml', '.yaml' then from_yaml
+        when '.toml'         then from_toml
+        else raise BadParameterError, "Invalid Config File: #{config_file}"
+        end
 
-      # Config file format detection (YAML is most common)
-      if type == ".json"
-        incoming = form_json
-
-      elsif %w[.yml .yaml].include?(type)
-        incoming = from_yaml
-
-      elsif type == ".toml"
-        incoming = from_toml
-
-      else
-        raise BadParameterError, "Invalid Config File: #{config_file}"
-      end
-
-      if incoming.key?(:data_dir)
-        incoming[:data_dir] = incoming[:data_dir].gsub(/^~/, Nenv.home)
-      end
-
-      merge! incoming
+      apply_incoming(incoming)
     end
 
-    # Writes current configuration to a file.
-    # Format is determined by file extension.
+    # Writes the current configuration to the file named by {#config_file}.
+    # Format is determined by the file extension.
     #
     # @return [void]
-    # @raise [BadParameterError] If config file is not set or unsupported format
+    # @raise [BadParameterError] If no config file is set or the type is unsupported
     def dump_file
-      if config_file.nil?
-        raise BadParameterError, "No config file given"
-      end
+      raise BadParameterError, "No config file given" if config_file.nil?
 
       FileUtils.touch(config_file)
-      # unless  File.exist?(config_file)
 
-      type = File.extname(config_file).downcase
-
-      if type == ".json"
-        dump_json
-
-      elsif %w[.yml .yaml].include?(type)
-        dump_yaml
-
-      elsif type == ".toml"
-        dump_toml
-
-      else
-        raise BadParameterError, "Invalid Config File Type: #{config_file}"
+      case File.extname(config_file).downcase
+      when '.json'         then File.write(config_file, JSON.pretty_generate(as_hash))
+      when '.yml', '.yaml' then File.write(config_file, as_hash.to_yaml)
+      when '.toml'         then File.write(config_file, TomlRB.dump(as_hash))
+      else raise BadParameterError, "Invalid Config File Type: #{config_file}"
       end
     end
 
-    # Injects additional properties from plugins.
-    # Allows external code to register new configuration options.
+    # Injects additional properties registered by plugins.
     #
     # @return [void]
     def inject_additional_properties
-      SQA::PluginManager.registered_properties.each do |prop, options|
-        self.class.property(prop, options)
+      return unless defined?(SQA::PluginManager)
+
+      SQA::PluginManager.registered_properties.each_key do |prop|
+        self.class.attr_config(prop) unless respond_to?(prop)
       end
     end
 
     ########################################################
     private
 
-    def override_with_envars(prefix = "SQA_")
-      keys.each do |key|
-        envar = ENV.fetch("#{prefix}#{key.to_s.upcase}", nil)
-        send("#{key}=", envar) unless envar.nil?
+    # Translates legacy/short keys to canonical attribute names.
+    #
+    # @param hash [Hash] incoming key/value pairs
+    # @return [Hash] hash with canonical, symbolized keys
+    def translate_keys(hash)
+      hash.each_with_object({}) do |(key, value), translated|
+        sym = key.to_sym
+        translated[LEGACY_KEYS.fetch(sym, sym)] = value
       end
     end
 
-    #####################################
-    ## override values from a config file
+    # Applies a hash read from a config file to this instance, translating
+    # legacy keys and expanding a leading ~ in data_dir.
+    #
+    # @param incoming [Hash] values loaded from the config file
+    # @return [void]
+    def apply_incoming(incoming)
+      incoming = translate_keys(incoming)
+      incoming[:data_dir] = HOME_COERCION.call(incoming[:data_dir]) if incoming.key?(:data_dir)
 
-    def from_json
-      ::JSON.parse(File.read(config_file)).symbolize_keys
+      incoming.each do |key, value|
+        writer = "#{key}="
+        public_send(writer, value) if respond_to?(writer)
+      end
     end
 
-    def from_toml
-      TomlRB.load_file(config_file).symbolize_keys
+    # @return [String] the downcased extension if config_file is readable, else "invalid"
+    def readable_extension
+      readable = File.exist?(config_file) && File.file?(config_file) && File.readable?(config_file)
+      readable ? File.extname(config_file).downcase : 'invalid'
     end
 
-    def from_yaml
-      ::YAML.load_file(config_file).symbolize_keys
-    end
+    def from_json = ::JSON.parse(File.read(config_file)).transform_keys(&:to_sym)
+    def from_toml = TomlRB.load_file(config_file).transform_keys(&:to_sym)
+    def from_yaml = ::YAML.load_file(config_file).transform_keys(&:to_sym)
 
-    #####################################
-    ## dump values to a config file
-
-    def as_hash   = to_h.except(:config_file)
-    def dump_json = File.write(config_file, JSON.pretty_generate(as_hash))
-    def dump_toml = File.write(config_file, TomlRB.dump(as_hash))
-    def dump_yaml = File.write(config_file, as_hash.to_yaml)
+    # @return [Hash] current values suitable for dumping (config_file excluded)
+    def as_hash = to_h.reject { |key, _| key.to_sym == :config_file }
 
     #####################################
     class << self
-      # Resets the configuration to default values.
-      # Creates a new Config instance and assigns it to SQA.config.
+      # Resets the configuration to freshly-loaded values and assigns it to
+      # SQA.config.
       #
       # @return [SQA::Config] The new config instance
       def reset
@@ -261,8 +250,8 @@ module SQA
   end
 end
 
-# Auto-initialization with deprecation warning
-# This will be removed in v1.0.0 - applications should call SQA.init explicitly
+# Auto-initialization with deprecation warning.
+# This will be removed in v1.0.0 - applications should call SQA.init explicitly.
 unless SQA::Config.initialized?
   if $VERBOSE
     warn "[SQA DEPRECATION] Auto-initialization at require time will be removed in v1.0. " \

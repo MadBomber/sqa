@@ -46,6 +46,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'kbs'
   spec.add_dependency 'lite-statistics'
   spec.add_dependency 'logger'  # Required for Ruby 3.5+; hashie requires 'logger' internally
+  spec.add_dependency 'myway_config'  # XDG-aware configuration management (extends anyway_config)
   spec.add_dependency 'nenv'
   spec.add_dependency 'ostruct'  # Required for Ruby 3.5+; used by Strategy/Backtest/Stream vectors
   spec.add_dependency 'redis'  # Required for KBS blackboard persistence

@@ -16,6 +16,42 @@ class SQA::Strategy
       end
     end
 
+    # Shared trend-following logic for moving-average strategies (SMA/EMA).
+    #
+    # Accepts two vector shapes via +raw+ (the strategy's indicator value read
+    # off the vector):
+    #   * legacy pre-classified hash: { trend: :up | :down }
+    #   * numeric latest value or full series; otherwise the moving average is
+    #     computed from +prices+ via the given block. Price above its moving
+    #     average is an uptrend (buy); below is a downtrend (sell).
+    #
+    # @param raw [Hash, Numeric, Array, nil] indicator value off the vector
+    # @param prices [Array<Numeric>, nil] price history
+    # @param period [Integer] moving-average period
+    # @yieldparam prices [Array<Numeric>] price history
+    # @yieldparam period [Integer] moving-average period
+    # @yieldreturn [Array<Numeric>] the moving-average series
+    # @return [Symbol] :buy, :sell, or :hold
+    def moving_average_trade(raw, prices, period)
+      if raw.is_a?(Hash)
+        return :buy  if raw[:trend] == :up
+        return :sell if raw[:trend] == :down
+
+        return :hold
+      end
+
+      return :hold unless prices && prices.size >= period
+
+      average = latest(raw) || latest(yield(prices, period))
+      price   = prices.last
+      return :hold if average.nil? || price.nil?
+
+      if    price > average then :buy
+      elsif price < average then :sell
+      else  :hold
+      end
+    end
+
     def trade_against(vector)
       return :hold unless respond_to? :trade
 

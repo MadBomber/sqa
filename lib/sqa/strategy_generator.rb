@@ -980,9 +980,12 @@ module SQA
         subset_df_data[col] = @stock.df[col].to_a[start_idx...end_idx]
       end
 
-      # Create new stock object with subset
+      # Create new stock object with subset. Stock#ticker delegates to
+      # @data (see def_delegators in stock.rb), so @data must be set here --
+      # a raw @ticker ivar is never read and left @data nil, which raised
+      # NoMethodError on every #ticker call against this subset.
       temp_stock = SQA::Stock.allocate
-      temp_stock.instance_variable_set(:@ticker, @stock.ticker)
+      temp_stock.instance_variable_set(:@data, SQA::DataFrame::Data.new(ticker: @stock.ticker, source: @stock.source))
       temp_stock.instance_variable_set(:@df, SQA::DataFrame.new(subset_df_data))
 
       temp_stock

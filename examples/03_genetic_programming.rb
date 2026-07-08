@@ -6,6 +6,7 @@
 # This example shows how to use SQA::GeneticProgram to automatically
 # find optimal parameters for a trading strategy through evolution.
 
+require_relative 'local_libs'
 require 'sqa'
 
 SQA.init
@@ -114,14 +115,15 @@ puts "Best Parameters Found:"
 puts "  RSI Period: #{best.genes[:period]}"
 puts "  Buy Threshold: #{best.genes[:buy_threshold]}"
 puts "  Sell Threshold: #{best.genes[:sell_threshold]}"
-puts "  Fitness (Total Return): #{best.fitness.round(2)}%"
+puts "  Fitness (Total Return): #{(best.fitness * 100).round(2)}%"
 puts
 
 # Show evolution history
 puts "Evolution History:"
 puts "-" * 60
 gp.history.each do |gen|
-  puts "Generation #{gen[:generation]}: Best=#{gen[:best_fitness].round(2)}%, Avg=#{gen[:avg_fitness].round(2)}%"
+  puts "Generation #{gen[:generation]}: " \
+       "Best=#{(gen[:best_fitness] * 100).round(2)}%, Avg=#{(gen[:avg_fitness] * 100).round(2)}%"
 end
 puts
 
@@ -145,10 +147,10 @@ backtest = SQA::Backtest.new(
 results = backtest.run
 
 puts "Backtest Results:"
-puts "  Total Return: #{results.total_return.round(2)}%"
+puts "  Total Return: #{(results.total_return * 100).round(2)}%"
 puts "  Sharpe Ratio: #{results.sharpe_ratio.round(2)}"
-puts "  Max Drawdown: #{results.max_drawdown.round(2)}%"
-puts "  Win Rate: #{results.win_rate.round(2)}%"
+puts "  Max Drawdown: #{(results.max_drawdown * 100).round(2)}%"
+puts "  Win Rate: #{(results.win_rate * 100).round(2)}%"
 puts "  Total Trades: #{results.total_trades}"
 puts
 

@@ -1,0 +1,33 @@
+# lib/sqa/config/defaults.yml
+#
+# Bundled configuration defaults for SQA (Simple Qualitative Analysis).
+#
+# This file is the single source of truth for SQA's configuration schema and
+# default values. It is loaded by myway_config's DefaultsLoader at the lowest
+# priority, then overlaid (lowest to highest) by:
+#
+#   1. Bundled defaults (this file)
+#   2. XDG user config       (~/.config/sqa/sqa.yml)
+#   3. Project config        (./config/sqa.yml)
+#   4. Environment variables (SQA_* prefix)
+#   5. Programmatic override  (SQA::Config.new(...))
+#
+# The `development`, `test`, and `production` sections are required by
+# myway_config for environment validation. They are intentionally empty here;
+# add per-environment overrides under them as the need arises.
+---
+defaults:
+  data_dir: ~/sqa_data
+  portfolio_filename: portfolio.csv
+  trades_filename: trades.csv
+  log_level: :info
+  debug: false
+  verbose: false
+  plotting_library: :gruff
+  lazy_update: false
+
+development:
+
+test:
+
+production:

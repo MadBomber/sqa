@@ -244,12 +244,45 @@ Demonstrates the higher-level analysis and trading modules together:
 This example screens a list of dividend-paying tickers and ranks them with a
 weighted composite score:
 
-- Quality: payout ratio, profit margin, ROE, earnings growth (from Alpha
-  Vantage's OVERVIEW endpoint)
-- Risk: beta, annualized volatility, max drawdown over a trailing 3-year
-  window (via `SQA::RiskManager`)
+- Quality: payout ratio, profit margin, ROE, earnings growth
+- Risk: debt-to-equity, beta, annualized volatility, max drawdown over a
+  trailing 3-year window (via `SQA::RiskManager`)
 - Yield: dividend yield, capped to avoid an outlier yield (often a warning
   sign, not free money) dominating the score
+
+Data comes directly from Yahoo Finance's unofficial `quoteSummary`/`chart`
+JSON APIs (self-contained `YahooFinanceClient` module in the script, not
+`SQA::Stock`) rather than Alpha Vantage — no API key, no official daily
+quota, and it includes debt-to-equity, which Alpha Vantage's OVERVIEW
+endpoint doesn't provide at all. The tradeoff: it's an unauthenticated
+scrape of Yahoo's internal API via a curl-based cookie/crumb handshake, so
+it can break if Yahoo changes their site, and Yahoo does its own IP-based
+rate limiting on the crumb endpoint (429 Too Many Requests) if hit too
+often. Set `YF_COOKIE` / `YF_CRUMB` env vars (from a real browser session)
+to bypass the handshake if you hit that.
+
+If curl's network path gets IP-rate-limited independently of a browser's
+(this happens — a browser session can succeed with a 200 on `getcrumb`
+while `curl` from the same machine gets 429), use the companion script
+**`fetch_yahoo_cache.rb`** instead: it drives an actual headless Chrome
+(via the `ferrum` gem) to do the fetch, since Yahoo's rate limiting is
+apparently tied to network path rather than just source IP, and a real
+browser session can succeed where `curl` gets blocked. It writes
+`{"summary": ..., "chart": ...}` JSON per ticker into
+`examples/.yahoo_cache/<ticker-lowercase>.json`. `09_dividend_quality_screener.rb`
+checks that cache before making any network call of its own, and skips the
+cookie/crumb handshake entirely if every requested ticker is already
+cached.
+
+```bash
+gem install ferrum   # if not already installed
+ruby examples/fetch_yahoo_cache.rb F T PFE XOM ET VZ CVX AGNC NLY PSEC
+```
+
+Run with plain `ruby`, not `bundle exec ruby` — `ferrum` is intentionally
+not a `sqa` gemspec dependency (it's a one-off workaround for this single
+utility script, not something the core library needs), so install it into
+your system/rbenv gemset directly.
 
 **Run it:**
 ```bash
@@ -261,9 +294,41 @@ weighted composite score:
 - Raw fundamentals/risk table per ticker
 - Ranked table: highest quality, lowest risk, highest yield first
 
-**Note:** debt-to-equity and free cash flow coverage aren't included — Alpha
-Vantage's OVERVIEW endpoint doesn't provide either. See `sqa-advisor`'s
-Yahoo Finance tools for a deeper balance-sheet check.
+---
+
+## Utility Scripts (not numbered walkthroughs)
+
+### `download_prices.rb` — bulk / incremental daily-price CSV downloader
+
+Downloads daily (`1d`) historical price CSVs for a list of ticker symbols,
+with incremental updates:
+
+- No CSV yet for a symbol → downloads its **maximum** available history.
+- CSV already exists → reads the last date in the file and downloads only
+  the rows **after** that date through today, appending them (deduped).
+
+```bash
+gem install ferrum   # if not already installed
+ruby examples/download_prices.rb AAPL MSFT KO         # into the current dir
+ruby examples/download_prices.rb --dir ~/prices AAPL  # into a chosen dir
+ruby examples/download_prices.rb --headful AAPL       # watch the browser
+```
+
+Output CSVs are oldest-first (ascending), ISO dates, columns
+`Date,Open,High,Low,Close,Adj Close,Volume`.
+
+Notes:
+- **Source is Yahoo Finance's chart API directly** (`sqa`'s own
+  `SQA::DataFrame::YahooFinance` source), *not* stockquote.io — that site's
+  `robots.txt` explicitly disallows its `/download_csv` backend to automated
+  agents, and it's just a Yahoo frontend anyway, so this goes to the real
+  source, which carries no such directive.
+- Uses a real headless Chrome (via `ferrum`) because Yahoo rate-limits its
+  API by network path — plain `curl`/`Net::HTTP` gets 429 where a browser
+  gets 200. Run with plain `ruby`, not `bundle exec` (`ferrum` is not a
+  `sqa` gemspec dependency).
+- Yahoo's timestamp API floors at the Unix epoch, so "maximum" history
+  starts no earlier than **1970-01-02** even for older securities.
 
 ---
 

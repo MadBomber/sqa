@@ -146,7 +146,9 @@ module SQA
         best_genes: current_best.genes.dup
       }
 
-      puts "Generation #{@generation}: Best=#{current_best.fitness.round(2)}%, Avg=#{avg_fitness.round(2)}%"
+      # Fitness is whatever the caller's block returns (a return fraction, a
+      # Sharpe ratio, etc.) -- units are the caller's to know, so no "%" here.
+      puts "Generation #{@generation}: Best=#{current_best.fitness.round(4)}, Avg=#{avg_fitness.round(4)}"
     end
 
     # Update @best_individual if the current population's best beats it.

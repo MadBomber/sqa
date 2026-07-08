@@ -17,25 +17,9 @@ class SQA::Strategy::SMA
   #     SMA is computed from vector.prices. Price above its SMA is an uptrend
   #     (buy); below is a downtrend (sell).
   def self.trade(vector)
-    raw = vector.respond_to?(:sma) ? vector.sma : nil
-
-    if raw.is_a?(Hash)
-      return :buy  if raw[:trend] == :up
-      return :sell if raw[:trend] == :down
-
-      return :hold
-    end
-
+    raw    = vector.respond_to?(:sma) ? vector.sma : nil
     prices = vector.respond_to?(:prices) ? vector.prices : nil
-    return :hold unless prices && prices.size >= PERIOD
 
-    sma   = latest(raw) || latest(SQAI.sma(prices, period: PERIOD))
-    price = prices.last
-    return :hold if sma.nil? || price.nil?
-
-    if    price > sma then :buy
-    elsif price < sma then :sell
-    else  :hold
-    end
+    moving_average_trade(raw, prices, PERIOD) { |p, period| SQAI.sma(p, period: period) }
   end
 end

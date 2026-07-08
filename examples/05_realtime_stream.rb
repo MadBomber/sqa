@@ -6,6 +6,7 @@
 # This example shows how to use SQA::Stream to process live stock
 # price updates and generate trading signals in real-time.
 
+require_relative 'local_libs'
 require 'sqa'
 
 SQA.init

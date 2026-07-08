@@ -17,6 +17,7 @@
 #
 # This system helps identify WHEN and WHERE patterns are valid.
 
+require_relative 'local_libs'
 require 'sqa'
 
 SQA.init
@@ -85,46 +86,57 @@ if ENV['RUN_INTEGRATION_TESTS']
   puts "=" * 80
   puts
 
-  analyzer = SQA::SectorAnalyzer.new
+  # Sector analysis needs fresh data for every stock in the sector. AAPL is
+  # cached locally, but MSFT/GOOGL may not be -- and a first-time fetch for
+  # them can fail (rate limit, network, missing key) even when AAPL-only
+  # examples above succeeded. Skip this example rather than crash the rest
+  # of the script, which doesn't depend on tech_stocks/sector_regime.
+  begin
+    analyzer = SQA::SectorAnalyzer.new
 
-  # Add technology stocks
-  tech_stocks = ['AAPL', 'MSFT', 'GOOGL'].map { |t| SQA::Stock.new(ticker: t) }
-  tech_stocks.each { |s| analyzer.add_stock(s, sector: :technology) }
+    # Add technology stocks
+    tech_stocks = ['AAPL', 'MSFT', 'GOOGL'].map { |t| SQA::Stock.new(ticker: t) }
+    tech_stocks.each { |s| analyzer.add_stock(s, sector: :technology) }
 
-  puts "Analyzing Technology sector (#{tech_stocks.size} stocks)"
-  puts
+    puts "Analyzing Technology sector (#{tech_stocks.size} stocks)"
+    puts
 
-  # Detect sector regime
-  sector_regime = analyzer.detect_sector_regime(:technology, tech_stocks)
-  puts "Technology Sector Regime:"
-  puts "  Consensus: #{sector_regime[:consensus_regime]}"
-  puts "  Sector strength: #{sector_regime[:sector_strength]}% bullish"
-  puts
+    # Detect sector regime
+    sector_regime = analyzer.detect_sector_regime(:technology, tech_stocks)
+    puts "Technology Sector Regime:"
+    puts "  Consensus: #{sector_regime[:consensus_regime]}"
+    puts "  Sector strength: #{sector_regime[:sector_strength]}% bullish"
+    puts
 
-  # Discover sector-wide patterns
-  puts "Discovering sector-wide patterns..."
-  sector_patterns = analyzer.discover_sector_patterns(
-    :technology,
-    tech_stocks,
-    min_gain_percent: 8.0,
-    fpop: 10,
-    max_fpl_risk: 20.0
-  )
+    # Discover sector-wide patterns
+    puts "Discovering sector-wide patterns..."
+    sector_patterns = analyzer.discover_sector_patterns(
+      :technology,
+      tech_stocks,
+      min_gain_percent: 8.0,
+      fpop: 10,
+      max_fpl_risk: 20.0
+    )
 
-  if sector_patterns.any?
-    puts "\nSector-Wide Patterns Found: #{sector_patterns.size}"
-    sector_patterns.first(3).each_with_index do |sp, i|
-      puts "\n  Pattern #{i + 1}:"
-      puts "    Stocks: #{sp[:stocks].join(', ')}"
-      puts "    Avg Frequency: #{sp[:avg_frequency].round(1)}"
-      puts "    Avg Gain: #{sp[:avg_gain].round(2)}%"
-      puts "    Conditions: #{sp[:conditions]}"
+    if sector_patterns.any?
+      puts "\nSector-Wide Patterns Found: #{sector_patterns.size}"
+      sector_patterns.first(3).each_with_index do |sp, i|
+        puts "\n  Pattern #{i + 1}:"
+        puts "    Stocks: #{sp[:stocks].join(', ')}"
+        puts "    Avg Frequency: #{sp[:avg_frequency].round(1)}"
+        puts "    Avg Gain: #{sp[:avg_gain].round(2)}%"
+        puts "    Conditions: #{sp[:conditions]}"
+      end
     end
+    puts
+
+    # Print sector summary
+    analyzer.print_sector_summary(:technology)
+  rescue StandardError => e
+    puts "Skipping sector analysis: could not load one or more sector tickers " \
+         "(#{e.class}: #{e.message})"
   end
   puts
-
-  # Print sector summary
-  analyzer.print_sector_summary(:technology)
 
   # Example 4: Context-Aware Pattern Discovery
   puts "\n" + "=" * 80

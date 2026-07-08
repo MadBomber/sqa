@@ -24,10 +24,11 @@
 # NOTE: SQA is an educational tool for learning technical analysis, NOT
 # production trading software. Do not make real financial decisions with it.
 
-# Use THIS checkout's lib/ so the example always runs against the local source,
-# even when launched directly (./examples/01_basic_usage.rb) rather than through
-# `bundle exec`. Otherwise `require 'sqa'` could load a stale installed sqa gem.
-$LOAD_PATH.unshift(File.expand_path('../lib', __dir__))
+# Use THIS checkout's lib/ (and the local sqa-tai) so the example always runs
+# against the local source, even when launched directly
+# (./examples/01_basic_usage.rb) rather than through `bundle exec`. Otherwise
+# `require 'sqa'` could load a stale installed sqa gem.
+require_relative 'local_libs'
 require 'sqa'
 
 # ---------------------------------------------------------------------------

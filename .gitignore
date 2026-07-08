@@ -15,3 +15,6 @@ temp.*
 
 # Local cross-repo dev lockfile (Gemfile.local)
 /Gemfile.local.lock
+
+# Optional local Yahoo Finance data cache for examples/09_dividend_quality_screener.rb
+/examples/.yahoo_cache/

@@ -4,11 +4,27 @@ require_relative 'test_helper'
 require 'tempfile'
 
 class ConfigTest < Minitest::Test
+  # Loaders that read external state (developer XDG config, project YAML, ejson,
+  # and SQA_* environment variables). These are disabled for the duration of
+  # each config test so assertions see the bundled defaults plus explicit
+  # overrides only, then restored in teardown so the rest of the suite keeps
+  # its environment-provided configuration (e.g. SQA_DATA_DIR).
+  EXTERNAL_LOADERS = %i[xdg yml ejson env].freeze
+
   def setup
+    @saved_loaders = Anyway.loaders.registry.dup
+    EXTERNAL_LOADERS.each do |name|
+      Anyway.loaders.delete(name) if Anyway.loaders.keys.include?(name)
+    end
     @config = SQA::Config.new
   end
 
   def teardown
+    # Restore any loaders removed in setup, preserving their original order.
+    current = Anyway.loaders.keys
+    @saved_loaders.each do |name, klass|
+      Anyway.loaders.append(name, klass) unless current.include?(name)
+    end
     # Reset to default config after each test
     SQA::Config.reset
   end
@@ -181,8 +197,6 @@ class ConfigTest < Minitest::Test
   end
 
   def test_yaml_config_file_loading
-    skip "Config file loading requires write access to temp directory"
-
     Tempfile.create(['config', '.yml']) do |f|
       f.write({ data_dir: "/yaml/test/path", debug: true }.to_yaml)
       f.rewind
@@ -196,8 +210,6 @@ class ConfigTest < Minitest::Test
   end
 
   def test_json_config_file_loading
-    skip "Config file loading requires write access to temp directory"
-
     Tempfile.create(['config', '.json']) do |f|
       f.write({ data_dir: "/json/test/path", verbose: true }.to_json)
       f.rewind
@@ -211,8 +223,6 @@ class ConfigTest < Minitest::Test
   end
 
   def test_toml_config_file_loading
-    skip "Config file loading requires write access to temp directory"
-
     Tempfile.create(['config', '.toml']) do |f|
       f.write(TomlRB.dump({ data_dir: "/toml/test/path", debug: true }))
       f.rewind
@@ -240,8 +250,6 @@ class ConfigTest < Minitest::Test
   end
 
   def test_tilde_expansion_in_data_dir
-    skip "Config file loading requires write access to temp directory"
-
     Tempfile.create(['config', '.yml']) do |f|
       f.write({ data_dir: "~/custom_data" }.to_yaml)
       f.rewind

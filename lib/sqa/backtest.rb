@@ -69,7 +69,7 @@ class SQA::Backtest
         - Win Rate: #{(win_rate * 100).round(2)}%
         - Average Win: $#{average_win.round(2)}
         - Average Loss: $#{average_loss.round(2)}
-        - Profit Factor: #{profit_factor.round(2)}
+        - Profit Factor: #{profit_factor.infinite? ? '∞' : profit_factor.round(2)}
       SUMMARY
     end
   end
@@ -386,6 +386,11 @@ class SQA::Backtest
 
     total_wins = winning.sum
     total_losses = losing.sum.abs
-    @results.profit_factor = total_losses.positive? ? total_wins / total_losses : 0.0
+    @results.profit_factor =
+      if total_losses.positive?
+        total_wins / total_losses
+      else
+        total_wins.positive? ? Float::INFINITY : 0.0
+      end
   end
 end

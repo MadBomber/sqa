@@ -9,6 +9,7 @@
 ##  By:   Dewayne VanHoozer (dvanhoozer@gmail.com)
 #
 
+require_relative 'local_libs'
 require 'sqa'
 require 'ostruct'
 

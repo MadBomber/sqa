@@ -13,6 +13,7 @@
 # FPOP (Future Period of Performance): The number of days to look ahead
 # from an inflection point to measure if price change exceeds threshold.
 
+require_relative 'local_libs'
 require 'sqa'
 
 SQA.init
@@ -77,10 +78,10 @@ if patterns.any?
     results = backtest.run
 
     puts "Backtest Results:"
-    puts "  Total Return: #{results.total_return.round(2)}%"
+    puts "  Total Return: #{(results.total_return * 100).round(2)}%"
     puts "  Sharpe Ratio: #{results.sharpe_ratio.round(2)}"
-    puts "  Max Drawdown: #{results.max_drawdown.round(2)}%"
-    puts "  Win Rate: #{results.win_rate.round(2)}%"
+    puts "  Max Drawdown: #{(results.max_drawdown * 100).round(2)}%"
+    puts "  Win Rate: #{(results.win_rate * 100).round(2)}%"
     puts "  Total Trades: #{results.total_trades}"
     puts
   end
@@ -217,10 +218,10 @@ if patterns.size >= 3
 
     comparison << {
       name: "Discovered ##{i + 1}",
-      return: results.total_return,
+      return: results.total_return * 100,
       sharpe: results.sharpe_ratio,
-      drawdown: results.max_drawdown,
-      win_rate: results.win_rate,
+      drawdown: results.max_drawdown * 100,
+      win_rate: results.win_rate * 100,
       trades: results.total_trades
     }
   end
@@ -244,10 +245,10 @@ if patterns.size >= 3
 
     comparison << {
       name: strat[:name],
-      return: results.total_return,
+      return: results.total_return * 100,
       sharpe: results.sharpe_ratio,
-      drawdown: results.max_drawdown,
-      win_rate: results.win_rate,
+      drawdown: results.max_drawdown * 100,
+      win_rate: results.win_rate * 100,
       trades: results.total_trades
     }
   end
@@ -316,10 +317,10 @@ if aggressive_patterns.any?
   results = backtest.run
 
   puts "Results:"
-  puts "  Total Return: #{results.total_return.round(2)}%"
+  puts "  Total Return: #{(results.total_return * 100).round(2)}%"
   puts "  Sharpe Ratio: #{results.sharpe_ratio.round(2)}"
-  puts "  Max Drawdown: #{results.max_drawdown.round(2)}%"
-  puts "  Win Rate: #{results.win_rate.round(2)}%"
+  puts "  Max Drawdown: #{(results.max_drawdown * 100).round(2)}%"
+  puts "  Win Rate: #{(results.win_rate * 100).round(2)}%"
   puts "  Total Trades: #{results.total_trades}"
   puts
   puts "⚠️  Note: High gain patterns often have lower frequency and higher risk"

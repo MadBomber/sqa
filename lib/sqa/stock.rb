@@ -148,6 +148,33 @@ class SQA::Stock
     warn "Warning: Could not fetch overview data for #{@ticker} (#{e.class}: #{e.message}). Continuing without it."
   end
 
+  # Enriches the stock's overview with company fundamentals from Financial
+  # Modeling Prep (FMP): executives and dividend history that Alpha Vantage's
+  # OVERVIEW doesn't provide, plus name / sector / industry / P/E / market cap.
+  #
+  # FMP values are merged into (and take precedence in) the existing overview
+  # Hash, so this composes with whatever Alpha Vantage already populated.
+  # Requires FMP_API_KEY in the environment.
+  #
+  # @param include_executives [Boolean] fetch the executives list (1 API call)
+  # @param include_dividends [Boolean] fetch dividend history (1 API call)
+  # @return [Hash] The merged overview
+  #
+  # @example
+  #   stock = SQA::Stock.new(ticker: 'AAPL')
+  #   stock.merge_fmp_overview
+  #   stock.overview['ceo']          # => "Mr. Timothy D. Cook"
+  #   stock.overview['sector']       # => "Technology"
+  #   stock.overview['executives']   # => [{ "name" => ..., "title" => ... }, ...]
+  #   stock.overview['dividends']    # => [{ "date" => ..., "dividend" => ... }, ...]
+  #
+  def merge_fmp_overview(include_executives: true, include_dividends: true)
+    fmp = SQA::FMP.overview(@ticker,
+                            include_executives: include_executives,
+                            include_dividends:  include_dividends)
+    @data.overview = (@data.overview || {}).merge(fmp)
+  end
+
   # Persists the stock's metadata to a JSON file.
   #
   # @return [Integer] Number of bytes written

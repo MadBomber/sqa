@@ -82,6 +82,26 @@ module SQA
       av_api_key
     end
 
+    # Returns the Financial Modeling Prep (FMP) API key.
+    # Reads from the FMP_API_KEY environment variable (env-only, like the
+    # Alpha Vantage key). Used by SQA::FMP for company fundamentals.
+    #
+    # @return [String] The FMP API key
+    # @raise [SQA::ConfigurationError] If no API key is set
+    def fmp_api_key
+      @fmp_api_key ||= ENV.fetch('FMP_API_KEY', nil)
+      @fmp_api_key || raise(SQA::ConfigurationError,
+                            'FMP API key not set. Set FMP_API_KEY environment variable.')
+    end
+
+    # Sets the Financial Modeling Prep API key.
+    #
+    # @param key [String] The API key to set
+    # @return [String] The key that was set
+    def fmp_api_key=(key)
+      @fmp_api_key = key
+    end
+
     # Returns whether debug mode is enabled.
     # @return [Boolean] true if debug mode is on
     def debug? 						= @config&.debug?
