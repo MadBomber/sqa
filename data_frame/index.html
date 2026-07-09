@@ -25,7 +25,7 @@
       
       
       <link rel="icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.0">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
     
     
       
@@ -33,7 +33,7 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.618322db.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.484c7ddc.min.css">
       
         
         <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
@@ -1090,6 +1090,28 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#fmp-financial-modeling-prep-default" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        FMP (Financial Modeling Prep) — default
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#yahoo-finance-fallback" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Yahoo Finance — fallback
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#alpha-vantage" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1101,10 +1123,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#yahoo-finance" class="md-nav__link">
+  <a href="#stooq-not-currently-usable" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Yahoo Finance
+        Stooq (not currently usable)
       
     </span>
   </a>
@@ -3501,6 +3523,28 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#fmp-financial-modeling-prep-default" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        FMP (Financial Modeling Prep) — default
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#yahoo-finance-fallback" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Yahoo Finance — fallback
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#alpha-vantage" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -3512,10 +3556,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#yahoo-finance" class="md-nav__link">
+  <a href="#stooq-not-currently-usable" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Yahoo Finance
+        Stooq (not currently usable)
       
     </span>
   </a>
@@ -3700,9 +3744,9 @@
 - <code>ticker</code> - Stock symbol (e.g., 'AAPL', 'MSFT')
 - <code>name</code> - Company name
 - <code>exchange</code> - Exchange symbol (NASDAQ, NYSE, etc.)
-- <code>source</code> - Data source (<code>:alpha_vantage</code>, <code>:yahoo_finance</code>)
+- <code>source</code> - Data source (<code>:fmp</code> (default), <code>:yahoo_finance</code>, <code>:alpha_vantage</code>)
 - <code>indicators</code> - Technical indicators configuration hash
-- <code>overview</code> - Company overview data from Alpha Vantage</p>
+- <code>overview</code> - Company overview data (from FMP and/or Alpha Vantage)</p>
 <p><strong>Key Features</strong>:
 - Dual initialization: from hash (JSON) or keyword arguments
 - JSON serialization with <code>to_json</code>
@@ -3710,11 +3754,11 @@
 - All attributes are read/write accessible</p>
 <h2 id="creating-dataframes">Creating DataFrames<a class="headerlink" href="#creating-dataframes" title="Permanent link">&para;</a></h2>
 <h3 id="from-data-sources">From Data Sources<a class="headerlink" href="#from-data-sources" title="Permanent link">&para;</a></h3>
-<div class="language-ruby highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="c1"># Using Alpha Vantage</span>
+<div class="language-ruby highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="c1"># Using the default source (FMP), with automatic fallback to Yahoo Finance</span>
 </span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="n">stock</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="no">SQA</span><span class="o">::</span><span class="no">Stock</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="ss">ticker</span><span class="p">:</span><span class="w"> </span><span class="s1">&#39;AAPL&#39;</span><span class="p">)</span>
 </span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="n">df</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">stock</span><span class="o">.</span><span class="n">df</span><span class="w">  </span><span class="c1"># SQA::DataFrame instance</span>
 </span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>
-</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="c1"># Using Yahoo Finance</span>
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="c1"># Explicitly choosing a source</span>
 </span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="n">stock</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="no">SQA</span><span class="o">::</span><span class="no">Stock</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="ss">ticker</span><span class="p">:</span><span class="w"> </span><span class="s1">&#39;MSFT&#39;</span><span class="p">,</span><span class="w"> </span><span class="ss">source</span><span class="p">:</span><span class="w"> </span><span class="ss">:yahoo_finance</span><span class="p">)</span>
 </span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="n">df</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">stock</span><span class="o">.</span><span class="n">df</span>
 </span></code></pre></div>
@@ -3817,7 +3861,7 @@
 <div class="language-ruby highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="c1"># From keyword arguments</span>
 </span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="no">SQA</span><span class="o">::</span><span class="no">DataFrame</span><span class="o">::</span><span class="no">Data</span><span class="o">.</span><span class="n">new</span><span class="p">(</span>
 </span><span id="__span-11-3"><a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a><span class="w">  </span><span class="ss">ticker</span><span class="p">:</span><span class="w"> </span><span class="s1">&#39;AAPL&#39;</span><span class="p">,</span>
-</span><span id="__span-11-4"><a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a><span class="w">  </span><span class="ss">source</span><span class="p">:</span><span class="w"> </span><span class="ss">:alpha_vantage</span><span class="p">,</span>
+</span><span id="__span-11-4"><a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a><span class="w">  </span><span class="ss">source</span><span class="p">:</span><span class="w"> </span><span class="ss">:fmp</span><span class="p">,</span>
 </span><span id="__span-11-5"><a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a><span class="w">  </span><span class="ss">indicators</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="ss">rsi</span><span class="p">:</span><span class="w"> </span><span class="mi">14</span><span class="p">,</span><span class="w"> </span><span class="ss">sma</span><span class="p">:</span><span class="w"> </span><span class="o">[</span><span class="mi">20</span><span class="p">,</span><span class="w"> </span><span class="mi">50</span><span class="o">]</span><span class="w"> </span><span class="p">}</span>
 </span><span id="__span-11-6"><a id="__codelineno-11-6" name="__codelineno-11-6" href="#__codelineno-11-6"></a><span class="p">)</span>
 </span><span id="__span-11-7"><a id="__codelineno-11-7" name="__codelineno-11-7" href="#__codelineno-11-7"></a>
@@ -3828,7 +3872,7 @@
 <h3 id="accessing-and-modifying-metadata">Accessing and Modifying Metadata<a class="headerlink" href="#accessing-and-modifying-metadata" title="Permanent link">&para;</a></h3>
 <div class="language-ruby highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="c1"># Read attributes</span>
 </span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a><span class="n">data</span><span class="o">.</span><span class="n">ticker</span><span class="w">        </span><span class="c1"># =&gt; &#39;AAPL&#39;</span>
-</span><span id="__span-12-3"><a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a><span class="n">data</span><span class="o">.</span><span class="n">source</span><span class="w">        </span><span class="c1"># =&gt; :alpha_vantage</span>
+</span><span id="__span-12-3"><a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a><span class="n">data</span><span class="o">.</span><span class="n">source</span><span class="w">        </span><span class="c1"># =&gt; :fmp</span>
 </span><span id="__span-12-4"><a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a><span class="n">data</span><span class="o">.</span><span class="n">indicators</span><span class="w">    </span><span class="c1"># =&gt; { rsi: 14, sma: [20, 50] }</span>
 </span><span id="__span-12-5"><a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a>
 </span><span id="__span-12-6"><a id="__codelineno-12-6" name="__codelineno-12-6" href="#__codelineno-12-6"></a><span class="c1"># Write attributes</span>
@@ -3884,21 +3928,47 @@
 </li>
 </ol>
 <h2 id="data-sources">Data Sources<a class="headerlink" href="#data-sources" title="Permanent link">&para;</a></h2>
-<h3 id="alpha-vantage">Alpha Vantage<a class="headerlink" href="#alpha-vantage" title="Permanent link">&para;</a></h3>
-<p><strong>Location</strong>: <code>lib/sqa/data_frame/alpha_vantage.rb</code></p>
-<div class="language-ruby highlight"><pre><span></span><code><span id="__span-18-1"><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a><span class="no">SQA</span><span class="o">::</span><span class="no">DataFrame</span><span class="o">::</span><span class="no">AlphaVantage</span><span class="o">.</span><span class="n">recent</span><span class="p">(</span><span class="s1">&#39;AAPL&#39;</span><span class="p">,</span><span class="w"> </span><span class="ss">full</span><span class="p">:</span><span class="w"> </span><span class="kp">true</span><span class="p">)</span>
+<p><code>SQA::Stock</code> defaults to <strong>FMP</strong> and automatically falls back to <strong>Yahoo
+Finance</strong> if the FMP fetch fails (rate limit, missing key, network). Each
+adapter exposes the same <code>self.recent(ticker, full:, from_date:)</code> interface
+and returns an <code>SQA::DataFrame</code> sorted <strong>ascending</strong> (oldest-first) as TA-Lib
+requires.</p>
+<h3 id="fmp-financial-modeling-prep-default">FMP (Financial Modeling Prep) — default<a class="headerlink" href="#fmp-financial-modeling-prep-default" title="Permanent link">&para;</a></h3>
+<p><strong>Location</strong>: <code>lib/sqa/data_frame/fmp.rb</code> (class <code>SQA::DataFrame::Fmp</code>)</p>
+<div class="language-ruby highlight"><pre><span></span><code><span id="__span-18-1"><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a><span class="no">SQA</span><span class="o">::</span><span class="no">DataFrame</span><span class="o">::</span><span class="no">Fmp</span><span class="o">.</span><span class="n">recent</span><span class="p">(</span><span class="s1">&#39;AAPL&#39;</span><span class="p">,</span><span class="w"> </span><span class="ss">full</span><span class="p">:</span><span class="w"> </span><span class="kp">true</span><span class="p">)</span>
 </span></code></pre></div>
-<p><strong>Requirements</strong>:
-- Environment variable: <code>AV_API_KEY</code> or <code>ALPHAVANTAGE_API_KEY</code>
-- Rate limiting: 5 calls/minute (free tier)</p>
-<h3 id="yahoo-finance">Yahoo Finance<a class="headerlink" href="#yahoo-finance" title="Permanent link">&para;</a></h3>
-<p><strong>Location</strong>: <code>lib/sqa/data_frame/yahoo_finance.rb</code></p>
+<p><strong>Requirements / notes</strong>:
+- Environment variable: <code>FMP_API_KEY</code>
+- Free tier: ~250 requests/day, up to ~5 years of daily history
+- Chosen as the default because Alpha Vantage's free tier is only 25
+  requests/day (and its full history is now a premium-only feature)
+- No split/dividend-adjusted close; <code>:adj_close_price</code> is derived by
+  duplicating <code>:close_price</code></p>
+<h3 id="yahoo-finance-fallback">Yahoo Finance — fallback<a class="headerlink" href="#yahoo-finance-fallback" title="Permanent link">&para;</a></h3>
+<p><strong>Location</strong>: <code>lib/sqa/data_frame/yahoo_finance.rb</code> (class <code>SQA::DataFrame::YahooFinance</code>)</p>
 <div class="language-ruby highlight"><pre><span></span><code><span id="__span-19-1"><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a><span class="no">SQA</span><span class="o">::</span><span class="no">DataFrame</span><span class="o">::</span><span class="no">YahooFinance</span><span class="o">.</span><span class="n">recent</span><span class="p">(</span><span class="s1">&#39;AAPL&#39;</span><span class="p">,</span><span class="w"> </span><span class="ss">full</span><span class="p">:</span><span class="w"> </span><span class="kp">true</span><span class="p">)</span>
 </span></code></pre></div>
-<p><strong>Features</strong>:
-- No API key required
-- Web scraping based (less reliable)
-- Good for testing and fallback</p>
+<p><strong>Features / notes</strong>:
+- No API key required — calls Yahoo's undocumented <code>chart</code> JSON API (the
+  same endpoints finance.yahoo.com uses), via a curl cookie/crumb handshake
+- Set <code>YF_COOKIE</code> / <code>YF_CRUMB</code> (from a real browser session) to bypass the
+  handshake if Yahoo IP-rate-limits the crumb endpoint (429)
+- Unofficial API, so it can break if Yahoo changes their site</p>
+<h3 id="alpha-vantage">Alpha Vantage<a class="headerlink" href="#alpha-vantage" title="Permanent link">&para;</a></h3>
+<p><strong>Location</strong>: <code>lib/sqa/data_frame/alpha_vantage.rb</code></p>
+<div class="language-ruby highlight"><pre><span></span><code><span id="__span-20-1"><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a><span class="no">SQA</span><span class="o">::</span><span class="no">DataFrame</span><span class="o">::</span><span class="no">AlphaVantage</span><span class="o">.</span><span class="n">recent</span><span class="p">(</span><span class="s1">&#39;AAPL&#39;</span><span class="p">,</span><span class="w"> </span><span class="ss">full</span><span class="p">:</span><span class="w"> </span><span class="kp">true</span><span class="p">)</span>
+</span></code></pre></div>
+<p><strong>Requirements / notes</strong>:
+- Environment variable: <code>AV_API_KEY</code> or <code>ALPHAVANTAGE_API_KEY</code>
+- Free tier: 25 requests/day; <code>full: true</code> history is now premium-only, so
+  the adapter falls back to compact (~100 trading days) for free keys
+- No longer the default because of the restrictive daily quota</p>
+<h3 id="stooq-not-currently-usable">Stooq (not currently usable)<a class="headerlink" href="#stooq-not-currently-usable" title="Permanent link">&para;</a></h3>
+<p><strong>Location</strong>: <code>lib/sqa/data_frame/stooq.rb</code></p>
+<p>stooq.com now serves a JavaScript proof-of-work bot challenge on its CSV
+endpoint, so a plain HTTP client can no longer reach it. The adapter is left
+in place (and would work again if that challenge is removed) but is not
+selectable as a working source today.</p>
 <h2 id="adding-new-data-sources">Adding New Data Sources<a class="headerlink" href="#adding-new-data-sources" title="Permanent link">&para;</a></h2>
 <p>To add a new data source adapter:</p>
 <ol>
@@ -3908,21 +3978,27 @@
 <li>Return data in Polars-compatible format</li>
 <li>Add column mapping if needed</li>
 </ol>
+<p>For a plain daily-OHLCV source with no adjusted close and a compact/full/
+<code>from_date</code> fetch window, <code>extend SQA::DataFrame::DailyPriceSource</code>
+(<code>lib/sqa/data_frame/daily_price_source.rb</code>) to inherit a shared <code>.recent</code>
+template — then you only provide a <code>COMPACT_DAYS</code> constant and a private
+<code>.fetch_dataframe(ticker, start_date:)</code> method. Both the FMP and Stooq
+adapters use this mixin.</p>
 <p><strong>Example</strong>:</p>
-<div class="language-ruby highlight"><pre><span></span><code><span id="__span-20-1"><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a><span class="k">class</span><span class="w"> </span><span class="nc">SQA</span><span class="o">::</span><span class="no">DataFrame</span><span class="o">::</span><span class="no">MySource</span>
-</span><span id="__span-20-2"><a id="__codelineno-20-2" name="__codelineno-20-2" href="#__codelineno-20-2"></a><span class="w">  </span><span class="no">TRANSFORMERS</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
-</span><span id="__span-20-3"><a id="__codelineno-20-3" name="__codelineno-20-3" href="#__codelineno-20-3"></a><span class="w">    </span><span class="ss">timestamp</span><span class="p">:</span><span class="w"> </span><span class="o">-&gt;</span><span class="p">(</span><span class="n">val</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="no">Date</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">val</span><span class="p">)</span><span class="w"> </span><span class="p">},</span>
-</span><span id="__span-20-4"><a id="__codelineno-20-4" name="__codelineno-20-4" href="#__codelineno-20-4"></a><span class="w">    </span><span class="ss">volume</span><span class="p">:</span><span class="w"> </span><span class="o">-&gt;</span><span class="p">(</span><span class="n">val</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">val</span><span class="o">.</span><span class="n">to_i</span><span class="w"> </span><span class="p">}</span>
-</span><span id="__span-20-5"><a id="__codelineno-20-5" name="__codelineno-20-5" href="#__codelineno-20-5"></a><span class="w">  </span><span class="p">}</span>
-</span><span id="__span-20-6"><a id="__codelineno-20-6" name="__codelineno-20-6" href="#__codelineno-20-6"></a>
-</span><span id="__span-20-7"><a id="__codelineno-20-7" name="__codelineno-20-7" href="#__codelineno-20-7"></a><span class="w">  </span><span class="k">def</span><span class="w"> </span><span class="nc">self</span><span class="o">.</span><span class="nf">recent</span><span class="p">(</span><span class="n">ticker</span><span class="p">,</span><span class="w"> </span><span class="o">**</span><span class="n">options</span><span class="p">)</span>
-</span><span id="__span-20-8"><a id="__codelineno-20-8" name="__codelineno-20-8" href="#__codelineno-20-8"></a><span class="w">    </span><span class="c1"># Fetch data from your source</span>
-</span><span id="__span-20-9"><a id="__codelineno-20-9" name="__codelineno-20-9" href="#__codelineno-20-9"></a><span class="w">    </span><span class="n">raw_data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">fetch_from_api</span><span class="p">(</span><span class="n">ticker</span><span class="p">)</span>
-</span><span id="__span-20-10"><a id="__codelineno-20-10" name="__codelineno-20-10" href="#__codelineno-20-10"></a>
-</span><span id="__span-20-11"><a id="__codelineno-20-11" name="__codelineno-20-11" href="#__codelineno-20-11"></a><span class="w">    </span><span class="c1"># Convert to Polars-compatible format</span>
-</span><span id="__span-20-12"><a id="__codelineno-20-12" name="__codelineno-20-12" href="#__codelineno-20-12"></a><span class="w">    </span><span class="no">SQA</span><span class="o">::</span><span class="no">DataFrame</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">raw_data</span><span class="p">,</span><span class="w"> </span><span class="ss">transformers</span><span class="p">:</span><span class="w"> </span><span class="no">TRANSFORMERS</span><span class="p">)</span>
-</span><span id="__span-20-13"><a id="__codelineno-20-13" name="__codelineno-20-13" href="#__codelineno-20-13"></a><span class="w">  </span><span class="k">end</span>
-</span><span id="__span-20-14"><a id="__codelineno-20-14" name="__codelineno-20-14" href="#__codelineno-20-14"></a><span class="k">end</span>
+<div class="language-ruby highlight"><pre><span></span><code><span id="__span-21-1"><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a><span class="k">class</span><span class="w"> </span><span class="nc">SQA</span><span class="o">::</span><span class="no">DataFrame</span><span class="o">::</span><span class="no">MySource</span>
+</span><span id="__span-21-2"><a id="__codelineno-21-2" name="__codelineno-21-2" href="#__codelineno-21-2"></a><span class="w">  </span><span class="no">TRANSFORMERS</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-21-3"><a id="__codelineno-21-3" name="__codelineno-21-3" href="#__codelineno-21-3"></a><span class="w">    </span><span class="ss">timestamp</span><span class="p">:</span><span class="w"> </span><span class="o">-&gt;</span><span class="p">(</span><span class="n">val</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="no">Date</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">val</span><span class="p">)</span><span class="w"> </span><span class="p">},</span>
+</span><span id="__span-21-4"><a id="__codelineno-21-4" name="__codelineno-21-4" href="#__codelineno-21-4"></a><span class="w">    </span><span class="ss">volume</span><span class="p">:</span><span class="w"> </span><span class="o">-&gt;</span><span class="p">(</span><span class="n">val</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">val</span><span class="o">.</span><span class="n">to_i</span><span class="w"> </span><span class="p">}</span>
+</span><span id="__span-21-5"><a id="__codelineno-21-5" name="__codelineno-21-5" href="#__codelineno-21-5"></a><span class="w">  </span><span class="p">}</span>
+</span><span id="__span-21-6"><a id="__codelineno-21-6" name="__codelineno-21-6" href="#__codelineno-21-6"></a>
+</span><span id="__span-21-7"><a id="__codelineno-21-7" name="__codelineno-21-7" href="#__codelineno-21-7"></a><span class="w">  </span><span class="k">def</span><span class="w"> </span><span class="nc">self</span><span class="o">.</span><span class="nf">recent</span><span class="p">(</span><span class="n">ticker</span><span class="p">,</span><span class="w"> </span><span class="o">**</span><span class="n">options</span><span class="p">)</span>
+</span><span id="__span-21-8"><a id="__codelineno-21-8" name="__codelineno-21-8" href="#__codelineno-21-8"></a><span class="w">    </span><span class="c1"># Fetch data from your source</span>
+</span><span id="__span-21-9"><a id="__codelineno-21-9" name="__codelineno-21-9" href="#__codelineno-21-9"></a><span class="w">    </span><span class="n">raw_data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">fetch_from_api</span><span class="p">(</span><span class="n">ticker</span><span class="p">)</span>
+</span><span id="__span-21-10"><a id="__codelineno-21-10" name="__codelineno-21-10" href="#__codelineno-21-10"></a>
+</span><span id="__span-21-11"><a id="__codelineno-21-11" name="__codelineno-21-11" href="#__codelineno-21-11"></a><span class="w">    </span><span class="c1"># Convert to Polars-compatible format</span>
+</span><span id="__span-21-12"><a id="__codelineno-21-12" name="__codelineno-21-12" href="#__codelineno-21-12"></a><span class="w">    </span><span class="no">SQA</span><span class="o">::</span><span class="no">DataFrame</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">raw_data</span><span class="p">,</span><span class="w"> </span><span class="ss">transformers</span><span class="p">:</span><span class="w"> </span><span class="no">TRANSFORMERS</span><span class="p">)</span>
+</span><span id="__span-21-13"><a id="__codelineno-21-13" name="__codelineno-21-13" href="#__codelineno-21-13"></a><span class="w">  </span><span class="k">end</span>
+</span><span id="__span-21-14"><a id="__codelineno-21-14" name="__codelineno-21-14" href="#__codelineno-21-14"></a><span class="k">end</span>
 </span></code></pre></div>
 <h2 id="common-gotchas">Common Gotchas<a class="headerlink" href="#common-gotchas" title="Permanent link">&para;</a></h2>
 <ol>
@@ -3958,39 +4034,39 @@
 <li><a href="https://pola-rs.github.io/polars-book/">Polars Documentation</a> - Underlying library</li>
 </ul>
 <h2 id="example-complete-workflow">Example: Complete Workflow<a class="headerlink" href="#example-complete-workflow" title="Permanent link">&para;</a></h2>
-<div class="language-ruby highlight"><pre><span></span><code><span id="__span-21-1"><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a><span class="nb">require</span><span class="w"> </span><span class="s1">&#39;sqa&#39;</span>
-</span><span id="__span-21-2"><a id="__codelineno-21-2" name="__codelineno-21-2" href="#__codelineno-21-2"></a>
-</span><span id="__span-21-3"><a id="__codelineno-21-3" name="__codelineno-21-3" href="#__codelineno-21-3"></a><span class="no">SQA</span><span class="o">.</span><span class="n">init</span>
-</span><span id="__span-21-4"><a id="__codelineno-21-4" name="__codelineno-21-4" href="#__codelineno-21-4"></a>
-</span><span id="__span-21-5"><a id="__codelineno-21-5" name="__codelineno-21-5" href="#__codelineno-21-5"></a><span class="c1"># Load stock data</span>
-</span><span id="__span-21-6"><a id="__codelineno-21-6" name="__codelineno-21-6" href="#__codelineno-21-6"></a><span class="n">stock</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="no">SQA</span><span class="o">::</span><span class="no">Stock</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="ss">ticker</span><span class="p">:</span><span class="w"> </span><span class="s1">&#39;AAPL&#39;</span><span class="p">)</span>
-</span><span id="__span-21-7"><a id="__codelineno-21-7" name="__codelineno-21-7" href="#__codelineno-21-7"></a>
-</span><span id="__span-21-8"><a id="__codelineno-21-8" name="__codelineno-21-8" href="#__codelineno-21-8"></a><span class="c1"># Access DataFrame</span>
-</span><span id="__span-21-9"><a id="__codelineno-21-9" name="__codelineno-21-9" href="#__codelineno-21-9"></a><span class="n">df</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">stock</span><span class="o">.</span><span class="n">df</span>
-</span><span id="__span-21-10"><a id="__codelineno-21-10" name="__codelineno-21-10" href="#__codelineno-21-10"></a>
-</span><span id="__span-21-11"><a id="__codelineno-21-11" name="__codelineno-21-11" href="#__codelineno-21-11"></a><span class="c1"># Get price array for indicators</span>
-</span><span id="__span-21-12"><a id="__codelineno-21-12" name="__codelineno-21-12" href="#__codelineno-21-12"></a><span class="n">prices</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">df</span><span class="o">[</span><span class="s2">&quot;adj_close_price&quot;</span><span class="o">].</span><span class="n">to_a</span>
-</span><span id="__span-21-13"><a id="__codelineno-21-13" name="__codelineno-21-13" href="#__codelineno-21-13"></a>
-</span><span id="__span-21-14"><a id="__codelineno-21-14" name="__codelineno-21-14" href="#__codelineno-21-14"></a><span class="c1"># Calculate technical indicators</span>
-</span><span id="__span-21-15"><a id="__codelineno-21-15" name="__codelineno-21-15" href="#__codelineno-21-15"></a><span class="n">sma_20</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="no">SQAI</span><span class="o">.</span><span class="n">sma</span><span class="p">(</span><span class="n">prices</span><span class="p">,</span><span class="w"> </span><span class="ss">period</span><span class="p">:</span><span class="w"> </span><span class="mi">20</span><span class="p">)</span>
-</span><span id="__span-21-16"><a id="__codelineno-21-16" name="__codelineno-21-16" href="#__codelineno-21-16"></a><span class="n">rsi_14</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="no">SQAI</span><span class="o">.</span><span class="n">rsi</span><span class="p">(</span><span class="n">prices</span><span class="p">,</span><span class="w"> </span><span class="ss">period</span><span class="p">:</span><span class="w"> </span><span class="mi">14</span><span class="p">)</span>
-</span><span id="__span-21-17"><a id="__codelineno-21-17" name="__codelineno-21-17" href="#__codelineno-21-17"></a>
-</span><span id="__span-21-18"><a id="__codelineno-21-18" name="__codelineno-21-18" href="#__codelineno-21-18"></a><span class="c1"># FPL analysis</span>
-</span><span id="__span-21-19"><a id="__codelineno-21-19" name="__codelineno-21-19" href="#__codelineno-21-19"></a><span class="n">fpl_analysis</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">df</span><span class="o">.</span><span class="n">fpl_analysis</span><span class="p">(</span><span class="ss">fpop</span><span class="p">:</span><span class="w"> </span><span class="mi">10</span><span class="p">)</span>
-</span><span id="__span-21-20"><a id="__codelineno-21-20" name="__codelineno-21-20" href="#__codelineno-21-20"></a><span class="n">high_quality</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="no">SQA</span><span class="o">::</span><span class="no">FPOP</span><span class="o">.</span><span class="n">filter_by_quality</span><span class="p">(</span>
-</span><span id="__span-21-21"><a id="__codelineno-21-21" name="__codelineno-21-21" href="#__codelineno-21-21"></a><span class="w">  </span><span class="n">fpl_analysis</span><span class="p">,</span>
-</span><span id="__span-21-22"><a id="__codelineno-21-22" name="__codelineno-21-22" href="#__codelineno-21-22"></a><span class="w">  </span><span class="ss">min_magnitude</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span><span class="o">.</span><span class="mi">0</span><span class="p">,</span>
-</span><span id="__span-21-23"><a id="__codelineno-21-23" name="__codelineno-21-23" href="#__codelineno-21-23"></a><span class="w">  </span><span class="ss">max_risk</span><span class="p">:</span><span class="w"> </span><span class="mi">25</span><span class="o">.</span><span class="mi">0</span>
-</span><span id="__span-21-24"><a id="__codelineno-21-24" name="__codelineno-21-24" href="#__codelineno-21-24"></a><span class="p">)</span>
-</span><span id="__span-21-25"><a id="__codelineno-21-25" name="__codelineno-21-25" href="#__codelineno-21-25"></a>
-</span><span id="__span-21-26"><a id="__codelineno-21-26" name="__codelineno-21-26" href="#__codelineno-21-26"></a><span class="c1"># Access stock metadata</span>
-</span><span id="__span-21-27"><a id="__codelineno-21-27" name="__codelineno-21-27" href="#__codelineno-21-27"></a><span class="nb">puts</span><span class="w"> </span><span class="s2">&quot;Ticker: </span><span class="si">#{</span><span class="n">stock</span><span class="o">.</span><span class="n">ticker</span><span class="si">}</span><span class="s2">&quot;</span>
-</span><span id="__span-21-28"><a id="__codelineno-21-28" name="__codelineno-21-28" href="#__codelineno-21-28"></a><span class="nb">puts</span><span class="w"> </span><span class="s2">&quot;Exchange: </span><span class="si">#{</span><span class="n">stock</span><span class="o">.</span><span class="n">exchange</span><span class="si">}</span><span class="s2">&quot;</span>
-</span><span id="__span-21-29"><a id="__codelineno-21-29" name="__codelineno-21-29" href="#__codelineno-21-29"></a><span class="nb">puts</span><span class="w"> </span><span class="s2">&quot;Source: </span><span class="si">#{</span><span class="n">stock</span><span class="o">.</span><span class="n">source</span><span class="si">}</span><span class="s2">&quot;</span>
-</span><span id="__span-21-30"><a id="__codelineno-21-30" name="__codelineno-21-30" href="#__codelineno-21-30"></a>
-</span><span id="__span-21-31"><a id="__codelineno-21-31" name="__codelineno-21-31" href="#__codelineno-21-31"></a><span class="c1"># Export data</span>
-</span><span id="__span-21-32"><a id="__codelineno-21-32" name="__codelineno-21-32" href="#__codelineno-21-32"></a><span class="n">df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="s2">&quot;aapl_prices.csv&quot;</span><span class="p">)</span>
-</span><span id="__span-21-33"><a id="__codelineno-21-33" name="__codelineno-21-33" href="#__codelineno-21-33"></a><span class="no">File</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;aapl_metadata.json&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">stock</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">to_json</span><span class="p">)</span>
+<div class="language-ruby highlight"><pre><span></span><code><span id="__span-22-1"><a id="__codelineno-22-1" name="__codelineno-22-1" href="#__codelineno-22-1"></a><span class="nb">require</span><span class="w"> </span><span class="s1">&#39;sqa&#39;</span>
+</span><span id="__span-22-2"><a id="__codelineno-22-2" name="__codelineno-22-2" href="#__codelineno-22-2"></a>
+</span><span id="__span-22-3"><a id="__codelineno-22-3" name="__codelineno-22-3" href="#__codelineno-22-3"></a><span class="no">SQA</span><span class="o">.</span><span class="n">init</span>
+</span><span id="__span-22-4"><a id="__codelineno-22-4" name="__codelineno-22-4" href="#__codelineno-22-4"></a>
+</span><span id="__span-22-5"><a id="__codelineno-22-5" name="__codelineno-22-5" href="#__codelineno-22-5"></a><span class="c1"># Load stock data</span>
+</span><span id="__span-22-6"><a id="__codelineno-22-6" name="__codelineno-22-6" href="#__codelineno-22-6"></a><span class="n">stock</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="no">SQA</span><span class="o">::</span><span class="no">Stock</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="ss">ticker</span><span class="p">:</span><span class="w"> </span><span class="s1">&#39;AAPL&#39;</span><span class="p">)</span>
+</span><span id="__span-22-7"><a id="__codelineno-22-7" name="__codelineno-22-7" href="#__codelineno-22-7"></a>
+</span><span id="__span-22-8"><a id="__codelineno-22-8" name="__codelineno-22-8" href="#__codelineno-22-8"></a><span class="c1"># Access DataFrame</span>
+</span><span id="__span-22-9"><a id="__codelineno-22-9" name="__codelineno-22-9" href="#__codelineno-22-9"></a><span class="n">df</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">stock</span><span class="o">.</span><span class="n">df</span>
+</span><span id="__span-22-10"><a id="__codelineno-22-10" name="__codelineno-22-10" href="#__codelineno-22-10"></a>
+</span><span id="__span-22-11"><a id="__codelineno-22-11" name="__codelineno-22-11" href="#__codelineno-22-11"></a><span class="c1"># Get price array for indicators</span>
+</span><span id="__span-22-12"><a id="__codelineno-22-12" name="__codelineno-22-12" href="#__codelineno-22-12"></a><span class="n">prices</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">df</span><span class="o">[</span><span class="s2">&quot;adj_close_price&quot;</span><span class="o">].</span><span class="n">to_a</span>
+</span><span id="__span-22-13"><a id="__codelineno-22-13" name="__codelineno-22-13" href="#__codelineno-22-13"></a>
+</span><span id="__span-22-14"><a id="__codelineno-22-14" name="__codelineno-22-14" href="#__codelineno-22-14"></a><span class="c1"># Calculate technical indicators</span>
+</span><span id="__span-22-15"><a id="__codelineno-22-15" name="__codelineno-22-15" href="#__codelineno-22-15"></a><span class="n">sma_20</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="no">SQAI</span><span class="o">.</span><span class="n">sma</span><span class="p">(</span><span class="n">prices</span><span class="p">,</span><span class="w"> </span><span class="ss">period</span><span class="p">:</span><span class="w"> </span><span class="mi">20</span><span class="p">)</span>
+</span><span id="__span-22-16"><a id="__codelineno-22-16" name="__codelineno-22-16" href="#__codelineno-22-16"></a><span class="n">rsi_14</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="no">SQAI</span><span class="o">.</span><span class="n">rsi</span><span class="p">(</span><span class="n">prices</span><span class="p">,</span><span class="w"> </span><span class="ss">period</span><span class="p">:</span><span class="w"> </span><span class="mi">14</span><span class="p">)</span>
+</span><span id="__span-22-17"><a id="__codelineno-22-17" name="__codelineno-22-17" href="#__codelineno-22-17"></a>
+</span><span id="__span-22-18"><a id="__codelineno-22-18" name="__codelineno-22-18" href="#__codelineno-22-18"></a><span class="c1"># FPL analysis</span>
+</span><span id="__span-22-19"><a id="__codelineno-22-19" name="__codelineno-22-19" href="#__codelineno-22-19"></a><span class="n">fpl_analysis</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">df</span><span class="o">.</span><span class="n">fpl_analysis</span><span class="p">(</span><span class="ss">fpop</span><span class="p">:</span><span class="w"> </span><span class="mi">10</span><span class="p">)</span>
+</span><span id="__span-22-20"><a id="__codelineno-22-20" name="__codelineno-22-20" href="#__codelineno-22-20"></a><span class="n">high_quality</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="no">SQA</span><span class="o">::</span><span class="no">FPOP</span><span class="o">.</span><span class="n">filter_by_quality</span><span class="p">(</span>
+</span><span id="__span-22-21"><a id="__codelineno-22-21" name="__codelineno-22-21" href="#__codelineno-22-21"></a><span class="w">  </span><span class="n">fpl_analysis</span><span class="p">,</span>
+</span><span id="__span-22-22"><a id="__codelineno-22-22" name="__codelineno-22-22" href="#__codelineno-22-22"></a><span class="w">  </span><span class="ss">min_magnitude</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span><span class="o">.</span><span class="mi">0</span><span class="p">,</span>
+</span><span id="__span-22-23"><a id="__codelineno-22-23" name="__codelineno-22-23" href="#__codelineno-22-23"></a><span class="w">  </span><span class="ss">max_risk</span><span class="p">:</span><span class="w"> </span><span class="mi">25</span><span class="o">.</span><span class="mi">0</span>
+</span><span id="__span-22-24"><a id="__codelineno-22-24" name="__codelineno-22-24" href="#__codelineno-22-24"></a><span class="p">)</span>
+</span><span id="__span-22-25"><a id="__codelineno-22-25" name="__codelineno-22-25" href="#__codelineno-22-25"></a>
+</span><span id="__span-22-26"><a id="__codelineno-22-26" name="__codelineno-22-26" href="#__codelineno-22-26"></a><span class="c1"># Access stock metadata</span>
+</span><span id="__span-22-27"><a id="__codelineno-22-27" name="__codelineno-22-27" href="#__codelineno-22-27"></a><span class="nb">puts</span><span class="w"> </span><span class="s2">&quot;Ticker: </span><span class="si">#{</span><span class="n">stock</span><span class="o">.</span><span class="n">ticker</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span id="__span-22-28"><a id="__codelineno-22-28" name="__codelineno-22-28" href="#__codelineno-22-28"></a><span class="nb">puts</span><span class="w"> </span><span class="s2">&quot;Exchange: </span><span class="si">#{</span><span class="n">stock</span><span class="o">.</span><span class="n">exchange</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span id="__span-22-29"><a id="__codelineno-22-29" name="__codelineno-22-29" href="#__codelineno-22-29"></a><span class="nb">puts</span><span class="w"> </span><span class="s2">&quot;Source: </span><span class="si">#{</span><span class="n">stock</span><span class="o">.</span><span class="n">source</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span id="__span-22-30"><a id="__codelineno-22-30" name="__codelineno-22-30" href="#__codelineno-22-30"></a>
+</span><span id="__span-22-31"><a id="__codelineno-22-31" name="__codelineno-22-31" href="#__codelineno-22-31"></a><span class="c1"># Export data</span>
+</span><span id="__span-22-32"><a id="__codelineno-22-32" name="__codelineno-22-32" href="#__codelineno-22-32"></a><span class="n">df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="s2">&quot;aapl_prices.csv&quot;</span><span class="p">)</span>
+</span><span id="__span-22-33"><a id="__codelineno-22-33" name="__codelineno-22-33" href="#__codelineno-22-33"></a><span class="no">File</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;aapl_metadata.json&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">stock</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">to_json</span><span class="p">)</span>
 </span></code></pre></div>
 
 
@@ -4166,10 +4242,10 @@
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.tabs.sticky", "navigation.sections", "navigation.path", "navigation.indexes", "navigation.top", "navigation.footer", "toc.follow", "search.suggest", "search.highlight", "search.share", "header.autohide", "content.code.copy", "content.code.annotate", "content.tabs.link", "content.tooltips", "content.action.edit", "content.action.view"], "search": "../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.tabs.sticky", "navigation.sections", "navigation.path", "navigation.indexes", "navigation.top", "navigation.footer", "toc.follow", "search.suggest", "search.highlight", "search.share", "header.autohide", "content.code.copy", "content.code.annotate", "content.tabs.link", "content.tooltips", "content.action.edit", "content.action.view"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="../assets/javascripts/bundle.e71a0d61.min.js"></script>
+      <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
       
         <script src="../assets/js/mathjax.js"></script>
       

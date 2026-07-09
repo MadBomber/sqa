@@ -25,7 +25,7 @@
       
       
       <link rel="icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.0">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
     
     
       
@@ -33,7 +33,7 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.618322db.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.484c7ddc.min.css">
       
         
         <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
@@ -2803,10 +2803,10 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#alpha-vantage-primary" class="md-nav__link">
+  <a href="#fmp-financial-modeling-prep-primary" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Alpha Vantage (Primary)
+        FMP — Financial Modeling Prep (Primary)
       
     </span>
   </a>
@@ -2818,6 +2818,28 @@
     <span class="md-ellipsis">
       
         Yahoo Finance (Fallback)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#alpha-vantage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Alpha Vantage
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#stooq-not-currently-usable" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Stooq (not currently usable)
       
     </span>
   </a>
@@ -2972,28 +2994,48 @@
 <h1 id="data-sources">Data Sources<a class="headerlink" href="#data-sources" title="Permanent link">&para;</a></h1>
 <p>SQA supports multiple data sources for historical stock price data.</p>
 <h2 id="available-data-sources">Available Data Sources<a class="headerlink" href="#available-data-sources" title="Permanent link">&para;</a></h2>
-<h3 id="alpha-vantage-primary">Alpha Vantage (Primary)<a class="headerlink" href="#alpha-vantage-primary" title="Permanent link">&para;</a></h3>
-<p>Free API with generous limits for historical and real-time data.</p>
+<p><code>SQA::Stock</code> defaults to <strong>FMP</strong> and automatically falls back to <strong>Yahoo
+Finance</strong> if the FMP fetch fails (rate limit, missing key, network). Every
+adapter exposes the same <code>self.recent(ticker, full:, from_date:)</code> interface
+and returns data sorted oldest-first for TA-Lib.</p>
+<h3 id="fmp-financial-modeling-prep-primary">FMP — Financial Modeling Prep (Primary)<a class="headerlink" href="#fmp-financial-modeling-prep-primary" title="Permanent link">&para;</a></h3>
+<p>Free API key, ~250 requests/day, up to ~5 years of daily history.</p>
 <p><strong>Setup:</strong>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nb">export</span><span class="w"> </span><span class="nv">AV_API_KEY</span><span class="o">=</span><span class="s2">&quot;your_key_here&quot;</span>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nb">export</span><span class="w"> </span><span class="nv">FMP_API_KEY</span><span class="o">=</span><span class="s2">&quot;your_key_here&quot;</span>
 </span></code></pre></div></p>
 <p><strong>Features:</strong>
-- Daily historical data
-- Adjusted closing prices
-- Up to 20 years of history
+- Daily historical OHLCV
+- Much higher free-tier quota than Alpha Vantage (~250/day vs 25/day)
+- No split/dividend-adjusted close — <code>adj_close_price</code> mirrors <code>close_price</code>
 - API key required (free)</p>
-<p><a href="https://www.alphavantage.co/support/#api-key">Get API Key →</a></p>
+<p><a href="https://site.financialmodelingprep.com/">Get API Key →</a></p>
 <h3 id="yahoo-finance-fallback">Yahoo Finance (Fallback)<a class="headerlink" href="#yahoo-finance-fallback" title="Permanent link">&para;</a></h3>
-<p>Web scraping fallback for when Alpha Vantage is unavailable.</p>
+<p>Used automatically when the primary source fails. Calls Yahoo's undocumented
+<code>chart</code> JSON API (the same endpoints finance.yahoo.com uses).</p>
 <p><strong>Features:</strong>
 - No API key required
-- Less reliable (web scraping)
-- Good for testing</p>
+- Unofficial API — can break if Yahoo changes their site
+- If Yahoo IP-rate-limits the crumb endpoint, set <code>YF_COOKIE</code> / <code>YF_CRUMB</code>
+  (from a browser session) to bypass the handshake</p>
+<h3 id="alpha-vantage">Alpha Vantage<a class="headerlink" href="#alpha-vantage" title="Permanent link">&para;</a></h3>
+<p>Still supported via <code>source: :alpha_vantage</code>, but no longer the default.</p>
+<p><strong>Setup:</strong>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="nb">export</span><span class="w"> </span><span class="nv">AV_API_KEY</span><span class="o">=</span><span class="s2">&quot;your_key_here&quot;</span>
+</span></code></pre></div></p>
+<p><strong>Features:</strong>
+- Only 25 requests/day on the free tier
+- Full history (<code>full: true</code>) is now premium-only; free keys fall back to
+  ~100 trading days</p>
+<p><a href="https://www.alphavantage.co/support/#api-key">Get API Key →</a></p>
+<h3 id="stooq-not-currently-usable">Stooq (not currently usable)<a class="headerlink" href="#stooq-not-currently-usable" title="Permanent link">&para;</a></h3>
+<p>stooq.com now serves a JavaScript proof-of-work bot challenge on its CSV
+endpoint, so <code>source: :stooq</code> cannot be reached by a plain HTTP client. The
+adapter remains in the codebase in case that challenge is lifted.</p>
 <h3 id="csv-files-custom">CSV Files (Custom)<a class="headerlink" href="#csv-files-custom" title="Permanent link">&para;</a></h3>
 <p>Import your own data from CSV files.</p>
 <p><strong>Format:</strong>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>Date,Open,High,Low,Close,Adj Close,Volume
-</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>2024-01-01,150.0,152.0,149.0,151.0,151.0,1000000
+<div class="language-text highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>Date,Open,High,Low,Close,Adj Close,Volume
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>2024-01-01,150.0,152.0,149.0,151.0,151.0,1000000
 </span></code></pre></div></p>
 <p>Place CSV files in <code>~/sqa_data/</code> named as <code>{ticker}.csv</code>.</p>
 <h2 id="data-format">Data Format<a class="headerlink" href="#data-format" title="Permanent link">&para;</a></h2>
@@ -3009,10 +3051,10 @@
 </ul>
 <h2 id="configuration">Configuration<a class="headerlink" href="#configuration" title="Permanent link">&para;</a></h2>
 <p>Set data directory in config:</p>
-<div class="language-ruby highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="no">SQA</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">data_dir</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;/path/to/data&quot;</span>
+<div class="language-ruby highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="no">SQA</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">data_dir</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;/path/to/data&quot;</span>
 </span></code></pre></div>
 <p>Or via environment:</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="nb">export</span><span class="w"> </span><span class="nv">SQA_DATA_DIR</span><span class="o">=</span><span class="s2">&quot;/path/to/data&quot;</span>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="nb">export</span><span class="w"> </span><span class="nv">SQA_DATA_DIR</span><span class="o">=</span><span class="s2">&quot;/path/to/data&quot;</span>
 </span></code></pre></div>
 
 
@@ -3188,10 +3230,10 @@
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.tabs.sticky", "navigation.sections", "navigation.path", "navigation.indexes", "navigation.top", "navigation.footer", "toc.follow", "search.suggest", "search.highlight", "search.share", "header.autohide", "content.code.copy", "content.code.annotate", "content.tabs.link", "content.tooltips", "content.action.edit", "content.action.view"], "search": "../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.tabs.sticky", "navigation.sections", "navigation.path", "navigation.indexes", "navigation.top", "navigation.footer", "toc.follow", "search.suggest", "search.highlight", "search.share", "header.autohide", "content.code.copy", "content.code.annotate", "content.tabs.link", "content.tooltips", "content.action.edit", "content.action.view"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="../assets/javascripts/bundle.e71a0d61.min.js"></script>
+      <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
       
         <script src="../assets/js/mathjax.js"></script>
       

@@ -25,7 +25,7 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.0">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
     
     
       
@@ -33,7 +33,7 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.618322db.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
       
         
         <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
@@ -3489,28 +3489,32 @@
 </span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="o">=&gt;</span><span class="w"> </span><span class="o">[</span><span class="ss">:acos</span><span class="p">,</span><span class="w"> </span><span class="ss">:ad</span><span class="p">,</span><span class="w"> </span><span class="ss">:add</span><span class="p">,</span><span class="w"> </span><span class="ss">:adosc</span><span class="p">,</span><span class="w"> </span><span class="ss">:adx</span><span class="p">,</span><span class="w"> </span><span class="ss">:adxr</span><span class="p">,</span><span class="w"> </span><span class="o">...]</span><span class="w">  </span><span class="c1"># 150+ indicators</span>
 </span></code></pre></div></p>
 <h2 id="step-4-configure-api-access-optional">Step 4: Configure API Access (Optional)<a class="headerlink" href="#step-4-configure-api-access-optional" title="Permanent link">&para;</a></h2>
-<p>To download live stock data, you'll need an Alpha Vantage API key.</p>
+<p>To download live stock data, you'll need an FMP (Financial Modeling Prep)
+API key — the default price source. Yahoo Finance is used as an automatic
+fallback and needs no key.</p>
 <h3 id="get-api-key">Get API Key<a class="headerlink" href="#get-api-key" title="Permanent link">&para;</a></h3>
 <ol>
-<li>Visit <a href="https://www.alphavantage.co/support/#api-key">Alpha Vantage</a></li>
-<li>Sign up for a free API key</li>
+<li>Visit <a href="https://site.financialmodelingprep.com/">Financial Modeling Prep</a></li>
+<li>Sign up for a free API key (~250 requests/day)</li>
 <li>Copy your API key</li>
 </ol>
 <h3 id="set-environment-variable">Set Environment Variable<a class="headerlink" href="#set-environment-variable" title="Permanent link">&para;</a></h3>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="c1"># Temporary (current session)</span>
-</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="nb">export</span><span class="w"> </span><span class="nv">AV_API_KEY</span><span class="o">=</span><span class="s2">&quot;your_api_key_here&quot;</span>
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="nb">export</span><span class="w"> </span><span class="nv">FMP_API_KEY</span><span class="o">=</span><span class="s2">&quot;your_api_key_here&quot;</span>
 </span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>
 </span><span id="__span-7-4"><a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a><span class="c1"># Permanent (add to ~/.bashrc or ~/.zshrc)</span>
-</span><span id="__span-7-5"><a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a><span class="nb">echo</span><span class="w"> </span><span class="s1">&#39;export AV_API_KEY=&quot;your_api_key_here&quot;&#39;</span><span class="w"> </span>&gt;&gt;<span class="w"> </span>~/.bashrc
+</span><span id="__span-7-5"><a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a><span class="nb">echo</span><span class="w"> </span><span class="s1">&#39;export FMP_API_KEY=&quot;your_api_key_here&quot;&#39;</span><span class="w"> </span>&gt;&gt;<span class="w"> </span>~/.bashrc
 </span><span id="__span-7-6"><a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a><span class="nb">source</span><span class="w"> </span>~/.bashrc
 </span></code></pre></div>
+<p>Alpha Vantage is still supported via <code>source: :alpha_vantage</code>; set
+<code>AV_API_KEY</code> (or <code>ALPHAVANTAGE_API_KEY</code>) if you want to use it.</p>
 <h3 id="alternative-configuration-file">Alternative: Configuration File<a class="headerlink" href="#alternative-configuration-file" title="Permanent link">&para;</a></h3>
-<p>Create <code>~/.sqa.yml</code>:</p>
+<p>Create <code>~/.config/sqa/sqa.yml</code>:</p>
 <div class="language-yaml highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="nt">data_dir</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">~/sqa_data</span>
 </span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="nt">debug</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
 </span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a><span class="nt">verbose</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
 </span></code></pre></div>
-<p>The API key is read from environment variables, not the config file.</p>
+<p>API keys are read from environment variables, not the config file.</p>
 <h2 id="troubleshooting">Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permanent link">&para;</a></h2>
 <h3 id="ta-lib-not-found">TA-Lib Not Found<a class="headerlink" href="#ta-lib-not-found" title="Permanent link">&para;</a></h3>
 <p><strong>Error</strong>: <code>cannot load such file -- sqa/tai (LoadError)</code></p>
@@ -3753,10 +3757,10 @@
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.tabs.sticky", "navigation.sections", "navigation.path", "navigation.indexes", "navigation.top", "navigation.footer", "toc.follow", "search.suggest", "search.highlight", "search.share", "header.autohide", "content.code.copy", "content.code.annotate", "content.tabs.link", "content.tooltips", "content.action.edit", "content.action.view"], "search": "../../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.tabs.sticky", "navigation.sections", "navigation.path", "navigation.indexes", "navigation.top", "navigation.footer", "toc.follow", "search.suggest", "search.highlight", "search.share", "header.autohide", "content.code.copy", "content.code.annotate", "content.tabs.link", "content.tooltips", "content.action.edit", "content.action.view"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="../../assets/javascripts/bundle.e71a0d61.min.js"></script>
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
       
         <script src="../../assets/js/mathjax.js"></script>
       
