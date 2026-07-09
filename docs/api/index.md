@@ -88,7 +88,7 @@ Represents a stock with historical data and metadata.
 
 ### Constructor
 
-#### `SQA::Stock.new(ticker:, source: :alpha_vantage)`
+#### `SQA::Stock.new(ticker:, source: :fmp)`
 
 Creates a new Stock instance and loads/fetches its data.
 

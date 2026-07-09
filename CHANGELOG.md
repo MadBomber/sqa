@@ -1,5 +1,51 @@
 ## [Unreleased]
 
+### Added
+- **FMP (Financial Modeling Prep) price adapter** (`SQA::DataFrame::Fmp`):
+  daily OHLCV history via FMP's `/stable/historical-price-eod/full` endpoint.
+  Free tier allows ~250 requests/day and ~5 years of history (vs Alpha
+  Vantage's 25/day). Reads `FMP_API_KEY` from the environment.
+- **`SQA::DataFrame::DailyPriceSource`** mixin: shared
+  `recent(ticker, full:, from_date:)` template for plain daily-OHLCV sources
+  (extended by both the FMP and Stooq adapters).
+- Automatic **Yahoo Finance fallback** in `SQA::Stock`: if the requested
+  source's fresh fetch fails (rate limit, missing key, network), the stock
+  retries against `SQA::Stock::FALLBACK_SOURCE` (`:yahoo_finance`).
+- Config file loading tests (YAML/JSON/TOML + `~` expansion) are now active
+  — they were previously skipped with an inaccurate "requires write access"
+  reason.
+
+### Changed
+- **`SQA::Stock` default source is now `:fmp`** (was `:alpha_vantage`).
+- **`SQA::DataFrame::YahooFinance` rewritten** to call Yahoo's undocumented
+  `chart` JSON API (cookie/crumb handshake, honoring `YF_COOKIE`/`YF_CRUMB`)
+  instead of scraping the long-removed HTML history table.
+- **Configuration rebuilt on `myway_config`**: `SQA::Config` now subclasses
+  `MywayConfig::Base`, sourcing values (lowest→highest precedence) from
+  bundled defaults (`lib/sqa/config/defaults.yml`) → XDG user config →
+  project config → `SQA_*` env vars → programmatic overrides, while keeping
+  the historical public API (legacy key translation, boolean coercion,
+  `from_file`/`dump_file`).
+- Alpha Vantage adapter now detects free-tier `outputsize=full` premium
+  errors and transparently falls back to compact (~100 trading days).
+
+### Fixed
+- `SQA::Backtest` profit factor returned `0.0` (the worst possible value)
+  for a flawless zero-loss backtest; it now returns `Float::INFINITY`
+  (rendered as `∞`).
+- `SQA::GeneticProgram#run_generation` hardcoded a `%` suffix on generic,
+  caller-defined fitness values; removed.
+- `SQA::StrategyGenerator#walk_forward_validate` crashed on every iteration
+  (`NoMethodError` on `#ticker`) because `create_stock_subset` set a dead
+  `@ticker` ivar instead of `@data`; validation now works.
+- `SQA::SectorAnalyzer#discover_sector_patterns` used the block form of
+  `debug_me` with an interpolated string, which raises a `SyntaxError` in
+  the current `debug_me`; switched to the string-argument form.
+- Example scripts: corrected percentage scaling (values stored as 0–1
+  fractions were shown 100× too small), made `06_fpop_analysis.rb`
+  executable, and hardened `07_pattern_context.rb`'s sector step against a
+  failed ticker fetch.
+
 ## [0.3.0] - 2026-07-02
 - Coordinated version bump to v0.3.0 across the SQA workspace.
 

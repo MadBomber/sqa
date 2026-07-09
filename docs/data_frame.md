@@ -32,9 +32,9 @@ A metadata storage class for stock information, separate from the price/volume d
 - `ticker` - Stock symbol (e.g., 'AAPL', 'MSFT')
 - `name` - Company name
 - `exchange` - Exchange symbol (NASDAQ, NYSE, etc.)
-- `source` - Data source (`:alpha_vantage`, `:yahoo_finance`)
+- `source` - Data source (`:fmp` (default), `:yahoo_finance`, `:alpha_vantage`)
 - `indicators` - Technical indicators configuration hash
-- `overview` - Company overview data from Alpha Vantage
+- `overview` - Company overview data (from FMP and/or Alpha Vantage)
 
 **Key Features**:
 - Dual initialization: from hash (JSON) or keyword arguments
@@ -47,11 +47,11 @@ A metadata storage class for stock information, separate from the price/volume d
 ### From Data Sources
 
 ```ruby
-# Using Alpha Vantage
+# Using the default source (FMP), with automatic fallback to Yahoo Finance
 stock = SQA::Stock.new(ticker: 'AAPL')
 df = stock.df  # SQA::DataFrame instance
 
-# Using Yahoo Finance
+# Explicitly choosing a source
 stock = SQA::Stock.new(ticker: 'MSFT', source: :yahoo_finance)
 df = stock.df
 ```
@@ -192,7 +192,7 @@ See [FPL Analysis Documentation](advanced/fpop.md) for more details.
 # From keyword arguments
 data = SQA::DataFrame::Data.new(
   ticker: 'AAPL',
-  source: :alpha_vantage,
+  source: :fmp,
   indicators: { rsi: 14, sma: [20, 50] }
 )
 
@@ -206,7 +206,7 @@ data = SQA::DataFrame::Data.new(json_data)
 ```ruby
 # Read attributes
 data.ticker        # => 'AAPL'
-data.source        # => :alpha_vantage
+data.source        # => :fmp
 data.indicators    # => { rsi: 14, sma: [20, 50] }
 
 # Write attributes
@@ -266,6 +266,43 @@ data = SQA::DataFrame::Data.new(json_data)
 
 ## Data Sources
 
+`SQA::Stock` defaults to **FMP** and automatically falls back to **Yahoo
+Finance** if the FMP fetch fails (rate limit, missing key, network). Each
+adapter exposes the same `self.recent(ticker, full:, from_date:)` interface
+and returns an `SQA::DataFrame` sorted **ascending** (oldest-first) as TA-Lib
+requires.
+
+### FMP (Financial Modeling Prep) — default
+
+**Location**: `lib/sqa/data_frame/fmp.rb` (class `SQA::DataFrame::Fmp`)
+
+```ruby
+SQA::DataFrame::Fmp.recent('AAPL', full: true)
+```
+
+**Requirements / notes**:
+- Environment variable: `FMP_API_KEY`
+- Free tier: ~250 requests/day, up to ~5 years of daily history
+- Chosen as the default because Alpha Vantage's free tier is only 25
+  requests/day (and its full history is now a premium-only feature)
+- No split/dividend-adjusted close; `:adj_close_price` is derived by
+  duplicating `:close_price`
+
+### Yahoo Finance — fallback
+
+**Location**: `lib/sqa/data_frame/yahoo_finance.rb` (class `SQA::DataFrame::YahooFinance`)
+
+```ruby
+SQA::DataFrame::YahooFinance.recent('AAPL', full: true)
+```
+
+**Features / notes**:
+- No API key required — calls Yahoo's undocumented `chart` JSON API (the
+  same endpoints finance.yahoo.com uses), via a curl cookie/crumb handshake
+- Set `YF_COOKIE` / `YF_CRUMB` (from a real browser session) to bypass the
+  handshake if Yahoo IP-rate-limits the crumb endpoint (429)
+- Unofficial API, so it can break if Yahoo changes their site
+
 ### Alpha Vantage
 
 **Location**: `lib/sqa/data_frame/alpha_vantage.rb`
@@ -274,22 +311,20 @@ data = SQA::DataFrame::Data.new(json_data)
 SQA::DataFrame::AlphaVantage.recent('AAPL', full: true)
 ```
 
-**Requirements**:
+**Requirements / notes**:
 - Environment variable: `AV_API_KEY` or `ALPHAVANTAGE_API_KEY`
-- Rate limiting: 5 calls/minute (free tier)
+- Free tier: 25 requests/day; `full: true` history is now premium-only, so
+  the adapter falls back to compact (~100 trading days) for free keys
+- No longer the default because of the restrictive daily quota
 
-### Yahoo Finance
+### Stooq (not currently usable)
 
-**Location**: `lib/sqa/data_frame/yahoo_finance.rb`
+**Location**: `lib/sqa/data_frame/stooq.rb`
 
-```ruby
-SQA::DataFrame::YahooFinance.recent('AAPL', full: true)
-```
-
-**Features**:
-- No API key required
-- Web scraping based (less reliable)
-- Good for testing and fallback
+stooq.com now serves a JavaScript proof-of-work bot challenge on its CSV
+endpoint, so a plain HTTP client can no longer reach it. The adapter is left
+in place (and would work again if that challenge is removed) but is not
+selectable as a working source today.
 
 ## Adding New Data Sources
 
@@ -300,6 +335,13 @@ To add a new data source adapter:
 3. Implement `self.recent(ticker, **options)` method
 4. Return data in Polars-compatible format
 5. Add column mapping if needed
+
+For a plain daily-OHLCV source with no adjusted close and a compact/full/
+`from_date` fetch window, `extend SQA::DataFrame::DailyPriceSource`
+(`lib/sqa/data_frame/daily_price_source.rb`) to inherit a shared `.recent`
+template — then you only provide a `COMPACT_DAYS` constant and a private
+`.fetch_dataframe(ticker, start_date:)` method. Both the FMP and Stooq
+adapters use this mixin.
 
 **Example**:
 

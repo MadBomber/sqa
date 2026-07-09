@@ -198,18 +198,19 @@ current_rsi = rsi.last  # Most recent RSI value
 
 ## Configuration
 
-SQA uses a hierarchical configuration system:
+SQA uses a hierarchical configuration system (built on `myway_config`):
 
 ```
-1. Default values (lowest priority)
-2. Environment variables (SQA_* prefix)
-3. Config file (~/.sqa.yml)
-4. Runtime settings (highest priority)
+1. Bundled defaults (lib/sqa/config/defaults.yml, lowest priority)
+2. XDG user config (~/.config/sqa/sqa.yml)
+3. Project config (./config/sqa.yml)
+4. Environment variables (SQA_* prefix)
+5. Programmatic / runtime settings (highest priority)
 ```
 
 **Key Settings:**
 ```yaml
-# ~/.sqa.yml
+# ~/.config/sqa/sqa.yml
 data_dir: ~/sqa_data
 log_level: info
 debug: false
@@ -219,7 +220,8 @@ lazy_update: false
 
 **Environment Variables:**
 ```bash
-export AV_API_KEY="your_alpha_vantage_key"
+export FMP_API_KEY="your_fmp_key"          # default price source
+export AV_API_KEY="your_alpha_vantage_key" # optional
 export SQA_DATA_DIR="~/my_data"
 export SQA_DEBUG=true
 ```

@@ -89,7 +89,7 @@ puts "Max Drawdown: #{results.max_drawdown}%"
 ## Core Features
 
 ### Data Management
-- **Multiple Data Sources**: Alpha Vantage, Yahoo Finance, CSV imports
+- **Multiple Data Sources**: FMP (default), Yahoo Finance (fallback), Alpha Vantage, CSV imports
 - **Polars DataFrames**: High-performance time series data manipulation
 - **Automatic Updates**: Keep historical data current
 

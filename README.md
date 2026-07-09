@@ -24,7 +24,7 @@
 - **High-Performance DataFrames** - Polars-based data structures for time series financial data
 - **150+ Technical Indicators** - Via the separate [`sqa-tai`](https://github.com/MadBomber/sqa-tai) gem (TA-Lib wrapper)
 - **Trading Strategies** - Framework for building and testing trading strategies
-- **Multiple Data Sources** - Alpha Vantage and Yahoo Finance adapters
+- **Multiple Data Sources** - FMP (default), Yahoo Finance (fallback), and Alpha Vantage adapters
 - **Stock Management** - Track stocks with historical prices and company metadata
 - **Statistical Analysis** - Comprehensive statistics on price data
 - **Ticker Validation** - Validate stock symbols against market exchanges
@@ -57,7 +57,7 @@
   - [Installation](#installation)
   - [Configuration](#configuration)
     - [Data Directory](#data-directory)
-    - [Alpha Vantage API Key](#alpha-vantage-api-key)
+    - [API Keys](#api-keys)
   - [Usage](#usage)
     - [Working with Stocks](#working-with-stocks)
     - [DataFrame Operations](#dataframe-operations)
@@ -67,8 +67,9 @@
   - [Interactive Console](#interactive-console)
   - [Architecture](#architecture)
   - [Data Sources](#data-sources)
+    - [FMP (Financial Modeling Prep)](#fmp-financial-modeling-prep--default)
+    - [Yahoo Finance](#yahoo-finance--fallback)
     - [Alpha Vantage](#alpha-vantage)
-    - [Yahoo Finance](#yahoo-finance)
   - [Contributing](#contributing)
   - [License](#license)
 
@@ -123,11 +124,24 @@ Create your data directory:
 mkdir ~/sqa_data
 ```
 
-### Alpha Vantage API Key
+### API Keys
 
-SQA uses Alpha Vantage for stock data. You'll need a free API key from [https://www.alphavantage.co/](https://www.alphavantage.co/)
+By default SQA fetches price data from **FMP (Financial Modeling Prep)** and
+automatically falls back to **Yahoo Finance** (no key required) if FMP fails.
+Alpha Vantage is still supported but is no longer the default because of its
+restrictive free-tier quota.
 
-Set the environment variable:
+Get a free FMP key from [https://site.financialmodelingprep.com/](https://site.financialmodelingprep.com/)
+and set the environment variable:
+
+```bash
+export FMP_API_KEY="your_api_key_here"
+```
+
+FMP's free tier allows ~250 requests/day and up to ~5 years of daily history.
+
+**Alpha Vantage (optional).** To use `source: :alpha_vantage`, get a free key
+from [https://www.alphavantage.co/](https://www.alphavantage.co/):
 
 ```bash
 export AV_API_KEY="your_api_key_here"
@@ -135,9 +149,11 @@ export AV_API_KEY="your_api_key_here"
 export ALPHAVANTAGE_API_KEY="your_api_key_here"
 ```
 
-The free tier allows:
-- 5 API calls per minute
-- 100 API calls per day
+Alpha Vantage's free tier allows only 25 requests/day, and full history is now
+a premium-only feature (free keys fall back to ~100 trading days).
+
+**Yahoo Finance** needs no key. If Yahoo IP-rate-limits the crumb endpoint,
+set `YF_COOKIE` / `YF_CRUMB` (from a browser session) to bypass the handshake.
 
 ## Usage
 
@@ -149,8 +165,8 @@ require 'sqa'
 # Initialize SQA
 SQA.init
 
-# Create or load a stock (automatically fetches/updates data from Alpha Vantage)
-aapl = SQA::Stock.new(ticker: 'AAPL', source: :alpha_vantage)
+# Create or load a stock (default source is FMP, with Yahoo Finance fallback)
+aapl = SQA::Stock.new(ticker: 'AAPL')
 #=> aapl with 1207 data points from 2019-01-02 to 2023-10-17
 
 # Access the DataFrame
@@ -940,7 +956,7 @@ For a complete web-based demonstration of SQA's capabilities, see the **[sqa_dem
 **Data Flow:**
 
 1. Create `SQA::Stock` with ticker symbol
-2. Stock fetches data from Alpha Vantage or Yahoo Finance
+2. Stock fetches data from FMP (default), Yahoo Finance (fallback), or Alpha Vantage
 3. Data stored in Polars-based `SQA::DataFrame`
 4. Apply technical indicators via `SQAI` / `SQA::TAI`
 5. Execute trading strategies to generate signals
@@ -949,41 +965,62 @@ For a complete web-based demonstration of SQA's capabilities, see the **[sqa_dem
 **Design Patterns:**
 
 - Plugin architecture for indicators and strategies
-- Data source abstraction (Alpha Vantage, Yahoo Finance)
+- Data source abstraction (FMP, Yahoo Finance, Alpha Vantage)
 - Delegation to Polars for DataFrame operations
 - Configuration hierarchy: defaults < environment variables < config file
 
 ## Data Sources
 
+`SQA::Stock` defaults to **FMP** and automatically falls back to **Yahoo
+Finance** if the FMP fetch fails. All adapters share the same
+`self.recent(ticker, full:, from_date:)` interface.
+
+### FMP (Financial Modeling Prep) — default
+
+- **URL:** [https://site.financialmodelingprep.com/](https://site.financialmodelingprep.com/)
+- **API Key:** Required (free tier available)
+- **Environment Variable:** `FMP_API_KEY`
+- **Free tier:** ~250 requests/day, up to ~5 years of daily history
+
+```ruby
+stock = SQA::Stock.new(ticker: 'GOOGL')          # source: :fmp is the default
+```
+
+### Yahoo Finance — fallback
+
+**No API key required** — calls Yahoo's undocumented `chart` JSON API.
+
+- **URL:** [https://finance.yahoo.com/](https://finance.yahoo.com/)
+- **Rate limiting:** Yahoo may IP-rate-limit the crumb endpoint; set
+  `YF_COOKIE` / `YF_CRUMB` from a browser session to bypass the handshake
+- Unofficial API, so it can break if Yahoo changes their site
+
+```ruby
+stock = SQA::Stock.new(ticker: 'AAPL', source: :yahoo_finance)
+```
+
 ### Alpha Vantage
 
-**Recommended data source** with a well-documented API.
-
 - **URL:** [https://www.alphavantage.co/](https://www.alphavantage.co/)
-- **API Key:** Required (free tier available)
-- **Environment Variable:** `AV_API_KEY` or `ALPHAVANTAGE_API_KEY`
-- **Rate Limits:** 5 calls/minute, 100 calls/day (free tier)
+- **API Key:** Required — `AV_API_KEY` or `ALPHAVANTAGE_API_KEY`
+- **Free tier:** 25 calls/day; full history is now premium-only (free keys
+  fall back to ~100 trading days)
 
 ```ruby
 stock = SQA::Stock.new(ticker: 'GOOGL', source: :alpha_vantage)
 ```
 
-### Yahoo Finance
+### Stooq (not currently usable)
 
-**No API available** - uses web scraping for historical data.
+stooq.com now serves a JavaScript proof-of-work bot challenge on its CSV
+endpoint, so `source: :stooq` cannot be reached by a plain HTTP client. The
+adapter remains in the codebase in case that challenge is lifted.
 
-- **URL:** [https://finance.yahoo.com/](https://finance.yahoo.com/)
-- **Manual Download:** Download CSV files and place in `SQA.data_dir`
-- **Filename Format:** `ticker.csv` (lowercase), e.g., `aapl.csv`
+### CSV files
 
-To manually download:
-1. Visit [https://finance.yahoo.com/quote/AAPL/history?p=AAPL](https://finance.yahoo.com/quote/AAPL/history?p=AAPL)
-2. Download historical data as CSV
-3. Move to your data directory as `aapl.csv`
-
-```ruby
-stock = SQA::Stock.new(ticker: 'AAPL', source: :yahoo_finance)
-```
+Any source can be short-circuited by placing a cached `ticker.csv` (lowercase)
+in `SQA.data_dir` — SQA loads it directly and only hits the network to append
+newer rows.
 
 ## Contributing
 
