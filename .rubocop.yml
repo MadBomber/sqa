@@ -107,6 +107,7 @@ Naming/VariableNumber:
     - 'lib/api/alpha_vantage_api.rb'
     - 'lib/sqa/tai/overlap_studies.rb'
     - 'lib/sqa/tai/momentum_indicators.rb'
+    - 'lib/sqa/data_frame/yahoo_finance.rb' # period1/period2 mirror Yahoo's own chart API query params verbatim
 
 # sqa-cli's gem entry point must be lib/sqa-cli.rb (hyphen) so that
 # `require 'sqa-cli'` resolves by exact match on the gem name; renaming to

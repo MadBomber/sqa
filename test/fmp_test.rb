@@ -143,12 +143,17 @@ class FmpTest < Minitest::Test
 
   def test_fmp_api_key_reads_env
     prev = SQA.instance_variable_get(:@fmp_api_key)
+    saved_env = ENV.fetch("FMP_API_KEY", nil)
     SQA.instance_variable_set(:@fmp_api_key, nil)
     ENV["FMP_API_KEY"] = "env-key-123"
 
     assert_equal "env-key-123", SQA.fmp_api_key
   ensure
-    ENV.delete("FMP_API_KEY")
+    if saved_env
+      ENV["FMP_API_KEY"] = saved_env
+    else
+      ENV.delete("FMP_API_KEY")
+    end
     SQA.instance_variable_set(:@fmp_api_key, prev)
   end
 

@@ -6,9 +6,11 @@ require 'csv'
 require 'polars'
 
 require_relative 'data_frame/data'
+require_relative 'data_frame/daily_price_source'
 require_relative 'data_frame/yahoo_finance'
 require_relative 'data_frame/alpha_vantage'
 require_relative 'data_frame/stooq'
+require_relative 'data_frame/fmp'
 
 # High-performance DataFrame wrapper around Polars for time series data manipulation.
 # Provides convenience methods for stock market data while leveraging Polars' Rust-backed

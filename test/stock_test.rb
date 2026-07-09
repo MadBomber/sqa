@@ -143,11 +143,11 @@ class StockTest < Minitest::Test
     assert_respond_to result, :most_actively_traded
   end
 
-  def test_default_source_is_alpha_vantage
+  def test_default_source_is_fmp
     skip "Requires API key and network access" unless ENV['RUN_INTEGRATION_TESTS']
 
     stock = SQA::Stock.new(ticker: 'AAPL')
-    assert_equal :alpha_vantage, stock.source
+    assert_equal :fmp, stock.source
   end
 
   def test_connection_constant_exists

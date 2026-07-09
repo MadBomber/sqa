@@ -14,6 +14,15 @@
 class SQA::Stock
   extend Forwardable
 
+  # Fetch source tried when the requested :source's fresh (uncached) fetch
+  # fails and it isn't already this source. Alpha Vantage's free tier is
+  # 25 requests/day (and now caps free-tier history at ~100 trading days),
+  # so :fmp (~250 requests/day, up to ~5 years of history) is the default,
+  # with Yahoo Finance's unofficial API (no key, no official quota, but
+  # liable to its own IP-based rate limiting) as a second attempt before
+  # giving up.
+  FALLBACK_SOURCE = :yahoo_finance
+
   # Default Alpha Vantage API URL
   # @return [String] The base URL for Alpha Vantage API
   ALPHA_VANTAGE_URL = "https://www.alphavantage.co".freeze
@@ -71,14 +80,18 @@ class SQA::Stock
   # Creates a new Stock instance and loads or fetches its data.
   #
   # @param ticker [String] The stock ticker symbol (e.g., 'AAPL', 'MSFT')
-  # @param source [Symbol] The data source to use (:alpha_vantage or :yahoo_finance)
-  # @raise [SQA::DataFetchError] If data cannot be fetched and no cached data exists
+  # @param source [Symbol] The data source to use (:fmp, :yahoo_finance, or
+  #   :alpha_vantage; :stooq also exists but stooq.com now requires solving
+  #   a JavaScript proof-of-work challenge, so it no longer works from a
+  #   plain HTTP client)
+  # @raise [SQA::DataFetchError] If data cannot be fetched (from :source or
+  #   the FALLBACK_SOURCE) and no cached data exists
   #
   # @example
   #   stock = SQA::Stock.new(ticker: 'AAPL')
   #   stock = SQA::Stock.new(ticker: 'GOOG', source: :yahoo_finance)
   #
-  def initialize(ticker:, source: :alpha_vantage)
+  def initialize(ticker:, source: :fmp)
     @ticker = ticker.downcase
     @source = source
 
@@ -240,7 +253,7 @@ class SQA::Stock
     else
       # Fetch fresh data from source (applies transformers and mapping)
       begin
-        @df = @klass.recent(@ticker, full: true)
+        @df = fetch_fresh_dataframe
         @df.to_csv(@df_path)
         return
       rescue StandardError => e
@@ -254,6 +267,23 @@ class SQA::Stock
     end
 
     update_dataframe_with_recent_data
+  end
+
+  # Fetches the full price history from @klass (the requested :source),
+  # falling back to FALLBACK_SOURCE if that fails and it isn't already the
+  # source in use. One source's failure (rate limit, missing key, network)
+  # doesn't necessarily mean the other's will too.
+  #
+  # @return [SQA::DataFrame]
+  def fetch_fresh_dataframe
+    @klass.recent(@ticker, full: true)
+  rescue StandardError => e
+    fallback_klass = "SQA::DataFrame::#{FALLBACK_SOURCE.to_s.camelize}".constantize
+    raise if @klass == fallback_klass
+
+    warn "Warning: Could not fetch #{@ticker} from #{@source} (#{e.class}: #{e.message}). " \
+         "Trying #{FALLBACK_SOURCE} instead."
+    fallback_klass.recent(@ticker, full: true)
   end
 
   # Fetches recent data from API and appends to existing DataFrame.
@@ -296,10 +326,11 @@ class SQA::Stock
     # Don't update if we're in lazy update mode
     return false if SQA.config.lazy_update
 
-    # Don't update if we don't have an API key (only relevant for Alpha Vantage)
-    if @source == :alpha_vantage
+    # Don't update if we don't have an API key (only relevant for sources
+    # that require one -- Yahoo Finance doesn't)
+    if %i[alpha_vantage fmp].include?(@source)
       begin
-        SQA.av_api_key
+        @source == :alpha_vantage ? SQA.av_api_key : SQA.fmp_api_key
       rescue SQA::ConfigurationError
         return false
       end

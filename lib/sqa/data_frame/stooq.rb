@@ -23,6 +23,8 @@ require 'polars'
 
 class SQA::DataFrame
   class Stooq
+    extend DailyPriceSource
+
     CONNECTION  = Faraday.new(url: 'https://stooq.com')
     HEADERS     = YahooFinance::HEADERS
 
@@ -57,44 +59,9 @@ class SQA::DataFrame
 
     ################################################################
 
-    # Get recent daily data from STOOQ.
-    #
-    # ticker    String  the security to retrieve (e.g. "AAPL", "^SPX", "VOD.UK")
-    # full      Boolean whether to fetch full available history (true) or just
-    #                   the last COMPACT_DAYS days (false)
-    # from_date Date    optional; fetch data strictly AFTER this date (for
-    #                   incremental updates). Overrides the compact window.
-    #
-    # Returns: SQA::DataFrame sorted ASCENDING (oldest to newest) for TA-Lib.
-    def self.recent(ticker, full: false, from_date: nil)
-      start_date =
-        if from_date
-          from_date
-        elsif full
-          nil
-        else
-          Date.today - COMPACT_DAYS
-        end
-
-      sqa_df = fetch_dataframe(ticker, start_date: start_date)
-
-      # Exclude the from_date itself (> not >=) so an incremental update that
-      # overlaps the last cached day doesn't reintroduce a duplicate row.
-      if from_date
-        sqa_df.data = sqa_df.data.filter(Polars.col("timestamp") > from_date.to_s)
-      end
-
-      # STOOQ's daily feed has no adjusted close; duplicate close_price so that
-      # strategies expecting :adj_close_price keep working.
-      sqa_df.data = sqa_df.data.with_columns(
-        sqa_df.data["close_price"].alias("adj_close_price")
-      )
-
-      # Defensive: guarantee ascending (oldest-first) order for TA-Lib.
-      sqa_df.data = sqa_df.data.sort("timestamp", descending: false)
-
-      sqa_df
-    end
+    # .recent(ticker, full:, from_date:) is provided by DailyPriceSource,
+    # extended above; it calls .fetch_dataframe (below) for the actual HTTP
+    # request and CSV parsing.
 
     # Fetches one page of daily price CSV from STOOQ and wraps it as an
     # SQA::DataFrame. Raises ApiError when STOOQ responds with its rate-limit
