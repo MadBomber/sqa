@@ -182,6 +182,12 @@ class ConfigTest < Minitest::Test
     SQA::Config.reset
 
     assert_equal Nenv.home + "/sqa_data", SQA.config.data_dir
+  ensure
+    # Config.reset discards the sandbox the suite installed, leaving data_dir
+    # pointing at a real directory. Restore it here rather than relying on the
+    # next test's isolation guard to notice.
+    SQA.config.data_dir = SQA_TEST_DATA_DIR
+    SQA::Store.reset!
   end
 
   def test_responds_to_from_file

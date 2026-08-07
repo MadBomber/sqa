@@ -18,6 +18,13 @@
 ---
 defaults:
   data_dir: ~/sqa_data
+  # SQLite stores, both resolved relative to data_dir. They are separate files
+  # because sqa.db is disposable (re-fetchable market data) while portfolio.db
+  # is not (the user's own trade record).
+  database_filename: sqa.db
+  portfolio_database_filename: portfolio.db
+  # Legacy CSV export targets, retained for import/export only -- these are no
+  # longer where portfolio state lives.
   portfolio_filename: portfolio.csv
   trades_filename: trades.csv
   log_level: :info

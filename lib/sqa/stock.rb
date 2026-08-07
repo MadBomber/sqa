@@ -91,15 +91,21 @@ class SQA::Stock
   #   stock = SQA::Stock.new(ticker: 'AAPL')
   #   stock = SQA::Stock.new(ticker: 'GOOG', source: :yahoo_finance)
   #
-  def initialize(ticker:, source: :fmp)
+  # @param ticker [String] The stock ticker symbol
+  # @param source [Symbol] The data source to use
+  # @param store [SQA::Store::Market, nil] Persistence layer; defaults to the
+  #   configured `sqa.db`. Injectable so a Stock can be tested against a
+  #   throwaway database.
+  def initialize(ticker:, source: :fmp, store: nil)
     @ticker = ticker.downcase
     @source = source
+    @store  = store
 
-    @data_path = SQA.data_dir + "#{@ticker}.json"
-    @df_path = SQA.data_dir + "#{@ticker}.csv"
-
-    # Validate ticker if validation data is available and cached data doesn't exist
-    if !(@data_path.exist? && @df_path.exist?) && !SQA::Ticker.valid?(ticker) && $VERBOSE
+    # Validate the ticker only when nothing is cached and the result would
+    # actually be reported. $VERBOSE is tested first because SQA::Ticker.valid?
+    # can trigger a download of the ticker universe, and there is no reason to
+    # pay for that to build a warning nobody will see.
+    if $VERBOSE && !cached? && !SQA::Ticker.valid?(ticker)
       warn "Warning: Ticker #{ticker} could not be validated. Proceeding anyway."
     end
 
@@ -110,14 +116,25 @@ class SQA::Stock
     update_dataframe
   end
 
-  # Loads existing data from cache or creates new data structure.
-  # If cached data exists, loads from JSON file. Otherwise creates
-  # minimal structure and attempts to fetch overview from API.
+  # The market store backing this stock.
+  #
+  # @return [SQA::Store::Market]
+  def store = @store ||= SQA::Store.market
+
+  # Whether both metadata and prices are already held for this ticker.
+  #
+  # @return [Boolean]
+  def cached? = store.stock?(@ticker) && store.price_count(@ticker).positive?
+
+  # Loads existing metadata from the store, or creates a minimal structure and
+  # attempts to fetch an overview from the API.
   #
   # @return [void]
   def load_or_create_data
-    if @data_path.exist?
-      @data = SQA::DataFrame::Data.new(JSON.parse(@data_path.read))
+    record = store.stock(@ticker)
+
+    if record
+      @data = SQA::DataFrame::Data.new(record)
     else
       # Create minimal data structure
       create_data
@@ -188,11 +205,18 @@ class SQA::Stock
     @data.overview = (@data.overview || {}).merge(fmp)
   end
 
-  # Persists the stock's metadata to a JSON file.
+  # Persists the stock's metadata to the market store.
   #
-  # @return [Integer] Number of bytes written
+  # @return [String] The ticker written
   def save_data
-    @data_path.write(@data.to_json)
+    store.save_stock(
+      ticker:     @data.ticker || @ticker,
+      source:     @data.source || @source,
+      name:       @data.name,
+      exchange:   @data.exchange,
+      overview:   @data.overview   || {},
+      indicators: @data.indicators || {}
+    )
   end
 
   # @!method ticker
@@ -217,56 +241,63 @@ class SQA::Stock
   #
   # @return [void]
   # @raise [SQA::DataFetchError] If data cannot be fetched and no cache exists
+  # Loads price data into {#df} from the store, adopting a legacy CSV or
+  # fetching from the API if the store holds nothing yet.
+  #
+  # The column-renaming and adj_close_price migrations that this method used to
+  # perform on every load are gone: the `prices` table names its columns, so
+  # there is no longer a format to sniff.
+  #
+  # @return [void]
+  # @raise [SQA::DataFetchError] If data cannot be fetched and nothing is cached
   def update_dataframe
-    if @df_path.exist?
-      # Load cached CSV - transformers already applied when data was first fetched
-      # Don't reapply them as columns are already in correct format
-      @df = SQA::DataFrame.load(source: @df_path)
+    rows = store.prices(@ticker)
+    rows = adopt_legacy_csv if rows.empty?
 
-      migrated = false
-
-      # Migration 1: Rename old column names to new convention
-      # Old files may have: open, high, low, close
-      # New files should have: open_price, high_price, low_price, close_price
-      if @df.columns.include?("open") && !@df.columns.include?("open_price")
-        old_to_new_mapping = {
-          "open"   => "open_price",
-          "high"   => "high_price",
-          "low"    => "low_price",
-          "close"  => "close_price"
-        }
-        @df.rename_columns!(old_to_new_mapping)
-        migrated = true
-      end
-
-      # Migration 2: Add adj_close_price column if missing (for old cached files)
-      # This ensures compatibility when appending new data that includes this column
-      unless @df.columns.include?("adj_close_price")
-        @df.data = @df.data.with_columns(
-          @df.data["close_price"].alias("adj_close_price")
-        )
-        migrated = true
-      end
-
-      # Save migrated DataFrame to avoid repeating migration
-      @df.to_csv(@df_path) if migrated
-    else
-      # Fetch fresh data from source (applies transformers and mapping)
-      begin
-        @df = fetch_fresh_dataframe
-        @df.to_csv(@df_path)
-        return
-      rescue StandardError => e
-        # If we can't fetch data, raise a more helpful error
-        raise SQA::DataFetchError.new(
-          "Unable to fetch data for #{@ticker}. Please ensure API key is set or provide cached CSV " \
-          "file at #{@df_path}. Error: #{e.message}",
-          original: e
-        )
-      end
+    if rows.empty?
+      @df = fetch_and_store_prices
+      return
     end
 
+    @df = SQA::DataFrame.from_aofh(rows)
+
     update_dataframe_with_recent_data
+  end
+
+  # Adopts a pre-SQLite `<ticker>.csv` from data_dir into the store.
+  #
+  # This is what makes upgrading free: the first run after the store landed
+  # finds the old cache and imports it instead of re-fetching history the user
+  # already had. The source file is read, never modified or removed.
+  #
+  # @return [Array<Hash>] The rows now held, or [] if there was no legacy file
+  def adopt_legacy_csv
+    legacy = SQA.data_dir + "#{@ticker}.csv"
+    return [] unless legacy.exist?
+
+    rows = SQA::Store::Importer.price_rows_from_csv(legacy)
+    return [] if rows.empty?
+
+    persist_prices(rows)
+    warn "Adopted legacy #{legacy.basename} into the market store" if $VERBOSE
+
+    store.prices(@ticker)
+  end
+
+  # Fetches full history and writes it to the store.
+  #
+  # @return [SQA::DataFrame]
+  # @raise [SQA::DataFetchError]
+  def fetch_and_store_prices
+    df = fetch_fresh_dataframe
+    persist_prices(df.to_aofh)
+    df
+  rescue StandardError => e
+    raise SQA::DataFetchError.new(
+      "Unable to fetch data for #{@ticker}. Please ensure an API key is set, or import an existing " \
+      "cache with SQA::Store::Importer. Error: #{e.message}",
+      original: e
+    )
   end
 
   # Fetches the full price history from @klass (the requested :source),
@@ -294,20 +325,31 @@ class SQA::Stock
     return unless should_update?
 
     begin
-      # CSV is sorted ascending (oldest first, TA-Lib compatible), so .last gets the most recent date
+      # Rows are ascending (oldest first, TA-Lib compatible), so .last is the most recent date
       from_date = Date.parse(@df["timestamp"].to_a.last)
       df_2 = @klass.recent(@ticker, from_date: from_date)
 
       if df_2 && df_2.size.positive?
-        # Use concat_and_deduplicate! to prevent duplicate timestamps and maintain ascending sort
-        @df.concat_and_deduplicate!(df_2)
-        @df.to_csv(@df_path)
+        # The (ticker, timestamp) primary key absorbs any overlap with what we
+        # already hold, so no in-memory deduplication is needed first.
+        store.save_prices(@ticker, df_2.to_aofh)
+        @df = SQA::DataFrame.from_aofh(store.prices(@ticker))
       end
     rescue StandardError => e
       # Log warning but don't fail - we have cached data
       # Common causes: rate limits, network issues, API errors
       warn "Warning: Could not update #{@ticker} from API (#{e.class}: #{e.message}). Using cached data."
     end
+  end
+
+  # Writes rows for this ticker, creating the parent stocks row if the price
+  # data arrived before any metadata did.
+  #
+  # @param rows [Array<Hash>]
+  # @return [Integer] Rows written
+  def persist_prices(rows)
+    store.save_stock(ticker: @ticker, source: @source) unless store.stock?(@ticker)
+    store.save_prices(@ticker, rows)
   end
 
   # @deprecated Use {#update_dataframe} instead. Will be removed in v1.0.0

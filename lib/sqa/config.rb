@@ -48,10 +48,14 @@ module SQA
   #   @return [String, nil] Path to dump the current configuration
   # @!attribute [rw] data_dir
   #   @return [String] Directory for data storage (default: ~/sqa_data)
+  # @!attribute [rw] database_filename
+  #   @return [String] Market database filename, relative to data_dir (default: sqa.db)
+  # @!attribute [rw] portfolio_database_filename
+  #   @return [String] Portfolio database filename, relative to data_dir (default: portfolio.db)
   # @!attribute [rw] portfolio_filename
-  #   @return [String] Portfolio CSV filename (default: portfolio.csv)
+  #   @return [String] Portfolio CSV filename for import/export (default: portfolio.csv)
   # @!attribute [rw] trades_filename
-  #   @return [String] Trades CSV filename (default: trades.csv)
+  #   @return [String] Trades CSV filename for import/export (default: trades.csv)
   # @!attribute [rw] log_level
   #   @return [Symbol] Log level (:debug, :info, :warn, :error, :fatal)
   # @!attribute [rw] debug
@@ -74,6 +78,8 @@ module SQA
                 :config_file,
                 :dump_config,
                 :data_dir,
+                :database_filename,
+                :portfolio_database_filename,
                 :portfolio_filename,
                 :trades_filename,
                 :log_level,

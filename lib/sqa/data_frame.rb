@@ -196,6 +196,16 @@ class SQA::DataFrame
     @data.columns.to_h { |col| [col.to_sym, @data[col].to_a] }
   end
 
+  # Returns the rows as an array of hashes with String keys — the inverse of
+  # {.from_aofh}, and the shape {SQA::Store::Market#save_prices} expects.
+  #
+  # @return [Array<Hash{String => Object}>]
+  #
+  # @example
+  #   df.to_aofh.first  # => { "timestamp" => "1999-11-01", "close_price" => 77.62, ... }
+  #
+  def to_aofh = @data.rows(named: true)
+
   # Writes the DataFrame to a CSV file.
   #
   # @param path_to_file [String, Pathname] Path to output CSV file

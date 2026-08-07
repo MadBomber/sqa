@@ -54,6 +54,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'ruby_llm-mcp'
   spec.add_dependency 'shared_tools'
   spec.add_dependency 'sqa-tai'
+  spec.add_dependency 'sqlite3', '~> 2.0'  # backing store for sqa.db / portfolio.db
   spec.add_dependency 'tty-table'
   spec.add_dependency 'eps'
   spec.add_dependency 'polars-df'

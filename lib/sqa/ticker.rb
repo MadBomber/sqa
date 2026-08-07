@@ -1,7 +1,9 @@
 # sqa/lib/sqa/ticker.rb
 #
 # Stock ticker symbol validation and lookup using the dumbstockapi.com service.
-# Downloads and caches a CSV file containing ticker symbols, company names, and exchanges.
+# The ticker universe is downloaded once and kept in the market store's
+# `tickers` table, replacing the old scan for `dumbstockapi-*.csv` files in the
+# data directory.
 #
 # @example Validating a ticker
 #   SQA::Ticker.valid?('AAPL')  # => true
@@ -13,14 +15,26 @@
 #   info[:exchange]  # => "NASDAQ"
 #
 class SQA::Ticker
-  # @return [String] Prefix for downloaded CSV filenames
+  # @return [String] Prefix of the legacy downloaded CSV filenames
   FILENAME_PREFIX = "dumbstockapi".freeze
 
   # @return [Faraday::Connection] Connection to dumbstockapi.com
   CONNECTION      = Faraday.new(url: "https://dumbstockapi.com")
 
+  # How many times a single process will attempt the download before giving up
+  # and answering lookups as "unknown".
+  DOWNLOAD_ATTEMPTS = 3
+
   class << self
-    # Downloads ticker data from dumbstockapi.com and saves to data directory.
+    # @return [SQA::Store::Market] The store holding the ticker universe
+    def store = @store ||= SQA::Store.market
+
+    # Overrides the backing store. Chiefly for tests.
+    #
+    # @param value [SQA::Store::Market, nil]
+    attr_writer :store
+
+    # Downloads the ticker universe and replaces the stored snapshot.
     #
     # @param country [String] Country code for ticker list (default: "US")
     # @return [Integer] HTTP status code from the download request
@@ -30,68 +44,54 @@ class SQA::Ticker
     #
     def download(country = "US")
       response = CONNECTION.get("/stock?format=csv&countries=#{country.upcase}").to_hash
+      return response[:status] unless response[:status] == 200
 
-      if response[:status] == 200
-        filename = response[:response_headers]["content-disposition"].split('=').last.gsub('"', '')
-        out_path = Pathname.new(SQA.config.data_dir) + filename
-        out_path.write response[:body]
+      rows = CSV.parse(response[:body], headers: true).map do |row|
+        row.to_h.merge("country" => country.upcase)
       end
+      store.replace_tickers(rows)
 
       response[:status]
     end
 
-    # Loads ticker data from cached CSV or downloads if not available.
-    # Retries download up to 3 times if no cached file exists.
+    # Ensures the universe is present, downloading it if the store is empty.
     #
-    # @return [Hash{String => Hash}] Hash mapping ticker symbols to info hashes
+    # The download is attempted at most once per process: a machine with no
+    # network should answer lookups as "unknown" quickly rather than retrying
+    # on every single validation.
+    #
+    # @return [Integer] Number of symbols available
     def load
-      tries = 0
-      found = false
+      return store.ticker_count if store.ticker_count.positive? || @download_attempted
 
-      until found || tries >= 3
-        files     = Pathname.new(SQA.config.data_dir).children.select { |c| c.basename.to_s.start_with?(FILENAME_PREFIX) }.sort
-        if files.empty?
-          begin
-            download
-          rescue StandardError => e
-            warn "Warning: Could not download ticker list: #{e.message}" if $VERBOSE
-          end
-          tries += 1
-        else
-          found = true
-        end
+      @download_attempted = true
+      attempt_download
+
+      if store.ticker_count.zero? && $VERBOSE
+        warn "Warning: No ticker validation data available. Proceeding without validation."
       end
 
-      if files.empty?
-        warn "Warning: No ticker validation data available. Proceeding without validation." if $VERBOSE
-        return {}
-      end
-
-      load_from_csv files.last
+      store.ticker_count
     end
 
-    # Loads ticker data from a specific CSV file.
+    # Loads ticker data from a CSV file into the store.
     #
-    # @param csv_path [Pathname, String] Path to CSV file
-    # @return [Hash{String => Hash}] Hash mapping ticker symbols to info hashes
+    # @param csv_path [Pathname, String] Path to a dumbstockapi-format CSV
+    # @return [Integer] Number of symbols written
     def load_from_csv(csv_path)
-      @data ||= {}
-      CSV.foreach(csv_path, headers: true) do |row|
-        @data[row["ticker"]] = {
-          name:     row["name"],
-          exchange: row["exchange"]
-        }
-      end
-
-      @data
+      store.replace_tickers(CSV.read(csv_path.to_s, headers: true).map(&:to_h))
     end
 
-    # Returns the cached ticker data, loading it if necessary.
+    # The whole ticker universe as a Hash, for backward compatibility.
     #
-    # @return [Hash{String => Hash}] Hash mapping ticker symbols to info hashes
+    # Materializes every symbol; {#lookup} and {#valid?} query the store
+    # directly and should be preferred.
+    #
+    # @return [Hash{String => Hash}] Symbol to `{ name:, exchange: }`
     def data
-      @data ||= {}
-      @data.empty? ? load : @data
+      load
+
+      store.tickers.to_h { |row| [row["symbol"], { name: row["name"], exchange: row["exchange"] }] }
     end
 
     # Looks up information for a specific ticker symbol.
@@ -104,11 +104,16 @@ class SQA::Ticker
     #   SQA::Ticker.lookup('FAKE')  # => nil
     #
     def lookup(ticker)
-      return nil if ticker.nil? || ticker.to_s.empty?
-      data[ticker.to_s.upcase]
+      return nil if blank?(ticker)
+
+      load
+      row = store.ticker(ticker)
+      return nil unless row
+
+      { name: row["name"], exchange: row["exchange"] }
     end
 
-    # Checks if a ticker symbol is valid (exists in the data).
+    # Checks if a ticker symbol is valid (exists in the universe).
     #
     # @param ticker [String, nil] Ticker symbol to validate
     # @return [Boolean] true if ticker exists, false otherwise
@@ -118,16 +123,32 @@ class SQA::Ticker
     #   SQA::Ticker.valid?(nil)     # => false
     #
     def valid?(ticker)
-      return false if ticker.nil? || ticker.to_s.empty?
-      data.key?(ticker.to_s.upcase)
+      return false if blank?(ticker)
+
+      load
+      store.valid_ticker?(ticker)
     end
 
-    # Resets the cached ticker data.
+    # Clears the memoized store handle and re-arms the download attempt.
     # Useful for testing to force a fresh load.
     #
-    # @return [Hash] Empty hash
+    # @return [nil]
     def reset!
-      @data = {}
+      @store = nil
+      @download_attempted = false
+      nil
+    end
+
+    private
+
+    def blank?(ticker) = ticker.nil? || ticker.to_s.empty?
+
+    def attempt_download
+      DOWNLOAD_ATTEMPTS.times do
+        return if download == 200
+      rescue StandardError => e
+        warn "Warning: Could not download ticker list: #{e.message}" if $VERBOSE
+      end
     end
   end
 end
