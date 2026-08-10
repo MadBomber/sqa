@@ -54,10 +54,17 @@ class SQA::DataFrame
       :volume          # 6
     ].freeze
 
-    # Calendar range Yahoo's chart endpoint requests for a "compact"
-    # (full: false) fetch when no from_date is given. Mirrors the other
-    # adapters' ~200-calendar-day COMPACT_DAYS window.
-    COMPACT_RANGE = '6mo'
+    # Calendar days requested for a "compact" (full: false) fetch when no
+    # from_date is given. Matches Fmp and Stooq's COMPACT_DAYS.
+    COMPACT_DAYS = 200
+
+    # period1 used for a full-history fetch. Yahoo clamps this to the symbol's
+    # actual listing date, so it just means "everything you have".
+    EARLIEST_DATE = Date.new(1970, 1, 1)
+
+    # Largest plausible gap between consecutive daily bars: a three-day weekend
+    # plus stacked holidays.
+    MAX_DAILY_GAP = 5
 
     class << self
       attr_accessor :cookie, :crumb, :auth_at
@@ -69,20 +76,19 @@ class SQA::DataFrame
     #
     # ticker    String  the security to retrieve (e.g. "AAPL")
     # full      Boolean whether to fetch full available history (true) or
-    #                   just the last COMPACT_RANGE (false)
+    #                   just the last COMPACT_DAYS (false)
     # from_date Date    optional; fetch data strictly AFTER this date (for
     #                   incremental updates). Overrides the compact window.
     #
     # Returns: SQA::DataFrame sorted ASCENDING (oldest to newest) for TA-Lib.
     def self.recent(ticker, full: false, from_date: nil)
-      result =
-        if from_date
-          chart(ticker, period1: from_date, period2: Date.today + 1)
-        else
-          chart(ticker, range: full ? 'max' : COMPACT_RANGE)
-        end
+      period1 = from_date || (full ? EARLIEST_DATE : Date.today - COMPACT_DAYS)
+      result  = chart(ticker, period1:, period2: Date.today + 1)
+      rows    = rows_from_chart(result)
 
-      sqa_df = SQA::DataFrame.new(rows_from_chart(result))
+      ensure_daily!(ticker, rows)
+
+      sqa_df = SQA::DataFrame.new(rows)
 
       # Exclude the from_date itself (> not >=) so an incremental update that
       # overlaps the last cached day doesn't reintroduce a duplicate row.
@@ -95,19 +101,23 @@ class SQA::DataFrame
       sqa_df
     end
 
-    # Fetch the chart JSON for `ticker`. Pass either `range:` (e.g. "max",
-    # "6mo") or an explicit `period1:`/`period2:` (Date, converted to Unix
-    # seconds) window, not both.
+    # Fetch the chart JSON for `ticker` over an explicit period1/period2 window
+    # (Dates, converted to Unix seconds).
+    #
+    # Yahoo's `range` parameter is deliberately not supported. Asking for
+    # `range=max&interval=1d` makes Yahoo silently downsample -- it answers
+    # with weekly or quarterly bars while still reporting a 1d interval, and
+    # those land in a daily series looking entirely legitimate. An explicit
+    # window returns true daily data, so the option that invites the mistake
+    # is simply not offered.
     #
     # @return [Hash] the chart.result[0] payload
-    def self.chart(ticker, range: nil, period1: nil, period2: nil)
-      params = { interval: '1d' }
-      if period1
-        params[:period1] = period1.to_time.to_i
-        params[:period2] = period2.to_time.to_i
-      else
-        params[:range] = range
-      end
+    def self.chart(ticker, period1:, period2:)
+      params = {
+        interval: '1d',
+        period1:  period1.to_time.to_i,
+        period2:  period2.to_time.to_i
+      }
 
       body = get_json("/v8/finance/chart/#{ticker.upcase}", params)
 
@@ -121,6 +131,32 @@ class SQA::DataFrame
     end
     private_class_method :chart
 
+    # Raises unless `rows` really are daily bars.
+    #
+    # Yahoo answers a 1d request with coarser data rather than an error when it
+    # decides the window is too wide, so granularity has to be checked rather
+    # than trusted -- weekly bars stored as daily would silently corrupt every
+    # indicator computed from them. The median gap is used because a genuine
+    # daily series still contains long holiday breaks.
+    #
+    # @param ticker [String]
+    # @param rows [Array<Hash>] rows from {rows_from_chart}
+    # @return [void]
+    # @raise [ApiError] if the series is coarser than daily
+    def self.ensure_daily!(ticker, rows)
+      return if rows.size < 3
+
+      dates = rows.map { |row| Date.parse(row['timestamp']) }.sort
+      gaps  = dates.each_cons(2).map { |a, b| (b - a).to_i }.sort
+      median = gaps[gaps.size / 2]
+      return if median <= MAX_DAILY_GAP
+
+      ApiError.raise(
+        "Yahoo Finance returned #{median}-day bars for #{ticker}, not daily " \
+        "(#{rows.size} rows over #{dates.first}..#{dates.last})"
+      )
+    end
+
     # Convert one chart() result into an array of row Hashes ready for
     # Polars::DataFrame.new, using SQA's canonical column names directly.
     def self.rows_from_chart(result)
@@ -133,7 +169,10 @@ class SQA::DataFrame
 
       timestamps.zip(*series).filter_map { |row| row_from_chart(row) }
     end
-    private_class_method :rows_from_chart
+    # Deliberately public: Yahoo rate-limits the chart endpoint by network
+    # path, so bin/sqa-yf-fetch fetches the same JSON from inside a real
+    # browser and needs to convert it. Parsing lives here, in one place,
+    # rather than being duplicated by that caller.
 
     # One row from the parallel arrays zipped in rows_from_chart:
     # [timestamp, open, high, low, close, volume, adjclose]. Returns nil for

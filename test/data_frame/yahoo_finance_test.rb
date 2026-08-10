@@ -149,7 +149,116 @@ class YahooFinanceTest < Minitest::Test
     assert df.size.positive?
   end
 
+  # -- daily-granularity guard ----------------------------------------------
+
+  # Yahoo answers `range=max&interval=1d` with weekly or quarterly bars while
+  # still reporting a 1d interval. Stored as daily, those silently corrupt
+  # every indicator computed from them, so recent() verifies the spacing.
+
+  # Builds a chart result with `count` bars spaced `step` days apart.
+
+  def test_recent_accepts_a_daily_series
+    df = with_stubbed_chart(chart_result_spaced(count: 10, step: 1)) do
+      SQA::DataFrame::YahooFinance.recent('AAPL', full: true)
+    end
+
+    assert_equal 10, df.size
+  end
+
+  def test_recent_tolerates_weekend_and_holiday_gaps
+    # Trading days only: Mon-Fri with a three-day weekend between weeks.
+    stamps = [0, 1, 2, 3, 4, 7, 8, 9, 10, 11].map { |d| (Date.new(2020, 1, 6) + d).to_time.to_i }
+    result = chart_result_spaced(count: 10, step: 1).merge('timestamp' => stamps)
+
+    df = with_stubbed_chart(result) { SQA::DataFrame::YahooFinance.recent('AAPL', full: true) }
+
+    assert_equal 10, df.size, 'a real daily series contains weekend gaps'
+  end
+
+  def test_recent_rejects_weekly_bars
+    error = assert_raises(ApiError) do
+      with_stubbed_chart(chart_result_spaced(count: 10, step: 7)) do
+        SQA::DataFrame::YahooFinance.recent('AAPL', full: true)
+      end
+    end
+
+    assert_match(/7-day bars for AAPL, not daily/, error.message)
+  end
+
+  def test_recent_rejects_quarterly_bars
+    error = assert_raises(ApiError) do
+      with_stubbed_chart(chart_result_spaced(count: 10, step: 91)) do
+        SQA::DataFrame::YahooFinance.recent('AAPL', full: true)
+      end
+    end
+
+    assert_match(/not daily/, error.message)
+  end
+
+  def test_recent_does_not_judge_granularity_from_too_few_bars
+    df = with_stubbed_chart(chart_result_spaced(count: 2, step: 30)) do
+      SQA::DataFrame::YahooFinance.recent('AAPL', full: true)
+    end
+
+    assert_equal 2, df.size, 'two bars say nothing about the series spacing'
+  end
+
+  # -- request window -------------------------------------------------------
+
+  def test_chart_requests_an_explicit_window_never_a_range
+    captured = nil
+    stub = lambda do |_path, params|
+      captured = params
+      { 'chart' => { 'result' => [VALID_CHART_RESULT] } }
+    end
+
+    SQA::DataFrame::YahooFinance.cookie = 'test-cookie'
+    SQA::DataFrame::YahooFinance.crumb = 'test-crumb'
+    SQA::DataFrame::YahooFinance.auth_at = Time.now.to_i
+    SQA::DataFrame::YahooFinance.stub(:get_json, stub) do
+      SQA::DataFrame::YahooFinance.recent('AAPL', full: true)
+    end
+
+    assert_equal '1d', captured[:interval]
+    assert captured.key?(:period1), 'a full fetch must bound the window explicitly'
+    assert captured.key?(:period2)
+    refute captured.key?(:range), 'range=max is what makes Yahoo downsample'
+  end
+
+  def test_full_fetch_reaches_back_further_than_a_compact_one
+    windows = []
+    stub = lambda do |_path, params|
+      windows << params[:period1]
+      { 'chart' => { 'result' => [VALID_CHART_RESULT] } }
+    end
+
+    SQA::DataFrame::YahooFinance.cookie = 'test-cookie'
+    SQA::DataFrame::YahooFinance.crumb = 'test-crumb'
+    SQA::DataFrame::YahooFinance.auth_at = Time.now.to_i
+    SQA::DataFrame::YahooFinance.stub(:get_json, stub) do
+      SQA::DataFrame::YahooFinance.recent('AAPL', full: true)
+      SQA::DataFrame::YahooFinance.recent('AAPL', full: false)
+    end
+
+    assert_operator windows.first, :<, windows.last
+    assert_equal SQA::DataFrame::YahooFinance::EARLIEST_DATE.to_time.to_i, windows.first
+  end
+
   private
+
+  def chart_result_spaced(count:, step:, start: Date.new(2020, 1, 6))
+    stamps = (0...count).map { |i| (start + (i * step)).to_time.to_i }
+    closes = (0...count).map { |i| 100.0 + i }
+
+    {
+      'timestamp' => stamps,
+      'indicators' => {
+        'quote' => [{ 'open' => closes, 'high' => closes, 'low' => closes,
+                      'close' => closes, 'volume' => [1_000] * count }],
+        'adjclose' => [{ 'adjclose' => closes }]
+      }
+    }
+  end
 
   # Force the cookie/crumb handshake to a fixed pair (skipping curl/network)
   # and stub CONNECTION.get to return a chart-shaped `result` wrapped in the
