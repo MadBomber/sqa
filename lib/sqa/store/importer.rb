@@ -65,6 +65,15 @@ module SQA
         @market         = market
         @portfolio      = portfolio
         @quarantine_dir = Pathname.new((quarantine_dir || (@data_dir + QUARANTINE_DIRNAME)).to_s)
+
+        # Report state; `run` resets these at the start of every import.
+        @dry_run     = false
+        @prices      = {}
+        @metadata    = []
+        @quarantined = []
+        @skipped     = []
+        @portfolios  = []
+        @tickers     = 0
       end
 
       # @return [SQA::Store::Market]
@@ -165,7 +174,7 @@ module SQA
         ticker = document['ticker'].to_s
         return @skipped << file.basename.to_s if ticker.empty?
 
-        unless @dry_run
+        write do
           market.save_stock(
             ticker:,
             source:     document['source'] || :fmp,
@@ -182,7 +191,7 @@ module SQA
       # Moved, never deleted -- these files are someone's cache, and the point
       # of the move is only to stop them colliding with a ticker's metadata.
       def quarantine(file)
-        unless @dry_run
+        write do
           @quarantine_dir.mkpath
           FileUtils.mv(file.to_s, (@quarantine_dir + file.basename).to_s)
         end
@@ -202,7 +211,7 @@ module SQA
             next
           end
 
-          unless @dry_run
+          write do
             # A price CSV can exist with no metadata sidecar, and prices are
             # foreign-keyed to stocks, so ensure the parent row exists first.
             market.save_stock(ticker:, source: :fmp) unless market.stock?(ticker)
@@ -219,7 +228,7 @@ module SQA
         return if files.empty?
 
         rows = CSV.read(files.last.to_s, headers: true).map(&:to_h)
-        market.replace_tickers(rows) unless @dry_run
+        write { market.replace_tickers(rows) }
 
         @tickers = rows.size
       end
@@ -269,6 +278,11 @@ module SQA
           # was written without any constraint that a sale be covered.
           @skipped << "#{file.basename} #{row['ticker']} #{row['action']} (#{e.message})"
         end
+      end
+
+      # Store mutations funnel through here so a dry run reports without writing.
+      def write
+        yield unless @dry_run
       end
 
       def parse_json(file)

@@ -14,11 +14,11 @@ rescue LoadError, Fiddle::DLError => e
   warn "Warning: TA-Lib not available (#{e.class}: #{e.message}). Technical indicators will not work." if $VERBOSE
 
   module SQAI
-    def self.method_missing(method, *args, &)
+    def self.method_missing(_method, *_args, &)
       raise "Technical indicators require TA-Lib to be installed. Please install libta-lib system library. Visit: http://ta-lib.org/hdr_dw.html"
     end
 
-    def self.respond_to_missing?(method, include_private = false)
+    def self.respond_to_missing?(_method, _include_private = false)
       false
     end
   end

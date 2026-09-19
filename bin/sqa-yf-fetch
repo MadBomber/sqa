@@ -1,0 +1,447 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+# bin/sqa-yf-fetch
+#
+# Acquires a Yahoo Finance cookie + crumb from a real Chrome browser, then
+# downloads daily price history into sqa.db through the normal SQA adapter.
+#
+# Why a browser? Yahoo's cookie/crumb handshake is rate limited by network
+# path, not just by IP: a curl or Faraday client can get 429 Too Many Requests
+# from the same endpoint real Chrome gets 200 from. SQA::DataFrame::YahooFinance
+# checks YF_COOKIE / YF_CRUMB before attempting its own handshake, so handing it
+# a browser-acquired pair sidesteps the block entirely.
+#
+# Run with plain `ruby`, NOT `bundle exec` -- ferrum drives a browser purely to
+# work around Yahoo's rate limiting and has nothing to do with sqa's dependency
+# graph, so it is deliberately not in sqa.gemspec. Install it separately:
+#
+#   gem install ferrum
+#
+# @example Fill in every ticker that has no price data
+#   bin/sqa-yf-fetch --all-empty
+#
+# @example Fetch specific tickers and add them to a watchlist
+#   bin/sqa-yf-fetch --watchlist "Major Telecom" TMUS CMCSA CHTR
+#
+# @example Reuse the session in your own shell
+#   eval "$(bin/sqa-yf-fetch --print-env)"
+#
+# This uses Yahoo's unofficial internal API. Be a reasonable user of it: fetch
+# a handful of tickers, not thousands.
+
+require 'optparse'
+
+begin
+  require 'ferrum'
+rescue LoadError
+  warn 'This script needs the ferrum gem: gem install ferrum'
+  warn '(Run it with plain `ruby`, not `bundle exec ruby` -- see the file header.)'
+  exit 1
+end
+
+$LOAD_PATH.unshift File.expand_path('../lib', __dir__)
+require 'sqa'
+
+module SQA
+  # Drives a real Chrome browser to obtain a Yahoo Finance cookie + crumb.
+  class YahooSession
+    # Yahoo sets its session cookies from the SPA, which needs a moment after
+    # navigation before the crumb endpoint will honour them.
+    SETTLE_SECONDS = 2
+
+    CRUMB_URL = 'https://query2.finance.yahoo.com/v1/test/getcrumb'
+    ENTRY_URL = 'https://finance.yahoo.com/quote/AAPL'
+
+    # Fetched in-page so it carries the browser session's cookies as
+    # same-origin credentials, exactly as a real page load would.
+    CRUMB_SCRIPT = <<~JS.freeze
+      (async () => {
+        const done = arguments[arguments.length - 1];
+        try {
+          const response = await fetch('#{CRUMB_URL}', { credentials: 'include' });
+          done({ ok: response.ok, status: response.status, crumb: (await response.text()).trim() });
+        } catch (error) {
+          done({ ok: false, status: 0, crumb: '', error: String(error) });
+        }
+      })()
+    JS
+
+    # @return [String] Cookie header value
+    attr_reader :cookie
+
+    # @return [String] Yahoo crumb token
+    attr_reader :crumb
+
+    # A crumb is an opaque short token. Yahoo returns HTML (a consent page or
+    # an error) when the handshake has not actually succeeded, so anything long
+    # or suspiciously shaped is rejected rather than passed downstream to fail
+    # confusingly later.
+    #
+    # @param value [String, nil]
+    # @return [Boolean]
+    def self.plausible_crumb?(value)
+      return false if value.nil?
+
+      text = value.strip
+      !text.empty? && text.length <= 32 && !text.include?('<') && !text.match?(/too many/i)
+    end
+
+    # Joins browser cookies into a Cookie header value.
+    #
+    # @param cookies [Array<#name, #value>, Hash]
+    # @return [String]
+    def self.cookie_header(cookies)
+      list = cookies.respond_to?(:values) ? cookies.values : cookies
+
+      list.map { |entry| "#{entry.name}=#{entry.value}" }.join('; ')
+    end
+
+    # @param headful [Boolean] Show the browser window
+    # @param timeout [Integer] Per-operation browser timeout, seconds
+    def initialize(headful: false, timeout: 30)
+      @headful = headful
+      @timeout = timeout
+    end
+
+    # @return [Ferrum::Page] The live page, for in-page fetches
+    attr_reader :page
+
+    # Opens a browser and acquires the cookie/crumb pair.
+    #
+    # The browser is left running: the cookie and crumb alone are not enough to
+    # read the chart endpoint from Ruby, so callers issue their fetches through
+    # {#page}. Call {#close} when finished, or use {.open}.
+    #
+    # @return [self]
+    # @raise [RuntimeError] If no usable crumb or cookie could be obtained
+    def acquire!
+      @browser = Ferrum::Browser.new(headless: !@headful, timeout: @timeout)
+      @page    = @browser.create_page
+      @page.go_to(ENTRY_URL)
+      sleep SETTLE_SECONDS
+
+      result = @page.evaluate_async(CRUMB_SCRIPT, @timeout)
+      raise "Yahoo returned HTTP #{result['status']} for the crumb endpoint" unless result['ok']
+
+      @crumb  = result['crumb'].to_s.strip
+      @cookie = self.class.cookie_header(@browser.cookies.all)
+
+      raise "Yahoo returned an implausible crumb: #{@crumb.inspect}" unless self.class.plausible_crumb?(@crumb)
+      raise 'No cookies were set by the Yahoo session' if @cookie.empty?
+
+      self
+    rescue StandardError
+      close
+      raise
+    end
+
+    # Opens a session, yields it, and always closes the browser.
+    #
+    # @yield [YahooSession]
+    # @return [Object] the block's value
+    def self.open(headful: false, timeout: 30)
+      session = new(headful:, timeout:).acquire!
+      begin
+        yield session
+      ensure
+        session.close
+      end
+    end
+
+    # @return [void]
+    def close
+      @browser&.quit
+      @browser = nil
+      @page    = nil
+    end
+
+    # Publishes the pair so SQA::DataFrame::YahooFinance picks it up.
+    #
+    # @return [void]
+    def export!
+      ENV['YF_COOKIE'] = cookie
+      ENV['YF_CRUMB']  = crumb
+    end
+
+    # Shell-eval'able export lines.
+    #
+    # @return [String]
+    def to_shell
+      <<~SHELL
+        export YF_COOKIE=#{cookie.inspect}
+        export YF_CRUMB=#{crumb.inspect}
+      SHELL
+    end
+  end
+
+  # Downloads price history into the market store by running Yahoo's chart
+  # request *inside* the browser page.
+  #
+  # A valid cookie and crumb are not sufficient: Yahoo rate-limits the chart
+  # endpoint by network path, so the identical authenticated request returns
+  # 200 from the browser and 429 from a Ruby HTTP client on the same machine.
+  # Issuing the fetch in-page is what actually gets the data.
+  class YahooDownloader
+    # Yahoo's chart API, fetched in-page so the browser attaches session
+    # cookies as same-origin credentials.
+    #
+    # Explicit period1/period2 bounds, never `range`. Asking for
+    # `range=max&interval=1d` makes Yahoo silently downsample: it answers with
+    # weekly or quarterly bars and still labels them a 1d interval. Those would
+    # land in `prices` looking exactly like daily rows and quietly corrupt
+    # every indicator computed from them.
+    CHART_SCRIPT = <<~JS
+      (async () => {
+        const done = arguments[arguments.length - 1];
+        const [ticker, period1, period2] = arguments;
+        try {
+          const url = `https://query1.finance.yahoo.com/v8/finance/chart/${ticker}` +
+                      `?interval=1d&period1=${period1}&period2=${period2}`;
+          const response = await fetch(url, { credentials: 'include' });
+          const body = await response.json();
+          const error = body?.chart?.error?.description || null;
+          done({ status: response.status, result: body?.chart?.result?.[0] || null, error });
+        } catch (error) {
+          done({ status: 0, result: null, error: String(error) });
+        }
+      })()
+    JS
+
+    # Earliest period1 to request when nothing is held. 1970 simply means "as
+    # far back as this symbol goes"; Yahoo clamps to the listing date.
+    EPOCH_START = 0
+
+    # Largest plausible gap between consecutive daily bars: a three-day
+    # weekend plus stacked holidays. Anything routinely above this is not a
+    # daily series.
+    MAX_DAILY_GAP = 5
+
+    # Verifies a fetched series really is daily.
+    #
+    # Yahoo will answer a 1d request with coarser bars rather than an error, so
+    # the granularity has to be checked rather than trusted. The median gap is
+    # used because a genuine daily series still contains long holiday breaks.
+    #
+    # @param rows [Array<Hash>] Rows from rows_from_chart
+    # @return [Boolean]
+    def self.daily?(rows)
+      return true if rows.size < 3
+
+      dates = rows.map { |row| Date.parse(row['timestamp']) }.sort
+      gaps  = dates.each_cons(2).map { |a, b| (b - a).to_i }.sort
+
+      gaps[gaps.size / 2] <= MAX_DAILY_GAP
+    end
+
+    # @param page [Ferrum::Page] A page already on a Yahoo origin
+    # @param market [SQA::Store::Market]
+    # @param delay [Float] Seconds between requests
+    def initialize(page:, market: Store.market, delay: 1.0)
+      @page   = page
+      @market = market
+      @delay  = delay
+    end
+
+    # Tickers already known to the store that hold no prices at all.
+    #
+    # @return [Array<String>]
+    def empty_tickers = @market.stock_tickers.reject { |ticker| @market.price_count(ticker).positive? }
+
+    # Known tickers whose newest close is older than `days` ago.
+    #
+    # @param days [Integer]
+    # @param today [Date]
+    # @return [Array<String>]
+    def stale_tickers(days: 4, today: Date.today)
+      @market.stock_tickers.select do |ticker|
+        last = @market.last_price_date(ticker)
+        last && Date.parse(last) < today - days
+      end
+    end
+
+    # Downloads one ticker in-page and writes it to the store.
+    #
+    # The range is sized from what is already held, so a routine refresh asks
+    # for a month rather than re-pulling decades every run.
+    #
+    # @param ticker [String]
+    # @return [Hash] `{ ticker:, added:, last:, error: }`
+    def download(ticker)
+      key    = ticker.to_s.downcase
+      before = @market.price_count(key)
+      last   = @market.last_price_date(key)
+
+      from_epoch = last ? Date.parse(last).to_time.to_i : EPOCH_START
+      to_epoch   = (Date.today + 1).to_time.to_i
+      response   = @page.evaluate_async(CHART_SCRIPT, 30, key.upcase, from_epoch, to_epoch)
+
+      raise "HTTP #{response['status']}#{": #{response['error']}" if response['error']}" unless response['status'] == 200
+      raise(response['error'] || 'no chart result returned') if response['result'].nil?
+
+      rows = DataFrame::YahooFinance.rows_from_chart(response['result'])
+      raise "refusing non-daily data (#{rows.size} bars over #{bar_span(rows)})" unless self.class.daily?(rows)
+
+      unless rows.empty?
+        @market.save_stock(ticker: key, source: :yahoo_finance) unless @market.stock?(key)
+        @market.save_prices(key, rows)
+      end
+
+      { ticker: key, added: @market.price_count(key) - before, last: @market.last_price_date(key), error: nil }
+    rescue StandardError => e
+      { ticker: key, added: 0, last:, error: e.message.to_s.lines.first.to_s.strip }
+    end
+
+    # Human-readable span of a fetched series, for the rejection message.
+    #
+    # @param rows [Array<Hash>]
+    # @return [String]
+    def bar_span(rows)
+      return 'no rows' if rows.empty?
+
+      dates = rows.map { |row| row['timestamp'] }.sort
+      "#{dates.first}..#{dates.last}"
+    end
+
+    # Downloads many tickers, pacing between requests.
+    #
+    # @param tickers [Array<String>]
+    # @yield [Hash] each result as it completes
+    # @return [Array<Hash>]
+    def download_all(tickers)
+      tickers.each_with_index.map do |ticker, index|
+        sleep @delay if index.positive?
+        result = download(ticker)
+        yield result if block_given?
+        result
+      end
+    end
+  end
+end
+
+#############################################
+## CLI
+
+# @param argv [Array<String>]
+# @return [Hash]
+def parse_yf_options(argv)
+  options = { all_empty: false, stale: false, watchlist: nil, headful: false, print_env: false, delay: 1.0 }
+
+  OptionParser.new do |parser|
+    parser.banner = <<~BANNER
+      Usage: sqa-yf-fetch [options] [TICKER...]
+
+      Acquires a Yahoo Finance cookie+crumb from a real Chrome browser, then
+      downloads daily price history into sqa.db. Run with plain `ruby`, not
+      `bundle exec` (requires the ferrum gem: gem install ferrum).
+
+      Options:
+    BANNER
+
+    parser.on('-a', '--all-empty', 'Fetch every ticker in sqa.db that has no prices') { options[:all_empty] = true }
+    parser.on('-s', '--stale', 'Also refetch tickers whose newest close is old')      { options[:stale] = true }
+    parser.on('-w', '--watchlist NAME', 'Add each fetched ticker to this watchlist')  { |n| options[:watchlist] = n }
+    parser.on('--headful', 'Show the browser window (useful for debugging)')          { options[:headful] = true }
+    parser.on('--print-env', 'Print export lines for the session and exit')           { options[:print_env] = true }
+    parser.on('--delay SECONDS', Float, 'Seconds between requests (default 1.0)')     { |d| options[:delay] = d }
+    parser.on('-h', '--help', 'Show this message') do
+      puts parser
+      exit 0
+    end
+  end.parse!(argv)
+
+  options
+end
+
+# Adds freshly downloaded tickers to a watchlist at their latest close.
+#
+# Members already present are skipped: `watch` opens a position, and opening
+# one twice would double the notional and move the comparison baseline.
+def add_to_watchlist(name, tickers, market)
+  store = SQA::Store.portfolio
+  record = store.portfolio(name)
+
+  unless record
+    store.create_portfolio(name:, kind: 'watchlist', description: 'Created by sqa-yf-fetch')
+    record = store.portfolio(name)
+    puts "  created watchlist #{name.inspect}"
+  end
+
+  id = record['id']
+  raise SQA::BadParameterError, "#{name.inspect} is a #{record['kind']}, not a watchlist" unless record['kind'] == 'watchlist'
+
+  tickers.each do |ticker|
+    if store.position(id, ticker)
+      puts "  #{ticker.upcase} already in #{name.inspect}, skipped"
+      next
+    end
+
+    row = market.prices(ticker).last
+    next puts "  #{ticker.upcase} has no price to open at, skipped" unless row
+
+    store.watch(id, ticker:, price: row['adj_close_price'], on: row['timestamp'])
+    puts format('  added %<ticker>-6s @ %<price>8.2f on %<date>s',
+                ticker: ticker.upcase, price: row['adj_close_price'], date: row['timestamp'])
+  end
+end
+
+if $PROGRAM_NAME == __FILE__
+  options = parse_yf_options(ARGV)
+  SQA.init([])
+
+  market = SQA::Store.market
+  picker = SQA::YahooDownloader.new(page: nil, market:)
+
+  requested  = ARGV.map(&:downcase)
+  requested |= picker.empty_tickers if options[:all_empty]
+  requested |= picker.stale_tickers if options[:stale]
+
+  if requested.empty? && !options[:print_env]
+    warn 'Nothing to do: name some tickers, or pass --all-empty / --stale.'
+    exit 1
+  end
+
+  puts "Launching Chrome (#{options[:headful] ? 'headful' : 'headless'}) to acquire a Yahoo session..."
+
+  failed = SQA::YahooSession.open(headful: options[:headful]) do |session|
+    puts "  crumb acquired (#{session.crumb.length} chars), #{session.cookie.count(';') + 1} cookies\n\n"
+
+    if options[:print_env]
+      puts session.to_shell
+      next []
+    end
+
+    # Published for anything downstream that still uses the HTTP adapter, even
+    # though this script's own fetches go through the page.
+    session.export!
+
+    downloader = SQA::YahooDownloader.new(page: session.page, market:, delay: options[:delay])
+
+    puts "Downloading #{requested.size} ticker(s): #{requested.map(&:upcase).join(' ')}"
+    results = downloader.download_all(requested) do |result|
+      if result[:error]
+        puts format('  %<ticker>-6s FAILED  %<error>s', ticker: result[:ticker].upcase, error: result[:error][0, 80])
+      else
+        puts format('  %<ticker>-6s %<added>+6d rows, last %<last>s',
+                    ticker: result[:ticker].upcase, added: result[:added], last: result[:last] || '—')
+      end
+    end
+
+    ok = results.reject { |r| r[:error] }
+    puts format("\n%<ok>d/%<total>d succeeded, %<rows>d rows added",
+                ok: ok.size, total: results.size, rows: ok.sum { |r| r[:added] })
+
+    if options[:watchlist] && ok.any?
+      puts "\nUpdating watchlist #{options[:watchlist].inspect}:"
+      add_to_watchlist(options[:watchlist], ok.map { |r| r[:ticker] }, market)
+    end
+
+    results.select { |r| r[:error] }
+  end
+
+  unless failed.empty?
+    puts "\nFailures:"
+    failed.each { |r| puts "  #{r[:ticker].upcase}: #{r[:error]}" }
+    exit 1
+  end
+end

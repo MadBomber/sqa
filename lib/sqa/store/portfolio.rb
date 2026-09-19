@@ -107,19 +107,22 @@ module SQA
         def decrease(fill, held)
           raise SQA::BadParameterError, "No position in #{fill.ticker}" unless held
 
-          if fill.shares > held.shares
+          sold  = fill.shares
+          owned = held.shares
+
+          if sold > owned
             raise SQA::BadParameterError,
-                  "Insufficient shares: trying to sell #{fill.shares}, holding #{held.shares}"
+                  "Insufficient shares: trying to sell #{sold}, holding #{owned}"
           end
 
-          return nil if fill.shares == held.shares
+          return nil if sold == owned
 
           # Average cost per share is unchanged by a partial sale; only the
           # remaining basis shrinks, proportionally.
-          cost_per_share = held.total_cost / held.shares
+          cost_per_share = held.total_cost / owned
 
-          held.with(shares: held.shares - fill.shares,
-                    total_cost: held.total_cost - (cost_per_share * fill.shares))
+          held.with(shares: owned - sold,
+                    total_cost: held.total_cost - (cost_per_share * sold))
         end
       end
 
@@ -267,12 +270,14 @@ module SQA
       #   quantities, a watchlist trade, or a sale exceeding the position
       def record_trade(portfolio_id:, ticker:, action:, shares:, price:,
                        commission: nil, traded_on: Date.today, note: nil)
-        action = action.to_s
-        symbol = normalize(ticker)
+        action      = action.to_s
+        symbol      = normalize(ticker)
+        share_count = shares.to_f
+        unit_price  = price.to_f
 
         validate_action!(action)
-        raise SQA::BadParameterError, 'Shares must be positive' unless shares.to_f.positive?
-        raise SQA::BadParameterError, 'Price must be positive'  unless price.to_f.positive?
+        raise SQA::BadParameterError, 'Shares must be positive' unless share_count.positive?
+        raise SQA::BadParameterError, 'Price must be positive'  unless unit_price.positive?
 
         record = portfolio_by_id(portfolio_id) or
           raise SQA::BadParameterError, "No portfolio with id #{portfolio_id}"
@@ -282,12 +287,12 @@ module SQA
                 "Watchlist '#{record['name']}' cannot #{action}; watchlists hold no positions to trade"
         end
 
-        total = shares.to_f * price.to_f
+        total = share_count * unit_price
         fee   = (commission || record['commission']).to_f
         date  = Base.iso_date(traded_on)
 
         transaction do
-          db.execute(<<~SQL, [portfolio_id, symbol, action, shares.to_f, price.to_f, total, fee, date, note, Base.now])
+          db.execute(<<~SQL, [portfolio_id, symbol, action, share_count, unit_price, total, fee, date, note, Base.now])
             INSERT INTO trades (portfolio_id, ticker, action, shares, price,
                                 total, commission, traded_on, note, created_at)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
@@ -297,7 +302,7 @@ module SQA
 
           apply_to_position(
             portfolio_id,
-            Fill.new(ticker: symbol, action:, shares: shares.to_f, price: price.to_f, total:, date:)
+            Fill.new(ticker: symbol, action:, shares: share_count, price: unit_price, total:, date:)
           )
           apply_to_cash(portfolio_id, action, total, fee)
 

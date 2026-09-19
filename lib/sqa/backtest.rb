@@ -5,7 +5,7 @@ require 'date'
 require_relative 'portfolio'
 
 class SQA::Backtest
-  attr_reader :stock, :strategy, :portfolio, :results, :equity_curve
+  attr_reader :stock, :strategy, :portfolio, :results, :equity_curve, :initial_capital
 
   # Represents the results of a backtest
   class Results
@@ -218,6 +218,8 @@ class SQA::Backtest
   # @param historical_prices [Array<Float>] Price history
   # @return [Symbol] :buy, :sell, or :hold
   def generate_signal(historical_prices)
+    length = historical_prices.length
+
     if @strategy.respond_to?(:execute)
       # SQA::Strategy object
       require 'ostruct'
@@ -227,15 +229,15 @@ class SQA::Backtest
       vector.prices = historical_prices
 
       # Add common indicators if we have enough data
-      if historical_prices.length >= 14
+      if length >= 14
         vector.rsi = SQAI.rsi(historical_prices, period: 14).last rescue nil
       end
 
-      if historical_prices.length >= 20
+      if length >= 20
         vector.sma_20 = SQAI.sma(historical_prices, period: 20).last rescue nil
       end
 
-      if historical_prices.length >= 50
+      if length >= 50
         vector.sma_50 = SQAI.sma(historical_prices, period: 50).last rescue nil
       end
 
@@ -249,7 +251,7 @@ class SQA::Backtest
       require 'ostruct'
       vector = OpenStruct.new(prices: historical_prices)
 
-      if historical_prices.length >= 14
+      if length >= 14
         vector.rsi = SQAI.rsi(historical_prices, period: 14).last rescue nil
       end
 
@@ -337,10 +339,11 @@ class SQA::Backtest
     max_dd = 0.0
 
     @equity_curve.each do |point|
-      if point[:value] > peak
-        peak = point[:value]
+      value = point[:value]
+      if value > peak
+        peak = value
       else
-        dd = (peak - point[:value]) / peak
+        dd = (peak - value) / peak
         max_dd = dd if dd > max_dd
       end
     end
@@ -377,11 +380,12 @@ class SQA::Backtest
   def apply_trade_statistics(trade_pls)
     winning = trade_pls.select(&:positive?)
     losing = trade_pls.select(&:negative?)
+    win_count = winning.size
 
-    @results.winning_trades = winning.size
+    @results.winning_trades = win_count
     @results.losing_trades = losing.size
-    @results.win_rate = winning.size.to_f / trade_pls.size
-    @results.average_win = winning.any? ? winning.sum / winning.size : 0.0
+    @results.win_rate = win_count.to_f / trade_pls.size
+    @results.average_win = winning.any? ? winning.sum / win_count : 0.0
     @results.average_loss = losing.any? ? losing.sum / losing.size : 0.0
 
     total_wins = winning.sum

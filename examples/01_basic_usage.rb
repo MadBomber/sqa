@@ -3,7 +3,7 @@
 
 # 01_basic_usage.rb
 #
-# The starting point for the SQA (Simple Qualitative Analysis) core library.
+# The starting point for the SQA (Stock Qualitative Analysis) core library.
 # It walks through the everyday building blocks you will reach for first:
 #
 #   1. Setup & configuration

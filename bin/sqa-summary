@@ -1,0 +1,340 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+# bin/sqa-summary.rb
+#
+# Summarizes the two SQA databases: sqa.db (market data) and portfolio.db
+# (portfolios, trades, positions).
+#
+# Read-only by design. SQLite creates a database file the moment it is opened,
+# so every path is checked for existence first -- running a summary must never
+# be the thing that brings a database into being.
+#
+# @example
+#   bin/sqa-summary.rb
+#   bin/sqa-summary.rb --verbose
+#   bin/sqa-summary.rb --data-dir ~/other_data --json
+
+# Only set up Bundler when run as a CLI. The test suite `load`s this file
+# inside an already-bundled process, where a second bundler/setup would
+# re-lock against activated gems and raise Gem::LoadError.
+require 'bundler/setup' if $PROGRAM_NAME == __FILE__
+require 'optparse'
+require 'json'
+require_relative '../lib/sqa'
+
+module SQA
+  # Gathers a summary of the SQA databases.
+  #
+  # Collection and rendering are kept apart: every `summarize_*` method returns
+  # a plain Hash and touches no output, so each can be exercised on its own
+  # against a throwaway database.
+  class Summary
+    # A ticker whose most recent close is older than this many days is called
+    # out as stale. Four days clears a normal weekend plus a holiday.
+    STALE_AFTER_DAYS = 4
+
+    # @param data_dir [String, Pathname] Directory holding the databases
+    # @param today [Date] Reference date for staleness
+    def initialize(data_dir: SQA.data_dir, today: Date.today)
+      @data_dir = Pathname.new(data_dir.to_s).expand_path
+      @today    = today
+    end
+
+    # @return [Pathname]
+    def market_path = @data_dir + SQA.config.database_filename
+
+    # @return [Pathname]
+    def portfolio_path = @data_dir + SQA.config.portfolio_database_filename
+
+    # The whole summary.
+    #
+    # @return [Hash]
+    def to_h = { data_dir: @data_dir.to_s, market: summarize_market, portfolios: summarize_portfolios }
+
+    #############################################
+    ## Collection
+
+    # @return [Hash] Market database summary, or `{ missing: true }`
+    def summarize_market
+      return { missing: true, path: market_path.to_s } unless market_path.exist?
+
+      store  = Store::Market.new(market_path)
+      stocks = store.stock_tickers.map { |ticker| stock_row(store, ticker) }
+
+      {
+        missing: false,
+        path:    market_path.to_s,
+        bytes:   market_path.size,
+        schema:  store.schema_version,
+        stocks:,
+        rows:    stocks.sum { |row| row[:rows] },
+        tickers: store.ticker_count,
+        first:   stocks.filter_map { |row| row[:first] }.min,
+        last:    stocks.filter_map { |row| row[:last] }.max,
+        counts:  stocks.group_by { |row| row[:status] }.transform_values(&:size)
+      }
+    ensure
+      store&.close
+    end
+
+    # @return [Hash] Portfolio database summary, or `{ missing: true }`
+    def summarize_portfolios
+      return { missing: true, path: portfolio_path.to_s } unless portfolio_path.exist?
+
+      store  = Store::Portfolio.new(portfolio_path)
+      prices = latest_closes
+      items  = store.portfolios.map { |record| portfolio_row(store, record, prices) }
+
+      {
+        missing: false,
+        path:    portfolio_path.to_s,
+        bytes:   portfolio_path.size,
+        schema:  store.schema_version,
+        items:,
+        counts:  items.group_by { |row| row[:kind] }.transform_values(&:size)
+      }
+    ensure
+      store&.close
+    end
+
+    # Latest close per ticker, used to value positions.
+    #
+    # This is the one place the two databases meet. `trades.ticker` is only a
+    # soft reference to `stocks.ticker` -- SQLite cannot enforce a foreign key
+    # across files -- so a position may name a ticker with no price data, and
+    # the summary reports that rather than quietly valuing it at zero.
+    #
+    # @return [Hash{String => Float}]
+    def latest_closes
+      return {} unless market_path.exist?
+
+      store = Store::Market.new(market_path)
+      store.stock_tickers.to_h do |ticker|
+        [ticker, store.prices(ticker).last&.fetch('adj_close_price', nil)]
+      end.compact
+    ensure
+      store&.close
+    end
+
+    # Classifies a ticker's price coverage.
+    #
+    # @param last [String, nil] Most recent timestamp held
+    # @return [Symbol] :empty, :current, or :stale
+    def status_for(last)
+      return :empty if last.nil?
+
+      Date.parse(last) >= @today - STALE_AFTER_DAYS ? :current : :stale
+    end
+
+    private
+
+    def stock_row(store, ticker)
+      record   = store.stock(ticker)
+      coverage = store.coverage(ticker)
+
+      {
+        ticker:,
+        name:   record&.fetch('name', nil),
+        source: record&.fetch('source', nil),
+        rows:   coverage[:count],
+        first:  coverage[:first],
+        last:   coverage[:last],
+        status: status_for(coverage[:last])
+      }
+    end
+
+    def portfolio_row(store, record, prices)
+      id        = record['id']
+      positions = store.positions(id)
+      valued    = positions.map { |row| [row, prices[row['ticker']]] }
+
+      {
+        id:,
+        name:      record['name'],
+        kind:      record['kind'],
+        cash:      record['cash'],
+        positions: positions.size,
+        value:     valued.sum { |row, price| price ? row['shares'] * price : 0.0 },
+        cost:      positions.sum { |row| row['total_cost'] },
+        unpriced:  valued.reject { |_, price| price }.map { |row, _| row['ticker'] },
+        trades:    store.trades(id).size
+      }
+    end
+  end
+
+  # Renders a {Summary} as text.
+  class SummaryReport
+    # Tables use explicit column widths rather than TTY::Table, which resizes
+    # to the terminal and will transpose a wide table into a column of
+    # key/value pairs on a narrow window. A summary should read the same
+    # wherever it is run, including when piped to a file.
+    TICKER_FORMAT    = '%-8s %9s  %-12s %-12s %-8s %s'
+    PORTFOLIO_FORMAT = '%-22s %-10s %12s %5s %14s %14s %7s'
+
+    UNITS = %w[B KB MB GB TB].freeze
+
+    # @param summary [Hash] Output of {Summary#to_h}
+    # @param verbose [Boolean] Include the per-ticker table
+    def initialize(summary, verbose: false)
+      @summary = summary
+      @verbose = verbose
+    end
+
+    # @return [String]
+    def to_s = [market_section, portfolio_section].join("\n")
+
+    private
+
+    def market_section
+      market = @summary[:market]
+      return missing_section('Market data', market[:path], 'run SQA::Store::Importer or create a stock') if market[:missing]
+
+      <<~SECTION
+        Market data — #{market[:path]}
+          schema v#{market[:schema]} · #{human_bytes(market[:bytes])} · #{plural(market[:stocks].size, 'stock')} · #{delimit(market[:rows])} price rows · #{delimit(market[:tickers])} ticker symbols
+          coverage #{market[:first] || '—'} → #{market[:last] || '—'}
+          #{status_line(market[:counts])}
+        #{ticker_table(market[:stocks])}
+      SECTION
+    end
+
+    def portfolio_section
+      portfolios = @summary[:portfolios]
+      return missing_section('Portfolios', portfolios[:path], 'created on first use of SQA::Store.portfolio') if portfolios[:missing]
+
+      <<~SECTION
+        Portfolios — #{portfolios[:path]}
+          schema v#{portfolios[:schema]} · #{human_bytes(portfolios[:bytes])} · #{kind_line(portfolios[:counts])}
+        #{portfolio_table(portfolios[:items])}
+      SECTION
+    end
+
+    def missing_section(title, path, hint)
+      <<~SECTION
+        #{title} — #{path}
+          not present (#{hint})
+      SECTION
+    end
+
+    def status_line(counts)
+      return 'no stocks yet' if counts.empty?
+
+      %i[current stale empty].filter_map do |status|
+        "#{counts[status]} #{status == :empty ? 'no data' : status}" if counts[status]
+      end.join(' · ')
+    end
+
+    def kind_line(counts)
+      return 'no portfolios yet' if counts.empty?
+
+      counts.sort.map { |kind, count| "#{count} #{kind}" }.join(' · ')
+    end
+
+    def ticker_table(stocks)
+      return '' if stocks.empty? || !@verbose
+
+      header = format(TICKER_FORMAT, 'TICKER', 'ROWS', 'FIRST', 'LAST', 'STATUS', 'SOURCE')
+      rows   = stocks.map do |row|
+        format(TICKER_FORMAT, row[:ticker], delimit(row[:rows]), row[:first] || '—',
+               row[:last] || '—', row[:status], row[:source])
+      end
+
+      indent([header, rule(header.length), *rows].join("\n"))
+    end
+
+    def portfolio_table(items)
+      return indent('(none)') if items.empty?
+
+      header = format(PORTFOLIO_FORMAT, 'NAME', 'KIND', 'CASH', 'POS', 'VALUE', 'P/L', 'TRADES')
+      rows   = items.map do |row|
+        format(PORTFOLIO_FORMAT, truncate(row[:name], 22), row[:kind], money(row[:cash]),
+               row[:positions], money(row[:value]), money(row[:value] - row[:cost]), row[:trades])
+      end
+
+      indent([header, rule(header.length), *rows, *unpriced_notes(items)].join("\n"))
+    end
+
+    # A position whose ticker has no rows in sqa.db contributes nothing to
+    # VALUE, which would otherwise read as a silently understated portfolio.
+    def unpriced_notes(items)
+      notes = items.reject { |row| row[:unpriced].empty? }
+      return [] if notes.empty?
+
+      ['', 'Not valued (no price data in sqa.db):'] +
+        notes.map { |row| "  #{row[:name]}: #{row[:unpriced].join(' ')}" }
+    end
+
+    def rule(length) = '-' * length
+
+    def truncate(text, limit) = text.to_s.length > limit ? "#{text.to_s[0, limit - 1]}…" : text.to_s
+
+    def indent(text) = text.to_s.lines.map { |line| line.strip.empty? ? line : "  #{line}" }.join
+
+    def human_bytes(bytes)
+      size  = bytes.to_f
+      index = 0
+
+      while size >= 1024 && index < UNITS.size - 1
+        size  /= 1024
+        index += 1
+      end
+
+      return "#{bytes} B" if index.zero?
+
+      format('%<size>.1f %<unit>s', size:, unit: UNITS[index])
+    end
+
+    def delimit(number) = number.to_s.reverse.scan(/\d{1,3}/).join(',').reverse
+
+    def money(value) = format('%<value>.2f', value: value.to_f)
+
+    def plural(count, noun) = "#{count} #{noun}#{'s' unless count == 1}"
+  end
+end
+
+#############################################
+## CLI
+
+# Parses command-line options.
+#
+# @param argv [Array<String>]
+# @return [Hash]
+def parse_summary_options(argv)
+  options = { verbose: false, json: false, data_dir: nil }
+
+  OptionParser.new do |parser|
+    parser.banner = <<~BANNER
+      Usage: sqa-summary.rb [options]
+
+      Summarizes the SQA market (sqa.db) and portfolio (portfolio.db) databases.
+      Read-only: it will not create a database that does not already exist.
+
+      Options:
+    BANNER
+
+    parser.on('-v', '--verbose', 'Include the per-ticker coverage table') { options[:verbose] = true }
+    parser.on('-j', '--json',    'Emit JSON instead of text')             { options[:json]    = true }
+    parser.on('-d', '--data-dir PATH', 'Directory holding the databases') { |path| options[:data_dir] = path }
+    parser.on('-h', '--help', 'Show this message') do
+      puts parser
+      exit 0
+    end
+  end.parse!(argv)
+
+  options
+end
+
+if $PROGRAM_NAME == __FILE__
+  options = parse_summary_options(ARGV)
+  SQA.init([])
+
+  summary = SQA::Summary.new(data_dir: options[:data_dir] || SQA.data_dir).to_h
+
+  if options[:json]
+    puts JSON.pretty_generate(summary)
+  else
+    puts
+    puts SQA::SummaryReport.new(summary, verbose: options[:verbose])
+  end
+end

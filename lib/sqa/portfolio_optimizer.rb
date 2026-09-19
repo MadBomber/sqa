@@ -53,9 +53,9 @@ module SQA
 
         # Portfolio variance = w^T * Σ * w
         variance = 0.0
-        weights.each_with_index do |wi, i|
-          weights.each_with_index do |wj, j|
-            variance += wi * wj * covariance_matrix[i][j]
+        weights.each_with_index do |weight_row, row|
+          weights.each_with_index do |weight_col, col|
+            variance += weight_row * weight_col * covariance_matrix[row][col]
           end
         end
 
@@ -349,19 +349,19 @@ module SQA
         num_periods = returns_matrix.first.size
         means = returns_matrix.map { |returns| returns.sum / returns.size.to_f }
 
-        Array.new(num_assets) do |i|
-          Array.new(num_assets) do |j|
-            covariance_between(returns_matrix, means, i, j, num_periods)
+        Array.new(num_assets) do |row|
+          Array.new(num_assets) do |col|
+            covariance_between(returns_matrix, means, row, col, num_periods)
           end
         end
       end
 
       ##
-      # Sample covariance between asset i and asset j over num_periods
-      def covariance_between(returns_matrix, means, i, j, num_periods)
+      # Sample covariance between two assets (by index) over num_periods
+      def covariance_between(returns_matrix, means, asset_a, asset_b, num_periods)
         cov = 0.0
         num_periods.times do |t|
-          cov += (returns_matrix[i][t] - means[i]) * (returns_matrix[j][t] - means[j])
+          cov += (returns_matrix[asset_a][t] - means[asset_a]) * (returns_matrix[asset_b][t] - means[asset_b])
         end
         cov / (num_periods - 1).to_f
       end
@@ -370,20 +370,21 @@ module SQA
       # Generate random portfolio weights
       def random_weights(num_assets, constraints)
         # Generate random weights that sum to 1.0
-        weights = num_assets.times.map { rand }
-        sum = weights.sum
-        weights = weights.map { |w| w / sum }
+        weights = normalize_weights(num_assets.times.map { rand })
 
         # Apply constraints
         min_weight = constraints[:min_weight] || 0.0
         max_weight = constraints[:max_weight] || 1.0
 
-        # Adjust if constraints violated
-        weights = weights.map { |w| w.clamp(min_weight, max_weight) }
+        # Adjust if constraints violated, then renormalize
+        normalize_weights(weights.map { |weight| weight.clamp(min_weight, max_weight) })
+      end
 
-        # Renormalize
+      ##
+      # Scale weights so they sum to 1.0
+      def normalize_weights(weights)
         sum = weights.sum
-        weights.map { |w| w / sum }
+        weights.map { |weight| weight / sum }
       end
     end
   end

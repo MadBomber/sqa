@@ -1,6 +1,6 @@
 # sqa/lib/sqa/init.rb
 
-# SQA (Simple Qualitative Analysis) - Ruby library for stock market technical analysis.
+# SQA (Stock Qualitative Analysis) - Ruby library for stock market technical analysis.
 # Provides high-performance data structures, trading strategies, and integrates with
 # the sqa-tai gem for 150+ technical indicators.
 #

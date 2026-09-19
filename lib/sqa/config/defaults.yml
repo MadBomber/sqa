@@ -1,6 +1,6 @@
 # lib/sqa/config/defaults.yml
 #
-# Bundled configuration defaults for SQA (Simple Qualitative Analysis).
+# Bundled configuration defaults for SQA (Stock Qualitative Analysis).
 #
 # This file is the single source of truth for SQA's configuration schema and
 # default values. It is loaded by myway_config's DefaultsLoader at the lowest

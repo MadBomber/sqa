@@ -38,9 +38,12 @@ class SQA::Strategy::Consensus
     end
   end
 
-  def strat_one 	= @results << (rand(2).zero? ? :buy : :sell)
-  def strat_two 	= @results << (rand(2).zero? ? :buy : :sell)
-  def strat_three = @results << (rand(2).zero? ? :buy : :sell)
-  def strat_four 	= @results << (rand(2).zero? ? :buy : :sell)
+  def strat_one 	= @results << random_vote
+  def strat_two 	= @results << random_vote
+  def strat_three = @results << random_vote
+  def strat_four 	= @results << random_vote
   def strat_five 	= @results << :hold
+
+  # Each strategy casts its own independent random vote.
+  def random_vote = rand(2).zero? ? :buy : :sell
 end

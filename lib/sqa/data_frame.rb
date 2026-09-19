@@ -105,13 +105,14 @@ class SQA::DataFrame
   #   df1.append!(df2)
   #
   def append!(other_df)
+    other_data = other_df.data
     self_row_count = @data.shape[0]
-    other_row_count = other_df.data.shape[0]
+    other_row_count = other_data.shape[0]
 
     @data = if self_row_count.zero?
-              other_df.data
+              other_data
             else
-              @data.vstack(other_df.data)
+              @data.vstack(other_data)
             end
 
     post_append_row_count = @data.shape[0]
@@ -425,10 +426,9 @@ class SQA::DataFrame
     # Converts array of hashes to hash of arrays format.
     #
     # @param aofh [Array<Hash>] Array of hash records
-    # @param mapping [Hash] Column name mappings (unused, for API compatibility)
-    # @param transformers [Hash] Column transformers (unused, for API compatibility)
+    # @param _options [Hash] Ignored (accepts mapping:/transformers: for API compatibility)
     # @return [Hash{String => Array}] Hash with column names as keys and arrays as values
-    def aofh_to_hofa(aofh, mapping: {}, transformers: {})
+    def aofh_to_hofa(aofh, **_options)
       hofa = Hash.new { |h, k| h[k.downcase] = [] }
       aofh.each { |entry| entry.each { |key, value| hofa[key.to_s.downcase] << value } }
       hofa

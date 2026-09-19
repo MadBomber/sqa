@@ -1,8 +1,8 @@
 <div align="center">
-  <h1>SQA - Simple Qualitative Analysis</h1>
+  <h1>SQA - Stock Qualitative Analysis</h1>
 
   <p>A Ruby library for technical analysis of stock market data, trading strategies, and portfolio optimization.<br/>
-      Core library of the <a href="https://github.com/MadBomber/sqa">SQA</a> (Simple Qualitative Analysis) ecosystem.</p>
+      Core library of the <a href="https://github.com/MadBomber/sqa">SQA</a> (Stock Qualitative Analysis) ecosystem.</p>
 </div>
 
 <table>

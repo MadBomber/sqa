@@ -1,6 +1,6 @@
 # SQA Examples
 
-This directory contains comprehensive examples demonstrating the SQA (Simple Qualitative Analysis) library. They are numbered so you can work through them in order — start with `01_basic_usage.rb`, then explore the advanced features.
+This directory contains comprehensive examples demonstrating the SQA (Stock Qualitative Analysis) library. They are numbered so you can work through them in order — start with `01_basic_usage.rb`, then explore the advanced features.
 
 ## Available Examples
 

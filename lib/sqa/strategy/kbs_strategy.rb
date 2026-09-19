@@ -212,16 +212,19 @@ module SQA
       # Stochastic facts
       def assert_stochastic_facts(vector)
         return unless vector.respond_to?(:stoch_k) && vector.respond_to?(:stoch_d)
-        return unless vector.stoch_k && vector.stoch_d
 
-        k_value = Array(vector.stoch_k).last
-        d_value = Array(vector.stoch_d).last
+        stoch_k = vector.stoch_k
+        stoch_d = vector.stoch_d
+        return unless stoch_k && stoch_d
+
+        k_value = Array(stoch_k).last
+        d_value = Array(stoch_d).last
 
         assert_fact(:stochastic, {
           k: k_value,
           d: d_value,
           zone: stoch_zone(k_value),
-          crossover: stoch_crossover(vector.stoch_k, vector.stoch_d)
+          crossover: stoch_crossover(stoch_k, stoch_d)
         })
       end
 
@@ -310,8 +313,9 @@ module SQA
       def price_trend(prices)
         return :neutral if prices.size < 2
 
-        first_half = prices[0...(prices.size / 2)]
-        second_half = prices[(prices.size / 2)..]
+        half = prices.size / 2
+        first_half = prices[0...half]
+        second_half = prices[half..]
 
         avg_first = first_half.sum / first_half.size.to_f
         avg_second = second_half.sum / second_half.size.to_f

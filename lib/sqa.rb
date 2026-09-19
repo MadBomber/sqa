@@ -28,7 +28,7 @@ else
     $DEBUG_ME = true
   rescue LoadError
     # debug_me is optional - define a no-op if not available
-    def debug_me(tag = nil, &)
+    def debug_me(_tag = nil, &)
       # No-op when debug_me gem is not available
     end
     $DEBUG_ME = false

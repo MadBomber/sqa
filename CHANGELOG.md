@@ -46,6 +46,9 @@
   executable, and hardened `07_pattern_context.rb`'s sector step against a
   failed ticker fetch.
 
+## [0.1.0] - 2026-09-18
+- Coordinated version bump to v0.1.0 across the SQA workspace.
+
 ## [0.3.0] - 2026-07-02
 - Coordinated version bump to v0.3.0 across the SQA workspace.
 

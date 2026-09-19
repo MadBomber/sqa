@@ -163,7 +163,7 @@ class StockTest < Minitest::Test
 
     # Mock the DataFrame to have yesterday's data
     yesterday = (Date.today - 1).to_s
-    stock.df.data = stock.df.data.with_column(
+    stock.df.data = stock.df.data.with_columns(
       Polars::Series.new("timestamp", [yesterday] * stock.df.size)
     )
 
@@ -178,7 +178,7 @@ class StockTest < Minitest::Test
 
     # Mock the DataFrame to have today's data
     today = Date.today.to_s
-    stock.df.data = stock.df.data.with_column(
+    stock.df.data = stock.df.data.with_columns(
       Polars::Series.new("timestamp", [today] * stock.df.size)
     )
 
@@ -193,7 +193,7 @@ class StockTest < Minitest::Test
 
     # Mock the DataFrame to have tomorrow's data (edge case)
     tomorrow = (Date.today + 1).to_s
-    stock.df.data = stock.df.data.with_column(
+    stock.df.data = stock.df.data.with_columns(
       Polars::Series.new("timestamp", [tomorrow] * stock.df.size)
     )
 

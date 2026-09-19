@@ -73,7 +73,7 @@ push:
 
 alias inc := bump
 
-# Increament version's level: major.minor.patch
+# Increment version's level: major.minor.patch
 @bump level='patch':
   semver increment {{level}}
   echo "Now working on: $(semver)"

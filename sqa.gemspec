@@ -8,7 +8,7 @@ Gem::Specification.new do |spec|
   spec.authors      = ["Dewayne VanHoozer"]
   spec.email        = ["dvanhoozer@gmail.com"]
 
-  spec.summary      = "sqa - Simple Qualitative Analysis"
+  spec.summary      = "sqa - Stock Qualitative Analysis"
   spec.description  = <<~DESC
     Simplistic playpen (e.g. not for serious use) for doing
     technical analysis of stock prices.  Under Construction.
@@ -39,7 +39,6 @@ Gem::Specification.new do |spec|
   spec.executables    = %w[sqa-console]
   spec.require_paths  = %w[lib]
 
-  spec.add_dependency 'alphavantage' # requires hashie v4.1; bad wrapper library
   spec.add_dependency 'csv'  # Required for Ruby 3.4+
   spec.add_dependency 'faraday'
   spec.add_dependency 'hashie'
@@ -50,10 +49,9 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'nenv'
   spec.add_dependency 'ostruct'  # Required for Ruby 3.5+; used by Strategy/Backtest/Stream vectors
   spec.add_dependency 'redis'  # Required for KBS blackboard persistence
-  spec.add_dependency 'ruby_llm'
-  spec.add_dependency 'ruby_llm-mcp'
+  spec.add_dependency 'ruby_llm', '>= 2.0'
   spec.add_dependency 'shared_tools'
-  spec.add_dependency 'sqa-tai'
+  spec.add_dependency 'sqa-tai', '~> 0.4'  # >= 0.4.0 replaces the unmaintained ta_lib_ffi gem, fixing a native ABI hang
   spec.add_dependency 'sqlite3', '~> 2.0'  # backing store for sqa.db / portfolio.db
   spec.add_dependency 'tty-table'
   spec.add_dependency 'eps'
@@ -64,6 +62,8 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'amazing_print'
   spec.add_development_dependency 'bundler'
   spec.add_development_dependency 'debug_me'
+  spec.add_development_dependency 'fasterer' # performance-hint gate (asgard fasterer_check); not in bundle by
+  # default, so `bundle exec fasterer` silently fails into fasterer_output.txt without this
   spec.add_development_dependency 'flay'
   spec.add_development_dependency 'flog'
   spec.add_development_dependency 'racc' # flog/flay transitively need this on Ruby 4+

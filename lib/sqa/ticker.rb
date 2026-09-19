@@ -25,6 +25,10 @@ class SQA::Ticker
   # and answering lookups as "unknown".
   DOWNLOAD_ATTEMPTS = 3
 
+  # Class-level state: whether this process has already tried (and possibly
+  # failed) to download the ticker universe. Re-armed by `reset!`.
+  @download_attempted = false
+
   class << self
     # @return [SQA::Store::Market] The store holding the ticker universe
     def store = @store ||= SQA::Store.market
@@ -44,14 +48,15 @@ class SQA::Ticker
     #
     def download(country = "US")
       response = CONNECTION.get("/stock?format=csv&countries=#{country.upcase}").to_hash
-      return response[:status] unless response[:status] == 200
+      status   = response[:status]
+      return status unless status == 200
 
       rows = CSV.parse(response[:body], headers: true).map do |row|
         row.to_h.merge("country" => country.upcase)
       end
       store.replace_tickers(rows)
 
-      response[:status]
+      status
     end
 
     # Ensures the universe is present, downloading it if the store is empty.
@@ -62,16 +67,19 @@ class SQA::Ticker
     #
     # @return [Integer] Number of symbols available
     def load
-      return store.ticker_count if store.ticker_count.positive? || @download_attempted
+      count = store.ticker_count
+      return count if count.positive? || @download_attempted
 
       @download_attempted = true
       attempt_download
 
-      if store.ticker_count.zero? && $VERBOSE
+      # Re-read: the download (when it succeeds) repopulates the store.
+      count = store.ticker_count
+      if count.zero? && $VERBOSE
         warn "Warning: No ticker validation data available. Proceeding without validation."
       end
 
-      store.ticker_count
+      count
     end
 
     # Loads ticker data from a CSV file into the store.

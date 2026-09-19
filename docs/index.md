@@ -1,8 +1,8 @@
-# SQA - Simple Qualitative Analysis
+# SQA - Stock Qualitative Analysis
 
 <div style="display: flex; align-items: flex-start; gap: 2rem; margin-bottom: 2rem;">
   <div style="flex: 0 0 400px;">
-    <img src="assets/images/sqa.jpg" alt="SQA - Simple Qualitative Analysis" style="width: 100%; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+    <img src="assets/images/sqa.jpg" alt="SQA - Stock Qualitative Analysis" style="width: 100%; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
   </div>
   <div style="flex: 1;">
     <h2 style="margin-top: 0;">Key Features</h2>
@@ -25,7 +25,7 @@
 
 ## Welcome to SQA
 
-**SQA (Simple Qualitative Analysis)** is an educational Ruby library designed for stock market technical analysis and trading strategy development. Built with high-performance data structures and seamlessly integrated with TA-Lib, SQA provides a comprehensive toolkit for analyzing historical stock data, implementing trading strategies, and backtesting your ideas.
+**SQA (Stock Qualitative Analysis)** is an educational Ruby library designed for stock market technical analysis and trading strategy development. Built with high-performance data structures and seamlessly integrated with TA-Lib, SQA provides a comprehensive toolkit for analyzing historical stock data, implementing trading strategies, and backtesting your ideas.
 
 !!! warning "Educational Purpose Only"
     SQA is designed for **educational purposes** only. It should not be used for actual trading without extensive testing and professional financial advice. Trading stocks involves substantial risk of loss.

@@ -100,6 +100,8 @@ class SQA::Stock
     @ticker = ticker.downcase
     @source = source
     @store  = store
+    @data   = nil # populated by load_or_create_data below
+    @df     = nil # populated by update_dataframe below
 
     # Validate the ticker only when nothing is cached and the result would
     # actually be reported. $VERBOSE is tested first because SQA::Ticker.valid?
@@ -251,8 +253,7 @@ class SQA::Stock
   # @return [void]
   # @raise [SQA::DataFetchError] If data cannot be fetched and nothing is cached
   def update_dataframe
-    rows = store.prices(@ticker)
-    rows = adopt_legacy_csv if rows.empty?
+    rows = stored_or_legacy_rows
 
     if rows.empty?
       @df = fetch_and_store_prices
@@ -262,6 +263,14 @@ class SQA::Stock
     @df = SQA::DataFrame.from_aofh(rows)
 
     update_dataframe_with_recent_data
+  end
+
+  # Rows already in the store, falling back to a legacy CSV adoption.
+  #
+  # @return [Array<Hash>] Possibly empty
+  def stored_or_legacy_rows
+    rows = store.prices(@ticker)
+    rows.empty? ? adopt_legacy_csv : rows
   end
 
   # Adopts a pre-SQLite `<ticker>.csv` from data_dir into the store.
@@ -279,7 +288,7 @@ class SQA::Stock
     return [] if rows.empty?
 
     persist_prices(rows)
-    warn "Adopted legacy #{legacy.basename} into the market store" if $VERBOSE
+    verbose_warn "Adopted legacy #{legacy.basename} into the market store"
 
     store.prices(@ticker)
   end
@@ -355,8 +364,16 @@ class SQA::Stock
   # @deprecated Use {#update_dataframe} instead. Will be removed in v1.0.0
   # @return [void]
   def update_the_dataframe
-    warn "[SQA DEPRECATION] update_the_dataframe is deprecated; use update_dataframe instead" if $VERBOSE
+    verbose_warn "[SQA DEPRECATION] update_the_dataframe is deprecated; use update_dataframe instead"
     update_dataframe
+  end
+
+  # Emits a warning only when Ruby is running verbose ($VERBOSE / -w).
+  #
+  # @param message [String]
+  # @return [void]
+  def verbose_warn(message)
+    warn message if $VERBOSE
   end
 
   # Determines whether the DataFrame should be updated from the API.
@@ -386,7 +403,7 @@ class SQA::Stock
         return false if last_timestamp >= Date.today
       rescue ArgumentError => e
         # If we can't parse the date, assume we need to update
-        warn "Warning: Could not parse last timestamp for #{@ticker} (#{e.message}). Will attempt update." if $VERBOSE
+        verbose_warn "Warning: Could not parse last timestamp for #{@ticker} (#{e.message}). Will attempt update."
       end
     end
 

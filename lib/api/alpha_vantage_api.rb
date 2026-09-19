@@ -23,15 +23,16 @@ class AlphaVantageAPI
             market:       nil,
             **extra)
     response = @connection.get do |req|
-      req.params['apikey']      = @api_key
-      req.params['function']    = function
-      req.params['symbol']      = symbol      if symbol
-      req.params['interval']    = interval    if interval
-      req.params['time_period'] = time_period if time_period
-      req.params['series_type'] = series_type if series_type
-      req.params['market']      = market      if market
+      params = req.params
+      params['apikey']      = @api_key
+      params['function']    = function
+      params['symbol']      = symbol      if symbol
+      params['interval']    = interval    if interval
+      params['time_period'] = time_period if time_period
+      params['series_type'] = series_type if series_type
+      params['market']      = market      if market
 
-      extra.each { |key, value| req.params[key.to_s] = value if value }
+      extra.each { |key, value| params[key.to_s] = value if value }
     end
 
     JSON.parse(response.body)

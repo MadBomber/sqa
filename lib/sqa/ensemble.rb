@@ -271,7 +271,7 @@ module SQA
     # @param vector [OpenStruct] Market data
     # @return [Symbol] Trading signal
     #
-    def self.trade(vector)
+    def self.trade(_vector)
       # This won't work for class method, use instance instead
       raise NotImplementedError, "Use ensemble instance, not class"
     end

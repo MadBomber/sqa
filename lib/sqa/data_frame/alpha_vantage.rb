@@ -60,22 +60,22 @@ class SQA::DataFrame
         fetch_dataframe(ticker, full: false)
       end
 
+      data = sqa_df.data
+
       # Handle date criteria if applicable
       if from_date
         # Use Polars.col() to create an expression for filtering
         # Use > (not >=) to exclude the from_date itself and prevent duplicates
-        sqa_df.data = sqa_df.data.filter(Polars.col("timestamp") > from_date.to_s)
+        data = data.filter(Polars.col("timestamp") > from_date.to_s)
       end
 
       # Alpha Vantage doesn't split close/adjusted_close, so duplicate for compatibility
       # This ensures adj_close_price exists for strategies that expect it
-      sqa_df.data = sqa_df.data.with_columns(
-        sqa_df.data["close_price"].alias("adj_close_price")
-      )
+      data = data.with_columns(data["close_price"].alias("adj_close_price"))
 
       # Sort data in ascending chronological order (oldest to newest) for TA-Lib compatibility
       # Alpha Vantage returns data newest-first, but TA-Lib expects oldest-first
-      sqa_df.data = sqa_df.data.sort("timestamp", descending: false)
+      sqa_df.data = data.sort("timestamp", descending: false)
 
       sqa_df
     end
@@ -98,13 +98,15 @@ class SQA::DataFrame
         raise "Bad Response: #{response[:status]}"
       end
 
+      body = response[:body]
+
       # Alpha Vantage reports rate limits / bad symbols as a JSON body even
       # when datatype=csv was requested. Detect that before handing it to
       # the CSV parser, which would otherwise misparse it as garbage data
       # and fail later with a confusing Polars column error.
-      if response[:body].lstrip.start_with?('{')
-        parsed = JSON.parse(response[:body])
-        ApiError.raise(parsed['Information'] || parsed['Note'] || response[:body])
+      if body.lstrip.start_with?('{')
+        parsed = JSON.parse(body)
+        ApiError.raise(parsed['Information'] || parsed['Note'] || body)
       end
 
       # Read CSV into Polars DataFrame directly
@@ -112,7 +114,7 @@ class SQA::DataFrame
       # dtype instances -- this polars-df version's Utils.parse_rb_type_into_dtype
       # doesn't accept the old :f64/:i64 symbol shorthand.
       df = Polars.read_csv(
-        StringIO.new(response[:body]),
+        StringIO.new(body),
         schema_overrides: {
           "open" => Float,
           "high" => Float,

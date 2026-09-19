@@ -296,7 +296,8 @@ module SQA
     end
 
     # Calculate technical indicator
-    def calculate_indicator(name, prices, volumes = nil, highs = nil, lows = nil, **)
+    # _volumes is accepted for call-site symmetry; no cached indicator uses it yet.
+    def calculate_indicator(name, prices, _volumes = nil, highs = nil, lows = nil, **)
       case name
       when :rsi
         SQAI.rsi(prices, **)

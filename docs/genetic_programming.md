@@ -23,10 +23,10 @@ signal  = signal_function(prices, x, pww)
 gain    = prices[fwi].max - prices[x] # could be negative
 loss    = prices[fwi].min - prices[x]
 delta   = decision-point amount (Float)
-          buy when  forcast_price - prices[x] >= delta
+          buy when  forecast_price - prices[x] >= delta
             buy to realize gain
           
-          sell when prices[x] - forcast_price >= delta
+          sell when prices[x] - forecast_price >= delta
             sell to avoid loss
 
 fitness_sell = gain - delta # more positive the better

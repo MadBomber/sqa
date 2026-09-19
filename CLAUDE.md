@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-SQA (Simple Qualitative Analysis) is a Ruby library for stock market technical analysis designed for educational purposes. It provides high-performance data structures, trading strategies, and integrates with the `sqa-tai` gem for 150+ technical indicators.
+SQA (Stock Qualitative Analysis) is a Ruby library for stock market technical analysis designed for educational purposes. It provides high-performance data structures, trading strategies, and integrates with the `sqa-tai` gem for 150+ technical indicators.
 
 **Important:** SQA is a **library-only gem** with no CLI functionality. The `sqa-console` executable launches an IRB console for interactive experimentation.
 

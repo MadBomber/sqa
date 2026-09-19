@@ -1,4 +1,4 @@
-# Financial Vizualization (finviz)
+# Financial Visualization (finviz)
 
 The original finviz unofficial gem has been untouched for 3 years.  I just forked it in the hope that I can bring it forward to current versions of its dependencies.
 

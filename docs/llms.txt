@@ -1,8 +1,8 @@
-# SQA - Simple Qualitative Analysis
+# SQA - Stock Qualitative Analysis
 
 > A powerful Ruby library for stock market technical analysis and trading strategy development
 
-SQA (Simple Qualitative Analysis) is an educational Ruby library designed for stock market technical analysis and trading strategy development. Built with high-performance data structures and seamlessly integrated with TA-Lib, SQA provides a comprehensive toolkit for analyzing historical stock data, implementing trading strategies, and backtesting your ideas.
+SQA (Stock Qualitative Analysis) is an educational Ruby library designed for stock market technical analysis and trading strategy development. Built with high-performance data structures and seamlessly integrated with TA-Lib, SQA provides a comprehensive toolkit for analyzing historical stock data, implementing trading strategies, and backtesting your ideas.
 
 SQA is designed for educational purposes only. It should not be used for actual trading without extensive testing and professional financial advice. Trading stocks involves substantial risk of loss.
 

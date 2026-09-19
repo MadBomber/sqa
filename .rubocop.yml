@@ -112,9 +112,12 @@ Naming/VariableNumber:
 # sqa-cli's gem entry point must be lib/sqa-cli.rb (hyphen) so that
 # `require 'sqa-cli'` resolves by exact match on the gem name; renaming to
 # snake_case would break the require path. (Only sqa-cli has such a file.)
+# Archspec.rb must be PascalCase, matching the archspec gem's own
+# Rakefile/Gemfile-style convention-named config file.
 Naming/FileName:
   Exclude:
     - 'lib/sqa-cli.rb'
+    - 'Archspec.rb'
 
 Naming/RescuedExceptionsVariableName:
   Enabled: false

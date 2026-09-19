@@ -330,21 +330,24 @@ module SQA
       clusters = []
 
       levels.each do |level|
+        price = level[:price]
+
         # Find existing cluster
         cluster = clusters.find do |c|
-          (c[:price] - level[:price]).abs / c[:price] < tolerance
+          (c[:price] - price).abs / c[:price] < tolerance
         end
 
         if cluster
           # Add to existing cluster
+          count = cluster[:count] + 1
           cluster[:timeframes] << level[:timeframe]
-          cluster[:count] += 1
+          cluster[:count] = count
           # Update average price
-          cluster[:price] = ((cluster[:price] * (cluster[:count] - 1)) + level[:price]) / cluster[:count]
+          cluster[:price] = ((cluster[:price] * (count - 1)) + price) / count
         else
           # Create new cluster
           clusters << {
-            price: level[:price],
+            price: price,
             timeframes: [level[:timeframe]],
             count: 1
           }

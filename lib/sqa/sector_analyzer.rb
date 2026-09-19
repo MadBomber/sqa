@@ -60,7 +60,7 @@ module SQA
     # @param sector [Symbol] Sector classification
     #
     def add_stock(stock, sector:)
-      raise ArgumentError, "Unknown sector: #{sector}" unless SECTORS.key?(sector)
+      validate_sector!(sector)
 
       ticker = stock.is_a?(String) ? stock : stock.ticker
       @stocks_by_sector[sector] << ticker unless @stocks_by_sector[sector].include?(ticker)
@@ -84,7 +84,7 @@ module SQA
     # @return [Array<Hash>] Sector-wide patterns
     #
     def discover_sector_patterns(sector, stocks, **)
-      raise ArgumentError, "Unknown sector: #{sector}" unless SECTORS.key?(sector)
+      validate_sector!(sector)
 
       kb = @blackboards[sector]
       all_patterns = []
@@ -93,7 +93,8 @@ module SQA
 
       # Discover patterns for each stock
       stocks.each do |stock|
-        debug_me "Analyzing #{stock.ticker}..."
+        ticker = stock.ticker
+        debug_me "Analyzing #{ticker}..."
 
         generator = SQA::StrategyGenerator.new(stock: stock, **)
         patterns = generator.discover_patterns
@@ -101,8 +102,8 @@ module SQA
         # Assert pattern facts in blackboard
         patterns.each_with_index do |pattern, i|
           kb.add_fact(:pattern_discovered, {
-            ticker: stock.ticker,
-            pattern_id: "#{stock.ticker}_#{i}",
+            ticker: ticker,
+            pattern_id: "#{ticker}_#{i}",
             conditions: pattern.conditions,
             frequency: pattern.frequency,
             avg_gain: pattern.avg_gain,
@@ -110,7 +111,7 @@ module SQA
           })
 
           all_patterns << {
-            ticker: stock.ticker,
+            ticker: ticker,
             pattern: pattern,
             sector: sector
           }
@@ -144,7 +145,7 @@ module SQA
     # @return [Hash] Sector regime information
     #
     def detect_sector_regime(sector, stocks)
-      raise ArgumentError, "Unknown sector: #{sector}" unless SECTORS.key?(sector)
+      validate_sector!(sector)
 
       kb = @blackboards[sector]
 
@@ -200,20 +201,29 @@ module SQA
     # @param sector [Symbol] Sector to summarize
     #
     def print_sector_summary(sector)
-      kb = @blackboards[sector]
+      kb      = @blackboards[sector]
+      divider = "=" * 70
 
-      puts "\n" + ("=" * 70)
-      puts "#{sector.to_s.upcase} SECTOR SUMMARY"
-      puts "=" * 70
+      puts <<~HEADER
+
+        #{divider}
+        #{sector.to_s.upcase} SECTOR SUMMARY
+        #{divider}
+      HEADER
 
       print_sector_fact_counts(kb)
       print_sector_regime(sector)
       print_sector_patterns(sector)
 
-      puts "=" * 70
+      puts divider
     end
 
     private
+
+    # Raises unless the sector is one of the known SECTORS.
+    def validate_sector!(sector)
+      raise ArgumentError, "Unknown sector: #{sector}" unless SECTORS.key?(sector)
+    end
 
     # Print the count of facts in the blackboard, grouped by type
     def print_sector_fact_counts(kb)
@@ -282,19 +292,21 @@ module SQA
     # Find patterns common across multiple stocks
     def find_common_patterns(all_patterns)
       # Group by similar conditions
-      grouped = all_patterns.group_by do |p|
-        p[:pattern].conditions.sort.to_h
+      grouped = all_patterns.group_by do |entry|
+        entry[:pattern].conditions.sort.to_h
       end
 
       # Find groups with multiple stocks
       common = grouped.select { |_conditions, group| group.size >= 2 }
 
       common.map do |conditions, group|
+        patterns = group.map { |entry| entry[:pattern] }
+        size     = group.size.to_f
         {
           conditions: conditions,
-          stocks: group.map { |p| p[:ticker] }.uniq,
-          avg_frequency: group.map { |p| p[:pattern].frequency }.sum / group.size.to_f,
-          avg_gain: group.map { |p| p[:pattern].avg_gain }.sum / group.size.to_f
+          stocks: group.map { |entry| entry[:ticker] }.uniq,
+          avg_frequency: patterns.sum(&:frequency) / size,
+          avg_gain: patterns.sum(&:avg_gain) / size
         }
       end
     end

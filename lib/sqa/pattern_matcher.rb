@@ -44,15 +44,16 @@ module SQA
     # @return [Array<Hash>] Similar patterns with metadata
     #
     def find_similar(lookback: 10, num_matches: 5, method: :euclidean, normalize: true)
-      return [] if @prices.size < lookback * 2
+      size = @prices.size
+      return [] if size < lookback * 2
 
       current_pattern = @prices[-lookback..]
       current_pattern = normalize_pattern(current_pattern) if normalize
 
       similarities = []
 
-      (@prices.size - lookback - 20).times do |start_idx|
-        next if start_idx + lookback >= @prices.size - lookback  # Don't compare to recent data
+      (size - lookback - 20).times do |start_idx|
+        next if start_idx + lookback >= size - lookback  # Don't compare to recent data
 
         candidate = build_similarity_candidate(start_idx, lookback, current_pattern, method, normalize)
         similarities << candidate if candidate
@@ -74,27 +75,14 @@ module SQA
 
       return nil if similar.empty?
 
-      # Collect future returns from similar patterns
-      future_returns = similar.map { |s| s[:future_return] }
+      # Re-measure each match's outcome over the requested forecast horizon.
+      # find_similar's own future_return covers `lookback` periods, which is
+      # not what the caller asked to forecast.
+      future_returns = similar.filter_map do |s|
+        future_outcome(s[:start_index], lookback, forecast_periods)&.fetch(:future_return)
+      end
 
-      # Statistical forecast
-      mean_return = future_returns.sum / future_returns.size.to_f
-      std_return = standard_deviation(future_returns)
-
-      current_price = @prices.last
-      forecast_price = current_price * (1 + mean_return)
-
-      {
-        forecast_price: forecast_price,
-        forecast_return: mean_return,
-        confidence_interval_95: [
-          current_price * (1 + mean_return - (1.96 * std_return)),
-          current_price * (1 + mean_return + (1.96 * std_return))
-        ],
-        num_matches: similar.size,
-        similar_patterns: similar,
-        current_price: current_price
-      }
+      build_forecast(similar, future_returns)
     end
 
     ##
@@ -229,26 +217,61 @@ module SQA
       historical_pattern = @prices[start_idx, lookback]
       historical_pattern = normalize_pattern(historical_pattern) if normalize
 
-      distance = distance_between(current_pattern, historical_pattern, method)
+      outcome = future_outcome(start_idx, lookback, lookback)
+      return nil unless outcome
 
-      future_start = start_idx + lookback
-      future_end = [future_start + lookback, @prices.size - 1].min
-      future_prices = @prices[future_start..future_end]
-
-      return nil if future_prices.empty?
-
-      future_return = (future_prices.last - @prices[start_idx + lookback - 1]) /
-                      @prices[start_idx + lookback - 1]
+      end_idx = start_idx + lookback - 1
 
       {
         start_index: start_idx,
-        end_index: start_idx + lookback - 1,
-        distance: distance,
+        end_index: end_idx,
+        distance: distance_between(current_pattern, historical_pattern, method),
         pattern: historical_pattern,
-        future_return: future_return,
-        future_prices: future_prices,
         pattern_start_price: @prices[start_idx],
-        pattern_end_price: @prices[start_idx + lookback - 1]
+        pattern_end_price: @prices[end_idx]
+      }.merge(outcome)
+    end
+
+    ##
+    # What happened over the `periods` after a pattern that ends at
+    # start_idx + lookback - 1, or nil when no future data exists there.
+    #
+    # @return [Hash, nil] :future_return and :future_prices
+    #
+    def future_outcome(start_idx, lookback, periods)
+      future_start = start_idx + lookback
+      future_end = [future_start + periods, @prices.size - 1].min
+      future_prices = @prices[future_start..future_end]
+
+      return nil if future_prices.nil? || future_prices.empty?
+
+      base_price = @prices[future_start - 1]
+
+      {
+        future_return: (future_prices.last - base_price) / base_price,
+        future_prices: future_prices
+      }
+    end
+
+    ##
+    # Assemble the forecast hash from the matches and their horizon returns.
+    #
+    def build_forecast(similar, future_returns)
+      mean_return = future_returns.sum / future_returns.size.to_f
+      spread = 1.96 * standard_deviation(future_returns)
+      growth = 1 + mean_return
+      current_price = @prices.last
+
+      {
+        forecast_price: current_price * growth,
+        forecast_return: mean_return,
+        confidence_interval_95: [
+          current_price * (growth - spread),
+          current_price * (growth + spread)
+        ],
+        num_matches: similar.size,
+        similar_patterns: similar,
+        current_price: current_price
       }
     end
 
@@ -304,10 +327,12 @@ module SQA
       dtw[0][0] = 0
 
       # Fill matrix
-      (1..n).each do |i|
-        (1..m).each do |j|
-          cost = (pattern_1[i - 1] - pattern_2[j - 1]).abs
-          dtw[i][j] = cost + [dtw[i - 1][j], dtw[i][j - 1], dtw[i - 1][j - 1]].min
+      (1..n).each do |row|
+        prev_row = row - 1
+        (1..m).each do |col|
+          prev_col = col - 1
+          cost = (pattern_1[prev_row] - pattern_2[prev_col]).abs
+          dtw[row][col] = cost + [dtw[prev_row][col], dtw[row][prev_col], dtw[prev_row][prev_col]].min
         end
       end
 
@@ -324,16 +349,16 @@ module SQA
     ##
     # Pearson correlation coefficient
     #
-    def pearson_correlation(x, y)
-      return 0.0 if x.size != y.size || x.size < 2
+    def pearson_correlation(xs, ys)
+      n = xs.size
+      return 0.0 if n != ys.size || n < 2
 
-      n = x.size
-      sum_x = x.sum
-      sum_y = y.sum
-      sum_xy = x.zip(y).sum { |a, b| a * b }
+      sum_x = xs.sum
+      sum_y = ys.sum
+      sum_xy = xs.zip(ys).sum { |a, b| a * b }
       # rubocop:disable Naming/VariableNumber -- sum_x2/sum_y2 denote Sum(x^2)/Sum(y^2), not "x, item 2"
-      sum_x2 = x.sum { |a| a**2 }
-      sum_y2 = y.sum { |a| a**2 }
+      sum_x2 = xs.sum { |a| a**2 }
+      sum_y2 = ys.sum { |a| a**2 }
 
       numerator = (n * sum_xy) - (sum_x * sum_y)
       denominator = Math.sqrt(((n * sum_x2) - (sum_x**2)) * ((n * sum_y2) - (sum_y**2)))
@@ -432,11 +457,15 @@ module SQA
       patterns = []
 
       peaks.each_cons(3) do |left, head, right|
+        left_price  = left[:price]
+        right_price = right[:price]
+        head_price  = head[:price]
+
         # Head should be higher than shoulders
-        next unless head[:price] > left[:price] && head[:price] > right[:price]
+        next unless head_price > left_price && head_price > right_price
 
         # Shoulders should be similar height
-        shoulder_diff = (left[:price] - right[:price]).abs / left[:price]
+        shoulder_diff = (left_price - right_price).abs / left_price
         next if shoulder_diff > 0.05
 
         patterns << {
@@ -444,7 +473,7 @@ module SQA
           left_shoulder: left[:index],
           head: head[:index],
           right_shoulder: right[:index],
-          neckline: (left[:price] + right[:price]) / 2.0
+          neckline: (left_price + right_price) / 2.0
         }
       end
 
