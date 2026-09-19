@@ -25,15 +25,15 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
     
     
       
-        <title>KBS Strategy - SQA - Simple Qualitative Analysis</title>
+        <title>KBS Strategy - SQA - Stock Qualitative Analysis</title>
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
       
         
         <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
@@ -100,7 +100,7 @@
 
 <header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="../.." title="SQA - Simple Qualitative Analysis" class="md-header__button md-logo" aria-label="SQA - Simple Qualitative Analysis" data-md-component="logo">
+    <a href="../.." title="SQA - Stock Qualitative Analysis" class="md-header__button md-logo" aria-label="SQA - Stock Qualitative Analysis" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -114,7 +114,7 @@
       <div class="md-header__ellipsis">
         <div class="md-header__topic">
           <span class="md-ellipsis">
-            SQA - Simple Qualitative Analysis
+            SQA - Stock Qualitative Analysis
           </span>
         </div>
         <div class="md-header__topic" data-md-component="header-topic">
@@ -397,13 +397,13 @@
 
 <nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="../.." title="SQA - Simple Qualitative Analysis" class="md-nav__button md-logo" aria-label="SQA - Simple Qualitative Analysis" data-md-component="logo">
+    <a href="../.." title="SQA - Stock Qualitative Analysis" class="md-nav__button md-logo" aria-label="SQA - Stock Qualitative Analysis" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
 
     </a>
-    SQA - Simple Qualitative Analysis
+    SQA - Stock Qualitative Analysis
   </label>
   
     <div class="md-nav__source">
@@ -3335,7 +3335,7 @@
 </span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="n">strategy</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="no">SQA</span><span class="o">::</span><span class="no">Strategy</span><span class="o">::</span><span class="no">KBS</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="ss">load_defaults</span><span class="p">:</span><span class="w"> </span><span class="kp">true</span><span class="p">)</span>
 </span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>
 </span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="c1"># Provide market data</span>
-</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="n">prices</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">stock</span><span class="o">.</span><span class="n">df</span><span class="o">[</span><span class="s2">&quot;adj_close_price&quot;</span><span class="o">].</span><span class="n">to_a</span>
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="n">prices</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">stock</span><span class="o">.</span><span class="n">df</span><span class="o">[</span><span class="s2">"adj_close_price"</span><span class="o">].</span><span class="n">to_a</span>
 </span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="n">vector</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="no">OpenStruct</span><span class="o">.</span><span class="n">new</span><span class="p">(</span>
 </span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="w">  </span><span class="ss">rsi</span><span class="p">:</span><span class="w"> </span><span class="no">SQAI</span><span class="o">.</span><span class="n">rsi</span><span class="p">(</span><span class="n">prices</span><span class="p">,</span><span class="w"> </span><span class="ss">period</span><span class="p">:</span><span class="w"> </span><span class="mi">14</span><span class="p">),</span>
 </span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="w">  </span><span class="ss">prices</span><span class="p">:</span><span class="w"> </span><span class="n">prices</span>
@@ -3353,7 +3353,7 @@
 </span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="w">  </span><span class="n">on</span><span class="w"> </span><span class="ss">:rsi</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="ss">level</span><span class="p">:</span><span class="w"> </span><span class="ss">:oversold</span><span class="w"> </span><span class="p">}</span>
 </span><span id="__span-2-8"><a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a><span class="w">  </span><span class="n">on</span><span class="w"> </span><span class="ss">:macd</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="ss">crossover</span><span class="p">:</span><span class="w"> </span><span class="ss">:bullish</span><span class="w"> </span><span class="p">}</span>
 </span><span id="__span-2-9"><a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a><span class="w">  </span><span class="n">on</span><span class="w"> </span><span class="ss">:volume</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="ss">level</span><span class="p">:</span><span class="w"> </span><span class="ss">:high</span><span class="w"> </span><span class="p">}</span>
-</span><span id="__span-2-10"><a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a><span class="w">  </span><span class="n">without</span><span class="w"> </span><span class="ss">:position</span><span class="w">  </span><span class="c1"># Don&#39;t buy if already holding</span>
+</span><span id="__span-2-10"><a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a><span class="w">  </span><span class="n">without</span><span class="w"> </span><span class="ss">:position</span><span class="w">  </span><span class="c1"># Don't buy if already holding</span>
 </span><span id="__span-2-11"><a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a>
 </span><span id="__span-2-12"><a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a><span class="w">  </span><span class="n">perform</span><span class="w"> </span><span class="k">do</span>
 </span><span id="__span-2-13"><a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a><span class="w">    </span><span class="n">kb</span><span class="o">.</span><span class="n">assert</span><span class="p">(</span><span class="ss">:signal</span><span class="p">,</span><span class="w"> </span><span class="p">{</span>
@@ -3431,7 +3431,7 @@
 </span><span id="__span-3-8"><a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a><span class="c1"># INCORRECT</span>
 </span><span id="__span-3-9"><a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a><span class="n">strategy</span><span class="o">.</span><span class="n">add_rule</span><span class="w"> </span><span class="ss">:my_rule</span><span class="w"> </span><span class="k">do</span>
 </span><span id="__span-3-10"><a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a><span class="w">  </span><span class="n">on</span><span class="w"> </span><span class="ss">:condition</span>
-</span><span id="__span-3-11"><a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a><span class="w">  </span><span class="n">perform</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">assert</span><span class="p">(</span><span class="ss">:signal</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="ss">action</span><span class="p">:</span><span class="w"> </span><span class="ss">:buy</span><span class="w"> </span><span class="p">})</span><span class="w"> </span><span class="p">}</span><span class="w">  </span><span class="c1"># Won&#39;t work!</span>
+</span><span id="__span-3-11"><a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a><span class="w">  </span><span class="n">perform</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">assert</span><span class="p">(</span><span class="ss">:signal</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="ss">action</span><span class="p">:</span><span class="w"> </span><span class="ss">:buy</span><span class="w"> </span><span class="p">})</span><span class="w"> </span><span class="p">}</span><span class="w">  </span><span class="c1"># Won't work!</span>
 </span><span id="__span-3-12"><a id="__codelineno-3-12" name="__codelineno-3-12" href="#__codelineno-3-12"></a><span class="k">end</span>
 </span></code></pre></div>
 <h2 id="related">Related<a class="headerlink" href="#related" title="Permanent link">&para;</a></h2>
@@ -3616,7 +3616,7 @@
       <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.tabs.sticky", "navigation.sections", "navigation.path", "navigation.indexes", "navigation.top", "navigation.footer", "toc.follow", "search.suggest", "search.highlight", "search.share", "header.autohide", "content.code.copy", "content.code.annotate", "content.tabs.link", "content.tooltips", "content.action.edit", "content.action.view"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
       
         <script src="../../assets/js/mathjax.js"></script>
       

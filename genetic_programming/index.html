@@ -25,15 +25,15 @@
       
       
       <link rel="icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
     
     
       
-        <title>Genetic Programming - SQA - Simple Qualitative Analysis</title>
+        <title>Genetic Programming - SQA - Stock Qualitative Analysis</title>
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.ec1eaa64.min.css">
       
         
         <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
@@ -100,7 +100,7 @@
 
 <header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href=".." title="SQA - Simple Qualitative Analysis" class="md-header__button md-logo" aria-label="SQA - Simple Qualitative Analysis" data-md-component="logo">
+    <a href=".." title="SQA - Stock Qualitative Analysis" class="md-header__button md-logo" aria-label="SQA - Stock Qualitative Analysis" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -114,7 +114,7 @@
       <div class="md-header__ellipsis">
         <div class="md-header__topic">
           <span class="md-ellipsis">
-            SQA - Simple Qualitative Analysis
+            SQA - Stock Qualitative Analysis
           </span>
         </div>
         <div class="md-header__topic" data-md-component="header-topic">
@@ -395,13 +395,13 @@
 
 <nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href=".." title="SQA - Simple Qualitative Analysis" class="md-nav__button md-logo" aria-label="SQA - Simple Qualitative Analysis" data-md-component="logo">
+    <a href=".." title="SQA - Stock Qualitative Analysis" class="md-nav__button md-logo" aria-label="SQA - Stock Qualitative Analysis" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
 
     </a>
-    SQA - Simple Qualitative Analysis
+    SQA - Stock Qualitative Analysis
   </label>
   
     <div class="md-nav__source">
@@ -3122,9 +3122,9 @@ fwi = (x+1 .. x+fww)</p>
 gain    = prices[fwi].max - prices[x] # could be negative
 loss    = prices[fwi].min - prices[x]
 delta   = decision-point amount (Float)
-          buy when  forcast_price - prices[x] &gt;= delta
+          buy when  forecast_price - prices[x] &gt;= delta
             buy to realize gain</p>
-<div class="language-text highlight"><pre><span></span><code>      sell when prices[x] - forcast_price &gt;= delta
+<div class="language-text highlight"><pre><span></span><code>      sell when prices[x] - forecast_price &gt;= delta
         sell to avoid loss
 </code></pre></div>
 <p>fitness_sell = gain - delta # more positive the better
@@ -3149,21 +3149,21 @@ fitness_hold = gain.abs &lt; delta &amp;&amp; loss.abs &lt; delta</p>
 </li>
 </ol>
 <p>Here is the Ruby code implementing genetic programming using Darwinning:</p>
-<div class="language-ruby highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="nb">require</span><span class="w"> </span><span class="s1">&#39;darwinning&#39;</span>
+<div class="language-ruby highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="nb">require</span><span class="w"> </span><span class="s1">'darwinning'</span>
 </span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>
 </span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="k">class</span><span class="w"> </span><span class="nc">TradingStrategy</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="no">Darwinning</span><span class="o">::</span><span class="no">Organism</span>
-</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="w">  </span><span class="vi">@name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;Trading Strategy&quot;</span>
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="w">  </span><span class="vi">@name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"Trading Strategy"</span>
 </span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="w">  </span><span class="vi">@genes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">[</span>
-</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="w">    </span><span class="no">Darwinning</span><span class="o">::</span><span class="no">Gene</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="nb">name</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;moving average short period&quot;</span><span class="p">,</span><span class="w"> </span><span class="ss">value_range</span><span class="p">:</span><span class="w"> </span><span class="p">(</span><span class="mi">5</span><span class="o">..</span><span class="mi">15</span><span class="p">)),</span>
-</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="w">    </span><span class="no">Darwinning</span><span class="o">::</span><span class="no">Gene</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="nb">name</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;moving average long period&quot;</span><span class="p">,</span><span class="w">  </span><span class="ss">value_range</span><span class="p">:</span><span class="w"> </span><span class="p">(</span><span class="mi">20</span><span class="o">..</span><span class="mi">50</span><span class="p">)),</span>
-</span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="w">    </span><span class="no">Darwinning</span><span class="o">::</span><span class="no">Gene</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="nb">name</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;buy threshold&quot;</span><span class="p">,</span><span class="w"> </span><span class="ss">value_range</span><span class="p">:</span><span class="w"> </span><span class="p">(</span><span class="mi">0</span><span class="o">.</span><span class="mo">01</span><span class="o">..</span><span class="mi">0</span><span class="o">.</span><span class="mo">05</span><span class="p">)),</span>
-</span><span id="__span-1-9"><a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="w">    </span><span class="no">Darwinning</span><span class="o">::</span><span class="no">Gene</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="nb">name</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;sell threshold&quot;</span><span class="p">,</span><span class="w"> </span><span class="ss">value_range</span><span class="p">:</span><span class="w"> </span><span class="p">(</span><span class="o">-</span><span class="mi">0</span><span class="o">.</span><span class="mo">05</span><span class="o">..-</span><span class="mi">0</span><span class="o">.</span><span class="mo">01</span><span class="p">))</span>
+</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="w">    </span><span class="no">Darwinning</span><span class="o">::</span><span class="no">Gene</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="nb">name</span><span class="p">:</span><span class="w"> </span><span class="s2">"moving average short period"</span><span class="p">,</span><span class="w"> </span><span class="ss">value_range</span><span class="p">:</span><span class="w"> </span><span class="p">(</span><span class="mi">5</span><span class="o">..</span><span class="mi">15</span><span class="p">)),</span>
+</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="w">    </span><span class="no">Darwinning</span><span class="o">::</span><span class="no">Gene</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="nb">name</span><span class="p">:</span><span class="w"> </span><span class="s2">"moving average long period"</span><span class="p">,</span><span class="w">  </span><span class="ss">value_range</span><span class="p">:</span><span class="w"> </span><span class="p">(</span><span class="mi">20</span><span class="o">..</span><span class="mi">50</span><span class="p">)),</span>
+</span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="w">    </span><span class="no">Darwinning</span><span class="o">::</span><span class="no">Gene</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="nb">name</span><span class="p">:</span><span class="w"> </span><span class="s2">"buy threshold"</span><span class="p">,</span><span class="w"> </span><span class="ss">value_range</span><span class="p">:</span><span class="w"> </span><span class="p">(</span><span class="mi">0</span><span class="o">.</span><span class="mo">01</span><span class="o">..</span><span class="mi">0</span><span class="o">.</span><span class="mo">05</span><span class="p">)),</span>
+</span><span id="__span-1-9"><a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="w">    </span><span class="no">Darwinning</span><span class="o">::</span><span class="no">Gene</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="nb">name</span><span class="p">:</span><span class="w"> </span><span class="s2">"sell threshold"</span><span class="p">,</span><span class="w"> </span><span class="ss">value_range</span><span class="p">:</span><span class="w"> </span><span class="p">(</span><span class="o">-</span><span class="mi">0</span><span class="o">.</span><span class="mo">05</span><span class="o">..-</span><span class="mi">0</span><span class="o">.</span><span class="mo">01</span><span class="p">))</span>
 </span><span id="__span-1-10"><a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="w">  </span><span class="o">]</span>
 </span><span id="__span-1-11"><a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a>
 </span><span id="__span-1-12"><a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a><span class="w">  </span><span class="k">def</span><span class="w"> </span><span class="nf">fitness</span>
-</span><span id="__span-1-13"><a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a><span class="w">    </span><span class="c1"># Define how to evaluate the strategy&#39;s fitness. Here, simplistic measures could be the paper trading results:</span>
-</span><span id="__span-1-14"><a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a><span class="w">    </span><span class="n">moving_average_short</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">genotypes</span><span class="o">[</span><span class="s2">&quot;moving average short period&quot;</span><span class="o">]</span>
-</span><span id="__span-1-15"><a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a><span class="w">    </span><span class="n">moving_accurate_touch_trigger_index_Bigvar</span><span class="o">=</span><span class="w"> </span><span class="o">&gt;</span><span class="n">umbrella_deal</span><span class="p">;</span><span class="w"> </span><span class="n">share_rally_hook</span><span class="o">=</span><span class="s2">&quot;?pelicans&quot;</span><span class="w"> </span><span class="n">surpassing_value_trauma_long</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="mi">5000</span><span class="o">..</span><span class="mi">100000</span><span class="p">}</span>
+</span><span id="__span-1-13"><a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a><span class="w">    </span><span class="c1"># Define how to evaluate the strategy's fitness. Here, simplistic measures could be the paper trading results:</span>
+</span><span id="__span-1-14"><a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a><span class="w">    </span><span class="n">moving_average_short</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">genotypes</span><span class="o">[</span><span class="s2">"moving average short period"</span><span class="o">]</span>
+</span><span id="__span-1-15"><a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a><span class="w">    </span><span class="n">moving_accurate_touch_trigger_index_Bigvar</span><span class="o">=</span><span class="w"> </span><span class="o">&gt;</span><span class="n">umbrella_deal</span><span class="p">;</span><span class="w"> </span><span class="n">share_rally_hook</span><span class="o">=</span><span class="s2">"?pelicans"</span><span class="w"> </span><span class="n">surpassing_value_trauma_long</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="mi">5000</span><span class="o">..</span><span class="mi">100000</span><span class="p">}</span>
 </span><span id="__span-1-16"><a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a><span class="w">    </span><span class="c1"># Simplified fitness function calculation for demonstration: assume returns as random for illustration</span>
 </span><span id="__span-1-17"><a id="__codelineno-1-17" name="__codelineno-1-17" href="#__codelineno-1-17"></a><span class="w">    </span><span class="nb">rand</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">50</span><span class="w">  </span><span class="c1"># Random fitness value for demonstration</span>
 </span><span id="__span-1-18"><a id="__codelineno-1-18" name="__codelineno-1-18" href="#__codelineno-1-18"></a><span class="w">  </span><span class="k">end</span>
@@ -3176,7 +3176,7 @@ fitness_hold = gain.abs &lt; delta &amp;&amp; loss.abs &lt; delta</p>
 </span><span id="__span-1-25"><a id="__codelineno-1-25" name="__codelineno-1-25" href="#__codelineno-1-25"></a>
 </span><span id="__span-1-26"><a id="__codelineno-1-26" name="__codelineno-1-26" href="#__codelineno-1-26"></a><span class="n">population</span><span class="o">.</span><span class="n">evolve!</span>
 </span><span id="__span-1-27"><a id="__codelineno-1-27" name="__codelineno-1-27" href="#__codelineno-1-27"></a>
-</span><span id="__span-1-28"><a id="__codelineno-1-28" name="__codelineno-1-28" href="#__codelineno-1-28"></a><span class="nb">puts</span><span class="w"> </span><span class="s2">&quot;Best trading strategy: </span><span class="si">#{</span><span class="n">population</span><span class="o">.</span><span class="n">best_member</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span id="__span-1-28"><a id="__codelineno-1-28" name="__codelineno-1-28" href="#__codelineno-1-28"></a><span class="nb">puts</span><span class="w"> </span><span class="s2">"Best trading strategy: </span><span class="si">#{</span><span class="n">population</span><span class="o">.</span><span class="n">best_member</span><span class="si">}</span><span class="s2">"</span>
 </span></code></pre></div>
 <h3 id="considerations">Considerations<a class="headerlink" href="#considerations" title="Permanent link">&para;</a></h3>
 <ul>
@@ -3364,7 +3364,7 @@ fitness_hold = gain.abs &lt; delta &amp;&amp; loss.abs &lt; delta</p>
       <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.tabs.sticky", "navigation.sections", "navigation.path", "navigation.indexes", "navigation.top", "navigation.footer", "toc.follow", "search.suggest", "search.highlight", "search.share", "header.autohide", "content.code.copy", "content.code.annotate", "content.tabs.link", "content.tooltips", "content.action.edit", "content.action.view"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../assets/javascripts/bundle.d7400e89.min.js"></script>
       
         <script src="../assets/js/mathjax.js"></script>
       

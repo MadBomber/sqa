@@ -25,15 +25,15 @@
       
       
       <link rel="icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
     
     
       
-        <title>Overview - SQA - Simple Qualitative Analysis</title>
+        <title>Overview - SQA - Stock Qualitative Analysis</title>
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.ec1eaa64.min.css">
       
         
         <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
@@ -100,7 +100,7 @@
 
 <header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href=".." title="SQA - Simple Qualitative Analysis" class="md-header__button md-logo" aria-label="SQA - Simple Qualitative Analysis" data-md-component="logo">
+    <a href=".." title="SQA - Stock Qualitative Analysis" class="md-header__button md-logo" aria-label="SQA - Stock Qualitative Analysis" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -114,7 +114,7 @@
       <div class="md-header__ellipsis">
         <div class="md-header__topic">
           <span class="md-ellipsis">
-            SQA - Simple Qualitative Analysis
+            SQA - Stock Qualitative Analysis
           </span>
         </div>
         <div class="md-header__topic" data-md-component="header-topic">
@@ -397,13 +397,13 @@
 
 <nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href=".." title="SQA - Simple Qualitative Analysis" class="md-nav__button md-logo" aria-label="SQA - Simple Qualitative Analysis" data-md-component="logo">
+    <a href=".." title="SQA - Stock Qualitative Analysis" class="md-nav__button md-logo" aria-label="SQA - Stock Qualitative Analysis" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
 
     </a>
-    SQA - Simple Qualitative Analysis
+    SQA - Stock Qualitative Analysis
   </label>
   
     <div class="md-nav__source">
@@ -3155,12 +3155,12 @@
 - Manage data persistence (JSON metadata + CSV prices)
 - Provide access to DataFrame for analysis</p>
 <p><strong>Example:</strong>
-<div class="language-ruby highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">stock</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="no">SQA</span><span class="o">::</span><span class="no">Stock</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="ss">ticker</span><span class="p">:</span><span class="w"> </span><span class="s1">&#39;AAPL&#39;</span><span class="p">)</span>
+<div class="language-ruby highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">stock</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="no">SQA</span><span class="o">::</span><span class="no">Stock</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="ss">ticker</span><span class="p">:</span><span class="w"> </span><span class="s1">'AAPL'</span><span class="p">)</span>
 </span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>
 </span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="c1"># Access data</span>
-</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="n">stock</span><span class="o">.</span><span class="n">ticker</span><span class="w">      </span><span class="c1"># =&gt; &quot;aapl&quot;</span>
-</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="n">stock</span><span class="o">.</span><span class="n">name</span><span class="w">        </span><span class="c1"># =&gt; &quot;Apple Inc&quot;</span>
-</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="n">stock</span><span class="o">.</span><span class="n">exchange</span><span class="w">    </span><span class="c1"># =&gt; &quot;NASDAQ&quot;</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="n">stock</span><span class="o">.</span><span class="n">ticker</span><span class="w">      </span><span class="c1"># =&gt; "aapl"</span>
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="n">stock</span><span class="o">.</span><span class="n">name</span><span class="w">        </span><span class="c1"># =&gt; "Apple Inc"</span>
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="n">stock</span><span class="o">.</span><span class="n">exchange</span><span class="w">    </span><span class="c1"># =&gt; "NASDAQ"</span>
 </span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="n">stock</span><span class="o">.</span><span class="n">df</span><span class="w">          </span><span class="c1"># =&gt; SQA::DataFrame with price/volume</span>
 </span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="n">stock</span><span class="o">.</span><span class="n">overview</span><span class="w">    </span><span class="c1"># =&gt; Hash with company details</span>
 </span></code></pre></div></p>
@@ -3185,12 +3185,12 @@
 <div class="language-ruby highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="n">df</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">stock</span><span class="o">.</span><span class="n">df</span>
 </span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>
 </span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="c1"># Column operations</span>
-</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="n">prices</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">df</span><span class="o">[</span><span class="s2">&quot;adj_close_price&quot;</span><span class="o">].</span><span class="n">to_a</span>
-</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="n">volumes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">df</span><span class="o">[</span><span class="s2">&quot;volume&quot;</span><span class="o">].</span><span class="n">to_a</span>
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="n">prices</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">df</span><span class="o">[</span><span class="s2">"adj_close_price"</span><span class="o">].</span><span class="n">to_a</span>
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="n">volumes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">df</span><span class="o">[</span><span class="s2">"volume"</span><span class="o">].</span><span class="n">to_a</span>
 </span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>
 </span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="c1"># Statistics (via Polars)</span>
-</span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="n">df</span><span class="o">.</span><span class="n">data</span><span class="o">[</span><span class="s2">&quot;close_price&quot;</span><span class="o">].</span><span class="n">mean</span>
-</span><span id="__span-1-9"><a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="n">df</span><span class="o">.</span><span class="n">data</span><span class="o">[</span><span class="s2">&quot;volume&quot;</span><span class="o">].</span><span class="n">sum</span>
+</span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="n">df</span><span class="o">.</span><span class="n">data</span><span class="o">[</span><span class="s2">"close_price"</span><span class="o">].</span><span class="n">mean</span>
+</span><span id="__span-1-9"><a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="n">df</span><span class="o">.</span><span class="n">data</span><span class="o">[</span><span class="s2">"volume"</span><span class="o">].</span><span class="n">sum</span>
 </span></code></pre></div></p>
 <h3 id="3-technical-indicators-sqai-sqatai">3. Technical Indicators (<code>SQAI</code> / <code>SQA::TAI</code>)<a class="headerlink" href="#3-technical-indicators-sqai-sqatai" title="Permanent link">&para;</a></h3>
 <p>150+ technical indicators provided by the <code>sqa-tai</code> gem, which wraps TA-Lib.</p>
@@ -3202,7 +3202,7 @@
 - <strong>Cycle</strong>: Hilbert Transform indicators
 - <strong>Pattern</strong>: Candlestick pattern recognition</p>
 <p><strong>Example:</strong>
-<div class="language-ruby highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="n">prices</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">stock</span><span class="o">.</span><span class="n">df</span><span class="o">[</span><span class="s2">&quot;adj_close_price&quot;</span><span class="o">].</span><span class="n">to_a</span>
+<div class="language-ruby highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="n">prices</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">stock</span><span class="o">.</span><span class="n">df</span><span class="o">[</span><span class="s2">"adj_close_price"</span><span class="o">].</span><span class="n">to_a</span>
 </span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>
 </span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="c1"># Single-value indicators</span>
 </span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="n">sma</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="no">SQAI</span><span class="o">.</span><span class="n">sma</span><span class="p">(</span><span class="n">prices</span><span class="p">,</span><span class="w"> </span><span class="ss">period</span><span class="p">:</span><span class="w"> </span><span class="mi">20</span><span class="p">)</span>
@@ -3229,7 +3229,7 @@
 - KBS (Knowledge-Based System)
 - Consensus (aggregates multiple strategies)</p>
 <p><strong>Example:</strong>
-<div class="language-ruby highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="nb">require</span><span class="w"> </span><span class="s1">&#39;ostruct&#39;</span>
+<div class="language-ruby highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="nb">require</span><span class="w"> </span><span class="s1">'ostruct'</span>
 </span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>
 </span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="n">vector</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="no">OpenStruct</span><span class="o">.</span><span class="n">new</span><span class="p">(</span>
 </span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="w">  </span><span class="ss">rsi</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="ss">trend</span><span class="p">:</span><span class="w"> </span><span class="ss">:over_sold</span><span class="p">,</span><span class="w"> </span><span class="ss">value</span><span class="p">:</span><span class="w"> </span><span class="mi">28</span><span class="w"> </span><span class="p">},</span>
@@ -3248,8 +3248,8 @@
 - Trade history</p>
 <p><strong>Example:</strong>
 <div class="language-ruby highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="n">portfolio</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="no">SQA</span><span class="o">::</span><span class="no">Portfolio</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="ss">initial_cash</span><span class="p">:</span><span class="w"> </span><span class="mi">10_000</span><span class="p">,</span><span class="w"> </span><span class="ss">commission</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="o">.</span><span class="mi">0</span><span class="p">)</span>
-</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="n">portfolio</span><span class="o">.</span><span class="n">buy</span><span class="p">(</span><span class="s1">&#39;AAPL&#39;</span><span class="p">,</span><span class="w"> </span><span class="ss">shares</span><span class="p">:</span><span class="w"> </span><span class="mi">10</span><span class="p">,</span><span class="w"> </span><span class="ss">price</span><span class="p">:</span><span class="w"> </span><span class="mi">150</span><span class="o">.</span><span class="mi">0</span><span class="p">)</span>
-</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="n">portfolio</span><span class="o">.</span><span class="n">sell</span><span class="p">(</span><span class="s1">&#39;AAPL&#39;</span><span class="p">,</span><span class="w"> </span><span class="ss">shares</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="ss">price</span><span class="p">:</span><span class="w"> </span><span class="mi">160</span><span class="o">.</span><span class="mi">0</span><span class="p">)</span>
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="n">portfolio</span><span class="o">.</span><span class="n">buy</span><span class="p">(</span><span class="s1">'AAPL'</span><span class="p">,</span><span class="w"> </span><span class="ss">shares</span><span class="p">:</span><span class="w"> </span><span class="mi">10</span><span class="p">,</span><span class="w"> </span><span class="ss">price</span><span class="p">:</span><span class="w"> </span><span class="mi">150</span><span class="o">.</span><span class="mi">0</span><span class="p">)</span>
+</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="n">portfolio</span><span class="o">.</span><span class="n">sell</span><span class="p">(</span><span class="s1">'AAPL'</span><span class="p">,</span><span class="w"> </span><span class="ss">shares</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="ss">price</span><span class="p">:</span><span class="w"> </span><span class="mi">160</span><span class="o">.</span><span class="mi">0</span><span class="p">)</span>
 </span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>
 </span><span id="__span-5-5"><a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="n">portfolio</span><span class="o">.</span><span class="n">cash</span><span class="w">        </span><span class="c1"># Remaining cash</span>
 </span><span id="__span-5-6"><a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a><span class="n">portfolio</span><span class="o">.</span><span class="n">positions</span><span class="w">   </span><span class="c1"># Current holdings</span>
@@ -3271,8 +3271,8 @@
 </span><span id="__span-6-5"><a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a><span class="p">)</span>
 </span><span id="__span-6-6"><a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a>
 </span><span id="__span-6-7"><a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a><span class="n">results</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">backtest</span><span class="o">.</span><span class="n">run</span>
-</span><span id="__span-6-8"><a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a><span class="nb">puts</span><span class="w"> </span><span class="s2">&quot;Return: </span><span class="si">#{</span><span class="n">results</span><span class="o">.</span><span class="n">total_return</span><span class="si">}</span><span class="s2">%&quot;</span>
-</span><span id="__span-6-9"><a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a><span class="nb">puts</span><span class="w"> </span><span class="s2">&quot;Sharpe: </span><span class="si">#{</span><span class="n">results</span><span class="o">.</span><span class="n">sharpe_ratio</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span id="__span-6-8"><a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a><span class="nb">puts</span><span class="w"> </span><span class="s2">"Return: </span><span class="si">#{</span><span class="n">results</span><span class="o">.</span><span class="n">total_return</span><span class="si">}</span><span class="s2">%"</span>
+</span><span id="__span-6-9"><a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a><span class="nb">puts</span><span class="w"> </span><span class="s2">"Sharpe: </span><span class="si">#{</span><span class="n">results</span><span class="o">.</span><span class="n">sharpe_ratio</span><span class="si">}</span><span class="s2">"</span>
 </span></code></pre></div></p>
 <h2 id="data-flow">Data Flow<a class="headerlink" href="#data-flow" title="Permanent link">&para;</a></h2>
 <p>Understanding how data flows through SQA:</p>
@@ -3308,9 +3308,9 @@
 </span><span id="__span-9-6"><a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a><span class="nt">lazy_update</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
 </span></code></pre></div></p>
 <p><strong>Environment Variables:</strong>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="nb">export</span><span class="w"> </span><span class="nv">FMP_API_KEY</span><span class="o">=</span><span class="s2">&quot;your_fmp_key&quot;</span><span class="w">          </span><span class="c1"># default price source</span>
-</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a><span class="nb">export</span><span class="w"> </span><span class="nv">AV_API_KEY</span><span class="o">=</span><span class="s2">&quot;your_alpha_vantage_key&quot;</span><span class="w"> </span><span class="c1"># optional</span>
-</span><span id="__span-10-3"><a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a><span class="nb">export</span><span class="w"> </span><span class="nv">SQA_DATA_DIR</span><span class="o">=</span><span class="s2">&quot;~/my_data&quot;</span>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="nb">export</span><span class="w"> </span><span class="nv">FMP_API_KEY</span><span class="o">=</span><span class="s2">"your_fmp_key"</span><span class="w">          </span><span class="c1"># default price source</span>
+</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a><span class="nb">export</span><span class="w"> </span><span class="nv">AV_API_KEY</span><span class="o">=</span><span class="s2">"your_alpha_vantage_key"</span><span class="w"> </span><span class="c1"># optional</span>
+</span><span id="__span-10-3"><a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a><span class="nb">export</span><span class="w"> </span><span class="nv">SQA_DATA_DIR</span><span class="o">=</span><span class="s2">"~/my_data"</span>
 </span><span id="__span-10-4"><a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a><span class="nb">export</span><span class="w"> </span><span class="nv">SQA_DEBUG</span><span class="o">=</span><span class="nb">true</span>
 </span></code></pre></div></p>
 <h2 id="file-storage">File Storage<a class="headerlink" href="#file-storage" title="Permanent link">&para;</a></h2>
@@ -3574,7 +3574,7 @@
       <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.tabs.sticky", "navigation.sections", "navigation.path", "navigation.indexes", "navigation.top", "navigation.footer", "toc.follow", "search.suggest", "search.highlight", "search.share", "header.autohide", "content.code.copy", "content.code.annotate", "content.tabs.link", "content.tooltips", "content.action.edit", "content.action.view"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../assets/javascripts/bundle.d7400e89.min.js"></script>
       
         <script src="../assets/js/mathjax.js"></script>
       

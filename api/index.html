@@ -25,15 +25,15 @@
       
       
       <link rel="icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
     
     
       
-        <title>Overview - SQA - Simple Qualitative Analysis</title>
+        <title>Overview - SQA - Stock Qualitative Analysis</title>
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.ec1eaa64.min.css">
       
         
         <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
@@ -100,7 +100,7 @@
 
 <header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href=".." title="SQA - Simple Qualitative Analysis" class="md-header__button md-logo" aria-label="SQA - Simple Qualitative Analysis" data-md-component="logo">
+    <a href=".." title="SQA - Stock Qualitative Analysis" class="md-header__button md-logo" aria-label="SQA - Stock Qualitative Analysis" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -114,7 +114,7 @@
       <div class="md-header__ellipsis">
         <div class="md-header__topic">
           <span class="md-ellipsis">
-            SQA - Simple Qualitative Analysis
+            SQA - Stock Qualitative Analysis
           </span>
         </div>
         <div class="md-header__topic" data-md-component="header-topic">
@@ -395,13 +395,13 @@
 
 <nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href=".." title="SQA - Simple Qualitative Analysis" class="md-nav__button md-logo" aria-label="SQA - Simple Qualitative Analysis" data-md-component="logo">
+    <a href=".." title="SQA - Stock Qualitative Analysis" class="md-nav__button md-logo" aria-label="SQA - Stock Qualitative Analysis" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
 
     </a>
-    SQA - Simple Qualitative Analysis
+    SQA - Stock Qualitative Analysis
   </label>
   
     <div class="md-nav__source">
@@ -3969,12 +3969,12 @@
 <p>Initializes the SQA library. Should be called once at application startup.</p>
 <div class="language-ruby highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="no">SQA</span><span class="o">.</span><span class="n">init</span>
 </span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="c1"># Or with arguments</span>
-</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="no">SQA</span><span class="o">.</span><span class="n">init</span><span class="p">(</span><span class="s2">&quot;--debug&quot;</span><span class="p">)</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="no">SQA</span><span class="o">.</span><span class="n">init</span><span class="p">(</span><span class="s2">"--debug"</span><span class="p">)</span>
 </span></code></pre></div>
 <p><strong>Returns:</strong> <code>SQA::Config</code> - The configuration instance</p>
 <h4 id="sqaconfig"><code>SQA.config</code><a class="headerlink" href="#sqaconfig" title="Permanent link">&para;</a></h4>
 <p>Returns the current configuration object.</p>
-<div class="language-ruby highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="no">SQA</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">data_dir</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;~/my_data&quot;</span>
+<div class="language-ruby highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="no">SQA</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">data_dir</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"~/my_data"</span>
 </span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="no">SQA</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">debug</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kp">true</span>
 </span></code></pre></div>
 <p><strong>Returns:</strong> <code>SQA::Config</code></p>
@@ -3991,7 +3991,7 @@
 <strong>Raises:</strong> <code>SQA::ConfigurationError</code> if not set</p>
 <h4 id="sqadebug-sqaverbose"><code>SQA.debug?</code> / <code>SQA.verbose?</code><a class="headerlink" href="#sqadebug-sqaverbose" title="Permanent link">&para;</a></h4>
 <p>Check if debug or verbose mode is enabled.</p>
-<div class="language-ruby highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="nb">puts</span><span class="w"> </span><span class="s2">&quot;Debug mode&quot;</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="no">SQA</span><span class="o">.</span><span class="n">debug?</span>
+<div class="language-ruby highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="nb">puts</span><span class="w"> </span><span class="s2">"Debug mode"</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="no">SQA</span><span class="o">.</span><span class="n">debug?</span>
 </span></code></pre></div>
 <p><strong>Returns:</strong> <code>Boolean</code></p>
 <hr />
@@ -4000,8 +4000,8 @@
 <h3 id="constructor">Constructor<a class="headerlink" href="#constructor" title="Permanent link">&para;</a></h3>
 <h4 id="sqastocknewticker-source-fmp"><code>SQA::Stock.new(ticker:, source: :fmp)</code><a class="headerlink" href="#sqastocknewticker-source-fmp" title="Permanent link">&para;</a></h4>
 <p>Creates a new Stock instance and loads/fetches its data.</p>
-<div class="language-ruby highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="n">stock</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="no">SQA</span><span class="o">::</span><span class="no">Stock</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="ss">ticker</span><span class="p">:</span><span class="w"> </span><span class="s1">&#39;AAPL&#39;</span><span class="p">)</span>
-</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="n">stock</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="no">SQA</span><span class="o">::</span><span class="no">Stock</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="ss">ticker</span><span class="p">:</span><span class="w"> </span><span class="s1">&#39;MSFT&#39;</span><span class="p">,</span><span class="w"> </span><span class="ss">source</span><span class="p">:</span><span class="w"> </span><span class="ss">:yahoo_finance</span><span class="p">)</span>
+<div class="language-ruby highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="n">stock</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="no">SQA</span><span class="o">::</span><span class="no">Stock</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="ss">ticker</span><span class="p">:</span><span class="w"> </span><span class="s1">'AAPL'</span><span class="p">)</span>
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="n">stock</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="no">SQA</span><span class="o">::</span><span class="no">Stock</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="ss">ticker</span><span class="p">:</span><span class="w"> </span><span class="s1">'MSFT'</span><span class="p">,</span><span class="w"> </span><span class="ss">source</span><span class="p">:</span><span class="w"> </span><span class="ss">:yahoo_finance</span><span class="p">)</span>
 </span></code></pre></div>
 <p><strong>Parameters:</strong>
 - <code>ticker</code> (String) - Stock ticker symbol
@@ -4062,7 +4062,7 @@
 <h3 id="instance-methods">Instance Methods<a class="headerlink" href="#instance-methods" title="Permanent link">&para;</a></h3>
 <h4 id="to_s-inspect"><code>#to_s</code> / <code>#inspect</code><a class="headerlink" href="#to_s-inspect" title="Permanent link">&para;</a></h4>
 <p>Returns human-readable string representation.</p>
-<div class="language-ruby highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="n">stock</span><span class="o">.</span><span class="n">to_s</span><span class="w">  </span><span class="c1"># =&gt; &quot;aapl with 1258 data points from 2019-11-09 to 2024-11-08&quot;</span>
+<div class="language-ruby highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="n">stock</span><span class="o">.</span><span class="n">to_s</span><span class="w">  </span><span class="c1"># =&gt; "aapl with 1258 data points from 2019-11-09 to 2024-11-08"</span>
 </span></code></pre></div>
 <h4 id="update"><code>#update</code><a class="headerlink" href="#update" title="Permanent link">&para;</a></h4>
 <p>Updates stock's overview data from API.</p>
@@ -4088,7 +4088,7 @@
 <h3 id="constructor_1">Constructor<a class="headerlink" href="#constructor_1" title="Permanent link">&para;</a></h3>
 <h4 id="sqadataframenewraw_data-nil-mapping-transformers"><code>SQA::DataFrame.new(raw_data = nil, mapping: {}, transformers: {})</code><a class="headerlink" href="#sqadataframenewraw_data-nil-mapping-transformers" title="Permanent link">&para;</a></h4>
 <p>Creates a new DataFrame instance.</p>
-<div class="language-ruby highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="n">df</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="no">SQA</span><span class="o">::</span><span class="no">DataFrame</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">data</span><span class="p">,</span><span class="w"> </span><span class="ss">mapping</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="s2">&quot;Close&quot;</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="s2">&quot;close_price&quot;</span><span class="w"> </span><span class="p">})</span>
+<div class="language-ruby highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="n">df</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="no">SQA</span><span class="o">::</span><span class="no">DataFrame</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">data</span><span class="p">,</span><span class="w"> </span><span class="ss">mapping</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="s2">"Close"</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="s2">"close_price"</span><span class="w"> </span><span class="p">})</span>
 </span></code></pre></div>
 <h3 id="instance-attributes_1">Instance Attributes<a class="headerlink" href="#instance-attributes_1" title="Permanent link">&para;</a></h3>
 <table>
@@ -4110,11 +4110,11 @@
 <h3 id="instance-methods_1">Instance Methods<a class="headerlink" href="#instance-methods_1" title="Permanent link">&para;</a></h3>
 <h4 id="columns-keys"><code>#columns</code> / <code>#keys</code><a class="headerlink" href="#columns-keys" title="Permanent link">&para;</a></h4>
 <p>Returns column names.</p>
-<div class="language-ruby highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="w">  </span><span class="c1"># =&gt; [&quot;timestamp&quot;, &quot;open_price&quot;, &quot;high_price&quot;, ...]</span>
+<div class="language-ruby highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="w">  </span><span class="c1"># =&gt; ["timestamp", "open_price", "high_price", ...]</span>
 </span></code></pre></div>
 <h4 id="column_name"><code>#[](column_name)</code><a class="headerlink" href="#column_name" title="Permanent link">&para;</a></h4>
 <p>Access a column (delegates to Polars).</p>
-<div class="language-ruby highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="n">prices</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">df</span><span class="o">[</span><span class="s2">&quot;adj_close_price&quot;</span><span class="o">].</span><span class="n">to_a</span>
+<div class="language-ruby highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="n">prices</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">df</span><span class="o">[</span><span class="s2">"adj_close_price"</span><span class="o">].</span><span class="n">to_a</span>
 </span></code></pre></div>
 <h4 id="size-nrows-length"><code>#size</code> / <code>#nrows</code> / <code>#length</code><a class="headerlink" href="#size-nrows-length" title="Permanent link">&para;</a></h4>
 <p>Returns number of rows.</p>
@@ -4124,7 +4124,7 @@
 <p>Returns number of columns.</p>
 <h4 id="to_csvpath"><code>#to_csv(path)</code><a class="headerlink" href="#to_csvpath" title="Permanent link">&para;</a></h4>
 <p>Writes DataFrame to CSV file.</p>
-<div class="language-ruby highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="n">df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="s2">&quot;output.csv&quot;</span><span class="p">)</span>
+<div class="language-ruby highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="n">df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="s2">"output.csv"</span><span class="p">)</span>
 </span></code></pre></div>
 <h4 id="to_h"><code>#to_h</code><a class="headerlink" href="#to_h" title="Permanent link">&para;</a></h4>
 <p>Converts to Ruby Hash.</p>
@@ -4137,26 +4137,26 @@
 <p>Appends, removes duplicates, and sorts. Enforces ascending order for TA-Lib compatibility.</p>
 <h4 id="rename_columnsmapping"><code>#rename_columns!(mapping)</code><a class="headerlink" href="#rename_columnsmapping" title="Permanent link">&para;</a></h4>
 <p>Renames columns according to mapping.</p>
-<div class="language-ruby highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a><span class="n">df</span><span class="o">.</span><span class="n">rename_columns!</span><span class="p">({</span><span class="w"> </span><span class="s2">&quot;open&quot;</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="s2">&quot;open_price&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;close&quot;</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="s2">&quot;close_price&quot;</span><span class="w"> </span><span class="p">})</span>
+<div class="language-ruby highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a><span class="n">df</span><span class="o">.</span><span class="n">rename_columns!</span><span class="p">({</span><span class="w"> </span><span class="s2">"open"</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="s2">"open_price"</span><span class="p">,</span><span class="w"> </span><span class="s2">"close"</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="s2">"close_price"</span><span class="w"> </span><span class="p">})</span>
 </span></code></pre></div>
 <h4 id="apply_transformerstransformers"><code>#apply_transformers!(transformers)</code><a class="headerlink" href="#apply_transformerstransformers" title="Permanent link">&para;</a></h4>
 <p>Applies transformer functions to columns.</p>
-<div class="language-ruby highlight"><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a><span class="n">df</span><span class="o">.</span><span class="n">apply_transformers!</span><span class="p">({</span><span class="w"> </span><span class="s2">&quot;volume&quot;</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="o">-&gt;</span><span class="p">(</span><span class="n">v</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">v</span><span class="o">.</span><span class="n">to_i</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">})</span>
+<div class="language-ruby highlight"><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a><span class="n">df</span><span class="o">.</span><span class="n">apply_transformers!</span><span class="p">({</span><span class="w"> </span><span class="s2">"volume"</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="o">-&gt;</span><span class="p">(</span><span class="n">v</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">v</span><span class="o">.</span><span class="n">to_i</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">})</span>
 </span></code></pre></div>
 <h4 id="fplcolumn-fpop"><code>#fpl(column:, fpop:)</code><a class="headerlink" href="#fplcolumn-fpop" title="Permanent link">&para;</a></h4>
 <p>Calculates Future Period Loss/Profit.</p>
-<div class="language-ruby highlight"><pre><span></span><code><span id="__span-17-1"><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a><span class="n">fpl_data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">df</span><span class="o">.</span><span class="n">fpl</span><span class="p">(</span><span class="ss">column</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;adj_close_price&quot;</span><span class="p">,</span><span class="w"> </span><span class="ss">fpop</span><span class="p">:</span><span class="w"> </span><span class="mi">10</span><span class="p">)</span>
+<div class="language-ruby highlight"><pre><span></span><code><span id="__span-17-1"><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a><span class="n">fpl_data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">df</span><span class="o">.</span><span class="n">fpl</span><span class="p">(</span><span class="ss">column</span><span class="p">:</span><span class="w"> </span><span class="s2">"adj_close_price"</span><span class="p">,</span><span class="w"> </span><span class="ss">fpop</span><span class="p">:</span><span class="w"> </span><span class="mi">10</span><span class="p">)</span>
 </span></code></pre></div>
 <h4 id="fpl_analysiscolumn-fpop"><code>#fpl_analysis(column:, fpop:)</code><a class="headerlink" href="#fpl_analysiscolumn-fpop" title="Permanent link">&para;</a></h4>
 <p>FPL analysis with risk metrics.</p>
 <h3 id="class-methods_1">Class Methods<a class="headerlink" href="#class-methods_1" title="Permanent link">&para;</a></h3>
 <h4 id="sqadataframeloadsource-mapping-transformers"><code>SQA::DataFrame.load(source:, mapping: {}, transformers: {})</code><a class="headerlink" href="#sqadataframeloadsource-mapping-transformers" title="Permanent link">&para;</a></h4>
 <p>Loads DataFrame from CSV file.</p>
-<div class="language-ruby highlight"><pre><span></span><code><span id="__span-18-1"><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a><span class="n">df</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="no">SQA</span><span class="o">::</span><span class="no">DataFrame</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="ss">source</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;path/to/data.csv&quot;</span><span class="p">)</span>
+<div class="language-ruby highlight"><pre><span></span><code><span id="__span-18-1"><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a><span class="n">df</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="no">SQA</span><span class="o">::</span><span class="no">DataFrame</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="ss">source</span><span class="p">:</span><span class="w"> </span><span class="s2">"path/to/data.csv"</span><span class="p">)</span>
 </span></code></pre></div>
 <h4 id="sqadataframefrom_aofhaofh-mapping-transformers"><code>SQA::DataFrame.from_aofh(aofh, mapping: {}, transformers: {})</code><a class="headerlink" href="#sqadataframefrom_aofhaofh-mapping-transformers" title="Permanent link">&para;</a></h4>
 <p>Creates DataFrame from array of hashes.</p>
-<div class="language-ruby highlight"><pre><span></span><code><span id="__span-19-1"><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">[</span><span class="p">{</span><span class="w"> </span><span class="s2">&quot;date&quot;</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="s2">&quot;2024-01-01&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;price&quot;</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="mi">100</span><span class="o">.</span><span class="mi">0</span><span class="w"> </span><span class="p">}</span><span class="o">]</span>
+<div class="language-ruby highlight"><pre><span></span><code><span id="__span-19-1"><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">[</span><span class="p">{</span><span class="w"> </span><span class="s2">"date"</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="s2">"2024-01-01"</span><span class="p">,</span><span class="w"> </span><span class="s2">"price"</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="mi">100</span><span class="o">.</span><span class="mi">0</span><span class="w"> </span><span class="p">}</span><span class="o">]</span>
 </span><span id="__span-19-2"><a id="__codelineno-19-2" name="__codelineno-19-2" href="#__codelineno-19-2"></a><span class="n">df</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="no">SQA</span><span class="o">::</span><span class="no">DataFrame</span><span class="o">.</span><span class="n">from_aofh</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
 </span></code></pre></div>
 <h4 id="sqadataframefrom_csv_filesource-mapping-transformers"><code>SQA::DataFrame.from_csv_file(source, mapping: {}, transformers: {})</code><a class="headerlink" href="#sqadataframefrom_csv_filesource-mapping-transformers" title="Permanent link">&para;</a></h4>
@@ -4260,15 +4260,15 @@
 <h3 id="instance-methods_3">Instance Methods<a class="headerlink" href="#instance-methods_3" title="Permanent link">&para;</a></h3>
 <h4 id="buyticker-shares-price"><code>#buy(ticker, shares:, price:)</code><a class="headerlink" href="#buyticker-shares-price" title="Permanent link">&para;</a></h4>
 <p>Purchases shares.</p>
-<div class="language-ruby highlight"><pre><span></span><code><span id="__span-27-1"><a id="__codelineno-27-1" name="__codelineno-27-1" href="#__codelineno-27-1"></a><span class="n">portfolio</span><span class="o">.</span><span class="n">buy</span><span class="p">(</span><span class="s1">&#39;AAPL&#39;</span><span class="p">,</span><span class="w"> </span><span class="ss">shares</span><span class="p">:</span><span class="w"> </span><span class="mi">10</span><span class="p">,</span><span class="w"> </span><span class="ss">price</span><span class="p">:</span><span class="w"> </span><span class="mi">150</span><span class="o">.</span><span class="mi">0</span><span class="p">)</span>
+<div class="language-ruby highlight"><pre><span></span><code><span id="__span-27-1"><a id="__codelineno-27-1" name="__codelineno-27-1" href="#__codelineno-27-1"></a><span class="n">portfolio</span><span class="o">.</span><span class="n">buy</span><span class="p">(</span><span class="s1">'AAPL'</span><span class="p">,</span><span class="w"> </span><span class="ss">shares</span><span class="p">:</span><span class="w"> </span><span class="mi">10</span><span class="p">,</span><span class="w"> </span><span class="ss">price</span><span class="p">:</span><span class="w"> </span><span class="mi">150</span><span class="o">.</span><span class="mi">0</span><span class="p">)</span>
 </span></code></pre></div>
 <h4 id="sellticker-shares-price"><code>#sell(ticker, shares:, price:)</code><a class="headerlink" href="#sellticker-shares-price" title="Permanent link">&para;</a></h4>
 <p>Sells shares.</p>
-<div class="language-ruby highlight"><pre><span></span><code><span id="__span-28-1"><a id="__codelineno-28-1" name="__codelineno-28-1" href="#__codelineno-28-1"></a><span class="n">portfolio</span><span class="o">.</span><span class="n">sell</span><span class="p">(</span><span class="s1">&#39;AAPL&#39;</span><span class="p">,</span><span class="w"> </span><span class="ss">shares</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="ss">price</span><span class="p">:</span><span class="w"> </span><span class="mi">160</span><span class="o">.</span><span class="mi">0</span><span class="p">)</span>
+<div class="language-ruby highlight"><pre><span></span><code><span id="__span-28-1"><a id="__codelineno-28-1" name="__codelineno-28-1" href="#__codelineno-28-1"></a><span class="n">portfolio</span><span class="o">.</span><span class="n">sell</span><span class="p">(</span><span class="s1">'AAPL'</span><span class="p">,</span><span class="w"> </span><span class="ss">shares</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="ss">price</span><span class="p">:</span><span class="w"> </span><span class="mi">160</span><span class="o">.</span><span class="mi">0</span><span class="p">)</span>
 </span></code></pre></div>
 <h4 id="valuecurrent_prices"><code>#value(current_prices)</code><a class="headerlink" href="#valuecurrent_prices" title="Permanent link">&para;</a></h4>
 <p>Calculates total portfolio value.</p>
-<div class="language-ruby highlight"><pre><span></span><code><span id="__span-29-1"><a id="__codelineno-29-1" name="__codelineno-29-1" href="#__codelineno-29-1"></a><span class="n">total</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">portfolio</span><span class="o">.</span><span class="n">value</span><span class="p">({</span><span class="w"> </span><span class="s1">&#39;AAPL&#39;</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="mi">165</span><span class="o">.</span><span class="mi">0</span><span class="w"> </span><span class="p">})</span>
+<div class="language-ruby highlight"><pre><span></span><code><span id="__span-29-1"><a id="__codelineno-29-1" name="__codelineno-29-1" href="#__codelineno-29-1"></a><span class="n">total</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">portfolio</span><span class="o">.</span><span class="n">value</span><span class="p">({</span><span class="w"> </span><span class="s1">'AAPL'</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="mi">165</span><span class="o">.</span><span class="mi">0</span><span class="w"> </span><span class="p">})</span>
 </span></code></pre></div>
 <p><strong>Parameters:</strong>
 - <code>current_prices</code> (Hash) - Ticker → current price</p>
@@ -4396,7 +4396,7 @@
 <h2 id="sqai-indicators">SQAI Indicators<a class="headerlink" href="#sqai-indicators" title="Permanent link">&para;</a></h2>
 <p>All indicators from TA-Lib via the <code>sqa-tai</code> gem.</p>
 <h3 id="common-usage">Common Usage<a class="headerlink" href="#common-usage" title="Permanent link">&para;</a></h3>
-<div class="language-ruby highlight"><pre><span></span><code><span id="__span-32-1"><a id="__codelineno-32-1" name="__codelineno-32-1" href="#__codelineno-32-1"></a><span class="n">prices</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">stock</span><span class="o">.</span><span class="n">df</span><span class="o">[</span><span class="s2">&quot;adj_close_price&quot;</span><span class="o">].</span><span class="n">to_a</span>
+<div class="language-ruby highlight"><pre><span></span><code><span id="__span-32-1"><a id="__codelineno-32-1" name="__codelineno-32-1" href="#__codelineno-32-1"></a><span class="n">prices</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">stock</span><span class="o">.</span><span class="n">df</span><span class="o">[</span><span class="s2">"adj_close_price"</span><span class="o">].</span><span class="n">to_a</span>
 </span><span id="__span-32-2"><a id="__codelineno-32-2" name="__codelineno-32-2" href="#__codelineno-32-2"></a>
 </span><span id="__span-32-3"><a id="__codelineno-32-3" name="__codelineno-32-3" href="#__codelineno-32-3"></a><span class="c1"># Moving Averages</span>
 </span><span id="__span-32-4"><a id="__codelineno-32-4" name="__codelineno-32-4" href="#__codelineno-32-4"></a><span class="n">sma</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="no">SQAI</span><span class="o">.</span><span class="n">sma</span><span class="p">(</span><span class="n">prices</span><span class="p">,</span><span class="w"> </span><span class="ss">period</span><span class="p">:</span><span class="w"> </span><span class="mi">20</span><span class="p">)</span>
@@ -4424,7 +4424,7 @@
 <h3 id="sqadatafetcherror">SQA::DataFetchError<a class="headerlink" href="#sqadatafetcherror" title="Permanent link">&para;</a></h3>
 <p>Raised when unable to fetch data from API or file.</p>
 <div class="language-ruby highlight"><pre><span></span><code><span id="__span-34-1"><a id="__codelineno-34-1" name="__codelineno-34-1" href="#__codelineno-34-1"></a><span class="k">begin</span>
-</span><span id="__span-34-2"><a id="__codelineno-34-2" name="__codelineno-34-2" href="#__codelineno-34-2"></a><span class="w">  </span><span class="n">stock</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="no">SQA</span><span class="o">::</span><span class="no">Stock</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="ss">ticker</span><span class="p">:</span><span class="w"> </span><span class="s1">&#39;INVALID&#39;</span><span class="p">)</span>
+</span><span id="__span-34-2"><a id="__codelineno-34-2" name="__codelineno-34-2" href="#__codelineno-34-2"></a><span class="w">  </span><span class="n">stock</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="no">SQA</span><span class="o">::</span><span class="no">Stock</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="ss">ticker</span><span class="p">:</span><span class="w"> </span><span class="s1">'INVALID'</span><span class="p">)</span>
 </span><span id="__span-34-3"><a id="__codelineno-34-3" name="__codelineno-34-3" href="#__codelineno-34-3"></a><span class="k">rescue</span><span class="w"> </span><span class="no">SQA</span><span class="o">::</span><span class="no">DataFetchError</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">e</span>
 </span><span id="__span-34-4"><a id="__codelineno-34-4" name="__codelineno-34-4" href="#__codelineno-34-4"></a><span class="w">  </span><span class="nb">puts</span><span class="w"> </span><span class="n">e</span><span class="o">.</span><span class="n">message</span>
 </span><span id="__span-34-5"><a id="__codelineno-34-5" name="__codelineno-34-5" href="#__codelineno-34-5"></a><span class="w">  </span><span class="nb">puts</span><span class="w"> </span><span class="n">e</span><span class="o">.</span><span class="n">original_error</span><span class="w">  </span><span class="c1"># Wrapped exception</span>
@@ -4435,15 +4435,15 @@
 <div class="language-ruby highlight"><pre><span></span><code><span id="__span-35-1"><a id="__codelineno-35-1" name="__codelineno-35-1" href="#__codelineno-35-1"></a><span class="k">begin</span>
 </span><span id="__span-35-2"><a id="__codelineno-35-2" name="__codelineno-35-2" href="#__codelineno-35-2"></a><span class="w">  </span><span class="n">key</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="no">SQA</span><span class="o">.</span><span class="n">av_api_key</span>
 </span><span id="__span-35-3"><a id="__codelineno-35-3" name="__codelineno-35-3" href="#__codelineno-35-3"></a><span class="k">rescue</span><span class="w"> </span><span class="no">SQA</span><span class="o">::</span><span class="no">ConfigurationError</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">e</span>
-</span><span id="__span-35-4"><a id="__codelineno-35-4" name="__codelineno-35-4" href="#__codelineno-35-4"></a><span class="w">  </span><span class="nb">puts</span><span class="w"> </span><span class="s2">&quot;API key not set&quot;</span>
+</span><span id="__span-35-4"><a id="__codelineno-35-4" name="__codelineno-35-4" href="#__codelineno-35-4"></a><span class="w">  </span><span class="nb">puts</span><span class="w"> </span><span class="s2">"API key not set"</span>
 </span><span id="__span-35-5"><a id="__codelineno-35-5" name="__codelineno-35-5" href="#__codelineno-35-5"></a><span class="k">end</span>
 </span></code></pre></div>
 <h3 id="sqabadparametererror">SQA::BadParameterError<a class="headerlink" href="#sqabadparametererror" title="Permanent link">&para;</a></h3>
 <p>Raised for invalid method parameters.</p>
 <div class="language-ruby highlight"><pre><span></span><code><span id="__span-36-1"><a id="__codelineno-36-1" name="__codelineno-36-1" href="#__codelineno-36-1"></a><span class="k">begin</span>
-</span><span id="__span-36-2"><a id="__codelineno-36-2" name="__codelineno-36-2" href="#__codelineno-36-2"></a><span class="w">  </span><span class="n">strategy</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;not a class&quot;</span><span class="p">)</span>
+</span><span id="__span-36-2"><a id="__codelineno-36-2" name="__codelineno-36-2" href="#__codelineno-36-2"></a><span class="w">  </span><span class="n">strategy</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">"not a class"</span><span class="p">)</span>
 </span><span id="__span-36-3"><a id="__codelineno-36-3" name="__codelineno-36-3" href="#__codelineno-36-3"></a><span class="k">rescue</span><span class="w"> </span><span class="no">SQA</span><span class="o">::</span><span class="no">BadParameterError</span>
-</span><span id="__span-36-4"><a id="__codelineno-36-4" name="__codelineno-36-4" href="#__codelineno-36-4"></a><span class="w">  </span><span class="nb">puts</span><span class="w"> </span><span class="s2">&quot;Invalid strategy type&quot;</span>
+</span><span id="__span-36-4"><a id="__codelineno-36-4" name="__codelineno-36-4" href="#__codelineno-36-4"></a><span class="w">  </span><span class="nb">puts</span><span class="w"> </span><span class="s2">"Invalid strategy type"</span>
 </span><span id="__span-36-5"><a id="__codelineno-36-5" name="__codelineno-36-5" href="#__codelineno-36-5"></a><span class="k">end</span>
 </span></code></pre></div>
 <h3 id="apierror">ApiError<a class="headerlink" href="#apierror" title="Permanent link">&para;</a></h3>
@@ -4642,7 +4642,7 @@
       <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.tabs.sticky", "navigation.sections", "navigation.path", "navigation.indexes", "navigation.top", "navigation.footer", "toc.follow", "search.suggest", "search.highlight", "search.share", "header.autohide", "content.code.copy", "content.code.annotate", "content.tabs.link", "content.tooltips", "content.action.edit", "content.action.view"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../assets/javascripts/bundle.d7400e89.min.js"></script>
       
         <script src="../assets/js/mathjax.js"></script>
       

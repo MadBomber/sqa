@@ -25,15 +25,15 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
     
     
       
-        <title>FPOP Analysis - SQA - Simple Qualitative Analysis</title>
+        <title>FPOP Analysis - SQA - Stock Qualitative Analysis</title>
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
       
         
         <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
@@ -100,7 +100,7 @@
 
 <header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="../.." title="SQA - Simple Qualitative Analysis" class="md-header__button md-logo" aria-label="SQA - Simple Qualitative Analysis" data-md-component="logo">
+    <a href="../.." title="SQA - Stock Qualitative Analysis" class="md-header__button md-logo" aria-label="SQA - Stock Qualitative Analysis" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -114,7 +114,7 @@
       <div class="md-header__ellipsis">
         <div class="md-header__topic">
           <span class="md-ellipsis">
-            SQA - Simple Qualitative Analysis
+            SQA - Stock Qualitative Analysis
           </span>
         </div>
         <div class="md-header__topic" data-md-component="header-topic">
@@ -395,13 +395,13 @@
 
 <nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="../.." title="SQA - Simple Qualitative Analysis" class="md-nav__button md-logo" aria-label="SQA - Simple Qualitative Analysis" data-md-component="logo">
+    <a href="../.." title="SQA - Stock Qualitative Analysis" class="md-nav__button md-logo" aria-label="SQA - Stock Qualitative Analysis" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
 
     </a>
-    SQA - Simple Qualitative Analysis
+    SQA - Stock Qualitative Analysis
   </label>
   
     <div class="md-nav__source">
@@ -3243,10 +3243,10 @@
 <h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
 <p>Calculate future returns, risk metrics, and direction classification to evaluate trading opportunities.</p>
 <h2 id="quick-start">Quick Start<a class="headerlink" href="#quick-start" title="Permanent link">&para;</a></h2>
-<div class="language-ruby highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nb">require</span><span class="w"> </span><span class="s1">&#39;sqa&#39;</span>
+<div class="language-ruby highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nb">require</span><span class="w"> </span><span class="s1">'sqa'</span>
 </span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>
-</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="n">stock</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="no">SQA</span><span class="o">::</span><span class="no">Stock</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="ss">ticker</span><span class="p">:</span><span class="w"> </span><span class="s1">&#39;AAPL&#39;</span><span class="p">)</span>
-</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="n">prices</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">stock</span><span class="o">.</span><span class="n">df</span><span class="o">[</span><span class="s2">&quot;adj_close_price&quot;</span><span class="o">].</span><span class="n">to_a</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="n">stock</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="no">SQA</span><span class="o">::</span><span class="no">Stock</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="ss">ticker</span><span class="p">:</span><span class="w"> </span><span class="s1">'AAPL'</span><span class="p">)</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="n">prices</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">stock</span><span class="o">.</span><span class="n">df</span><span class="o">[</span><span class="s2">"adj_close_price"</span><span class="o">].</span><span class="n">to_a</span>
 </span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>
 </span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="c1"># Calculate FPL (Future Period Loss/Profit)</span>
 </span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="n">fpl_data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="no">SQA</span><span class="o">::</span><span class="no">FPOP</span><span class="o">.</span><span class="n">fpl</span><span class="p">(</span><span class="n">prices</span><span class="p">,</span><span class="w"> </span><span class="ss">fpop</span><span class="p">:</span><span class="w"> </span><span class="mi">10</span><span class="p">)</span>
@@ -3254,8 +3254,8 @@
 </span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>
 </span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="c1"># Comprehensive analysis</span>
 </span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a><span class="n">analysis</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="no">SQA</span><span class="o">::</span><span class="no">FPOP</span><span class="o">.</span><span class="n">fpl_analysis</span><span class="p">(</span><span class="n">prices</span><span class="p">,</span><span class="w"> </span><span class="ss">fpop</span><span class="p">:</span><span class="w"> </span><span class="mi">10</span><span class="p">)</span>
-</span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a><span class="nb">puts</span><span class="w"> </span><span class="s2">&quot;Risk: </span><span class="si">#{</span><span class="n">analysis</span><span class="o">[</span><span class="ss">:risk</span><span class="o">]</span><span class="si">}</span><span class="s2">%&quot;</span>
-</span><span id="__span-0-13"><a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a><span class="nb">puts</span><span class="w"> </span><span class="s2">&quot;Direction: </span><span class="si">#{</span><span class="n">analysis</span><span class="o">[</span><span class="ss">:direction</span><span class="o">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="w">  </span><span class="c1"># :UP, :DOWN, :FLAT</span>
+</span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a><span class="nb">puts</span><span class="w"> </span><span class="s2">"Risk: </span><span class="si">#{</span><span class="n">analysis</span><span class="o">[</span><span class="ss">:risk</span><span class="o">]</span><span class="si">}</span><span class="s2">%"</span>
+</span><span id="__span-0-13"><a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a><span class="nb">puts</span><span class="w"> </span><span class="s2">"Direction: </span><span class="si">#{</span><span class="n">analysis</span><span class="o">[</span><span class="ss">:direction</span><span class="o">]</span><span class="si">}</span><span class="s2">"</span><span class="w">  </span><span class="c1"># :UP, :DOWN, :FLAT</span>
 </span></code></pre></div>
 <h2 id="methods">Methods<a class="headerlink" href="#methods" title="Permanent link">&para;</a></h2>
 <h3 id="basic-fpl-calculation">Basic FPL Calculation<a class="headerlink" href="#basic-fpl-calculation" title="Permanent link">&para;</a></h3>
@@ -3314,16 +3314,16 @@
 </span></code></pre></div>
 <h2 id="use-cases">Use Cases<a class="headerlink" href="#use-cases" title="Permanent link">&para;</a></h2>
 <h3 id="1-opportunity-screening">1. Opportunity Screening<a class="headerlink" href="#1-opportunity-screening" title="Permanent link">&para;</a></h3>
-<div class="language-ruby highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="n">stocks</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">[</span><span class="s1">&#39;AAPL&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;GOOGL&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;MSFT&#39;</span><span class="o">]</span>
+<div class="language-ruby highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="n">stocks</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">[</span><span class="s1">'AAPL'</span><span class="p">,</span><span class="w"> </span><span class="s1">'GOOGL'</span><span class="p">,</span><span class="w"> </span><span class="s1">'MSFT'</span><span class="o">]</span>
 </span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>
 </span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="n">stocks</span><span class="o">.</span><span class="n">each</span><span class="w"> </span><span class="k">do</span><span class="w"> </span><span class="o">|</span><span class="n">ticker</span><span class="o">|</span>
 </span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="w">  </span><span class="n">stock</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="no">SQA</span><span class="o">::</span><span class="no">Stock</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="ss">ticker</span><span class="p">:</span><span class="w"> </span><span class="n">ticker</span><span class="p">)</span>
-</span><span id="__span-6-5"><a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a><span class="w">  </span><span class="n">prices</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">stock</span><span class="o">.</span><span class="n">df</span><span class="o">[</span><span class="s2">&quot;adj_close_price&quot;</span><span class="o">].</span><span class="n">to_a</span>
+</span><span id="__span-6-5"><a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a><span class="w">  </span><span class="n">prices</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">stock</span><span class="o">.</span><span class="n">df</span><span class="o">[</span><span class="s2">"adj_close_price"</span><span class="o">].</span><span class="n">to_a</span>
 </span><span id="__span-6-6"><a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a>
 </span><span id="__span-6-7"><a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a><span class="w">  </span><span class="n">analysis</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="no">SQA</span><span class="o">::</span><span class="no">FPOP</span><span class="o">.</span><span class="n">fpl_analysis</span><span class="p">(</span><span class="n">prices</span><span class="p">,</span><span class="w"> </span><span class="ss">fpop</span><span class="p">:</span><span class="w"> </span><span class="mi">10</span><span class="p">)</span>
 </span><span id="__span-6-8"><a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a>
 </span><span id="__span-6-9"><a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a><span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="n">analysis</span><span class="o">[</span><span class="ss">:reward</span><span class="o">]</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">15</span><span class="o">.</span><span class="mi">0</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">analysis</span><span class="o">[</span><span class="ss">:risk</span><span class="o">]</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">10</span><span class="o">.</span><span class="mi">0</span>
-</span><span id="__span-6-10"><a id="__codelineno-6-10" name="__codelineno-6-10" href="#__codelineno-6-10"></a><span class="w">    </span><span class="nb">puts</span><span class="w"> </span><span class="s2">&quot;</span><span class="si">#{</span><span class="n">ticker</span><span class="si">}</span><span class="s2">: Good risk/reward (</span><span class="si">#{</span><span class="n">analysis</span><span class="o">[</span><span class="ss">:reward</span><span class="o">]</span><span class="si">}</span><span class="s2">/</span><span class="si">#{</span><span class="n">analysis</span><span class="o">[</span><span class="ss">:risk</span><span class="o">]</span><span class="si">}</span><span class="s2">)&quot;</span>
+</span><span id="__span-6-10"><a id="__codelineno-6-10" name="__codelineno-6-10" href="#__codelineno-6-10"></a><span class="w">    </span><span class="nb">puts</span><span class="w"> </span><span class="s2">"</span><span class="si">#{</span><span class="n">ticker</span><span class="si">}</span><span class="s2">: Good risk/reward (</span><span class="si">#{</span><span class="n">analysis</span><span class="o">[</span><span class="ss">:reward</span><span class="o">]</span><span class="si">}</span><span class="s2">/</span><span class="si">#{</span><span class="n">analysis</span><span class="o">[</span><span class="ss">:risk</span><span class="o">]</span><span class="si">}</span><span class="s2">)"</span>
 </span><span id="__span-6-11"><a id="__codelineno-6-11" name="__codelineno-6-11" href="#__codelineno-6-11"></a><span class="w">  </span><span class="k">end</span>
 </span><span id="__span-6-12"><a id="__codelineno-6-12" name="__codelineno-6-12" href="#__codelineno-6-12"></a><span class="k">end</span>
 </span></code></pre></div>
@@ -3333,7 +3333,7 @@
 </span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>
 </span><span id="__span-7-4"><a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a><span class="k">if</span><span class="w"> </span><span class="n">current_analysis</span><span class="o">[</span><span class="ss">:direction</span><span class="o">]</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="ss">:UP</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>
 </span><span id="__span-7-5"><a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a><span class="w">   </span><span class="n">current_analysis</span><span class="o">[</span><span class="ss">:quality_score</span><span class="o">]</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="o">.</span><span class="mi">7</span>
-</span><span id="__span-7-6"><a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a><span class="w">  </span><span class="nb">puts</span><span class="w"> </span><span class="s2">&quot;Strong buy opportunity&quot;</span>
+</span><span id="__span-7-6"><a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a><span class="w">  </span><span class="nb">puts</span><span class="w"> </span><span class="s2">"Strong buy opportunity"</span>
 </span><span id="__span-7-7"><a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a><span class="k">end</span>
 </span></code></pre></div>
 <h3 id="3-stop-loss-calculation">3. Stop Loss Calculation<a class="headerlink" href="#3-stop-loss-calculation" title="Permanent link">&para;</a></h3>
@@ -3343,9 +3343,9 @@
 </span><span id="__span-8-4"><a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a><span class="n">entry_price</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">prices</span><span class="o">.</span><span class="n">last</span>
 </span><span id="__span-8-5"><a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a><span class="n">stop_loss</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">entry_price</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="p">(</span><span class="mi">1</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">analysis</span><span class="o">[</span><span class="ss">:risk</span><span class="o">]</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">100</span><span class="p">)</span>
 </span><span id="__span-8-6"><a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a>
-</span><span id="__span-8-7"><a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a><span class="nb">puts</span><span class="w"> </span><span class="s2">&quot;Entry: $</span><span class="si">#{</span><span class="n">entry_price</span><span class="si">}</span><span class="s2">&quot;</span>
-</span><span id="__span-8-8"><a id="__codelineno-8-8" name="__codelineno-8-8" href="#__codelineno-8-8"></a><span class="nb">puts</span><span class="w"> </span><span class="s2">&quot;Stop Loss: $</span><span class="si">#{</span><span class="n">stop_loss</span><span class="si">}</span><span class="s2">&quot;</span>
-</span><span id="__span-8-9"><a id="__codelineno-8-9" name="__codelineno-8-9" href="#__codelineno-8-9"></a><span class="nb">puts</span><span class="w"> </span><span class="s2">&quot;Target: $</span><span class="si">#{</span><span class="n">entry_price</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="p">(</span><span class="mi">1</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">analysis</span><span class="o">[</span><span class="ss">:reward</span><span class="o">]</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">100</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span id="__span-8-7"><a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a><span class="nb">puts</span><span class="w"> </span><span class="s2">"Entry: $</span><span class="si">#{</span><span class="n">entry_price</span><span class="si">}</span><span class="s2">"</span>
+</span><span id="__span-8-8"><a id="__codelineno-8-8" name="__codelineno-8-8" href="#__codelineno-8-8"></a><span class="nb">puts</span><span class="w"> </span><span class="s2">"Stop Loss: $</span><span class="si">#{</span><span class="n">stop_loss</span><span class="si">}</span><span class="s2">"</span>
+</span><span id="__span-8-9"><a id="__codelineno-8-9" name="__codelineno-8-9" href="#__codelineno-8-9"></a><span class="nb">puts</span><span class="w"> </span><span class="s2">"Target: $</span><span class="si">#{</span><span class="n">entry_price</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="p">(</span><span class="mi">1</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">analysis</span><span class="o">[</span><span class="ss">:reward</span><span class="o">]</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">100</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span>
 </span></code></pre></div>
 <h2 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h2>
 <ul>
@@ -3537,7 +3537,7 @@
       <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.tabs.sticky", "navigation.sections", "navigation.path", "navigation.indexes", "navigation.top", "navigation.footer", "toc.follow", "search.suggest", "search.highlight", "search.share", "header.autohide", "content.code.copy", "content.code.annotate", "content.tabs.link", "content.tooltips", "content.action.edit", "content.action.view"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
       
         <script src="../../assets/js/mathjax.js"></script>
       

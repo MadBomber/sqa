@@ -25,15 +25,15 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
     
     
       
-        <title>Strategy Generator - SQA - Simple Qualitative Analysis</title>
+        <title>Strategy Generator - SQA - Stock Qualitative Analysis</title>
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
       
         
         <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
@@ -100,7 +100,7 @@
 
 <header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="../.." title="SQA - Simple Qualitative Analysis" class="md-header__button md-logo" aria-label="SQA - Simple Qualitative Analysis" data-md-component="logo">
+    <a href="../.." title="SQA - Stock Qualitative Analysis" class="md-header__button md-logo" aria-label="SQA - Stock Qualitative Analysis" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -114,7 +114,7 @@
       <div class="md-header__ellipsis">
         <div class="md-header__topic">
           <span class="md-ellipsis">
-            SQA - Simple Qualitative Analysis
+            SQA - Stock Qualitative Analysis
           </span>
         </div>
         <div class="md-header__topic" data-md-component="header-topic">
@@ -395,13 +395,13 @@
 
 <nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="../.." title="SQA - Simple Qualitative Analysis" class="md-nav__button md-logo" aria-label="SQA - Simple Qualitative Analysis" data-md-component="logo">
+    <a href="../.." title="SQA - Stock Qualitative Analysis" class="md-nav__button md-logo" aria-label="SQA - Stock Qualitative Analysis" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
 
     </a>
-    SQA - Simple Qualitative Analysis
+    SQA - Stock Qualitative Analysis
   </label>
   
     <div class="md-nav__source">
@@ -3160,10 +3160,10 @@
 <li><strong>Generate Strategies</strong>: Create executable strategy code from patterns</li>
 </ol>
 <h2 id="quick-start">Quick Start<a class="headerlink" href="#quick-start" title="Permanent link">&para;</a></h2>
-<div class="language-ruby highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nb">require</span><span class="w"> </span><span class="s1">&#39;sqa&#39;</span>
+<div class="language-ruby highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nb">require</span><span class="w"> </span><span class="s1">'sqa'</span>
 </span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>
 </span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="c1"># Load stock data</span>
-</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="n">stock</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="no">SQA</span><span class="o">::</span><span class="no">Stock</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="ss">ticker</span><span class="p">:</span><span class="w"> </span><span class="s1">&#39;AAPL&#39;</span><span class="p">)</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="n">stock</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="no">SQA</span><span class="o">::</span><span class="no">Stock</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="ss">ticker</span><span class="p">:</span><span class="w"> </span><span class="s1">'AAPL'</span><span class="p">)</span>
 </span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>
 </span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="c1"># Create generator</span>
 </span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="n">generator</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="no">SQA</span><span class="o">::</span><span class="no">StrategyGenerator</span><span class="o">.</span><span class="n">new</span><span class="p">(</span>
@@ -3192,28 +3192,28 @@
 <div class="language-ruby highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="n">patterns</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">generator</span><span class="o">.</span><span class="n">discover_patterns</span>
 </span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>
 </span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="n">patterns</span><span class="o">.</span><span class="n">each_with_index</span><span class="w"> </span><span class="k">do</span><span class="w"> </span><span class="o">|</span><span class="n">pattern</span><span class="p">,</span><span class="w"> </span><span class="n">i</span><span class="o">|</span>
-</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="w">  </span><span class="nb">puts</span><span class="w"> </span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Pattern </span><span class="si">#{</span><span class="n">i</span><span class="si">}</span><span class="s2">:&quot;</span>
-</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="w">  </span><span class="nb">puts</span><span class="w"> </span><span class="s2">&quot;  Support: </span><span class="si">#{</span><span class="n">pattern</span><span class="o">[</span><span class="ss">:support</span><span class="o">]</span><span class="si">}</span><span class="s2"> occurrences&quot;</span>
-</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="w">  </span><span class="nb">puts</span><span class="w"> </span><span class="s2">&quot;  Avg Gain: </span><span class="si">#{</span><span class="n">pattern</span><span class="o">[</span><span class="ss">:avg_gain</span><span class="o">].</span><span class="n">round</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="si">}</span><span class="s2">%&quot;</span>
-</span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="w">  </span><span class="nb">puts</span><span class="w"> </span><span class="s2">&quot;  Win Rate: </span><span class="si">#{</span><span class="n">pattern</span><span class="o">[</span><span class="ss">:win_rate</span><span class="o">].</span><span class="n">round</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="si">}</span><span class="s2">%&quot;</span>
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="w">  </span><span class="nb">puts</span><span class="w"> </span><span class="s2">"</span><span class="se">\n</span><span class="s2">Pattern </span><span class="si">#{</span><span class="n">i</span><span class="si">}</span><span class="s2">:"</span>
+</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="w">  </span><span class="nb">puts</span><span class="w"> </span><span class="s2">"  Support: </span><span class="si">#{</span><span class="n">pattern</span><span class="o">[</span><span class="ss">:support</span><span class="o">]</span><span class="si">}</span><span class="s2"> occurrences"</span>
+</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="w">  </span><span class="nb">puts</span><span class="w"> </span><span class="s2">"  Avg Gain: </span><span class="si">#{</span><span class="n">pattern</span><span class="o">[</span><span class="ss">:avg_gain</span><span class="o">].</span><span class="n">round</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="si">}</span><span class="s2">%"</span>
+</span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="w">  </span><span class="nb">puts</span><span class="w"> </span><span class="s2">"  Win Rate: </span><span class="si">#{</span><span class="n">pattern</span><span class="o">[</span><span class="ss">:win_rate</span><span class="o">].</span><span class="n">round</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="si">}</span><span class="s2">%"</span>
 </span><span id="__span-2-8"><a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>
-</span><span id="__span-2-9"><a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a><span class="w">  </span><span class="nb">puts</span><span class="w"> </span><span class="s2">&quot;  Conditions:&quot;</span>
+</span><span id="__span-2-9"><a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a><span class="w">  </span><span class="nb">puts</span><span class="w"> </span><span class="s2">"  Conditions:"</span>
 </span><span id="__span-2-10"><a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a><span class="w">  </span><span class="n">pattern</span><span class="o">[</span><span class="ss">:conditions</span><span class="o">].</span><span class="n">each</span><span class="w"> </span><span class="k">do</span><span class="w"> </span><span class="o">|</span><span class="n">cond</span><span class="o">|</span>
-</span><span id="__span-2-11"><a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a><span class="w">    </span><span class="nb">puts</span><span class="w"> </span><span class="s2">&quot;    - </span><span class="si">#{</span><span class="n">cond</span><span class="o">[</span><span class="ss">:indicator</span><span class="o">]</span><span class="si">}</span><span class="s2">: </span><span class="si">#{</span><span class="n">cond</span><span class="o">[</span><span class="ss">:state</span><span class="o">]</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span id="__span-2-11"><a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a><span class="w">    </span><span class="nb">puts</span><span class="w"> </span><span class="s2">"    - </span><span class="si">#{</span><span class="n">cond</span><span class="o">[</span><span class="ss">:indicator</span><span class="o">]</span><span class="si">}</span><span class="s2">: </span><span class="si">#{</span><span class="n">cond</span><span class="o">[</span><span class="ss">:state</span><span class="o">]</span><span class="si">}</span><span class="s2">"</span>
 </span><span id="__span-2-12"><a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a><span class="w">  </span><span class="k">end</span>
 </span><span id="__span-2-13"><a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a><span class="k">end</span>
 </span></code></pre></div>
 <h2 id="generating-strategy-code">Generating Strategy Code<a class="headerlink" href="#generating-strategy-code" title="Permanent link">&para;</a></h2>
 <div class="language-ruby highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="n">strategy_code</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">generator</span><span class="o">.</span><span class="n">generate_strategy</span><span class="p">(</span>
 </span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="w">  </span><span class="ss">pattern_index</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
-</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="w">  </span><span class="ss">class_name</span><span class="p">:</span><span class="w"> </span><span class="s1">&#39;DiscoveredStrategy&#39;</span>
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="w">  </span><span class="ss">class_name</span><span class="p">:</span><span class="w"> </span><span class="s1">'DiscoveredStrategy'</span>
 </span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="p">)</span>
 </span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>
 </span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="c1"># Save to file</span>
-</span><span id="__span-3-7"><a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="no">File</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;lib/sqa/strategy/discovered_strategy.rb&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">strategy_code</span><span class="p">)</span>
+</span><span id="__span-3-7"><a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="no">File</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">'lib/sqa/strategy/discovered_strategy.rb'</span><span class="p">,</span><span class="w"> </span><span class="n">strategy_code</span><span class="p">)</span>
 </span><span id="__span-3-8"><a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a>
 </span><span id="__span-3-9"><a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a><span class="c1"># Load and use</span>
-</span><span id="__span-3-10"><a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a><span class="n">require_relative</span><span class="w"> </span><span class="s1">&#39;lib/sqa/strategy/discovered_strategy&#39;</span>
+</span><span id="__span-3-10"><a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a><span class="n">require_relative</span><span class="w"> </span><span class="s1">'lib/sqa/strategy/discovered_strategy'</span>
 </span><span id="__span-3-11"><a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a><span class="n">signal</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="no">SQA</span><span class="o">::</span><span class="no">Strategy</span><span class="o">::</span><span class="no">DiscoveredStrategy</span><span class="o">.</span><span class="n">trade</span><span class="p">(</span><span class="n">vector</span><span class="p">)</span>
 </span></code></pre></div>
 <h2 id="context-aware-patterns">Context-Aware Patterns<a class="headerlink" href="#context-aware-patterns" title="Permanent link">&para;</a></h2>
@@ -3226,9 +3226,9 @@
 </span><span id="__span-4-7"><a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a>
 </span><span id="__span-4-8"><a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a><span class="c1"># Patterns include context</span>
 </span><span id="__span-4-9"><a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a><span class="n">pattern</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">patterns</span><span class="o">.</span><span class="n">first</span>
-</span><span id="__span-4-10"><a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a><span class="nb">puts</span><span class="w"> </span><span class="s2">&quot;Valid in: </span><span class="si">#{</span><span class="n">pattern</span><span class="o">.</span><span class="n">context</span><span class="o">.</span><span class="n">valid_months</span><span class="si">}</span><span class="s2">&quot;</span><span class="w">      </span><span class="c1"># =&gt; [10, 11, 12]</span>
-</span><span id="__span-4-11"><a id="__codelineno-4-11" name="__codelineno-4-11" href="#__codelineno-4-11"></a><span class="nb">puts</span><span class="w"> </span><span class="s2">&quot;Valid regimes: </span><span class="si">#{</span><span class="n">pattern</span><span class="o">.</span><span class="n">context</span><span class="o">.</span><span class="n">valid_regimes</span><span class="si">}</span><span class="s2">&quot;</span><span class="w"> </span><span class="c1"># =&gt; [:bull]</span>
-</span><span id="__span-4-12"><a id="__codelineno-4-12" name="__codelineno-4-12" href="#__codelineno-4-12"></a><span class="nb">puts</span><span class="w"> </span><span class="s2">&quot;Sector: </span><span class="si">#{</span><span class="n">pattern</span><span class="o">.</span><span class="n">context</span><span class="o">.</span><span class="n">sector</span><span class="si">}</span><span class="s2">&quot;</span><span class="w">               </span><span class="c1"># =&gt; :technology</span>
+</span><span id="__span-4-10"><a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a><span class="nb">puts</span><span class="w"> </span><span class="s2">"Valid in: </span><span class="si">#{</span><span class="n">pattern</span><span class="o">.</span><span class="n">context</span><span class="o">.</span><span class="n">valid_months</span><span class="si">}</span><span class="s2">"</span><span class="w">      </span><span class="c1"># =&gt; [10, 11, 12]</span>
+</span><span id="__span-4-11"><a id="__codelineno-4-11" name="__codelineno-4-11" href="#__codelineno-4-11"></a><span class="nb">puts</span><span class="w"> </span><span class="s2">"Valid regimes: </span><span class="si">#{</span><span class="n">pattern</span><span class="o">.</span><span class="n">context</span><span class="o">.</span><span class="n">valid_regimes</span><span class="si">}</span><span class="s2">"</span><span class="w"> </span><span class="c1"># =&gt; [:bull]</span>
+</span><span id="__span-4-12"><a id="__codelineno-4-12" name="__codelineno-4-12" href="#__codelineno-4-12"></a><span class="nb">puts</span><span class="w"> </span><span class="s2">"Sector: </span><span class="si">#{</span><span class="n">pattern</span><span class="o">.</span><span class="n">context</span><span class="o">.</span><span class="n">sector</span><span class="si">}</span><span class="s2">"</span><span class="w">               </span><span class="c1"># =&gt; :technology</span>
 </span></code></pre></div>
 <h2 id="walk-forward-validation">Walk-Forward Validation<a class="headerlink" href="#walk-forward-validation" title="Permanent link">&para;</a></h2>
 <div class="language-ruby highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="c1"># Prevent overfitting with out-of-sample testing</span>
@@ -3238,10 +3238,10 @@
 </span><span id="__span-5-5"><a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="p">)</span>
 </span><span id="__span-5-6"><a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a>
 </span><span id="__span-5-7"><a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a><span class="n">validated_patterns</span><span class="o">.</span><span class="n">each</span><span class="w"> </span><span class="k">do</span><span class="w"> </span><span class="o">|</span><span class="n">result</span><span class="o">|</span>
-</span><span id="__span-5-8"><a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a><span class="w">  </span><span class="nb">puts</span><span class="w"> </span><span class="s2">&quot;Pattern </span><span class="si">#{</span><span class="n">result</span><span class="o">[</span><span class="ss">:pattern_index</span><span class="o">]</span><span class="si">}</span><span class="s2">:&quot;</span>
-</span><span id="__span-5-9"><a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a><span class="w">  </span><span class="nb">puts</span><span class="w"> </span><span class="s2">&quot;  Train Return: </span><span class="si">#{</span><span class="n">result</span><span class="o">[</span><span class="ss">:train_return</span><span class="o">]</span><span class="si">}</span><span class="s2">%&quot;</span>
-</span><span id="__span-5-10"><a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a><span class="w">  </span><span class="nb">puts</span><span class="w"> </span><span class="s2">&quot;  Test Return: </span><span class="si">#{</span><span class="n">result</span><span class="o">[</span><span class="ss">:test_return</span><span class="o">]</span><span class="si">}</span><span class="s2">%&quot;</span>
-</span><span id="__span-5-11"><a id="__codelineno-5-11" name="__codelineno-5-11" href="#__codelineno-5-11"></a><span class="w">  </span><span class="nb">puts</span><span class="w"> </span><span class="s2">&quot;  Robust: </span><span class="si">#{</span><span class="n">result</span><span class="o">[</span><span class="ss">:robust</span><span class="o">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="w">  </span><span class="c1"># true if test performance acceptable</span>
+</span><span id="__span-5-8"><a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a><span class="w">  </span><span class="nb">puts</span><span class="w"> </span><span class="s2">"Pattern </span><span class="si">#{</span><span class="n">result</span><span class="o">[</span><span class="ss">:pattern_index</span><span class="o">]</span><span class="si">}</span><span class="s2">:"</span>
+</span><span id="__span-5-9"><a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a><span class="w">  </span><span class="nb">puts</span><span class="w"> </span><span class="s2">"  Train Return: </span><span class="si">#{</span><span class="n">result</span><span class="o">[</span><span class="ss">:train_return</span><span class="o">]</span><span class="si">}</span><span class="s2">%"</span>
+</span><span id="__span-5-10"><a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a><span class="w">  </span><span class="nb">puts</span><span class="w"> </span><span class="s2">"  Test Return: </span><span class="si">#{</span><span class="n">result</span><span class="o">[</span><span class="ss">:test_return</span><span class="o">]</span><span class="si">}</span><span class="s2">%"</span>
+</span><span id="__span-5-11"><a id="__codelineno-5-11" name="__codelineno-5-11" href="#__codelineno-5-11"></a><span class="w">  </span><span class="nb">puts</span><span class="w"> </span><span class="s2">"  Robust: </span><span class="si">#{</span><span class="n">result</span><span class="o">[</span><span class="ss">:robust</span><span class="o">]</span><span class="si">}</span><span class="s2">"</span><span class="w">  </span><span class="c1"># true if test performance acceptable</span>
 </span><span id="__span-5-12"><a id="__codelineno-5-12" name="__codelineno-5-12" href="#__codelineno-5-12"></a><span class="k">end</span>
 </span></code></pre></div>
 <h2 id="example-output">Example Output<a class="headerlink" href="#example-output" title="Permanent link">&para;</a></h2>
@@ -3460,7 +3460,7 @@
       <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.tabs.sticky", "navigation.sections", "navigation.path", "navigation.indexes", "navigation.top", "navigation.footer", "toc.follow", "search.suggest", "search.highlight", "search.share", "header.autohide", "content.code.copy", "content.code.annotate", "content.tabs.link", "content.tooltips", "content.action.edit", "content.action.view"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
       
         <script src="../../assets/js/mathjax.js"></script>
       
