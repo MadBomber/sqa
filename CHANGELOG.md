@@ -14,6 +14,13 @@
 - Config file loading tests (YAML/JSON/TOML + `~` expansion) are now active
   — they were previously skipped with an inaccurate "requires write access"
   reason.
+- **SQLite-backed stores** (`SQA::Store`, `::Store::Market`,
+  `::Store::Portfolio`, `::Store::Importer`): market data and portfolios now
+  persist in `sqa.db` / `portfolio.db` instead of per-ticker CSV/JSON files,
+  with legacy-file adoption on first access, real/simulated/watchlist
+  portfolio kinds, and an indexed `SQA::Ticker` table (b185b83).
+- Price-fetch command-line utilities `bin/sqa-recent-prices`,
+  `bin/sqa-summary`, and `bin/sqa-yf-fetch` (7411d07).
 
 ### Changed
 - **`SQA::Stock` default source is now `:fmp`** (was `:alpha_vantage`).
@@ -28,6 +35,11 @@
   `from_file`/`dump_file`).
 - Alpha Vantage adapter now detects free-tier `outputsize=full` premium
   errors and transparently falls back to compact (~100 trading days).
+- Project renamed from "Simple Qualitative Analysis" to **"Stock Qualitative
+  Analysis"** across the README, docs, examples, and gemspec (7411d07).
+- Dependencies: dropped `alphavantage` and `ruby_llm-mcp`; pinned
+  `sqa-tai ~> 0.4` and `ruby_llm >= 2.0` (7411d07); added `sqlite3 ~> 2.0`
+  to back the new stores (b185b83).
 
 ### Fixed
 - `SQA::Backtest` profit factor returned `0.0` (the worst possible value)
@@ -45,6 +57,12 @@
   fractions were shown 100× too small), made `06_fpop_analysis.rb`
   executable, and hardened `07_pattern_context.rb`'s sector step against a
   failed ticker fetch.
+- `SQA::DataFrame::YahooFinance` now bounds chart requests with an explicit
+  `period1`/`period2` window instead of `range=max`, and `ensure_daily!`
+  rejects Yahoo's silently downsampled weekly/quarterly bars (7838c44).
+- Guarded nil indicator values (TA-Lib warmup padding) across the strategies,
+  `SQA::StrategyGenerator`, `SQA::Ensemble`, and `SQA::PatternMatcher`
+  (89e02af).
 
 ## [0.1.0] - 2026-09-18
 - Coordinated version bump to v0.1.0 across the SQA workspace.
