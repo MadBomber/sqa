@@ -5,8 +5,9 @@ require_relative '../test_helper'
 class DataFrameFmpTest < Minitest::Test
   # A minimal stand-in for a Faraday response whose #status/#body are what
   # SQA::DataFrame::Fmp.fetch_dataframe expects. Object#stub replaces the
-  # whole CONNECTION.get call (block included), so the block that sets
-  # query params (and reads SQA.fmp_api_key) never actually runs here.
+  # whole CONNECTION.get call, but fetch_dataframe reads
+  # SQA.fmp_api_key before calling it, so with_stubbed_response sets a
+  # placeholder key for the duration of the block.
   class FakeResponse
     attr_reader :status, :body
 
@@ -134,7 +135,15 @@ class DataFrameFmpTest < Minitest::Test
   # Stub CONNECTION.get to return `body` (HTTP `status`) for the duration of
   # the block, so the fetch/parse path can be exercised without any network.
   def with_stubbed_response(body, status: 200, &)
+    prev_key = SQA.instance_variable_get(:@fmp_api_key)
+    SQA.fmp_api_key = "test-key"
     response = FakeResponse.new(status: status, body: body)
-    SQA::DataFrame::Fmp::CONNECTION.stub(:get, response, &)
+    getter = lambda do |_path, params|
+      assert_equal "test-key", params["apikey"]
+      response
+    end
+    SQA::DataFrame::Fmp::CONNECTION.stub(:get, getter, &)
+  ensure
+    SQA.instance_variable_set(:@fmp_api_key, prev_key)
   end
 end
