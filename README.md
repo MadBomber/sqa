@@ -115,7 +115,7 @@ require 'sqa'
 SQA.init
 
 # Or specify a custom data directory
-SQA::Config.new(data_dir: '~/Documents/my_stock_data')
+SQA.config.data_dir = '~/Documents/my_stock_data'
 ```
 
 Create your data directory:
@@ -351,13 +351,16 @@ portfolio.profit_loss(current_prices)
 
 # View summary
 portfolio.summary
-#=> { initial_cash: 10000.0, cash: 8248.0, positions: 1, trades: 2, ... }
+#=> { initial_cash: 10000.0, current_cash: 8248.0, positions_count: 1, total_trades: 2, ... }
 
-# Save trades to CSV
-portfolio.save_to_csv('my_trades.csv')
+# Save positions to CSV
+portfolio.save_to_csv('my_portfolio.csv')
 
-# Load from CSV
-portfolio.load_from_csv('my_trades.csv')
+# Save trade history to CSV
+portfolio.save_trades_to_csv('my_trades.csv')
+
+# Load positions from CSV into a new portfolio
+portfolio = SQA::Portfolio.load_from_csv('my_portfolio.csv')
 ```
 
 ### Backtesting
@@ -381,13 +384,13 @@ backtest = SQA::Backtest.new(
 # Run backtest
 results = backtest.run
 
-# View comprehensive metrics
-puts "Total Return: #{results.total_return.round(2)}%"
-puts "Annualized Return: #{results.annualized_return.round(2)}%"
+# View comprehensive metrics (returns, drawdown, and win rate are fractions)
+puts "Total Return: #{(results.total_return * 100).round(2)}%"
+puts "Annualized Return: #{(results.annualized_return * 100).round(2)}%"
 puts "Sharpe Ratio: #{results.sharpe_ratio.round(2)}"
-puts "Max Drawdown: #{results.max_drawdown.round(2)}%"
+puts "Max Drawdown: #{(results.max_drawdown * 100).round(2)}%"
 puts "Total Trades: #{results.total_trades}"
-puts "Win Rate: #{results.win_rate.round(2)}%"
+puts "Win Rate: #{(results.win_rate * 100).round(2)}%"
 puts "Profit Factor: #{results.profit_factor.round(2)}"
 
 # Access equity curve for charting
@@ -663,9 +666,9 @@ regime_data = SQA::MarketRegime.split_by_regime(stock)
 current_regime = SQA::MarketRegime.detect(stock)
 strategy = case current_regime[:type]
 when :bull
-  SQA::Strategy::MomentumBreakout
+  SQA::Strategy::VolumeBreakout
 when :bear
-  SQA::Strategy::MeanReversion
+  SQA::Strategy::MR
 when :sideways
   SQA::Strategy::BollingerBands
 end
