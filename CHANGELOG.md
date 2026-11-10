@@ -42,6 +42,10 @@
   to back the new stores (b185b83).
 
 ### Fixed
+- README examples now match the API: `SQA.config.data_dir =` for a custom
+  data directory, `Portfolio#summary` key names, `save_trades_to_csv` and the
+  class method `SQA::Portfolio.load_from_csv`, backtest fractions shown as
+  percentages, and real strategy classes in the market-regime example.
 - `SQA::Backtest` profit factor returned `0.0` (the worst possible value)
   for a flawless zero-loss backtest; it now returns `Float::INFINITY`
   (rendered as `∞`).
