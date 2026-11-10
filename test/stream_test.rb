@@ -77,20 +77,24 @@ class StreamTest < Minitest::Test
   def test_on_signal_callback
     signal_called = false
     received_signal = nil
+    received_data = nil
 
-    @stream.on_signal do |signal, _data|
+    @stream.on_signal do |signal, data|
       signal_called = true
       received_signal = signal
+      received_data = data
     end
 
-    # Add strategy
+    # A strategy that always votes :buy drives the consensus away from the
+    # initial :hold signal, so the callback fires when the signal changes.
     @stream.add_strategy(->(_v) { :buy })
 
-    # Need enough data for strategy to run
+    # Feed enough data points to exceed the minimum needed to run strategies.
     35.times { |i| @stream.update(price: 100.0 + i) }
 
-    # Callback might be called if signal changes
-    # (depends on strategy logic)
+    assert signal_called, 'on_signal callback was never invoked'
+    assert_equal :buy, received_signal
+    assert_equal :buy, received_data[:signal]
   end
 
   def test_stats

@@ -64,9 +64,7 @@ class GeneticProgramTest < Minitest::Test
 
     gp = SQA::GeneticProgram.new(stock: @stock)
 
-    fitness_called = false
     gp.fitness do |_genes|
-      fitness_called = true
       10.0
     end
 
