@@ -115,7 +115,7 @@ require 'sqa'
 SQA.init
 
 # Or specify a custom data directory
-SQA.config.data_dir = '~/Documents/my_stock_data'
+SQA.config.data_dir = File.expand_path('~/Documents/my_stock_data')
 ```
 
 Create your data directory:
@@ -351,7 +351,7 @@ portfolio.profit_loss(current_prices)
 
 # View summary
 portfolio.summary
-#=> { initial_cash: 10000.0, current_cash: 8248.0, positions_count: 1, total_trades: 2, ... }
+#=> { initial_cash: 10000.0, current_cash: 9298.0, positions_count: 1, total_trades: 2, ... }
 
 # Save positions to CSV
 portfolio.save_to_csv('my_portfolio.csv')
@@ -360,6 +360,7 @@ portfolio.save_to_csv('my_portfolio.csv')
 portfolio.save_trades_to_csv('my_trades.csv')
 
 # Load positions from CSV into a new portfolio
+# (positions only: cash starts at 0 and trade history is not restored)
 portfolio = SQA::Portfolio.load_from_csv('my_portfolio.csv')
 ```
 
@@ -481,11 +482,11 @@ puts "Best Parameters:"
 puts "  RSI Period: #{best.genes[:rsi_period]}"
 puts "  Buy Threshold: #{best.genes[:buy_threshold]}"
 puts "  Sell Threshold: #{best.genes[:sell_threshold]}"
-puts "  Fitness: #{best.fitness.round(2)}%"
+puts "  Fitness: #{(best.fitness * 100).round(2)}%"
 
 # View evolution history
 gp.history.each do |gen|
-  puts "Gen #{gen[:generation]}: Best=#{gen[:best_fitness].round(2)}%"
+  puts "Gen #{gen[:generation]}: Best=#{(gen[:best_fitness] * 100).round(2)}%"
 end
 ```
 
@@ -816,14 +817,14 @@ validated_patterns = results[:validated_patterns]
 results[:validation_results].each do |r|
   puts "Train: #{r[:train_period]}"
   puts "Test:  #{r[:test_period]}"
-  puts "Return: #{r[:test_return]}%"
+  puts "Return: #{(r[:test_return] * 100).round(2)}%"
   puts "Sharpe: #{r[:test_sharpe]}"
 end
 
 # Statistics
 all_returns = results[:validation_results].map { |r| r[:test_return] }
 avg_return = all_returns.sum / all_returns.size
-puts "Average out-of-sample return: #{avg_return.round(2)}%"
+puts "Average out-of-sample return: #{(avg_return * 100).round(2)}%"
 ```
 
 **How It Works:**
