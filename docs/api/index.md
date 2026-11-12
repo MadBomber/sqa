@@ -456,11 +456,11 @@ results = backtest.run
 
 | Metric | Description |
 |--------|-------------|
-| `total_return` | Total percentage return |
+| `total_return` | Total return as a fraction (0.155 = 15.5%) |
 | `sharpe_ratio` | Risk-adjusted return |
 | `sortino_ratio` | Downside risk-adjusted return |
 | `max_drawdown` | Largest peak-to-trough decline |
-| `win_rate` | Percentage of profitable trades |
+| `win_rate` | Fraction of profitable trades (0.6 = 60%) |
 | `num_trades` | Total number of trades |
 | `final_value` | Ending portfolio value |
 

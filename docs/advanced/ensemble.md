@@ -62,7 +62,7 @@ selected = ensemble.rotate(stock)
 comparison = ensemble.backtest_comparison(stock)
 
 comparison.each do |name, results|
-  puts "#{name}: Return = #{results[:return]}%"
+  puts "#{name}: Return = #{(results.total_return * 100).round(2)}%"
 end
 ```
 

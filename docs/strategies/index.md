@@ -72,7 +72,7 @@ backtest = SQA::Backtest.new(
 )
 
 results = backtest.run
-puts "Return: #{results.total_return}%"
+puts "Return: #{(results.total_return * 100).round(2)}%"
 ```
 
 ## Strategy Comparison
