@@ -128,6 +128,18 @@ class StooqTest < Minitest::Test
     end
   end
 
+  def test_recent_encodes_symbol_as_a_single_param
+    params = with_recorded_request { SQA::DataFrame::Stooq.recent('BRK&B#X', full: true) }
+
+    assert_equal({ 's' => 'brk&b#x.us', 'i' => 'd' }, params)
+  end
+
+  def test_recent_sends_from_date_as_start_param
+    params = with_recorded_request { SQA::DataFrame::Stooq.recent('AAPL', from_date: Date.parse('2024-01-02')) }
+
+    assert_equal({ 's' => 'aapl.us', 'i' => 'd', 'd1' => '20240102' }, params)
+  end
+
   # -- optional live integration -------------------------------------------
 
   def test_recent_returns_dataframe_with_valid_ticker
@@ -146,5 +158,13 @@ class StooqTest < Minitest::Test
   def with_stubbed_response(body, &)
     response = FakeResponse.new(status: 200, body: body)
     SQA::DataFrame::Stooq::CONNECTION.stub(:get, response, &)
+  end
+
+  # Runs the block against a recording connection; returns the params the
+  # first request sent.
+  def with_recorded_request(&)
+    conn, sent = TestHTTP.recording_connection('https://stooq.com', VALID_CSV)
+    SQA::DataFrame::Stooq::CONNECTION.stub(:get, ->(*args) { conn.get(*args) }, &)
+    sent.first
   end
 end

@@ -86,12 +86,12 @@ class SQA::DataFrame
     # feature, etc.).
     def self.fetch_dataframe(ticker, full:)
       response = CONNECTION.get(
-        "/query?" \
-        "function=TIME_SERIES_DAILY&" \
-        "symbol=#{ticker.upcase}&" \
-        "apikey=#{SQA.av.key}&" \
-        "datatype=csv&" \
-        "outputsize=#{full ? 'full' : 'compact'}"
+        '/query',
+        'function'   => 'TIME_SERIES_DAILY',
+        'symbol'     => ticker.upcase,
+        'apikey'     => SQA.av.key,
+        'datatype'   => 'csv',
+        'outputsize' => full ? 'full' : 'compact'
       ).to_hash
 
       unless response[:status] == 200

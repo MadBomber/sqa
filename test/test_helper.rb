@@ -70,6 +70,20 @@ Minitest.after_run do
   FileUtils.remove_entry(SQA_TEST_DATA_DIR) if File.directory?(SQA_TEST_DATA_DIR)
 end
 
+# Faraday connections on the test adapter, for checking how a client
+# encodes its query string without touching the network.
+module TestHTTP
+  # Returns [Faraday::Connection, Array<Hash>]: a connection that answers
+  # every GET with +body+, and the query params each request sent, as
+  # parsed back out of the request URL.
+  def self.recording_connection(url, body)
+    sent  = []
+    stubs = Faraday::Adapter::Test::Stubs.new
+    stubs.get(/.*/) { |env| [200, {}, body].tap { sent << env.params } }
+    [Faraday.new(url: url) { |conn| conn.adapter(:test, stubs) }, sent]
+  end
+end
+
 require 'debug_me'
 Object.include(DebugMe)
 

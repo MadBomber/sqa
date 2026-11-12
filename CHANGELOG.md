@@ -23,6 +23,7 @@
   `bin/sqa-summary`, and `bin/sqa-yf-fetch` (7411d07).
 
 ### Changed
+- Alpha Vantage and STOOQ requests now build their query strings from a Faraday params hash, matching the FMP adapter.
 - **`SQA::Stock` default source is now `:fmp`** (was `:alpha_vantage`).
 - **`SQA::DataFrame::YahooFinance` rewritten** to call Yahoo's undocumented
   `chart` JSON API (cookie/crumb handshake, honoring `YF_COOKIE`/`YF_CRUMB`)
