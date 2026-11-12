@@ -68,6 +68,9 @@
   `SQA::StrategyGenerator`, `SQA::Ensemble`, and `SQA::PatternMatcher`
   (89e02af).
 
+### CI
+- GitHub Actions runs `bundle exec rake test` on Ruby 3.4 and 4.0 for pushes and pull requests to `develop` and `main`.
+
 ## [0.1.0] - 2026-09-18
 - Coordinated version bump to v0.1.0 across the SQA workspace.
 
