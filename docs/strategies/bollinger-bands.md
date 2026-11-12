@@ -74,10 +74,10 @@ backtest = SQA::Backtest.new(
 
 results = backtest.run
 
-puts "Total Return: #{results.total_return}%"
+puts "Total Return: #{(results.total_return * 100).round(2)}%"
 puts "Sharpe Ratio: #{results.sharpe_ratio}"
-puts "Max Drawdown: #{results.max_drawdown}%"
-puts "Win Rate: #{results.win_rate}%"
+puts "Max Drawdown: #{(results.max_drawdown * 100).round(2)}%"
+puts "Win Rate: #{(results.win_rate * 100).round(2)}%"
 ```
 
 ## Characteristics

@@ -126,7 +126,7 @@ backtest = SQA::Backtest.new(
 results = backtest.run
 
 puts "Final Value: $#{results.portfolio_value}"
-puts "Total Return: #{results.total_return}%"
+puts "Total Return: #{(results.total_return * 100).round(2)}%"
 puts "Total Trades: #{results.num_trades}"
 ```
 

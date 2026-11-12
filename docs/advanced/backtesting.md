@@ -24,10 +24,10 @@ backtest = SQA::Backtest.new(
 results = backtest.run
 
 # View results
-puts "Total Return: #{results.total_return}%"
+puts "Total Return: #{(results.total_return * 100).round(2)}%"
 puts "Sharpe Ratio: #{results.sharpe_ratio}"
-puts "Max Drawdown: #{results.max_drawdown}%"
-puts "Win Rate: #{results.win_rate}%"
+puts "Max Drawdown: #{(results.max_drawdown * 100).round(2)}%"
+puts "Win Rate: #{(results.win_rate * 100).round(2)}%"
 ```
 
 ## Configuration
@@ -49,7 +49,7 @@ backtest = SQA::Backtest.new(
 The `backtest.run` method returns a results object with:
 
 ### Return Metrics
-- `total_return` - Total percentage return
+- `total_return` - Total return as a fraction (0.155 = 15.5%)
 - `annualized_return` - Return per year
 - `benchmark_return` - Buy-and-hold comparison
 
@@ -61,7 +61,7 @@ The `backtest.run` method returns a results object with:
 
 ### Trading Metrics
 - `num_trades` - Total number of trades
-- `win_rate` - Percentage of profitable trades
+- `win_rate` - Fraction of profitable trades (0.6 = 60%)
 - `avg_win` - Average winning trade
 - `avg_loss` - Average losing trade
 - `profit_factor` - Gross profit / gross loss
@@ -95,11 +95,11 @@ strategies.each do |strategy|
   
   puts "\n#{strategy.name} Results:"
   puts "-" * 40
-  puts "Return: #{results.total_return.round(2)}%"
+  puts "Return: #{(results.total_return * 100).round(2)}%"
   puts "Sharpe: #{results.sharpe_ratio.round(2)}"
-  puts "Max DD: #{results.max_drawdown.round(2)}%"
+  puts "Max DD: #{(results.max_drawdown * 100).round(2)}%"
   puts "Trades: #{results.num_trades}"
-  puts "Win Rate: #{results.win_rate.round(2)}%"
+  puts "Win Rate: #{(results.win_rate * 100).round(2)}%"
 end
 ```
 
@@ -125,7 +125,7 @@ results = backtest.run
 # Test different RSI thresholds
 (20..40).step(5).each do |oversold|
   results = test_strategy_with_params(oversold)
-  puts "RSI #{oversold}: Return = #{results.total_return}%"
+  puts "RSI #{oversold}: Return = #{(results.total_return * 100).round(2)}%"
 end
 ```
 
