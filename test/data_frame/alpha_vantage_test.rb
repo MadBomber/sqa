@@ -3,6 +3,12 @@
 require_relative '../test_helper'
 
 class AlphaVantageTest < Minitest::Test
+  AV_CSV = <<~CSV
+    timestamp,open,high,low,close,volume
+    2024-01-03,185.5,187.0,185.0,186.2,48000000
+    2024-01-02,185.0,186.0,184.0,185.5,50000000
+  CSV
+
   def test_connection_constant_exists
     refute_nil SQA::DataFrame::AlphaVantage::CONNECTION
     assert_kind_of Faraday::Connection, SQA::DataFrame::AlphaVantage::CONNECTION
@@ -91,8 +97,36 @@ class AlphaVantageTest < Minitest::Test
     end
   end
 
+  def test_recent_encodes_symbol_as_a_single_param
+    params = with_recorded_request { SQA::DataFrame::AlphaVantage.recent('brk&b#x') }
+
+    assert_equal(
+      { 'function' => 'TIME_SERIES_DAILY', 'symbol' => 'BRK&B#X', 'apikey' => 'test-key',
+        'datatype' => 'csv', 'outputsize' => 'compact' },
+      params
+    )
+  end
+
+  def test_recent_full_requests_full_outputsize
+    params = with_recorded_request { SQA::DataFrame::AlphaVantage.recent('aapl', full: true) }
+
+    assert_equal 'full', params['outputsize']
+  end
+
   def test_connection_url
     connection = SQA::DataFrame::AlphaVantage::CONNECTION
     assert_equal 'https://www.alphavantage.co', connection.url_prefix.to_s.chomp('/')
+  end
+
+  private
+
+  # Runs the block against a recording connection; returns the params the
+  # first request sent.
+  def with_recorded_request(&)
+    conn, sent = TestHTTP.recording_connection('https://www.alphavantage.co', AV_CSV)
+    SQA.stub(:av_api_key, 'test-key') do
+      SQA::DataFrame::AlphaVantage::CONNECTION.stub(:get, ->(*args) { conn.get(*args) }, &)
+    end
+    sent.first
   end
 end

@@ -68,11 +68,10 @@ class SQA::DataFrame
     # notice or an empty/non-CSV body (bad symbol, throttled, etc.) instead of
     # letting the CSV parser choke on it later with a confusing Polars error.
     def self.fetch_dataframe(ticker, start_date: nil)
-      symbol = stooq_symbol(ticker)
-      query  = "s=#{symbol}&i=d"
-      query += "&d1=#{start_date.strftime('%Y%m%d')}" if start_date
+      params = { 's' => stooq_symbol(ticker), 'i' => 'd' }
+      params['d1'] = start_date.strftime('%Y%m%d') if start_date
 
-      response = CONNECTION.get("/q/d/l/?#{query}").to_hash
+      response = CONNECTION.get('/q/d/l/', params).to_hash
 
       unless response[:status] == 200
         raise "Bad Response: #{response[:status]}"

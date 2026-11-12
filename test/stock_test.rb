@@ -3,6 +3,11 @@
 require_relative 'test_helper'
 
 class StockTest < Minitest::Test
+  # Don't let a stubbed .top response stay memoized for later tests.
+  def teardown
+    SQA::Stock.reset_top!
+  end
+
   def test_invalid_ticker_raises_error
     assert_raises SQA::DataFetchError do
       SQA::Stock.new(ticker: 'INVALID_TICKER_9999')
@@ -281,5 +286,33 @@ class StockTest < Minitest::Test
 
   def test_alpha_vantage_url_constant_exists
     assert_equal "https://www.alphavantage.co", SQA::Stock::ALPHA_VANTAGE_URL
+  end
+
+  def test_merge_overview_encodes_symbol_as_a_single_param
+    stock = SQA::Stock.allocate # skip the constructor's store and price fetch
+    stock.data = SQA::DataFrame::Data.new(ticker: 'brk&b#x', source: :alpha_vantage, indicators: {})
+
+    params = with_recorded_av_request('{"Symbol":"BRK&B#X"}') { stock.merge_overview }
+
+    assert_equal({ 'function' => 'OVERVIEW', 'symbol' => 'BRK&B#X', 'apikey' => 'test-key' }, params)
+  end
+
+  def test_top_sends_query_as_separate_params
+    body = '{"top_gainers":[{"ticker":"A","price":"1.0","volume":"10"}],"top_losers":[],"most_actively_traded":[]}'
+
+    SQA::Stock.reset_top! # .top is memoized; make sure this call reaches the connection
+    params = with_recorded_av_request(body) { SQA::Stock.top }
+
+    assert_equal({ 'function' => 'TOP_GAINERS_LOSERS', 'apikey' => 'test-key' }, params)
+  end
+
+  private
+
+  # Runs the block with SQA::Stock talking to a recording connection;
+  # returns the params the first request sent.
+  def with_recorded_av_request(body, &)
+    conn, sent = TestHTTP.recording_connection(SQA::Stock::ALPHA_VANTAGE_URL, body)
+    SQA.stub(:av_api_key, 'test-key') { SQA::Stock.stub(:connection, conn, &) }
+    sent.first
   end
 end

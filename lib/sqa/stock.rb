@@ -430,7 +430,7 @@ class SQA::Stock
   # @raise [ApiError] If the API returns an error response
   def merge_overview
     temp = JSON.parse(
-      self.class.connection.get("/query?function=OVERVIEW&symbol=#{ticker.upcase}&apikey=#{SQA.av.key}")
+      self.class.connection.get('/query', { 'function' => 'OVERVIEW', 'symbol' => ticker.upcase, 'apikey' => SQA.av.key })
       .to_hash[:body]
     )
 
@@ -467,7 +467,7 @@ class SQA::Stock
     def top
       return @top if @top
 
-      a_hash = JSON.parse(connection.get("/query?function=TOP_GAINERS_LOSERS&apikey=#{SQA.av.key}").to_hash[:body])
+      a_hash = JSON.parse(connection.get('/query', { 'function' => 'TOP_GAINERS_LOSERS', 'apikey' => SQA.av.key }).to_hash[:body])
 
       mash = Hashie::Mash.new(a_hash)
 
