@@ -1,0 +1,36 @@
+name: Test
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # sqa-tai ~> 0.4 needs Ruby >= 3.4
+        ruby: ["3.4", "4.0"]
+    env:
+      TA_LIB_VERSION: "0.8.3"
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Install TA-Lib C library
+        run: |
+          curl -fsSLO "https://github.com/TA-Lib/ta-lib/releases/download/v${TA_LIB_VERSION}/ta-lib_${TA_LIB_VERSION}_amd64.deb"
+          sudo dpkg -i "ta-lib_${TA_LIB_VERSION}_amd64.deb"
+
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ matrix.ruby }}
+          bundler-cache: true
+
+      - name: Run tests
+        run: bundle exec rake test
