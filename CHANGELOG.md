@@ -43,6 +43,9 @@
   to back the new stores (b185b83).
 
 ### Fixed
+- `SQA::RiskManager.sortino_ratio` now averages squared downside returns over
+  all periods (the standard downside deviation) instead of only the losing
+  periods. Reported Sortino ratios are higher than before (#67).
 - README examples now match the API: `SQA.config.data_dir =` for a custom
   data directory, `Portfolio#summary` key names, `save_trades_to_csv` and the
   class method `SQA::Portfolio.load_from_csv`, backtest fractions shown as
