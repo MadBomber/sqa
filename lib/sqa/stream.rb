@@ -33,9 +33,16 @@
 
 module SQA
   class Stream
+    # Price points required before strategies run; window_size must be at least this.
+    MIN_DATA_POINTS = 30
+
     attr_reader :ticker, :window_size, :strategies, :data_buffer, :indicator_cache
 
     def initialize(ticker:, window_size: 100, strategies: [])
+      if window_size < MIN_DATA_POINTS
+        raise ArgumentError, "window_size must be at least #{MIN_DATA_POINTS} (got #{window_size})"
+      end
+
       @ticker = ticker
       @window_size = window_size
       @strategies = Array(strategies)
@@ -206,7 +213,7 @@ module SQA
 
     # Check if we have enough data to run strategies
     def sufficient_data?
-      @data_buffer[:prices].size >= 30 # Minimum data points
+      @data_buffer[:prices].size >= MIN_DATA_POINTS
     end
 
     # Trim buffers to maintain window size
