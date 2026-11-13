@@ -235,15 +235,15 @@ prices = [100, 102, 105, 103, 107, 110, 108, 112, 115, 113]
 
 # Simple Moving Average
 sma = SQAI.sma(prices, period: 5)
-#=> [104.0, 105.4, 106.6, 108.0, 110.4, 111.6]
+#=> [103.4, 105.4, 106.6, 108.0, 110.4, 111.6]
 
-# Relative Strength Index
-rsi = SQAI.rsi(prices, period: 14)
-#=> [70.5, 68.2, ...]
+# Relative Strength Index (needs more than `period` prices)
+rsi = SQAI.rsi(prices, period: 5)
+#=> [85.7, 72.7, 80.2, 84.3, 72.0] (rounded)
 
 # Exponential Moving Average
 ema = SQAI.ema(prices, period: 5)
-#=> [...]
+#=> [103.4, 105.6, 106.4, 108.3, 110.5, 111.3] (rounded)
 
 # Bollinger Bands (returns upper, middle, lower)
 upper, middle, lower = SQAI.bbands(prices, period: 5)
@@ -500,6 +500,9 @@ require 'sqa'
 # Create KBS strategy
 strategy = SQA::Strategy::KBS.new(load_defaults: false)
 
+# Capture the knowledge base for use inside perform blocks
+kb = strategy.kb
+
 # Define custom trading rules
 strategy.add_rule :golden_opportunity do
   desc "Perfect storm: Multiple bullish indicators align"
@@ -514,9 +517,9 @@ strategy.add_rule :golden_opportunity do
   # Negation: Don't buy if overbought elsewhere
   without :rsi, { level: :overbought }
 
-  # Action
-  then do
-    assert(:signal, { action: :buy, confidence: :high })
+  # Action (use kb.assert; a bare assert is not available here)
+  perform do
+    kb.assert(:signal, { action: :buy, confidence: :high })
   end
 end
 
