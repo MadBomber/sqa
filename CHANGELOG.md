@@ -43,6 +43,7 @@
   to back the new stores (b185b83).
 
 ### Fixed
+CHANGELOG.md
 - `SQA::RiskManager.sortino_ratio` now averages squared downside returns over
   all periods (the standard downside deviation) instead of only the losing
   periods. Reported Sortino ratios are higher than before (#67).
@@ -80,6 +81,8 @@
   exactly zero (e.g. `(0.0, 5.0)`); a window that only rises is now `:UP` and
   one that only falls is `:DOWN`, so `fpl_analysis` directions change for
   those bars (#81).
+- `bin/sqa-summary --help` and its header comments now use the script's
+  current name instead of the old `sqa-summary.rb` (#82).
 
 ### CI
 - GitHub Actions runs `bundle exec rake test` on Ruby 3.4 and 4.0 for pushes and pull requests to `develop` and `main`.
