@@ -296,12 +296,12 @@ module SQA
         excess_returns = returns.map { |r| r - target_return }
         mean_excess = excess_returns.sum / excess_returns.size.to_f
 
-        # Downside deviation (only negative returns)
+        # Downside deviation: squared shortfalls averaged over all periods
         downside_returns = excess_returns.select(&:negative?)
         return Float::INFINITY if downside_returns.empty?
 
         downside_deviation = Math.sqrt(
-          downside_returns.map { |r| r**2 }.sum / downside_returns.size.to_f
+          downside_returns.map { |r| r**2 }.sum / excess_returns.size.to_f
         )
 
         return 0.0 if downside_deviation.zero?

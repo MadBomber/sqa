@@ -141,6 +141,13 @@ class RiskManagerTest < Minitest::Test
     # Sortino should be higher than Sharpe (only penalizes downside)
   end
 
+  def test_sortino_ratio_divides_downside_by_all_periods
+    returns = [0.02, -0.01, 0.03, 0.01, -0.02, 0.015]
+    sortino = SQA::RiskManager.sortino_ratio(returns, periods_per_year: 1)
+
+    assert_in_delta 0.8216, sortino, 0.0001
+  end
+
   def test_sortino_with_no_downside
     positive_returns = [0.01, 0.02, 0.015, 0.01, 0.005]
     sortino = SQA::RiskManager.sortino_ratio(positive_returns)
