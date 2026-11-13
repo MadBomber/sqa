@@ -117,6 +117,7 @@ module SQA
     coerce_types(
       debug:            BOOLEAN_COERCION,
       verbose:          BOOLEAN_COERCION,
+      lazy_update:      BOOLEAN_COERCION,
       log_level:        SYMBOL_COERCION,
       plotting_library: SYMBOL_COERCION,
       data_dir:         HOME_COERCION
