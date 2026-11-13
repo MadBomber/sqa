@@ -19,7 +19,7 @@ class SQA::Portfolio
 
     def profit_loss_percent(current_price)
       return 0.0 if avg_cost.zero?
-      ((current_price - avg_cost) / avg_cost) * 100.0
+      (current_price - avg_cost).fdiv(avg_cost) * 100.0
     end
   end
 
@@ -81,7 +81,7 @@ class SQA::Portfolio
       total_shares = pos.shares + shares
       total_cost_basis = pos.total_cost + total_cost
       pos.shares = total_shares
-      pos.avg_cost = total_cost_basis / total_shares
+      pos.avg_cost = total_cost_basis.fdiv(total_shares)
       pos.total_cost = total_cost_basis
     else
       @positions[ticker] = Position.new(
@@ -140,7 +140,7 @@ class SQA::Portfolio
       @positions.delete(ticker)
     else
       # Partial sale - reduce shares and total cost proportionally
-      cost_per_share = pos.total_cost / held
+      cost_per_share = pos.total_cost.fdiv(held)
       pos.shares -= shares
       pos.total_cost -= (cost_per_share * shares)
       # avg_cost stays the same
