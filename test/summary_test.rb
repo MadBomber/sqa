@@ -194,4 +194,12 @@ class SummaryTest < Minitest::Test
     assert_equal(1, report.lines.count { |line| line.include?('TICKER') })
     assert(report.lines.any? { |line| line.match?(/aapl\s+2\s+2024-01-08/) })
   end
+
+  def test_help_banner_uses_the_script_name
+    out, = capture_io do
+      assert_raises(SystemExit) { parse_summary_options(['--help']) }
+    end
+
+    assert_match(/^Usage: sqa-summary \[options\]$/, out)
+  end
 end
