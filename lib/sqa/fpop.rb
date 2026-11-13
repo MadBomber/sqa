@@ -18,11 +18,11 @@
 #
 #   # Get raw FPL data
 #   fpl_data = SQA::FPOP.fpl(prices, fpop: 3)
-#   # => [[-2.0, 10.0], [-4.9, 17.6], ...]
+#   # => [[-2.0, 5.0], [-3.92, 7.84], ...]
 #
 #   # Get detailed analysis
 #   analysis = SQA::FPOP.fpl_analysis(prices, fpop: 3)
-#   # => [{min_delta: -2.0, max_delta: 10.0, risk: 12.0, direction: :UNCERTAIN, ...}, ...]
+#   # => [{min_delta: -2.0, max_delta: 5.0, risk: 7.0, direction: :UNCERTAIN, ...}, ...]
 
 module SQA
   module FPOP

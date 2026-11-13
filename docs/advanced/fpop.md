@@ -4,6 +4,11 @@
 
 Calculate future returns, risk metrics, and direction classification to evaluate trading opportunities.
 
+FPOP looks *ahead* from each bar, so it describes what happened after a bar,
+not what will happen after today. Both `fpl` and `fpl_analysis` return one
+entry per bar that has at least one later price; the final bar has none, so
+the result is one element shorter than the price array.
+
 ## Quick Start
 
 ```ruby
@@ -14,12 +19,13 @@ prices = stock.df["adj_close_price"].to_a
 
 # Calculate FPL (Future Period Loss/Profit)
 fpl_data = SQA::FPOP.fpl(prices, fpop: 10)
-# => [[min_delta, max_delta], ...]
+# => [[min_delta, max_delta], ...]   one pair per bar
 
-# Comprehensive analysis
+# Per-bar analysis (an Array of Hashes)
 analysis = SQA::FPOP.fpl_analysis(prices, fpop: 10)
-puts "Risk: #{analysis[:risk]}%"
-puts "Direction: #{analysis[:direction]}"  # :UP, :DOWN, :FLAT
+latest = analysis.last   # the most recent bar with a future window
+puts "Risk: #{latest[:risk]}%"
+puts "Direction: #{latest[:direction]}"  # :UP, :DOWN, :UNCERTAIN, :FLAT
 ```
 
 ## Methods
@@ -30,38 +36,59 @@ puts "Direction: #{analysis[:direction]}"  # :UP, :DOWN, :FLAT
 prices = [100, 102, 105, 103, 107, 110]
 fpl = SQA::FPOP.fpl(prices, fpop: 3)
 
-# For each point, calculates min/max change over next 3 periods
-# fpl[0] = [min(102,105,103) - 100, max(102,105,103) - 100]
-#        = [100-100, 105-100] = [0, 5]
+# For each point, the min/max percentage change over the next 3 periods.
+# fpl[0] looks at [102, 105, 103]:
+#   min = (102 - 100) / 100 * 100 = 2.0
+#   max = (105 - 100) / 100 * 100 = 5.0
+fpl[0]  # => [2.0, 5.0]
 ```
 
 ### Comprehensive Analysis
 
 ```ruby
-analysis = SQA::FPOP.fpl_analysis(prices, fpop: 10)
+analysis = SQA::FPOP.fpl_analysis(prices, fpop: 3)
 
-# Returns hash with:
-# {
-#   fpl: [[min_delta, max_delta], ...],
-#   risk: 15.5,              # Max downside %
-#   reward: 25.2,            # Max upside %
-#   direction: :UP,          # Overall trend
-#   magnitude: 10.3,         # Average move size
-#   quality_score: 0.75      # Risk/reward ratio
+analysis.class  # => Array (one Hash per bar)
+analysis.first
+# => {
+#   min_delta: 2.0,                         # Worst % change in the window
+#   max_delta: 5.0,                         # Best % change in the window
+#   risk: 3.0,                              # Range: max_delta - min_delta
+#   direction: :UP,                         # :UP, :DOWN, :UNCERTAIN, or :FLAT
+#   magnitude: 3.5,                         # Average of min_delta and max_delta
+#   interpretation: "UP: 3.5% (±1.5% risk)"
 # }
 ```
 
+Direction values:
+
+- `:UP` - the price rose during the window and did not fall
+- `:DOWN` - the price fell during the window and did not rise
+- `:UNCERTAIN` - the price both rose and fell within the window
+- `:FLAT` - no clear direction (see `SQA::FPOP.determine_direction` for the
+  zero-delta edge cases)
+
 ### Quality Filtering
 
+`filter_by_quality` returns the **indices** of the bars that pass every
+criterion:
+
 ```ruby
-filtered = SQA::FPOP.filter_by_quality(
+indices = SQA::FPOP.filter_by_quality(
   analysis,
-  min_magnitude: 5.0,      # Minimum 5% move
-  max_risk: 25.0,          # Maximum 25% downside
-  directions: [:UP]         # Only upward moves
+  min_magnitude: 5.0,      # Minimum 5% average move
+  max_risk: 25.0,          # Maximum 25% range between best and worst
+  directions: [:UP]        # Only upward moves
 )
 
-# Returns only high-quality opportunities
+indices.map { |i| analysis[i] }  # the matching bars
+```
+
+### Risk/Reward Ratios
+
+```ruby
+ratios = SQA::FPOP.risk_reward_ratios(analysis)
+# => one Float per bar: |magnitude| / risk (0.0 when risk is 0)
 ```
 
 ## Integration with Strategy Generator
@@ -80,17 +107,16 @@ patterns = generator.discover_patterns
 
 ## DataFrame Methods
 
+The DataFrame wrappers read a price column (default `"adj_close_price"`) and
+return the same values as the module methods. They do not add columns.
+
 ```ruby
-# Convenient DataFrame extensions
 df = stock.df
 
-# Add FPL columns
-df_with_fpl = df.fpl(fpop: 10)
+fpl_data = df.fpl(fpop: 10)             # => Array of [min_delta, max_delta]
+analysis = df.fpl_analysis(fpop: 10)    # => Array of Hashes
 
-# Add full analysis
-df_with_analysis = df.fpl_analysis(fpop: 10)
-
-# Now has columns: fpl_min, fpl_max, fpl_risk, fpl_direction, etc.
+analysis.last[:direction]
 ```
 
 ## Use Cases
@@ -103,11 +129,11 @@ stocks = ['AAPL', 'GOOGL', 'MSFT']
 stocks.each do |ticker|
   stock = SQA::Stock.new(ticker: ticker)
   prices = stock.df["adj_close_price"].to_a
-  
-  analysis = SQA::FPOP.fpl_analysis(prices, fpop: 10)
-  
-  if analysis[:reward] > 15.0 && analysis[:risk] < 10.0
-    puts "#{ticker}: Good risk/reward (#{analysis[:reward]}/#{analysis[:risk]})"
+
+  latest = SQA::FPOP.fpl_analysis(prices, fpop: 10).last
+
+  if latest[:max_delta] > 15.0 && latest[:risk] < 10.0
+    puts "#{ticker}: Good risk/reward (#{latest[:max_delta]}/#{latest[:risk]})"
   end
 end
 ```
@@ -115,11 +141,12 @@ end
 ### 2. Entry Point Validation
 
 ```ruby
-# Check if current point offers good risk/reward
-current_analysis = SQA::FPOP.fpl_analysis(prices, fpop: 10)
+# Check whether a historical entry point offered good risk/reward
+analysis = SQA::FPOP.fpl_analysis(prices, fpop: 10)
+ratios = SQA::FPOP.risk_reward_ratios(analysis)
 
-if current_analysis[:direction] == :UP && 
-   current_analysis[:quality_score] > 0.7
+entry_index = analysis.size - 1
+if analysis[entry_index][:direction] == :UP && ratios[entry_index] > 0.7
   puts "Strong buy opportunity"
 end
 ```
@@ -128,26 +155,26 @@ end
 
 ```ruby
 analysis = SQA::FPOP.fpl_analysis(prices, fpop: 10)
+latest = analysis.last
 
-# Set stop loss based on expected risk
+# Set stop loss based on the worst move seen in the window
 entry_price = prices.last
-stop_loss = entry_price * (1 - analysis[:risk] / 100)
+stop_loss = entry_price * (1 + latest[:min_delta] / 100)
 
 puts "Entry: $#{entry_price}"
 puts "Stop Loss: $#{stop_loss}"
-puts "Target: $#{entry_price * (1 + analysis[:reward] / 100)}"
+puts "Target: $#{entry_price * (1 + latest[:max_delta] / 100)}"
 ```
 
 ## Parameters
 
-- `fpop`: Future periods to analyze (default: 10)
-- `min_magnitude`: Minimum move size to consider (%)
-- `max_risk`: Maximum acceptable downside (%)
-- `directions`: Filter by `:UP`, `:DOWN`, or `:FLAT`
+- `fpop`: Future periods to analyze (default: 14)
+- `min_magnitude`: Minimum average move to consider (%)
+- `max_risk`: Maximum acceptable range between best and worst move (%)
+- `directions`: Filter by `:UP`, `:DOWN`, `:UNCERTAIN`, or `:FLAT`
 
 ## Related
 
 - [Strategy Generator](strategy-generator.md) - Uses FPOP for pattern quality
 - [Risk Management](risk-management.md) - Position sizing based on risk
 - [Backtesting](backtesting.md) - Validate FPOP predictions
-
