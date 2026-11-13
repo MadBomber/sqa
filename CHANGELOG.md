@@ -76,6 +76,10 @@
 - `SQA::PatternMatcher#cluster_patterns` moved every empty cluster onto
   cluster 0's previous centroid, so k-means could lose clusters; each empty
   cluster now keeps its own previous centroid.
+- `SQA::FPOP.determine_direction` returned `:FLAT` when one delta was
+  exactly zero (e.g. `(0.0, 5.0)`); a window that only rises is now `:UP` and
+  one that only falls is `:DOWN`, so `fpl_analysis` directions change for
+  those bars (#81).
 
 ### CI
 - GitHub Actions runs `bundle exec rake test` on Ruby 3.4 and 4.0 for pushes and pull requests to `develop` and `main`.

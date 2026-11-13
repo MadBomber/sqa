@@ -101,14 +101,18 @@ module SQA
 
       # Determine directional bias from min/max deltas
       #
+      # A delta of exactly zero means the price touched (but did not cross)
+      # the current price, so a window that only rises is :UP and one that
+      # only falls is :DOWN. Only (0, 0) is :FLAT.
+      #
       # @param min_delta [Float] Minimum percentage change
       # @param max_delta [Float] Maximum percentage change
       # @return [Symbol] :UP, :DOWN, :UNCERTAIN, or :FLAT
       #
       def determine_direction(min_delta, max_delta)
-        if min_delta.positive? && max_delta.positive?
+        if !min_delta.negative? && max_delta.positive?
           :UP
-        elsif min_delta.negative? && max_delta.negative?
+        elsif min_delta.negative? && !max_delta.positive?
           :DOWN
         elsif min_delta.negative? && max_delta.positive?
           :UNCERTAIN
