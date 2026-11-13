@@ -47,13 +47,7 @@ class SQA::DataFrame
 
     # Transformers applied AFTER column renaming. No adj_close_price here --
     # FMP's free endpoint doesn't provide one; .recent duplicates close_price.
-    TRANSFORMERS  = {
-      HEADERS[1] => ->(v) { v.to_f.round(3) },  # :open_price
-      HEADERS[2] => ->(v) { v.to_f.round(3) },  # :high_price
-      HEADERS[3] => ->(v) { v.to_f.round(3) },  # :low_price
-      HEADERS[4] => ->(v) { v.to_f.round(3) },  # :close_price
-      HEADERS[6] => lambda(&:to_i)              # :volume
-    }.freeze
+    TRANSFORMERS  = YahooFinance::TRANSFORMERS
 
     # Number of calendar days of history a "compact" (full: false) fetch
     # requests. ~200 calendar days comfortably covers the ~100 trading days

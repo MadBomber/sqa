@@ -117,7 +117,7 @@ module SQA
         return 0.0 if avg_loss.zero? || win_rate >= 1.0 || win_rate <= 0.0
 
         lose_rate = 1.0 - win_rate
-        win_loss_ratio = avg_win / avg_loss
+        win_loss_ratio = avg_win.fdiv(avg_loss)
 
         # Kelly formula
         kelly_fraction = ((win_rate * win_loss_ratio) - lose_rate) / win_loss_ratio
@@ -236,7 +236,7 @@ module SQA
             running_peak_idx = idx
           end
 
-          drawdown = (price - running_peak) / running_peak
+          drawdown = (price - running_peak).fdiv(running_peak)
           next unless drawdown < max_dd
           max_dd = drawdown
           peak_idx = running_peak_idx
@@ -296,12 +296,12 @@ module SQA
         excess_returns = returns.map { |r| r - target_return }
         mean_excess = excess_returns.sum / excess_returns.size.to_f
 
-        # Downside deviation (only negative returns)
+        # Downside deviation: squared shortfalls averaged over all periods
         downside_returns = excess_returns.select(&:negative?)
         return Float::INFINITY if downside_returns.empty?
 
         downside_deviation = Math.sqrt(
-          downside_returns.map { |r| r**2 }.sum / downside_returns.size.to_f
+          downside_returns.map { |r| r**2 }.sum / excess_returns.size.to_f
         )
 
         return 0.0 if downside_deviation.zero?

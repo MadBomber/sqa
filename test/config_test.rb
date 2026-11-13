@@ -115,6 +115,13 @@ class ConfigTest < Minitest::Test
     refute config.verbose?
   end
 
+  def test_lazy_update_coercion_from_string
+    assert_equal true, SQA::Config.new(lazy_update: "true").lazy_update
+    assert_equal true, SQA::Config.new(lazy_update: "1").lazy_update
+    assert_equal false, SQA::Config.new(lazy_update: "0").lazy_update
+    assert_equal false, SQA::Config.new(lazy_update: "off").lazy_update
+  end
+
   def test_log_level_coercion_to_symbol
     config = SQA::Config.new(log_level: "debug")
     assert_equal :debug, config.log_level

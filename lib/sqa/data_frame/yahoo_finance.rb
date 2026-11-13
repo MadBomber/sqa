@@ -54,6 +54,17 @@ class SQA::DataFrame
       :volume          # 6
     ].freeze
 
+    # Column transformers applied AFTER renaming. Shared by every daily price
+    # adapter (and SQA::Stock); adj_close_price is omitted because not every
+    # source provides one.
+    TRANSFORMERS = {
+      HEADERS[1] => ->(v) { v.to_f.round(3) },  # :open_price
+      HEADERS[2] => ->(v) { v.to_f.round(3) },  # :high_price
+      HEADERS[3] => ->(v) { v.to_f.round(3) },  # :low_price
+      HEADERS[4] => ->(v) { v.to_f.round(3) },  # :close_price
+      HEADERS[6] => lambda(&:to_i)              # :volume
+    }.freeze
+
     # Calendar days requested for a "compact" (full: false) fetch when no
     # from_date is given. Matches Fmp and Stooq's COMPACT_DAYS.
     COMPACT_DAYS = 200

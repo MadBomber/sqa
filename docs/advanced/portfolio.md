@@ -119,7 +119,7 @@ unrealized_pnl = (165.0 - 150.0) * 5  # => $75
 backtest = SQA::Backtest.new(
   stock: stock,
   strategy: SQA::Strategy::RSI,
-  initial_cash: 10_000,
+  initial_capital: 10_000,
   commission: 1.0
 )
 

@@ -44,6 +44,24 @@ class PortfolioTest < Minitest::Test
     assert_in_delta 155.0, position.avg_cost, 0.01
   end
 
+  def test_integer_prices_do_not_truncate_cost_basis
+    pf = SQA::Portfolio.new(initial_cash: 10_000)
+    pf.buy('X', shares: 3, price: 10)
+    pf.buy('X', shares: 1, price: 11)
+
+    assert_in_delta 10.25, pf.positions['X'].avg_cost, 1e-9
+
+    pf.sell('X', shares: 1, price: 12)
+
+    assert_in_delta 30.75, pf.positions['X'].total_cost, 1e-9
+  end
+
+  def test_profit_loss_percent_with_integer_cost
+    position = SQA::Portfolio::Position.new('X', 10, 100, 1000)
+
+    assert_in_delta 5.0, position.profit_loss_percent(105), 1e-9
+  end
+
   def test_sell_reduces_position
     @portfolio.buy('AAPL', shares: 20, price: 150.0, date: Date.today)
     @portfolio.sell('AAPL', shares: 10, price: 160.0, date: Date.today)

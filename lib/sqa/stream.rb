@@ -33,9 +33,16 @@
 
 module SQA
   class Stream
+    # Price points required before strategies run; window_size must be at least this.
+    MIN_DATA_POINTS = 30
+
     attr_reader :ticker, :window_size, :strategies, :data_buffer, :indicator_cache
 
     def initialize(ticker:, window_size: 100, strategies: [])
+      if window_size < MIN_DATA_POINTS
+        raise ArgumentError, "window_size must be at least #{MIN_DATA_POINTS} (got #{window_size})"
+      end
+
       @ticker = ticker
       @window_size = window_size
       @strategies = Array(strategies)
@@ -206,7 +213,7 @@ module SQA
 
     # Check if we have enough data to run strategies
     def sufficient_data?
-      @data_buffer[:prices].size >= 30 # Minimum data points
+      @data_buffer[:prices].size >= MIN_DATA_POINTS
     end
 
     # Trim buffers to maintain window size
@@ -277,8 +284,8 @@ module SQA
         sma: lazy_indicator(:sma, prices, period: 20),
         ema: lazy_indicator(:ema, prices, period: 20),
         macd: lazy_indicator(:macd, prices),
-        stoch_k: lazy_indicator(:stoch, highs, lows, prices, &:first),
-        stoch_d: lazy_indicator(:stoch, highs, lows, prices, &:last),
+        stoch_k: lazy_indicator(:stoch, prices, volumes, highs, lows, &:first),
+        stoch_d: lazy_indicator(:stoch, prices, volumes, highs, lows, &:last),
         bb_upper: lazy_indicator(:bbands, prices, &:first),
         bb_middle: lazy_indicator(:bbands, prices) { |r| r[1] },
         bb_lower: lazy_indicator(:bbands, prices) { |r| r[2] }

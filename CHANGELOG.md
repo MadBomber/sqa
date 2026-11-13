@@ -43,6 +43,9 @@
   to back the new stores (b185b83).
 
 ### Fixed
+- `SQA::RiskManager.sortino_ratio` now averages squared downside returns over
+  all periods (the standard downside deviation) instead of only the losing
+  periods. Reported Sortino ratios are higher than before (#67).
 - README examples now match the API: `SQA.config.data_dir =` for a custom
   data directory, `Portfolio#summary` key names, `save_trades_to_csv` and the
   class method `SQA::Portfolio.load_from_csv`, backtest fractions shown as
@@ -70,6 +73,9 @@
   (89e02af).
 - `sqa-console` crashed on Ruby 4.0+ with `cannot load such file -- irb`,
   because irb is no longer a default gem; `irb` is now a runtime dependency.
+- `SQA::PatternMatcher#cluster_patterns` moved every empty cluster onto
+  cluster 0's previous centroid, so k-means could lose clusters; each empty
+  cluster now keeps its own previous centroid.
 
 ### CI
 - GitHub Actions runs `bundle exec rake test` on Ruby 3.4 and 4.0 for pushes and pull requests to `develop` and `main`.
