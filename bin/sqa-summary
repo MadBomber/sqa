@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-# bin/sqa-summary.rb
+# bin/sqa-summary
 #
 # Summarizes the two SQA databases: sqa.db (market data) and portfolio.db
 # (portfolios, trades, positions).
@@ -11,9 +11,9 @@
 # be the thing that brings a database into being.
 #
 # @example
-#   bin/sqa-summary.rb
-#   bin/sqa-summary.rb --verbose
-#   bin/sqa-summary.rb --data-dir ~/other_data --json
+#   bin/sqa-summary
+#   bin/sqa-summary --verbose
+#   bin/sqa-summary --data-dir ~/other_data --json
 
 # Only set up Bundler when run as a CLI. The test suite `load`s this file
 # inside an already-bundled process, where a second bundler/setup would
@@ -305,7 +305,7 @@ def parse_summary_options(argv)
 
   OptionParser.new do |parser|
     parser.banner = <<~BANNER
-      Usage: sqa-summary.rb [options]
+      Usage: sqa-summary [options]
 
       Summarizes the SQA market (sqa.db) and portfolio (portfolio.db) databases.
       Read-only: it will not create a database that does not already exist.

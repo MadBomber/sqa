@@ -76,6 +76,8 @@
 - `SQA::PatternMatcher#cluster_patterns` moved every empty cluster onto
   cluster 0's previous centroid, so k-means could lose clusters; each empty
   cluster now keeps its own previous centroid.
+- `bin/sqa-summary --help` and its header comments now use the script's
+  current name instead of the old `sqa-summary.rb` (#82).
 
 ### CI
 - GitHub Actions runs `bundle exec rake test` on Ruby 3.4 and 4.0 for pushes and pull requests to `develop` and `main`.
