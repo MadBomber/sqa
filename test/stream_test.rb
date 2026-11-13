@@ -11,6 +11,25 @@ class StreamTest < Minitest::Test
     assert_empty @stream.strategies
   end
 
+  def test_rejects_window_size_below_minimum
+    error = assert_raises(ArgumentError) do
+      SQA::Stream.new(ticker: 'AAPL', window_size: SQA::Stream::MIN_DATA_POINTS - 1)
+    end
+
+    assert_match(/at least #{SQA::Stream::MIN_DATA_POINTS}/, error.message)
+  end
+
+  def test_minimum_window_size_emits_signals
+    stream = SQA::Stream.new(ticker: 'AAPL', window_size: SQA::Stream::MIN_DATA_POINTS)
+    signals = []
+    stream.on_signal { |signal, _data| signals << signal }
+    stream.add_strategy(->(_v) { :buy })
+
+    100.times { |i| stream.update(price: 100.0 + i) }
+
+    assert_equal [:buy], signals
+  end
+
   def test_add_strategy
     @stream.add_strategy(SQA::Strategy::RSI)
 
