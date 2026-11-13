@@ -71,6 +71,8 @@
 - Guarded nil indicator values (TA-Lib warmup padding) across the strategies,
   `SQA::StrategyGenerator`, `SQA::Ensemble`, and `SQA::PatternMatcher`
   (89e02af).
+- `sqa-console` crashed on Ruby 4.0+ with `cannot load such file -- irb`,
+  because irb is no longer a default gem; `irb` is now a runtime dependency.
 - `SQA::PatternMatcher#cluster_patterns` moved every empty cluster onto
   cluster 0's previous centroid, so k-means could lose clusters; each empty
   cluster now keeps its own previous centroid.

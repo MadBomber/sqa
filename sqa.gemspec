@@ -42,6 +42,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'csv'  # Required for Ruby 3.4+
   spec.add_dependency 'faraday'
   spec.add_dependency 'hashie'
+  spec.add_dependency 'irb'  # Required for Ruby 4.0+; bin/sqa-console (a shipped executable) starts IRB
   spec.add_dependency 'kbs'
   spec.add_dependency 'lite-statistics'
   spec.add_dependency 'logger'  # Required for Ruby 3.5+; hashie requires 'logger' internally
