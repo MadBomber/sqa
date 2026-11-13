@@ -77,6 +77,10 @@ CHANGELOG.md
 - `SQA::PatternMatcher#cluster_patterns` moved every empty cluster onto
   cluster 0's previous centroid, so k-means could lose clusters; each empty
   cluster now keeps its own previous centroid.
+- `SQA::FPOP.determine_direction` returned `:FLAT` when one delta was
+  exactly zero (e.g. `(0.0, 5.0)`); a window that only rises is now `:UP` and
+  one that only falls is `:DOWN`, so `fpl_analysis` directions change for
+  those bars (#81).
 - `bin/sqa-summary --help` and its header comments now use the script's
   current name instead of the old `sqa-summary.rb` (#82).
 
