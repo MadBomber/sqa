@@ -56,6 +56,14 @@ class RiskManagerTest < Minitest::Test
     assert position <= 2500, "Should not exceed max_fraction * capital"
   end
 
+  def test_kelly_criterion_integer_and_float_inputs_agree
+    int_pos   = SQA::RiskManager.kelly_criterion(win_rate: 0.5, avg_win: 3, avg_loss: 2, capital: 10_000)
+    float_pos = SQA::RiskManager.kelly_criterion(win_rate: 0.5, avg_win: 3.0, avg_loss: 2.0, capital: 10_000)
+
+    assert_in_delta float_pos, int_pos, 1e-9
+    assert int_pos.positive?
+  end
+
   def test_kelly_criterion_with_bad_odds
     position = SQA::RiskManager.kelly_criterion(
       win_rate: 0.40,  # Poor win rate
@@ -119,6 +127,15 @@ class RiskManagerTest < Minitest::Test
 
     assert result[:max_drawdown] <= 0, "Drawdown should be negative"
     assert result[:peak_idx] < result[:trough_idx], "Peak should come before trough"
+  end
+
+  def test_max_drawdown_with_integer_prices
+    result = SQA::RiskManager.max_drawdown([100, 110, 105, 95, 100])
+
+    assert_in_delta(-0.136, result[:max_drawdown], 0.001)
+    assert_equal 1, result[:peak_idx]
+    assert_equal 3, result[:trough_idx]
+    assert_in_delta SQA::RiskManager.max_drawdown([100.0, 110.0, 105.0, 95.0, 100.0])[:max_drawdown], result[:max_drawdown], 1e-12
   end
 
   def test_max_drawdown_with_uptrend
