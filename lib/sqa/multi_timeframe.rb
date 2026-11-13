@@ -104,7 +104,8 @@ module SQA
       higher_data = @timeframes[higher_timeframe]
       higher_prices = higher_data["adj_close_price"].to_a
 
-      higher_trend = if higher_prices.last > higher_prices[-10..].sum / 10.0
+      recent_higher = higher_prices.last(10)
+      higher_trend = if higher_prices.last > recent_higher.sum / recent_higher.size.to_f
                        :up
                      else
                        :down
@@ -180,6 +181,9 @@ module SQA
                              when :macd
                                SQAI.macd(prices, **)
                              end
+      rescue SQA::TAI::InvalidParameterError
+        # Too few bars on this timeframe for the requested period; skip it.
+        next
       end
 
       results
@@ -197,9 +201,10 @@ module SQA
 
       @timeframes.each do |timeframe, data|
         prices = data["adj_close_price"].to_a
-        rsi = SQAI.rsi(prices, period: 14)
+        next if prices.size < 20
 
-        next if prices.size < 20 || rsi.size < 20
+        rsi = SQAI.rsi(prices, period: 14)
+        next if rsi.size < 20
 
         # Compare last 10 periods
         price_trend = prices[-1] > prices[-10]
@@ -371,10 +376,20 @@ module SQA
       OpenStruct.new(
         prices: prices,
         close: prices.last,
-        rsi: SQAI.rsi(prices, period: 14).last,
-        sma_20: SQAI.sma(prices, period: 20).last,
-        ema_12: SQAI.ema(prices, period: 12).last
+        rsi: last_indicator_value(:rsi, prices, period: 14),
+        sma_20: last_indicator_value(:sma, prices, period: 20),
+        ema_12: last_indicator_value(:ema, prices, period: 12)
       )
+    end
+
+    ##
+    # Latest value of an indicator, or nil when the series is shorter than
+    # the indicator's period.
+    #
+    def last_indicator_value(name, prices, **)
+      SQAI.public_send(name, prices, **).last
+    rescue SQA::TAI::InvalidParameterError
+      nil
     end
   end
 end
