@@ -29,9 +29,9 @@ generator = SQA::StrategyGenerator.new(
 # Discover patterns
 patterns = generator.discover_patterns
 
-# Generate strategy from first pattern
-strategy_code = generator.generate_strategy(pattern_index: 0)
-puts strategy_code
+# Generate a strategy (a callable returning :buy or :hold) from the first pattern
+strategy = generator.generate_strategy(pattern_index: 0)
+signal = strategy.call(vector)
 ```
 
 ## Configuration
@@ -40,10 +40,13 @@ puts strategy_code
 generator = SQA::StrategyGenerator.new(
   stock: stock,
   min_gain_percent: 10.0,      # Minimum profit required
-  max_loss_percent: -5.0,       # Maximum acceptable loss
-  fpop: 10,                     # Future periods to analyze
-  min_support: 3                # Minimum pattern occurrences
+  min_loss_percent: -5.0,      # Loss threshold (defaults to -min_gain_percent)
+  fpop: 10,                    # Future periods to analyze
+  inflection_window: 3         # Window for detecting local min/max
 )
+
+# Minimum pattern occurrences is set when discovering patterns
+patterns = generator.discover_patterns(min_pattern_frequency: 3)
 ```
 
 ## Discovering Patterns
@@ -53,31 +56,31 @@ patterns = generator.discover_patterns
 
 patterns.each_with_index do |pattern, i|
   puts "\nPattern #{i}:"
-  puts "  Support: #{pattern[:support]} occurrences"
-  puts "  Avg Gain: #{pattern[:avg_gain].round(2)}%"
-  puts "  Win Rate: #{pattern[:win_rate].round(2)}%"
-  
+  puts "  Frequency: #{pattern.frequency} occurrences"
+  puts "  Avg Gain: #{pattern.avg_gain.round(2)}%"
+  puts "  Success Rate: #{pattern.success_rate.round(2)}%"
+
   puts "  Conditions:"
-  pattern[:conditions].each do |cond|
-    puts "    - #{cond[:indicator]}: #{cond[:state]}"
+  pattern.conditions.each do |indicator, state|
+    puts "    - #{indicator}: #{state}"
   end
 end
 ```
 
-## Generating Strategy Code
+## Generating Strategies
 
 ```ruby
-strategy_code = generator.generate_strategy(
+# strategy_type: :proc (default), :class, or :kbs
+strategy_class = generator.generate_strategy(
   pattern_index: 0,
-  class_name: 'DiscoveredStrategy'
+  strategy_type: :class
 )
 
-# Save to file
-File.write('lib/sqa/strategy/discovered_strategy.rb', strategy_code)
+# The generated class responds to .trade like the built-in strategies
+signal = strategy_class.trade(vector)
 
-# Load and use
-require_relative 'lib/sqa/strategy/discovered_strategy'
-signal = SQA::Strategy::DiscoveredStrategy.trade(vector)
+# Or generate the top N patterns at once
+strategies = generator.generate_strategies(top_n: 5, strategy_type: :class)
 ```
 
 ## Context-Aware Patterns
@@ -93,7 +96,7 @@ patterns = generator.discover_context_aware_patterns(
 # Patterns include context
 pattern = patterns.first
 puts "Valid in: #{pattern.context.valid_months}"      # => [10, 11, 12]
-puts "Valid regimes: #{pattern.context.valid_regimes}" # => [:bull]
+puts "Market regime: #{pattern.context.market_regime}" # => :bull
 puts "Sector: #{pattern.context.sector}"               # => :technology
 ```
 
@@ -101,17 +104,15 @@ puts "Sector: #{pattern.context.sector}"               # => :technology
 
 ```ruby
 # Prevent overfitting with out-of-sample testing
-validated_patterns = generator.walk_forward_validate(
+result = generator.walk_forward_validate(
   train_size: 250,  # Training period (days)
-  test_size: 60     # Testing period (days)
+  test_size: 60,    # Testing period (days)
+  step_size: 30     # Days to step forward each iteration
 )
 
-validated_patterns.each do |result|
-  puts "Pattern #{result[:pattern_index]}:"
-  puts "  Train Return: #{result[:train_return]}%"
-  puts "  Test Return: #{result[:test_return]}%"
-  puts "  Robust: #{result[:robust]}"  # true if test performance acceptable
-end
+puts "Iterations: #{result[:total_iterations]}"
+puts "Validated patterns: #{result[:validated_patterns].size}"
+result[:validation_results]  # per-iteration out-of-sample results
 ```
 
 ## Example Output

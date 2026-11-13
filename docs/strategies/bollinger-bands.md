@@ -69,7 +69,7 @@ puts "Signal: #{signal}"  # => :buy, :sell, or :hold
 backtest = SQA::Backtest.new(
   stock: stock,
   strategy: SQA::Strategy::BollingerBands,
-  initial_cash: 10_000
+  initial_capital: 10_000
 )
 
 results = backtest.run

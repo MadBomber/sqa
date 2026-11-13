@@ -82,7 +82,7 @@ stock = SQA::Stock.new(ticker: 'AAPL')
 backtest = SQA::Backtest.new(
   stock: stock,
   strategy: SQA::Strategy::RSI,
-  initial_cash: 10_000.0,
+  initial_capital: 10_000.0,
   commission: 1.0  # $1 per trade
 )
 
@@ -197,7 +197,7 @@ SQAI.sma(prices, period: 50)
 SQAI.methods.grep(/^[a-z]/).sort
 
 # Try different strategies
-SQA::Strategy.descendants  # List all strategy classes
+SQA::Strategy.new.available  # List all strategy classes
 ```
 
 ## Next Steps
