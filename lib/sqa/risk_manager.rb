@@ -117,7 +117,7 @@ module SQA
         return 0.0 if avg_loss.zero? || win_rate >= 1.0 || win_rate <= 0.0
 
         lose_rate = 1.0 - win_rate
-        win_loss_ratio = avg_win / avg_loss
+        win_loss_ratio = avg_win.fdiv(avg_loss)
 
         # Kelly formula
         kelly_fraction = ((win_rate * win_loss_ratio) - lose_rate) / win_loss_ratio
@@ -236,7 +236,7 @@ module SQA
             running_peak_idx = idx
           end
 
-          drawdown = (price - running_peak) / running_peak
+          drawdown = (price - running_peak).fdiv(running_peak)
           next unless drawdown < max_dd
           max_dd = drawdown
           peak_idx = running_peak_idx
