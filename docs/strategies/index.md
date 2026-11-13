@@ -68,7 +68,7 @@ signal = SQA::Strategy::RSI.trade(vector)
 backtest = SQA::Backtest.new(
   stock: stock,
   strategy: SQA::Strategy::MACD,
-  initial_cash: 10_000
+  initial_capital: 10_000
 )
 
 results = backtest.run

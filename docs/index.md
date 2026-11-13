@@ -77,7 +77,7 @@ signal = SQA::Strategy::RSI.trade(vector)  # => :buy, :sell, or :hold
 backtest = SQA::Backtest.new(
   stock: stock,
   strategy: SQA::Strategy::RSI,
-  initial_cash: 10_000
+  initial_capital: 10_000
 )
 results = backtest.run
 

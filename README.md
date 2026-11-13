@@ -394,8 +394,8 @@ puts "Total Trades: #{results.total_trades}"
 puts "Win Rate: #{(results.win_rate * 100).round(2)}%"
 puts "Profit Factor: #{results.profit_factor.round(2)}"
 
-# Access equity curve for charting
-results.equity_curve  #=> Array of portfolio values over time
+# Access equity curve for charting (on the backtest, not the results)
+backtest.equity_curve  #=> Array of { date:, value:, price: } hashes over time
 ```
 
 ### Strategy Generator
@@ -412,7 +412,7 @@ stock = SQA::Stock.new(ticker: 'AAPL')
 generator = SQA::StrategyGenerator.new(
   stock: stock,
   min_gain_percent: 10.0,    # Find trades with ≥10% gain
-  holding_period: (5..20)    # Within 5-20 days
+  fpop: 10                   # Within the next 10 periods
 )
 
 # Discover patterns

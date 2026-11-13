@@ -431,13 +431,13 @@ Simulate strategies on historical data.
 
 ### Constructor
 
-#### `SQA::Backtest.new(stock:, strategy:, initial_cash: 10_000, commission: 0.0)`
+#### `SQA::Backtest.new(stock:, strategy:, initial_capital: 10_000, commission: 0.0)`
 
 ```ruby
 backtest = SQA::Backtest.new(
   stock: stock,
   strategy: SQA::Strategy::RSI,
-  initial_cash: 10_000,
+  initial_capital: 10_000,
   commission: 1.0
 )
 ```
