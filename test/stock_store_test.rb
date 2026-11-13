@@ -197,6 +197,16 @@ class StockStoreTest < Minitest::Test
     assert_equal 2, @store.price_count('aapl'), 'a second load must not duplicate adopted rows'
   end
 
+  def test_builds_a_stock_for_every_price_source
+    seed_prices
+
+    %i[alpha_vantage fmp stooq yahoo_finance].each do |source|
+      s = stock(source:)
+
+      assert_equal SQA::DataFrame::YahooFinance::TRANSFORMERS, s.transformers, source.to_s
+    end
+  end
+
   #############################################
   ## Failure
 

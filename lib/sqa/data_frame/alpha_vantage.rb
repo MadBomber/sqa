@@ -25,14 +25,7 @@ class SQA::DataFrame
 
     # Transformers applied AFTER column renaming
     # Alpha Vantage CSV doesn't have adjusted_close, so we only transform what exists
-    TRANSFORMERS  = {
-      HEADERS[1] => ->(v) { v.to_f.round(3) },  # :open_price
-      HEADERS[2] => ->(v) { v.to_f.round(3) },  # :high_price
-      HEADERS[3] => ->(v) { v.to_f.round(3) },  # :low_price
-      HEADERS[4] => ->(v) { v.to_f.round(3) },  # :close_price
-      # HEADERS[5] - :adj_close_price doesn't exist in Alpha Vantage CSV
-      HEADERS[6] => lambda(&:to_i)            # :volume
-    }.freeze
+    TRANSFORMERS  = YahooFinance::TRANSFORMERS
 
     ################################################################
 
