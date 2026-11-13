@@ -153,6 +153,32 @@ class StreamTest < Minitest::Test
     assert_equal 10, @stream.data_buffer[:prices].size
   end
 
+  def feed_ohlcv(stream, count = 60)
+    count.times do |i|
+      price = 100 + Math.sin(i / 3.0) * 5
+      stream.update(price: price, volume: 1000 + i * 10, high: price + 1, low: price - 1)
+    end
+  end
+
+  def test_vector_includes_stochastic
+    feed_ohlcv(@stream)
+    vector = @stream.send(:build_vector)
+
+    assert_instance_of Array, vector.stoch_k
+    assert_instance_of Array, vector.stoch_d
+  end
+
+  def test_stream_vector_yields_kbs_volume_and_stochastic_facts
+    feed_ohlcv(@stream)
+    vector = @stream.send(:build_vector)
+
+    kbs = SQA::Strategy::KBS.new(load_defaults: false)
+    kbs.send(:assert_market_facts, vector)
+
+    assert_equal 1, kbs.query_facts(:volume).size
+    assert_equal 1, kbs.query_facts(:stochastic).size
+  end
+
   def test_indicator_caching
     30.times { |i| @stream.update(price: 100.0 + i) }
 

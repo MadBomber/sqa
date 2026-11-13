@@ -195,9 +195,12 @@ module SQA
 
       # Volume facts
       def assert_volume_facts(vector)
-        return unless vector.respond_to?(:volume) && vector.volume
+        # SQA::Stream vectors carry :volumes; other callers pass :volume
+        series = vector.volumes if vector.respond_to?(:volumes)
+        series ||= vector.volume if vector.respond_to?(:volume)
+        return unless series
 
-        volumes = Array(vector.volume)
+        volumes = Array(series)
         current_volume = volumes.last
         avg_volume = volumes.last(20).sum / 20.0 if volumes.size >= 20
         return unless avg_volume

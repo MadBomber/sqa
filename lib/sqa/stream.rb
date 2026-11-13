@@ -284,8 +284,8 @@ module SQA
         sma: lazy_indicator(:sma, prices, period: 20),
         ema: lazy_indicator(:ema, prices, period: 20),
         macd: lazy_indicator(:macd, prices),
-        stoch_k: lazy_indicator(:stoch, highs, lows, prices, &:first),
-        stoch_d: lazy_indicator(:stoch, highs, lows, prices, &:last),
+        stoch_k: lazy_indicator(:stoch, prices, volumes, highs, lows, &:first),
+        stoch_d: lazy_indicator(:stoch, prices, volumes, highs, lows, &:last),
         bb_upper: lazy_indicator(:bbands, prices, &:first),
         bb_middle: lazy_indicator(:bbands, prices) { |r| r[1] },
         bb_lower: lazy_indicator(:bbands, prices) { |r| r[2] }
