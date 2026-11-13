@@ -122,7 +122,7 @@ module SQA
 
       # Simple k-means clustering: iterate until convergence
       10.times do
-        clusters = assign_patterns_to_clusters(patterns, centroids, num_clusters)
+        clusters = assign_patterns_to_clusters(patterns, centroids, centroids.size)
         centroids = update_cluster_centroids(clusters, centroids, pattern_length)
       end
 
@@ -200,8 +200,8 @@ module SQA
     # members; empty clusters keep their previous centroid.
     #
     def update_cluster_centroids(clusters, previous_centroids, pattern_length)
-      clusters.map do |cluster|
-        next previous_centroids[0] if cluster.empty?
+      clusters.map.with_index do |cluster, idx|
+        next previous_centroids[idx] if cluster.empty?
 
         pattern_length.times.map do |i|
           cluster.map { |p| p[:pattern][i] }.sum / cluster.size.to_f
