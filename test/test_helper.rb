@@ -4,13 +4,13 @@ $LOAD_PATH.unshift File.expand_path('../lib', __dir__)
 
 require 'simplecov'
 SimpleCov.start do
-  add_filter '/test/'
+  skip '/test/'
 
-  add_group 'Strategies', 'lib/sqa/strategy'
-  add_group 'DataFrame', 'lib/sqa/data_frame'
-  add_group 'Indicators', 'lib/sqa/indicator'
-  add_group 'API', 'lib/api'
-  add_group 'Core', 'lib/sqa'
+  group 'Strategies', 'lib/sqa/strategy'
+  group 'DataFrame', 'lib/sqa/data_frame'
+  group 'Indicators', 'lib/sqa/indicator'
+  group 'API', 'lib/api'
+  group 'Core', 'lib/sqa'
 end
 
 require 'sqa'
