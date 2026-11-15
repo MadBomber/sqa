@@ -43,6 +43,7 @@
   to back the new stores (b185b83).
 
 ### Fixed
+- `SQA::Stock.new` raises `SQA::BadParameterError` listing `SOURCES` for an unknown `source:` instead of a `NameError`.
 CHANGELOG.md
 - `SQA::RiskManager.sortino_ratio` now averages squared downside returns over
   all periods (the standard downside deviation) instead of only the losing
