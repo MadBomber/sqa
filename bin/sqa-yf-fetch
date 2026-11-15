@@ -31,6 +31,7 @@
 # a handful of tickers, not thousands.
 
 require 'optparse'
+require 'shellwords'
 
 begin
   require 'ferrum'
@@ -164,13 +165,14 @@ module SQA
       ENV['YF_CRUMB']  = crumb
     end
 
-    # Shell-eval'able export lines.
+    # Shell-eval'able export lines. Each value is quoted with Shellwords so
+    # eval sets it to exactly what Yahoo returned.
     #
     # @return [String]
     def to_shell
       <<~SHELL
-        export YF_COOKIE=#{cookie.inspect}
-        export YF_CRUMB=#{crumb.inspect}
+        export YF_COOKIE=#{Shellwords.escape(cookie)}
+        export YF_CRUMB=#{Shellwords.escape(crumb)}
       SHELL
     end
   end
@@ -353,6 +355,13 @@ def parse_yf_options(argv)
   options
 end
 
+# Where progress lines go. With --print-env, stdout carries only the export
+# lines meant for eval, so progress goes to stderr.
+#
+# @param options [Hash] from parse_yf_options
+# @return [IO]
+def yf_progress_io(options) = options[:print_env] ? $stderr : $stdout
+
 # Adds freshly downloaded tickers to a watchlist at their latest close.
 #
 # Members already present are skipped: `watch` opens a position, and opening
@@ -401,10 +410,12 @@ if $PROGRAM_NAME == __FILE__
     exit 1
   end
 
-  puts "Launching Chrome (#{options[:headful] ? 'headful' : 'headless'}) to acquire a Yahoo session..."
+  status = yf_progress_io(options)
+
+  status.puts "Launching Chrome (#{options[:headful] ? 'headful' : 'headless'}) to acquire a Yahoo session..."
 
   failed = SQA::YahooSession.open(headful: options[:headful]) do |session|
-    puts "  crumb acquired (#{session.crumb.length} chars), #{session.cookie.count(';') + 1} cookies\n\n"
+    status.puts "  crumb acquired (#{session.crumb.length} chars), #{session.cookie.count(';') + 1} cookies\n\n"
 
     if options[:print_env]
       puts session.to_shell
