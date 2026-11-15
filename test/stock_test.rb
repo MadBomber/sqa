@@ -148,6 +148,22 @@ class StockTest < Minitest::Test
     assert_respond_to result, :most_actively_traded
   end
 
+  def test_unknown_source_raises_bad_parameter_error
+    error = assert_raises(SQA::BadParameterError) do
+      SQA::Stock.new(ticker: 'AAPL', source: :typo)
+    end
+    assert_includes error.message, ':typo'
+    SQA::Stock::SOURCES.each { |source| assert_includes error.message, source.to_s }
+  end
+
+  def test_validate_source_accepts_every_known_source
+    SQA::Stock::SOURCES.each do |source|
+      assert_equal source, SQA::Stock.validate_source!(source)
+      assert_equal source, SQA::Stock.validate_source!(source.to_s)
+      assert SQA::DataFrame.const_get(source.to_s.camelize, false).const_defined?(:TRANSFORMERS, false)
+    end
+  end
+
   def test_default_source_is_fmp
     skip "Requires API key and network access" unless ENV['RUN_INTEGRATION_TESTS']
 

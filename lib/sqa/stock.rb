@@ -23,6 +23,9 @@ class SQA::Stock
   # giving up.
   FALLBACK_SOURCE = :yahoo_finance
 
+  # Data sources accepted by .new, each naming an SQA::DataFrame adapter.
+  SOURCES = %i[alpha_vantage fmp stooq yahoo_finance].freeze
+
   # Default Alpha Vantage API URL
   # @return [String] The base URL for Alpha Vantage API
   ALPHA_VANTAGE_URL = "https://www.alphavantage.co".freeze
@@ -63,6 +66,19 @@ class SQA::Stock
     def reset_connection!
       @connection = nil
     end
+
+    # Normalizes a data source and rejects one with no SQA::DataFrame adapter.
+    #
+    # @param source [Symbol, String] The requested data source
+    # @return [Symbol] The source as a Symbol
+    # @raise [SQA::BadParameterError] If source is not one of SOURCES
+    def validate_source!(source)
+      symbol = source.to_s.to_sym
+      return symbol if SOURCES.include?(symbol)
+
+      raise SQA::BadParameterError,
+            "Unknown source #{source.inspect}; expected one of: #{SOURCES.join(', ')}"
+    end
   end
 
   # @!attribute [rw] data
@@ -80,10 +96,11 @@ class SQA::Stock
   # Creates a new Stock instance and loads or fetches its data.
   #
   # @param ticker [String] The stock ticker symbol (e.g., 'AAPL', 'MSFT')
-  # @param source [Symbol] The data source to use (:fmp, :yahoo_finance, or
+  # @param source [Symbol, String] The data source to use, one of SOURCES (:fmp, :yahoo_finance, or
   #   :alpha_vantage; :stooq also exists but stooq.com now requires solving
   #   a JavaScript proof-of-work challenge, so it no longer works from a
   #   plain HTTP client)
+  # @raise [SQA::BadParameterError] If source is not one of SOURCES
   # @raise [SQA::DataFetchError] If data cannot be fetched (from :source or
   #   the FALLBACK_SOURCE) and no cached data exists
   #
@@ -98,7 +115,7 @@ class SQA::Stock
   #   throwaway database.
   def initialize(ticker:, source: :fmp, store: nil)
     @ticker = ticker.downcase
-    @source = source
+    @source = self.class.validate_source!(source)
     @store  = store
     @data   = nil # populated by load_or_create_data below
     @df     = nil # populated by update_dataframe below
@@ -228,7 +245,7 @@ class SQA::Stock
   # @!method exchange
   #   @return [String, nil] The exchange where the stock trades
   # @!method source
-  #   @return [Symbol] The data source (:alpha_vantage or :yahoo_finance)
+  #   @return [Symbol] The data source (one of SOURCES)
   # @!method indicators
   #   @return [Hash] Cached indicator values
   # @!method indicators=(value)

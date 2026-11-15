@@ -320,6 +320,7 @@ end
 3. Implement `self.recent(ticker, **options)` method
 4. Return data in format compatible with Polars::DataFrame
 5. Add mapping for column names if needed
+6. Add `:my_source` to `SQA::Stock::SOURCES` (`SQA::Stock.new` rejects any other source) and define `TRANSFORMERS`
 
 ## Critical Constraints
 
