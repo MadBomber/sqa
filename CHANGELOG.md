@@ -84,6 +84,7 @@ CHANGELOG.md
   those bars (#81).
 - `bin/sqa-summary --help` and its header comments now use the script's
   current name instead of the old `sqa-summary.rb` (#82).
+- `SQA::DataFrame#apply_transformers!` passes an inferred `return_dtype:` to Polars `map_elements`, so loading prices no longer prints a `return_dtype` warning per transformed column (#91).
 
 ### CI
 - GitHub Actions runs `bundle exec rake test` on Ruby 3.4 and 4.0 for pushes and pull requests to `develop` and `main`.
