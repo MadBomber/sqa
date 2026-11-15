@@ -84,6 +84,7 @@ CHANGELOG.md
   those bars (#81).
 - `bin/sqa-summary --help` and its header comments now use the script's
   current name instead of the old `sqa-summary.rb` (#82).
+- `SQA::Portfolio#total_return`, `#profit_loss_percent` and `SQA::PortfolioOptimizer.rebalance`'s `current_weight` returned truncated values when every input was an Integer; they now use float division (#89).
 
 ### CI
 - GitHub Actions runs `bundle exec rake test` on Ruby 3.4 and 4.0 for pushes and pull requests to `develop` and `main`.
