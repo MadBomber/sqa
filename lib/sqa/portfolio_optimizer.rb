@@ -272,7 +272,7 @@ module SQA
             action: shares.positive? ? :buy : :sell,
             shares: shares.abs,
             value: shares * price,
-            current_weight: current_value / total_value,
+            current_weight: current_value.fdiv(total_value),
             target_weight: target_weight
           }
         end

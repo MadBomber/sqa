@@ -84,6 +84,7 @@ CHANGELOG.md
   those bars (#81).
 - `bin/sqa-summary --help` and its header comments now use the script's
   current name instead of the old `sqa-summary.rb` (#82).
+- `SQA::Portfolio#total_return`, `#profit_loss_percent` and `SQA::PortfolioOptimizer.rebalance`'s `current_weight` returned truncated values when every input was an Integer; they now use float division (#89).
 - `SQA::DataFrame#apply_transformers!` passes an inferred `return_dtype:` to Polars `map_elements`, so loading prices no longer prints a `return_dtype` warning per transformed column (#91).
 
 ### CI
