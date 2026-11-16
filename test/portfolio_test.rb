@@ -62,6 +62,14 @@ class PortfolioTest < Minitest::Test
     assert_in_delta 5.0, position.profit_loss_percent(105), 1e-9
   end
 
+  def test_total_return_with_integer_inputs
+    pf = SQA::Portfolio.new(initial_cash: 10_000, commission: 1)
+    pf.buy('X', shares: 10, price: 100)
+
+    assert_in_delta 0.0499, pf.total_return('X' => 150), 1e-9
+    assert_in_delta 4.99, pf.profit_loss_percent('X' => 150), 1e-9
+  end
+
   def test_sell_reduces_position
     @portfolio.buy('AAPL', shares: 20, price: 150.0, date: Date.today)
     @portfolio.sell('AAPL', shares: 10, price: 160.0, date: Date.today)

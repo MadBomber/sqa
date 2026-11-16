@@ -129,4 +129,16 @@ class PortfolioOptimizerTest < Minitest::Test
       assert %i[buy sell].include?(trade[:action])
     end
   end
+
+  def test_rebalance_current_weight_with_integer_values
+    trades = SQA::PortfolioOptimizer.rebalance(
+      current_values: { 'A' => 3000, 'B' => 7000 },
+      target_weights: { 'A' => 0.5, 'B' => 0.5 },
+      total_value: 10_000,
+      prices: { 'A' => 100, 'B' => 70 }
+    )
+
+    assert_in_delta 0.3, trades['A'][:current_weight], 1e-9
+    assert_in_delta 0.7, trades['B'][:current_weight], 1e-9
+  end
 end
