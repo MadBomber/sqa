@@ -3314,8 +3314,7 @@ the result is one element shorter than the price array.</p>
 <li><code>:UP</code> - the price rose during the window and did not fall</li>
 <li><code>:DOWN</code> - the price fell during the window and did not rise</li>
 <li><code>:UNCERTAIN</code> - the price both rose and fell within the window</li>
-<li><code>:FLAT</code> - no clear direction (see <code>SQA::FPOP.determine_direction</code> for the
-  zero-delta edge cases)</li>
+<li><code>:FLAT</code> - the price neither rose nor fell (both deltas are zero)</li>
 </ul>
 <h3 id="quality-filtering">Quality Filtering<a class="headerlink" href="#quality-filtering" title="Permanent link">&para;</a></h3>
 <p><code>filter_by_quality</code> returns the <strong>indices</strong> of the bars that pass every
