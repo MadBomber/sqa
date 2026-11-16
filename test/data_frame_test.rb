@@ -64,6 +64,32 @@ class DataFrameTest < Minitest::Test
     assert_equal transformed_hash, @df.to_h
   end
 
+  def test_apply_transformers_does_not_warn_about_return_dtype
+    df = SQA::DataFrame.new({ 'price' => [nil, '1.5', '2'], 'volume' => %w[10 20 30] })
+    original_verbose = $VERBOSE
+    $VERBOSE = true
+
+    _, err = capture_io do
+      df.apply_transformers!(price: ->(v) { v.to_f }, volume: ->(v) { v.to_i })
+    end
+
+    assert_empty err
+    assert_equal [Polars::Float64, Polars::Int64], df.data.dtypes
+    assert_equal({ price: [nil, 1.5, 2.0], volume: [10, 20, 30] }, df.to_h)
+  ensure
+    $VERBOSE = original_verbose
+  end
+
+  def test_infer_return_dtype
+    series = Polars::Series.new('a', [nil, '3'])
+
+    assert_equal Polars::Float64, SQA::DataFrame.infer_return_dtype(series, ->(v) { v.to_f })
+    assert_equal Polars::Int64, SQA::DataFrame.infer_return_dtype(series, ->(v) { v.to_i })
+    assert_nil SQA::DataFrame.infer_return_dtype(series, ->(v) { v * 2 })
+    assert_nil SQA::DataFrame.infer_return_dtype(series, ->(v) { v.to_sym })
+    assert_nil SQA::DataFrame.infer_return_dtype(Polars::Series.new('b', [nil, nil]), ->(v) { v.to_f })
+  end
+
   def test_to_csv
     require 'tempfile'
     file = Tempfile.new('test.csv')

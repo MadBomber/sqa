@@ -66,8 +66,10 @@ class SQA::DataFrame
   def apply_transformers!(transformers)
     transformers.each do |col, transformer|
       col_name = col.to_s
+      series = @data[col_name]
+      return_dtype = self.class.infer_return_dtype(series, transformer)
       @data = @data.with_columns(
-        @data[col_name].map_elements(&transformer).alias(col_name)
+        series.map_elements(return_dtype: return_dtype, &transformer).alias(col_name)
       )
     end
   end
@@ -277,6 +279,25 @@ class SQA::DataFrame
   # @return [Boolean] true if value matches YYYY-MM-DD format
   def self.is_date?(value)
     value.is_a?(String) && !/\d{4}-\d{2}-\d{2}/.match(value).nil?
+  end
+
+  # Infers the Polars dtype a transformer produces by applying it to the
+  # series' first non-null value. Passing this as +return_dtype:+ silences
+  # Polars' map_elements warning without changing the resulting dtype.
+  # Strings are left to Polars to infer because non-UTF-8 strings (e.g. the
+  # US-ASCII result of Integer#to_s) fail under an explicit String dtype.
+  #
+  # @param series [Polars::Series] Column the transformer will be applied to
+  # @param transformer [Proc] Transformer function
+  # @return [Class, nil] Polars::Float64, Polars::Int64, or nil to let Polars infer
+  def self.infer_return_dtype(series, transformer)
+    sample = series.drop_nulls.to_a.first
+    return nil if sample.nil?
+
+    case transformer.call(sample)
+    when Float   then Polars::Float64
+    when Integer then Polars::Int64
+    end
   end
 
   # Delegates unknown methods to the underlying Polars DataFrame.
