@@ -44,7 +44,6 @@
 
 ### Fixed
 - `SQA::Stock.new` raises `SQA::BadParameterError` listing `SOURCES` for an unknown `source:` instead of a `NameError`.
-CHANGELOG.md
 - `SQA::RiskManager.sortino_ratio` now averages squared downside returns over
   all periods (the standard downside deviation) instead of only the losing
   periods. Reported Sortino ratios are higher than before (#67).
@@ -86,6 +85,16 @@ CHANGELOG.md
   current name instead of the old `sqa-summary.rb` (#82).
 - `SQA::Portfolio#total_return`, `#profit_loss_percent` and `SQA::PortfolioOptimizer.rebalance`'s `current_weight` returned truncated values when every input was an Integer; they now use float division (#89).
 - `SQA::DataFrame#apply_transformers!` passes an inferred `return_dtype:` to Polars `map_elements`, so loading prices no longer prints a `return_dtype` warning per transformed column (#91).
+- `SQA::Config` now coerces `lazy_update` to a Boolean like the other flags (#69).
+- `SQA::Stock.new(source: :yahoo_finance)` works again; `SQA::DataFrame::YahooFinance::TRANSFORMERS` is defined (#70).
+- `SQA::Stream.new` raises `ArgumentError` when `window_size` is below `SQA::Stream::MIN_DATA_POINTS` (30), the minimum strategies need. Callers that passed a smaller window now get an error (#73).
+- `SQA::Strategy::KBS` volume facts and stochastic indicators now work with `SQA::Stream` vectors (`volumes`, and the correct `stoch` argument order) (#74).
+- `SQA::RiskManager.max_drawdown` and `.kelly_criterion` use float division, so Integer inputs no longer truncate. Reported values change for Integer inputs (#75).
+- `SQA::Portfolio` average cost, cost basis on sell, and `Position#profit_loss_percent` use float division. Reported values change for Integer prices (#76).
+- `SQA::MultiTimeframe` handles timeframes with fewer bars than the indicator periods instead of raising (#77).
+
+### Removed
+- Unreferenced `examples/F.csv` sample data file (#71).
 
 ### CI
 - GitHub Actions runs `bundle exec rake test` on Ruby 3.4 and 4.0 for pushes and pull requests to `develop` and `main`.

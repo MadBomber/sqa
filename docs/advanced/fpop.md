@@ -65,8 +65,7 @@ Direction values:
 - `:UP` - the price rose during the window and did not fall
 - `:DOWN` - the price fell during the window and did not rise
 - `:UNCERTAIN` - the price both rose and fell within the window
-- `:FLAT` - no clear direction (see `SQA::FPOP.determine_direction` for the
-  zero-delta edge cases)
+- `:FLAT` - the price neither rose nor fell (both deltas are zero)
 
 ### Quality Filtering
 
