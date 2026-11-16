@@ -83,6 +83,8 @@
   those bars (#81).
 - `bin/sqa-summary --help` and its header comments now use the script's
   current name instead of the old `sqa-summary.rb` (#82).
+- `SQA::Portfolio#total_return`, `#profit_loss_percent` and `SQA::PortfolioOptimizer.rebalance`'s `current_weight` returned truncated values when every input was an Integer; they now use float division (#89).
+- `SQA::DataFrame#apply_transformers!` passes an inferred `return_dtype:` to Polars `map_elements`, so loading prices no longer prints a `return_dtype` warning per transformed column (#91).
 - `SQA::Config` now coerces `lazy_update` to a Boolean like the other flags (#69).
 - `SQA::Stock.new(source: :yahoo_finance)` works again; `SQA::DataFrame::YahooFinance::TRANSFORMERS` is defined (#70).
 - `SQA::Stream.new` raises `ArgumentError` when `window_size` is below `SQA::Stream::MIN_DATA_POINTS` (30), the minimum strategies need. Callers that passed a smaller window now get an error (#73).

@@ -205,7 +205,7 @@ class SQA::Portfolio
   # @return [Float] P&L percentage
   def profit_loss_percent(current_prices = {})
     return 0.0 if @initial_cash.zero?
-    (profit_loss(current_prices) / @initial_cash) * 100.0
+    profit_loss(current_prices).fdiv(@initial_cash) * 100.0
   end
 
   # Calculate total return (including dividends if tracked)
@@ -213,7 +213,7 @@ class SQA::Portfolio
   # @return [Float] Total return as decimal (e.g., 0.15 for 15%)
   def total_return(current_prices = {})
     return 0.0 if @initial_cash.zero?
-    profit_loss(current_prices) / @initial_cash
+    profit_loss(current_prices).fdiv(@initial_cash)
   end
 
   # Get trade history
