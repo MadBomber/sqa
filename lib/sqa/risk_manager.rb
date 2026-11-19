@@ -117,7 +117,7 @@ module SQA
         return 0.0 if avg_loss.zero? || win_rate >= 1.0 || win_rate <= 0.0
 
         lose_rate = 1.0 - win_rate
-        win_loss_ratio = avg_win / avg_loss
+        win_loss_ratio = avg_win.fdiv(avg_loss)
 
         # Kelly formula
         kelly_fraction = ((win_rate * win_loss_ratio) - lose_rate) / win_loss_ratio
@@ -236,7 +236,7 @@ module SQA
             running_peak_idx = idx
           end
 
-          drawdown = (price - running_peak) / running_peak
+          drawdown = (price - running_peak).fdiv(running_peak)
           next unless drawdown < max_dd
           max_dd = drawdown
           peak_idx = running_peak_idx
@@ -296,12 +296,12 @@ module SQA
         excess_returns = returns.map { |r| r - target_return }
         mean_excess = excess_returns.sum / excess_returns.size.to_f
 
-        # Downside deviation (only negative returns)
+        # Downside deviation: squared shortfalls averaged over all periods
         downside_returns = excess_returns.select(&:negative?)
         return Float::INFINITY if downside_returns.empty?
 
         downside_deviation = Math.sqrt(
-          downside_returns.map { |r| r**2 }.sum / downside_returns.size.to_f
+          downside_returns.map { |r| r**2 }.sum / excess_returns.size.to_f
         )
 
         return 0.0 if downside_deviation.zero?
@@ -384,13 +384,14 @@ module SQA
       # Build the summary stats hash (mean/median/percentiles/min/max) from
       # a sorted array of simulated final values.
       def summarize_monte_carlo_results(sorted_final_values)
+        size = sorted_final_values.size
         {
-          mean: sorted_final_values.sum / sorted_final_values.size.to_f,
-          median: sorted_final_values[sorted_final_values.size / 2],
-          percentile_5: sorted_final_values[(sorted_final_values.size * 0.05).floor],
-          percentile_25: sorted_final_values[(sorted_final_values.size * 0.25).floor],
-          percentile_75: sorted_final_values[(sorted_final_values.size * 0.75).floor],
-          percentile_95: sorted_final_values[(sorted_final_values.size * 0.95).floor],
+          mean: sorted_final_values.sum / size.to_f,
+          median: sorted_final_values[size / 2],
+          percentile_5: sorted_final_values[(size * 0.05).floor],
+          percentile_25: sorted_final_values[(size * 0.25).floor],
+          percentile_75: sorted_final_values[(size * 0.75).floor],
+          percentile_95: sorted_final_values[(size * 0.95).floor],
           min: sorted_final_values.first,
           max: sorted_final_values.last,
           all_values: sorted_final_values
@@ -432,8 +433,8 @@ module SQA
           # Box-Muller transform for normal distribution
           u_1 = rand
           u_2 = rand
-          z = Math.sqrt(-2 * Math.log(u_1)) * Math.cos(2 * Math::PI * u_2)
-          mean + (std_dev * z)
+          z_score = Math.sqrt(-2 * Math.log(u_1)) * Math.cos(2 * Math::PI * u_2)
+          mean + (std_dev * z_score)
         end
 
         historical_var(simulated, confidence)

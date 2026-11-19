@@ -11,6 +11,25 @@ class StreamTest < Minitest::Test
     assert_empty @stream.strategies
   end
 
+  def test_rejects_window_size_below_minimum
+    error = assert_raises(ArgumentError) do
+      SQA::Stream.new(ticker: 'AAPL', window_size: SQA::Stream::MIN_DATA_POINTS - 1)
+    end
+
+    assert_match(/at least #{SQA::Stream::MIN_DATA_POINTS}/, error.message)
+  end
+
+  def test_minimum_window_size_emits_signals
+    stream = SQA::Stream.new(ticker: 'AAPL', window_size: SQA::Stream::MIN_DATA_POINTS)
+    signals = []
+    stream.on_signal { |signal, _data| signals << signal }
+    stream.add_strategy(->(_v) { :buy })
+
+    100.times { |i| stream.update(price: 100.0 + i) }
+
+    assert_equal [:buy], signals
+  end
+
   def test_add_strategy
     @stream.add_strategy(SQA::Strategy::RSI)
 
@@ -77,20 +96,24 @@ class StreamTest < Minitest::Test
   def test_on_signal_callback
     signal_called = false
     received_signal = nil
+    received_data = nil
 
-    @stream.on_signal do |signal, _data|
+    @stream.on_signal do |signal, data|
       signal_called = true
       received_signal = signal
+      received_data = data
     end
 
-    # Add strategy
+    # A strategy that always votes :buy drives the consensus away from the
+    # initial :hold signal, so the callback fires when the signal changes.
     @stream.add_strategy(->(_v) { :buy })
 
-    # Need enough data for strategy to run
+    # Feed enough data points to exceed the minimum needed to run strategies.
     35.times { |i| @stream.update(price: 100.0 + i) }
 
-    # Callback might be called if signal changes
-    # (depends on strategy logic)
+    assert signal_called, 'on_signal callback was never invoked'
+    assert_equal :buy, received_signal
+    assert_equal :buy, received_data[:signal]
   end
 
   def test_stats
@@ -128,6 +151,32 @@ class StreamTest < Minitest::Test
     threads.each(&:join)
 
     assert_equal 10, @stream.data_buffer[:prices].size
+  end
+
+  def feed_ohlcv(stream, count = 60)
+    count.times do |i|
+      price = 100 + Math.sin(i / 3.0) * 5
+      stream.update(price: price, volume: 1000 + i * 10, high: price + 1, low: price - 1)
+    end
+  end
+
+  def test_vector_includes_stochastic
+    feed_ohlcv(@stream)
+    vector = @stream.send(:build_vector)
+
+    assert_instance_of Array, vector.stoch_k
+    assert_instance_of Array, vector.stoch_d
+  end
+
+  def test_stream_vector_yields_kbs_volume_and_stochastic_facts
+    feed_ohlcv(@stream)
+    vector = @stream.send(:build_vector)
+
+    kbs = SQA::Strategy::KBS.new(load_defaults: false)
+    kbs.send(:assert_market_facts, vector)
+
+    assert_equal 1, kbs.query_facts(:volume).size
+    assert_equal 1, kbs.query_facts(:stochastic).size
   end
 
   def test_indicator_caching

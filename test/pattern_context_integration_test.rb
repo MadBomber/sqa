@@ -167,7 +167,8 @@ class PatternContextIntegrationTest < Minitest::Test
     # Verify structure
     regimes.each do |regime|
       assert_includes %i[bull bear sideways], regime[:type]
-      assert regime[:start_index] < regime[:end_index]
+      # A regime can legitimately last a single day (start_index == end_index).
+      assert regime[:start_index] <= regime[:end_index]
       assert regime[:duration].positive?
     end
 

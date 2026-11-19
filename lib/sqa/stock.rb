@@ -14,6 +14,18 @@
 class SQA::Stock
   extend Forwardable
 
+  # Fetch source tried when the requested :source's fresh (uncached) fetch
+  # fails and it isn't already this source. Alpha Vantage's free tier is
+  # 25 requests/day (and now caps free-tier history at ~100 trading days),
+  # so :fmp (~250 requests/day, up to ~5 years of history) is the default,
+  # with Yahoo Finance's unofficial API (no key, no official quota, but
+  # liable to its own IP-based rate limiting) as a second attempt before
+  # giving up.
+  FALLBACK_SOURCE = :yahoo_finance
+
+  # Data sources accepted by .new, each naming an SQA::DataFrame adapter.
+  SOURCES = %i[alpha_vantage fmp stooq yahoo_finance].freeze
+
   # Default Alpha Vantage API URL
   # @return [String] The base URL for Alpha Vantage API
   ALPHA_VANTAGE_URL = "https://www.alphavantage.co".freeze
@@ -54,6 +66,19 @@ class SQA::Stock
     def reset_connection!
       @connection = nil
     end
+
+    # Normalizes a data source and rejects one with no SQA::DataFrame adapter.
+    #
+    # @param source [Symbol, String] The requested data source
+    # @return [Symbol] The source as a Symbol
+    # @raise [SQA::BadParameterError] If source is not one of SOURCES
+    def validate_source!(source)
+      symbol = source.to_s.to_sym
+      return symbol if SOURCES.include?(symbol)
+
+      raise SQA::BadParameterError,
+            "Unknown source #{source.inspect}; expected one of: #{SOURCES.join(', ')}"
+    end
   end
 
   # @!attribute [rw] data
@@ -71,22 +96,35 @@ class SQA::Stock
   # Creates a new Stock instance and loads or fetches its data.
   #
   # @param ticker [String] The stock ticker symbol (e.g., 'AAPL', 'MSFT')
-  # @param source [Symbol] The data source to use (:alpha_vantage or :yahoo_finance)
-  # @raise [SQA::DataFetchError] If data cannot be fetched and no cached data exists
+  # @param source [Symbol, String] The data source to use, one of SOURCES (:fmp, :yahoo_finance, or
+  #   :alpha_vantage; :stooq also exists but stooq.com now requires solving
+  #   a JavaScript proof-of-work challenge, so it no longer works from a
+  #   plain HTTP client)
+  # @raise [SQA::BadParameterError] If source is not one of SOURCES
+  # @raise [SQA::DataFetchError] If data cannot be fetched (from :source or
+  #   the FALLBACK_SOURCE) and no cached data exists
   #
   # @example
   #   stock = SQA::Stock.new(ticker: 'AAPL')
   #   stock = SQA::Stock.new(ticker: 'GOOG', source: :yahoo_finance)
   #
-  def initialize(ticker:, source: :alpha_vantage)
+  # @param ticker [String] The stock ticker symbol
+  # @param source [Symbol] The data source to use
+  # @param store [SQA::Store::Market, nil] Persistence layer; defaults to the
+  #   configured `sqa.db`. Injectable so a Stock can be tested against a
+  #   throwaway database.
+  def initialize(ticker:, source: :fmp, store: nil)
     @ticker = ticker.downcase
-    @source = source
+    @source = self.class.validate_source!(source)
+    @store  = store
+    @data   = nil # populated by load_or_create_data below
+    @df     = nil # populated by update_dataframe below
 
-    @data_path = SQA.data_dir + "#{@ticker}.json"
-    @df_path = SQA.data_dir + "#{@ticker}.csv"
-
-    # Validate ticker if validation data is available and cached data doesn't exist
-    if !(@data_path.exist? && @df_path.exist?) && !SQA::Ticker.valid?(ticker) && $VERBOSE
+    # Validate the ticker only when nothing is cached and the result would
+    # actually be reported. $VERBOSE is tested first because SQA::Ticker.valid?
+    # can trigger a download of the ticker universe, and there is no reason to
+    # pay for that to build a warning nobody will see.
+    if $VERBOSE && !cached? && !SQA::Ticker.valid?(ticker)
       warn "Warning: Ticker #{ticker} could not be validated. Proceeding anyway."
     end
 
@@ -97,14 +135,25 @@ class SQA::Stock
     update_dataframe
   end
 
-  # Loads existing data from cache or creates new data structure.
-  # If cached data exists, loads from JSON file. Otherwise creates
-  # minimal structure and attempts to fetch overview from API.
+  # The market store backing this stock.
+  #
+  # @return [SQA::Store::Market]
+  def store = @store ||= SQA::Store.market
+
+  # Whether both metadata and prices are already held for this ticker.
+  #
+  # @return [Boolean]
+  def cached? = store.stock?(@ticker) && store.price_count(@ticker).positive?
+
+  # Loads existing metadata from the store, or creates a minimal structure and
+  # attempts to fetch an overview from the API.
   #
   # @return [void]
   def load_or_create_data
-    if @data_path.exist?
-      @data = SQA::DataFrame::Data.new(JSON.parse(@data_path.read))
+    record = store.stock(@ticker)
+
+    if record
+      @data = SQA::DataFrame::Data.new(record)
     else
       # Create minimal data structure
       create_data
@@ -148,11 +197,45 @@ class SQA::Stock
     warn "Warning: Could not fetch overview data for #{@ticker} (#{e.class}: #{e.message}). Continuing without it."
   end
 
-  # Persists the stock's metadata to a JSON file.
+  # Enriches the stock's overview with company fundamentals from Financial
+  # Modeling Prep (FMP): executives and dividend history that Alpha Vantage's
+  # OVERVIEW doesn't provide, plus name / sector / industry / P/E / market cap.
   #
-  # @return [Integer] Number of bytes written
+  # FMP values are merged into (and take precedence in) the existing overview
+  # Hash, so this composes with whatever Alpha Vantage already populated.
+  # Requires FMP_API_KEY in the environment.
+  #
+  # @param include_executives [Boolean] fetch the executives list (1 API call)
+  # @param include_dividends [Boolean] fetch dividend history (1 API call)
+  # @return [Hash] The merged overview
+  #
+  # @example
+  #   stock = SQA::Stock.new(ticker: 'AAPL')
+  #   stock.merge_fmp_overview
+  #   stock.overview['ceo']          # => "Mr. Timothy D. Cook"
+  #   stock.overview['sector']       # => "Technology"
+  #   stock.overview['executives']   # => [{ "name" => ..., "title" => ... }, ...]
+  #   stock.overview['dividends']    # => [{ "date" => ..., "dividend" => ... }, ...]
+  #
+  def merge_fmp_overview(include_executives: true, include_dividends: true)
+    fmp = SQA::FMP.overview(@ticker,
+                            include_executives: include_executives,
+                            include_dividends:  include_dividends)
+    @data.overview = (@data.overview || {}).merge(fmp)
+  end
+
+  # Persists the stock's metadata to the market store.
+  #
+  # @return [String] The ticker written
   def save_data
-    @data_path.write(@data.to_json)
+    store.save_stock(
+      ticker:     @data.ticker || @ticker,
+      source:     @data.source || @source,
+      name:       @data.name,
+      exchange:   @data.exchange,
+      overview:   @data.overview   || {},
+      indicators: @data.indicators || {}
+    )
   end
 
   # @!method ticker
@@ -162,7 +245,7 @@ class SQA::Stock
   # @!method exchange
   #   @return [String, nil] The exchange where the stock trades
   # @!method source
-  #   @return [Symbol] The data source (:alpha_vantage or :yahoo_finance)
+  #   @return [Symbol] The data source (one of SOURCES)
   # @!method indicators
   #   @return [Hash] Cached indicator values
   # @!method indicators=(value)
@@ -177,56 +260,87 @@ class SQA::Stock
   #
   # @return [void]
   # @raise [SQA::DataFetchError] If data cannot be fetched and no cache exists
+  # Loads price data into {#df} from the store, adopting a legacy CSV or
+  # fetching from the API if the store holds nothing yet.
+  #
+  # The column-renaming and adj_close_price migrations that this method used to
+  # perform on every load are gone: the `prices` table names its columns, so
+  # there is no longer a format to sniff.
+  #
+  # @return [void]
+  # @raise [SQA::DataFetchError] If data cannot be fetched and nothing is cached
   def update_dataframe
-    if @df_path.exist?
-      # Load cached CSV - transformers already applied when data was first fetched
-      # Don't reapply them as columns are already in correct format
-      @df = SQA::DataFrame.load(source: @df_path)
+    rows = stored_or_legacy_rows
 
-      migrated = false
-
-      # Migration 1: Rename old column names to new convention
-      # Old files may have: open, high, low, close
-      # New files should have: open_price, high_price, low_price, close_price
-      if @df.columns.include?("open") && !@df.columns.include?("open_price")
-        old_to_new_mapping = {
-          "open"   => "open_price",
-          "high"   => "high_price",
-          "low"    => "low_price",
-          "close"  => "close_price"
-        }
-        @df.rename_columns!(old_to_new_mapping)
-        migrated = true
-      end
-
-      # Migration 2: Add adj_close_price column if missing (for old cached files)
-      # This ensures compatibility when appending new data that includes this column
-      unless @df.columns.include?("adj_close_price")
-        @df.data = @df.data.with_columns(
-          @df.data["close_price"].alias("adj_close_price")
-        )
-        migrated = true
-      end
-
-      # Save migrated DataFrame to avoid repeating migration
-      @df.to_csv(@df_path) if migrated
-    else
-      # Fetch fresh data from source (applies transformers and mapping)
-      begin
-        @df = @klass.recent(@ticker, full: true)
-        @df.to_csv(@df_path)
-        return
-      rescue StandardError => e
-        # If we can't fetch data, raise a more helpful error
-        raise SQA::DataFetchError.new(
-          "Unable to fetch data for #{@ticker}. Please ensure API key is set or provide cached CSV " \
-          "file at #{@df_path}. Error: #{e.message}",
-          original: e
-        )
-      end
+    if rows.empty?
+      @df = fetch_and_store_prices
+      return
     end
 
+    @df = SQA::DataFrame.from_aofh(rows)
+
     update_dataframe_with_recent_data
+  end
+
+  # Rows already in the store, falling back to a legacy CSV adoption.
+  #
+  # @return [Array<Hash>] Possibly empty
+  def stored_or_legacy_rows
+    rows = store.prices(@ticker)
+    rows.empty? ? adopt_legacy_csv : rows
+  end
+
+  # Adopts a pre-SQLite `<ticker>.csv` from data_dir into the store.
+  #
+  # This is what makes upgrading free: the first run after the store landed
+  # finds the old cache and imports it instead of re-fetching history the user
+  # already had. The source file is read, never modified or removed.
+  #
+  # @return [Array<Hash>] The rows now held, or [] if there was no legacy file
+  def adopt_legacy_csv
+    legacy = SQA.data_dir + "#{@ticker}.csv"
+    return [] unless legacy.exist?
+
+    rows = SQA::Store::Importer.price_rows_from_csv(legacy)
+    return [] if rows.empty?
+
+    persist_prices(rows)
+    verbose_warn "Adopted legacy #{legacy.basename} into the market store"
+
+    store.prices(@ticker)
+  end
+
+  # Fetches full history and writes it to the store.
+  #
+  # @return [SQA::DataFrame]
+  # @raise [SQA::DataFetchError]
+  def fetch_and_store_prices
+    df = fetch_fresh_dataframe
+    persist_prices(df.to_aofh)
+    df
+  rescue StandardError => e
+    raise SQA::DataFetchError.new(
+      "Unable to fetch data for #{@ticker}. Please ensure an API key is set, or import an existing " \
+      "cache with SQA::Store::Importer. Error: #{e.message}",
+      original: e
+    )
+  end
+
+  # Fetches the full price history from @klass (the requested :source),
+  # falling back to FALLBACK_SOURCE if that fails and it isn't already the
+  # source in use. One source's failure (rate limit, missing key, network)
+  # doesn't necessarily mean the other's will too.
+  #
+  # @return [SQA::DataFrame]
+  def fetch_fresh_dataframe
+    @klass.recent(@ticker, full: true)
+  rescue StandardError => e
+    fallback_klass = "SQA::DataFrame::#{FALLBACK_SOURCE.to_s.camelize}".constantize
+    raise if @klass == fallback_klass
+
+    warn "Warning: Could not fetch #{@ticker} from #{@source} (#{e.class}: #{e.message}). " \
+         "Trying #{FALLBACK_SOURCE} instead."
+    fallback_klass.recent(@ticker, full: true)
   end
 
   # Fetches recent data from API and appends to existing DataFrame.
@@ -237,14 +351,15 @@ class SQA::Stock
     return unless should_update?
 
     begin
-      # CSV is sorted ascending (oldest first, TA-Lib compatible), so .last gets the most recent date
+      # Rows are ascending (oldest first, TA-Lib compatible), so .last is the most recent date
       from_date = Date.parse(@df["timestamp"].to_a.last)
       df_2 = @klass.recent(@ticker, from_date: from_date)
 
       if df_2 && df_2.size.positive?
-        # Use concat_and_deduplicate! to prevent duplicate timestamps and maintain ascending sort
-        @df.concat_and_deduplicate!(df_2)
-        @df.to_csv(@df_path)
+        # The (ticker, timestamp) primary key absorbs any overlap with what we
+        # already hold, so no in-memory deduplication is needed first.
+        store.save_prices(@ticker, df_2.to_aofh)
+        @df = SQA::DataFrame.from_aofh(store.prices(@ticker))
       end
     rescue StandardError => e
       # Log warning but don't fail - we have cached data
@@ -253,11 +368,29 @@ class SQA::Stock
     end
   end
 
+  # Writes rows for this ticker, creating the parent stocks row if the price
+  # data arrived before any metadata did.
+  #
+  # @param rows [Array<Hash>]
+  # @return [Integer] Rows written
+  def persist_prices(rows)
+    store.save_stock(ticker: @ticker, source: @source) unless store.stock?(@ticker)
+    store.save_prices(@ticker, rows)
+  end
+
   # @deprecated Use {#update_dataframe} instead. Will be removed in v1.0.0
   # @return [void]
   def update_the_dataframe
-    warn "[SQA DEPRECATION] update_the_dataframe is deprecated; use update_dataframe instead" if $VERBOSE
+    verbose_warn "[SQA DEPRECATION] update_the_dataframe is deprecated; use update_dataframe instead"
     update_dataframe
+  end
+
+  # Emits a warning only when Ruby is running verbose ($VERBOSE / -w).
+  #
+  # @param message [String]
+  # @return [void]
+  def verbose_warn(message)
+    warn message if $VERBOSE
   end
 
   # Determines whether the DataFrame should be updated from the API.
@@ -269,10 +402,11 @@ class SQA::Stock
     # Don't update if we're in lazy update mode
     return false if SQA.config.lazy_update
 
-    # Don't update if we don't have an API key (only relevant for Alpha Vantage)
-    if @source == :alpha_vantage
+    # Don't update if we don't have an API key (only relevant for sources
+    # that require one -- Yahoo Finance doesn't)
+    if %i[alpha_vantage fmp].include?(@source)
       begin
-        SQA.av_api_key
+        @source == :alpha_vantage ? SQA.av_api_key : SQA.fmp_api_key
       rescue SQA::ConfigurationError
         return false
       end
@@ -286,7 +420,7 @@ class SQA::Stock
         return false if last_timestamp >= Date.today
       rescue ArgumentError => e
         # If we can't parse the date, assume we need to update
-        warn "Warning: Could not parse last timestamp for #{@ticker} (#{e.message}). Will attempt update." if $VERBOSE
+        verbose_warn "Warning: Could not parse last timestamp for #{@ticker} (#{e.message}). Will attempt update."
       end
     end
 
@@ -313,7 +447,7 @@ class SQA::Stock
   # @raise [ApiError] If the API returns an error response
   def merge_overview
     temp = JSON.parse(
-      self.class.connection.get("/query?function=OVERVIEW&symbol=#{ticker.upcase}&apikey=#{SQA.av.key}")
+      self.class.connection.get('/query', { 'function' => 'OVERVIEW', 'symbol' => ticker.upcase, 'apikey' => SQA.av.key })
       .to_hash[:body]
     )
 
@@ -350,7 +484,7 @@ class SQA::Stock
     def top
       return @top if @top
 
-      a_hash = JSON.parse(connection.get("/query?function=TOP_GAINERS_LOSERS&apikey=#{SQA.av.key}").to_hash[:body])
+      a_hash = JSON.parse(connection.get('/query', { 'function' => 'TOP_GAINERS_LOSERS', 'apikey' => SQA.av.key }).to_hash[:body])
 
       mash = Hashie::Mash.new(a_hash)
 

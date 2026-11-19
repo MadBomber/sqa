@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-SQA (Simple Qualitative Analysis) is a Ruby library for stock market technical analysis designed for educational purposes. It provides high-performance data structures, trading strategies, and integrates with the `sqa-tai` gem for 150+ technical indicators.
+SQA (Stock Qualitative Analysis) is a Ruby library for stock market technical analysis designed for educational purposes. It provides high-performance data structures, trading strategies, and integrates with the `sqa-tai` gem for 150+ technical indicators.
 
 **Important:** SQA is a **library-only gem** with no CLI functionality. The `sqa-console` executable launches an IRB console for interactive experimentation.
 
@@ -72,7 +72,7 @@ sqa-console        # Launch IRB with SQA library loaded
 
 **Basic Flow:**
 1. Create `SQA::Stock` with ticker symbol
-2. Stock fetches data from Alpha Vantage or Yahoo Finance
+2. Stock fetches data from FMP (default), falling back to Yahoo Finance
 3. Data stored in Polars-based `SQA::DataFrame`
 4. Apply technical indicators via `SQAI` / `SQA::TAI` (from sqa-tai gem)
 5. Execute trading strategies to generate buy/sell/hold signals
@@ -180,22 +180,44 @@ sqa-console        # Launch IRB with SQA library loaded
 
 ### Key Design Patterns
 - **Plugin Architecture**: Strategies are pluggable modules
-- **Data Source Abstraction**: Multiple data providers (Alpha Vantage, Yahoo Finance) with common interface
+- **Data Source Abstraction**: Multiple data providers (FMP, Yahoo Finance, Alpha Vantage) sharing a common `recent(ticker, full:, from_date:)` interface
 - **Delegation Pattern**: DataFrame delegates to Polars for high-performance operations
-- **Configuration Hierarchy**: defaults < environment variables < config file
+- **Configuration Hierarchy** (via `myway_config`): bundled defaults < XDG user config < project config < environment variables < programmatic overrides
 
 ## Important Implementation Notes
 
 ### Data Sources
-- **Alpha Vantage API** requires `AV_API_KEY` or `ALPHAVANTAGE_API_KEY` environment variable
-- **Yahoo Finance** scraping available as fallback (no API, less reliable)
+`SQA::Stock`'s default source is `:fmp`; it auto-falls back to
+`:yahoo_finance` (`SQA::Stock::FALLBACK_SOURCE`) when the primary fresh fetch
+fails. All adapters live in `lib/sqa/data_frame/` and expose
+`self.recent(ticker, full:, from_date:)`; plain daily-OHLCV sources with no
+adjusted close (`Fmp`, `Stooq`) `extend SQA::DataFrame::DailyPriceSource` for
+a shared `.recent` template (they only supply `COMPACT_DAYS` + a private
+`.fetch_dataframe`).
+- **FMP (Financial Modeling Prep)** — default. `FMP_API_KEY` env var, ~250
+  req/day, ~5yr history. Note the class is `SQA::DataFrame::Fmp` (camelized
+  from `:fmp`), distinct from the fundamentals client `SQA::FMP` in
+  `lib/sqa/fmp.rb`.
+- **Yahoo Finance** — fallback, no key. Calls Yahoo's undocumented `chart`
+  JSON API (cookie/crumb handshake; honors `YF_COOKIE`/`YF_CRUMB`). The old
+  HTML-table scraper is gone.
+- **Alpha Vantage** — still supported (`AV_API_KEY`/`ALPHAVANTAGE_API_KEY`)
+  but only 25 req/day; `full: true` is premium-only, so free keys fall back
+  to compact (~100 trading days).
+- **Stooq** — adapter exists but stooq.com now serves a JS proof-of-work bot
+  challenge, so it's unreachable from a plain HTTP client (not selectable).
 - CSV file imports supported for historical data (place in data directory as `ticker.csv`)
 
 ### Configuration
-- Config files: YAML or TOML in `~/.sqa.*`
+Built on the `myway_config` gem (`SQA::Config < MywayConfig::Base`).
+- Schema + defaults: `lib/sqa/config/defaults.yml` (single source of truth)
+- XDG user config: `~/.config/sqa/sqa.yml`; project config: `./config/sqa.yml`
+- Explicit config file (any of YAML/TOML/JSON) still loadable via
+  `config_file=` + `#from_file`; `#dump_file` writes it back out
 - Data directory: `~/sqa_data/` (default, configurable)
-- Environment variables:
-  - `AV_API_KEY` or `ALPHAVANTAGE_API_KEY` - Alpha Vantage API key
+- Environment variables (`SQA_*` prefix, e.g. `SQA_DATA_DIR`), plus:
+  - `FMP_API_KEY` - FMP key (default price source)
+  - `AV_API_KEY` or `ALPHAVANTAGE_API_KEY` - Alpha Vantage key (optional)
   - Custom config via `SQA::Config.new(data_dir: '...')`
 
 ### DataFrame Implementation
@@ -275,7 +297,7 @@ end
 - **Attributes**: ticker, name, exchange, source, indicators, overview
 - **Dual initialization**:
   - From hash: `SQA::DataFrame::Data.new(JSON.parse(json_string))`
-  - From keywords: `SQA::DataFrame::Data.new(ticker: 'AAPL', source: :alpha_vantage, indicators: {})`
+  - From keywords: `SQA::DataFrame::Data.new(ticker: 'AAPL', source: :fmp, indicators: {})`
 - **JSON serialization**: `data.to_json` for persistence
 - **Used by**: `SQA::Stock` to persist metadata in `~/sqa_data/ticker.json`
 - **File location**: `lib/sqa/data_frame/data.rb`
@@ -288,8 +310,8 @@ end
 
 ### API Integration
 - New data sources go in `lib/sqa/data_frame/`
-- Follow existing adapter pattern (see `alpha_vantage.rb` and `yahoo_finance.rb`)
-- Handle rate limiting and errors gracefully
+- Follow existing adapter pattern (see `fmp.rb`, `yahoo_finance.rb`, `alpha_vantage.rb`); for plain daily OHLCV, `extend DailyPriceSource`
+- Handle rate limiting and errors gracefully (raise `ApiError` for source errors so `SQA::Stock`'s fallback can catch them)
 - Return Polars-compatible data structures
 
 ### Adding New Data Sources
@@ -298,6 +320,7 @@ end
 3. Implement `self.recent(ticker, **options)` method
 4. Return data in format compatible with Polars::DataFrame
 5. Add mapping for column names if needed
+6. Add `:my_source` to `SQA::Stock::SOURCES` (`SQA::Stock.new` rejects any other source) and define `TRANSFORMERS`
 
 ## Critical Constraints
 
@@ -325,13 +348,19 @@ lib/
 │   └── string.rb                   # String helpers (camelize, constantize, underscore)
 └── sqa/
     ├── backtest.rb                 # ✨ NEW: Backtesting framework (345 lines)
-    ├── config.rb                   # Configuration management
+    ├── config.rb                   # Configuration management (myway_config-based)
+    ├── config/
+    │   └── defaults.yml            # Bundled config schema + defaults
     ├── data_frame.rb               # Polars DataFrame wrapper
     ├── data_frame/
     │   ├── alpha_vantage.rb        # Alpha Vantage data adapter
+    │   ├── daily_price_source.rb   # Shared .recent template mixin (Fmp/Stooq)
     │   ├── data.rb                 # Stock metadata storage class (93 lines)
-    │   └── yahoo_finance.rb        # Yahoo Finance scraper
+    │   ├── fmp.rb                  # FMP price adapter (default source)
+    │   ├── stooq.rb                # Stooq adapter (blocked by JS bot challenge)
+    │   └── yahoo_finance.rb        # Yahoo Finance chart-JSON adapter (fallback)
     ├── errors.rb                   # Error classes
+    ├── fmp.rb                      # FMP company-fundamentals client (SQA::FMP)
     ├── ensemble.rb                 # ✨ NEW: Strategy combination and voting (358 lines)
     ├── fpop.rb                     # ✨ NEW: Future Period Loss/Profit analysis (243 lines)
     ├── gp.rb                       # ✨ NEW: Genetic programming (259 lines, COMPLETE)
@@ -367,14 +396,18 @@ lib/
     └── version.rb                  # Version constant
 
 examples/
-├── README.md                       # ✨ NEW: Comprehensive examples guide
-├── advanced_features_example.rb    # ✨ NEW: All advanced features demo (396 lines)
-├── fpop_analysis_example.rb        # ✨ NEW: FPL analysis utilities (191 lines)
-├── genetic_programming_example.rb  # ✨ NEW: GP parameter evolution
-├── kbs_strategy_example.rb         # ✨ NEW: RETE rule-based trading
-├── pattern_context_example.rb      # ✨ NEW: Context-aware patterns (280 lines)
-├── realtime_stream_example.rb      # ✨ NEW: Live price processing
-└── strategy_generator_example.rb   # ✨ NEW: Pattern mining
+├── README.md                       # Comprehensive examples guide
+├── 01_basic_usage.rb          # Core API intro: setup, indicators, portfolio, dataframe, backtest
+├── 02_strategy_generator.rb   # Pattern mining
+├── 03_genetic_programming.rb  # GP parameter evolution
+├── 04_kbs_strategy.rb         # RETE rule-based trading
+├── 05_realtime_stream.rb      # Live price processing
+├── 06_fpop_analysis.rb        # FPL analysis utilities (191 lines)
+├── 07_pattern_context.rb      # Context-aware patterns (280 lines)
+├── 08_advanced_features.rb    # All advanced features demo (396 lines)
+├── 09_dividend_quality_screener.rb  # Dividend quality/risk ranking demo
+├── fetch_yahoo_cache.rb        # Chrome-driven (ferrum) fetch helper for #9's Yahoo cache
+└── download_prices.rb          # Chrome-driven bulk/incremental daily-price CSV downloader (Yahoo)
 
 test/
 ├── backtest_test.rb                # ✨ NEW: Backtest tests
@@ -394,6 +427,13 @@ test/
 ├── stream_test.rb                  # ✨ NEW: Stream processor tests
 ├── strategy_generator_test.rb      # ✨ NEW: Strategy generator tests
 ├── data_frame_test.rb              # DataFrame tests
+├── config_test.rb                  # Config (myway_config) tests
+├── fmp_test.rb                     # SQA::FMP fundamentals client tests
+├── data_frame/
+│   ├── alpha_vantage_test.rb       # Alpha Vantage adapter tests
+│   ├── fmp_test.rb                 # Fmp price adapter tests
+│   ├── stooq_test.rb               # Stooq adapter tests
+│   └── yahoo_finance_test.rb       # Yahoo Finance adapter tests
 ├── test_helper.rb                  # Test configuration
 └── indicator/                      # Indicator tests (legacy, may need updates)
 ```
@@ -417,6 +457,8 @@ test/
 4. **Indicators in separate gem**: Technical indicators are in `sqa-tai`, not SQA
 5. **API key format changed**: Use `AV_API_KEY` not `AV_API_KEYS` (singular)
 6. **Strategies need OpenStruct**: Pass data to strategies as OpenStruct with named fields
+7. **Two FMP classes**: `SQA::DataFrame::Fmp` (price history, camelized from `:fmp`) vs `SQA::FMP` (company fundamentals) — different files, different purposes
+8. **Default source is `:fmp`**: needs `FMP_API_KEY`; falls back to Yahoo Finance (no key) automatically on failure
 
 ## Advanced Features Quick Reference
 

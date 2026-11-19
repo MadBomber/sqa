@@ -42,24 +42,26 @@ puts "Kelly Position: $#{position}"
 ### Fixed Fractional
 
 ```ruby
-# Risk fixed % of capital per trade
-position = SQA::RiskManager.fixed_fractional(
+# Risk a fixed fraction of capital per trade (returns the dollar amount at risk)
+risk_amount = SQA::RiskManager.fixed_fractional(
   capital: 10_000,
-  risk_percent: 0.02,    # Risk 2% per trade
-  stop_loss_percent: 0.05 # 5% stop loss
+  risk_fraction: 0.02    # Risk 2% per trade => 200.0
 )
 
-shares = (position / current_price).to_i
+# Size the position so a 5% stop loss loses at most risk_amount
+stop_loss_percent = 0.05
+shares = (risk_amount / (current_price * stop_loss_percent)).floor
 ```
 
 ### Percent Volatility
 
 ```ruby
-# Size based on volatility
-position = SQA::RiskManager.percent_volatility(
+# Size based on recent volatility (returns a number of shares)
+shares = SQA::RiskManager.percent_volatility(
   capital: 10_000,
-  target_volatility: 0.02,  # 2% target vol
-  price_volatility: 0.25     # Stock's 25% annualized vol
+  returns: returns,          # Recent period returns
+  current_price: current_price,
+  target_volatility: 0.15    # 15% annualized target vol
 )
 ```
 
@@ -80,44 +82,41 @@ puts "Sharpe Ratio: #{sharpe.round(2)}"
 
 ```ruby
 # Like Sharpe but only penalizes downside volatility
-sortino = SQA::RiskManager.sortino_ratio(returns, risk_free_rate: 0.02)
+sortino = SQA::RiskManager.sortino_ratio(returns, target_return: 0.0)
 puts "Sortino Ratio: #{sortino.round(2)}"
 ```
 
 ### Calmar Ratio
 
 ```ruby
-# Annual return / Maximum drawdown
-prices = stock.df["adj_close_price"].to_a
-calmar = SQA::RiskManager.calmar_ratio(prices)
+# Annualized return / Maximum drawdown (takes period returns)
+calmar = SQA::RiskManager.calmar_ratio(returns)
 puts "Calmar Ratio: #{calmar.round(2)}"
 ```
 
 ### Maximum Drawdown
 
 ```ruby
-max_dd = SQA::RiskManager.max_drawdown(prices)
-puts "Max Drawdown: #{(max_dd * 100).round(2)}%"
+drawdown = SQA::RiskManager.max_drawdown(prices)
+puts "Max Drawdown: #{(drawdown[:max_drawdown] * 100).round(2)}%"
+# drawdown also includes :peak_idx, :trough_idx, :peak_value, :trough_value
 ```
 
 ## Monte Carlo Simulation
 
 ```ruby
 # Simulate potential outcomes
-simulations = SQA::RiskManager.monte_carlo_simulation(
+simulation = SQA::RiskManager.monte_carlo_simulation(
+  initial_capital: 10_000,
   returns: returns,
-  initial_value: 10_000,
   periods: 252,          # 1 year
-  num_simulations: 1000
+  simulations: 1000
 )
 
-# Analyze results
-outcomes = simulations.map(&:last).sort
-percentile_5 = outcomes[(outcomes.size * 0.05).to_i]
-percentile_95 = outcomes[(outcomes.size * 0.95).to_i]
-
-puts "5th percentile: $#{percentile_5.round(2)}"
-puts "95th percentile: $#{percentile_95.round(2)}"
+# Summary of final portfolio values
+puts "5th percentile: $#{simulation[:percentile_5].round(2)}"
+puts "Median: $#{simulation[:median].round(2)}"
+puts "95th percentile: $#{simulation[:percentile_95].round(2)}"
 ```
 
 ## Complete Example
@@ -137,8 +136,8 @@ class RiskAssessment
       cvar_95: SQA::RiskManager.cvar(@returns, confidence: 0.95),
       sharpe: SQA::RiskManager.sharpe_ratio(@returns),
       sortino: SQA::RiskManager.sortino_ratio(@returns),
-      max_dd: SQA::RiskManager.max_drawdown(@prices),
-      volatility: @returns.standard_deviation
+      max_dd: SQA::RiskManager.max_drawdown(@prices)[:max_drawdown],
+      volatility: volatility
     }
   end
   
@@ -154,8 +153,7 @@ class RiskAssessment
     when :fixed
       SQA::RiskManager.fixed_fractional(
         capital: capital,
-        risk_percent: 0.02,
-        stop_loss_percent: 0.05
+        risk_fraction: 0.02
       )
     end
   end
@@ -166,6 +164,11 @@ class RiskAssessment
     @prices.each_cons(2).map { |a, b| (b - a) / a }
   end
   
+  def volatility
+    mean = @returns.sum / @returns.size
+    Math.sqrt(@returns.sum { |r| (r - mean)**2 } / (@returns.size - 1))
+  end
+
   def calculate_win_rate
     wins = @returns.count { |r| r > 0 }
     wins.to_f / @returns.size

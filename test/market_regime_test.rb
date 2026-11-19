@@ -96,8 +96,12 @@ class MarketRegimeTest < Minitest::Test
 
     regimes.each do |regime|
       assert_includes %i[bull bear sideways], regime[:type]
-      assert regime[:start_index] < regime[:end_index]
-      assert_equal regime[:end_index] - regime[:start_index], regime[:duration]
+      # A regime can legitimately last a single day (start_index == end_index).
+      assert regime[:start_index] <= regime[:end_index]
+      # duration is an inclusive day-count over [start_index, end_index], not
+      # the exclusive index delta -- summed durations across regimes must
+      # equal total days analyzed (see strategy_generator.rb's total_days).
+      assert_equal regime[:end_index] - regime[:start_index] + 1, regime[:duration]
     end
   end
 

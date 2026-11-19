@@ -69,15 +69,15 @@ puts "Signal: #{signal}"  # => :buy, :sell, or :hold
 backtest = SQA::Backtest.new(
   stock: stock,
   strategy: SQA::Strategy::BollingerBands,
-  initial_cash: 10_000
+  initial_capital: 10_000
 )
 
 results = backtest.run
 
-puts "Total Return: #{results.total_return}%"
+puts "Total Return: #{(results.total_return * 100).round(2)}%"
 puts "Sharpe Ratio: #{results.sharpe_ratio}"
-puts "Max Drawdown: #{results.max_drawdown}%"
-puts "Win Rate: #{results.win_rate}%"
+puts "Max Drawdown: #{(results.max_drawdown * 100).round(2)}%"
+puts "Win Rate: #{(results.win_rate * 100).round(2)}%"
 ```
 
 ## Characteristics

@@ -31,7 +31,9 @@
 #
 
 module SQA
-  class StrategyGenerator
+  # Long by breadth: ~20 small, independent indicator-state extractors and
+  # pattern-mining helpers rather than deep logic.
+  class StrategyGenerator # rubocop:disable Metrics/ClassLength
     # Represents a profitable trade opportunity discovered in historical data
     class ProfitablePoint
       attr_accessor :entry_index, :entry_price, :exit_index, :exit_price,
@@ -453,21 +455,24 @@ module SQA
 
     # Step 4: Tag a single pattern with regime/seasonal/sector/discovery-period context
     def tag_pattern_context(pattern, regime_data, seasonal_data, sector)
+      context = pattern.context
+
       if regime_data
-        pattern.context.market_regime = regime_data[:type]
-        pattern.context.volatility_regime = regime_data[:volatility]
+        context.market_regime = regime_data[:type]
+        context.volatility_regime = regime_data[:volatility]
       end
 
       if seasonal_data && seasonal_data[:has_seasonal_pattern]
-        pattern.context.valid_months = seasonal_data[:best_months]
-        pattern.context.valid_quarters = seasonal_data[:best_quarters]
+        context.valid_months = seasonal_data[:best_months]
+        context.valid_quarters = seasonal_data[:best_quarters]
       end
 
-      pattern.context.sector = sector if sector
+      context.sector = sector if sector
 
-      date_column = @stock.df.data.columns.include?("date") ? "date" : "timestamp"
-      dates = @stock.df[date_column].to_a
-      pattern.context.discovered_period = "#{dates.first} to #{dates.last}"
+      df = @stock.df
+      date_column = df.data.columns.include?("date") ? "date" : "timestamp"
+      dates = df[date_column].to_a
+      context.discovered_period = "#{dates.first} to #{dates.last}"
     end
 
     def print_context_aware_summary(patterns)
@@ -534,7 +539,8 @@ module SQA
     # a ProfitablePoint if either the gain or loss threshold is cleared.
     def record_profitable_point_if_any(inflection_idx, prices, fpl_data)
       entry_price = prices[inflection_idx]
-      future_prices = prices[(inflection_idx + 1)..(inflection_idx + @fpop)]
+      future_start = inflection_idx + 1
+      future_prices = prices[future_start..(inflection_idx + @fpop)]
       max_future_price = future_prices.max
       min_future_price = future_prices.min
 
@@ -542,10 +548,10 @@ module SQA
       max_loss_percent = ((min_future_price - entry_price) / entry_price * 100.0)
 
       if max_gain_percent >= @min_gain_percent
-        exit_idx = inflection_idx + 1 + future_prices.index(max_future_price)
+        exit_idx = future_start + future_prices.index(max_future_price)
         append_profitable_point(inflection_idx, entry_price, exit_idx, max_future_price, fpl_data)
       elsif max_loss_percent <= @min_loss_percent
-        exit_idx = inflection_idx + 1 + future_prices.index(min_future_price)
+        exit_idx = future_start + future_prices.index(min_future_price)
         append_profitable_point(inflection_idx, entry_price, exit_idx, min_future_price, fpl_data)
       end
     end
@@ -563,12 +569,15 @@ module SQA
 
     # Print the Step 1 summary report (counts, success rate, FPL quality stats)
     def print_profitable_points_summary(inflection_points, filter_counts)
-      puts "  Inflection points analyzed: #{inflection_points.size}"
+      analyzed = inflection_points.size
+      found    = @profitable_points.size
+
+      puts "  Inflection points analyzed: #{analyzed}"
       puts "  Filtered by risk: #{filter_counts[:risk]}" if @max_fpl_risk
       puts "  Filtered by direction: #{filter_counts[:direction]}" if @required_fpl_directions
-      puts "  Profitable opportunities found: #{@profitable_points.size}"
-      if inflection_points.size.positive?
-        puts "  Success rate: #{(@profitable_points.size.to_f / inflection_points.size * 100).round(2)}%"
+      puts "  Profitable opportunities found: #{found}"
+      if analyzed.positive?
+        puts "  Success rate: #{(found.to_f / analyzed * 100).round(2)}%"
       end
 
       print_fpl_quality_stats
@@ -614,10 +623,11 @@ module SQA
     def analyze_indicator_states
       puts "Step 2: Analyzing indicator states at profitable points..."
 
-      prices = @stock.df["adj_close_price"].to_a
-      volumes = @stock.df["volume"].to_a
-      highs = @stock.df["high_price"].to_a
-      lows = @stock.df["low_price"].to_a
+      df = @stock.df
+      prices = df["adj_close_price"].to_a
+      volumes = df["volume"].to_a
+      highs = df["high_price"].to_a
+      lows = df["low_price"].to_a
 
       # Pre-calculate all indicators for efficiency
       indicator_cache = calculate_all_indicators(prices, volumes, highs, lows)
@@ -631,8 +641,9 @@ module SQA
       puts
     end
 
-    # Calculate all indicators once for efficiency
-    def calculate_all_indicators(prices, volumes, highs, lows)
+    # Calculate all indicators once for efficiency.
+    # _volumes is accepted for call-site symmetry; no cached indicator uses it yet.
+    def calculate_all_indicators(prices, _volumes, highs, lows)
       cache = {}
 
       cache_rsi!(cache, prices)
@@ -719,9 +730,12 @@ module SQA
 
     # RSI state at idx
     def extract_rsi_state(states, idx, cache)
-      return unless cache[:rsi] && idx < cache[:rsi].size
+      rsi_series = cache[:rsi]
+      return unless rsi_series && idx < rsi_series.size
 
-      rsi_val = cache[:rsi][idx]
+      rsi_val = rsi_series[idx]
+      return if rsi_val.nil? # TA-Lib warmup padding
+
       rsi_config = @indicators_config[:rsi]
 
       states[:rsi] = if rsi_val < rsi_config[:oversold]
@@ -736,12 +750,18 @@ module SQA
 
     # MACD crossover/position state at idx
     def extract_macd_state(states, idx, cache)
-      return unless cache[:macd_line] && cache[:macd_signal] && idx >= 1
+      macd_line = cache[:macd_line]
+      macd_signal = cache[:macd_signal]
+      return unless macd_line && macd_signal && idx >= 1
 
-      macd_curr = cache[:macd_line][idx]
-      signal_curr = cache[:macd_signal][idx]
-      macd_prev = cache[:macd_line][idx - 1]
-      signal_prev = cache[:macd_signal][idx - 1]
+      macd_curr = macd_line[idx]
+      signal_curr = macd_signal[idx]
+      macd_prev = macd_line[idx - 1]
+      signal_prev = macd_signal[idx - 1]
+
+      # TA-Lib pads the warmup period (and out-of-range indices) with nil;
+      # skip the MACD state until all four values are present.
+      return if macd_curr.nil? || signal_curr.nil? || macd_prev.nil? || signal_prev.nil?
 
       states[:macd_crossover] = if macd_prev <= signal_prev && macd_curr > signal_curr
                                   :bullish
@@ -755,9 +775,12 @@ module SQA
 
     # Stochastic state at idx
     def extract_stoch_state(states, idx, cache)
-      return unless cache[:stoch_k] && idx < cache[:stoch_k].size
+      stoch_k_series = cache[:stoch_k]
+      return unless stoch_k_series && idx < stoch_k_series.size
 
-      stoch_k_val = cache[:stoch_k][idx]
+      stoch_k_val = stoch_k_series[idx]
+      return if stoch_k_val.nil? # TA-Lib warmup padding
+
       stoch_config = @indicators_config[:stoch]
 
       states[:stoch] = if stoch_k_val < stoch_config[:oversold]
@@ -771,10 +794,13 @@ module SQA
 
     # SMA crossover state at idx
     def extract_sma_cross_state(states, idx, cache)
-      return unless cache[:sma_short] && cache[:sma_long] && idx < cache[:sma_short].size
+      short_series = cache[:sma_short]
+      long_series = cache[:sma_long]
+      return unless short_series && long_series && idx < short_series.size
 
-      sma_short = cache[:sma_short][idx]
-      sma_long = cache[:sma_long][idx]
+      sma_short = short_series[idx]
+      sma_long = long_series[idx]
+      return if sma_short.nil? || sma_long.nil? # TA-Lib warmup padding
 
       states[:sma_cross] = sma_short > sma_long ? :golden : :death
     end
@@ -786,6 +812,7 @@ module SQA
       price = prices[idx]
       upper = cache[:bb_upper][idx]
       lower = cache[:bb_lower][idx]
+      return if upper.nil? || lower.nil? # TA-Lib warmup padding
 
       states[:bb_position] = if price < lower
                                :below_lower
@@ -798,10 +825,12 @@ module SQA
 
     # Price vs EMA state at idx
     def extract_price_vs_ema_state(states, idx, cache, prices)
-      return unless cache[:ema] && idx < cache[:ema].size && idx < prices.size
+      ema_series = cache[:ema]
+      return unless ema_series && idx < ema_series.size && idx < prices.size
 
       price = prices[idx]
-      ema = cache[:ema][idx]
+      ema = ema_series[idx]
+      return if ema.nil? # TA-Lib warmup padding
 
       states[:price_vs_ema] = price > ema ? :above : :below
     end
@@ -967,9 +996,12 @@ module SQA
         subset_df_data[col] = @stock.df[col].to_a[start_idx...end_idx]
       end
 
-      # Create new stock object with subset
+      # Create new stock object with subset. Stock#ticker delegates to
+      # @data (see def_delegators in stock.rb), so @data must be set here --
+      # a raw @ticker ivar is never read and left @data nil, which raised
+      # NoMethodError on every #ticker call against this subset.
       temp_stock = SQA::Stock.allocate
-      temp_stock.instance_variable_set(:@ticker, @stock.ticker)
+      temp_stock.instance_variable_set(:@data, SQA::DataFrame::Data.new(ticker: @stock.ticker, source: @stock.source))
       temp_stock.instance_variable_set(:@df, SQA::DataFrame.new(subset_df_data))
 
       temp_stock

@@ -100,28 +100,33 @@ Expected output:
 
 ## Step 4: Configure API Access (Optional)
 
-To download live stock data, you'll need an Alpha Vantage API key.
+To download live stock data, you'll need an FMP (Financial Modeling Prep)
+API key — the default price source. Yahoo Finance is used as an automatic
+fallback and needs no key.
 
 ### Get API Key
 
-1. Visit [Alpha Vantage](https://www.alphavantage.co/support/#api-key)
-2. Sign up for a free API key
+1. Visit [Financial Modeling Prep](https://site.financialmodelingprep.com/)
+2. Sign up for a free API key (~250 requests/day)
 3. Copy your API key
 
 ### Set Environment Variable
 
 ```bash
 # Temporary (current session)
-export AV_API_KEY="your_api_key_here"
+export FMP_API_KEY="your_api_key_here"
 
 # Permanent (add to ~/.bashrc or ~/.zshrc)
-echo 'export AV_API_KEY="your_api_key_here"' >> ~/.bashrc
+echo 'export FMP_API_KEY="your_api_key_here"' >> ~/.bashrc
 source ~/.bashrc
 ```
 
+Alpha Vantage is still supported via `source: :alpha_vantage`; set
+`AV_API_KEY` (or `ALPHAVANTAGE_API_KEY`) if you want to use it.
+
 ### Alternative: Configuration File
 
-Create `~/.sqa.yml`:
+Create `~/.config/sqa/sqa.yml`:
 
 ```yaml
 data_dir: ~/sqa_data
@@ -129,7 +134,7 @@ debug: false
 verbose: false
 ```
 
-The API key is read from environment variables, not the config file.
+API keys are read from environment variables, not the config file.
 
 ## Troubleshooting
 

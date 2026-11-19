@@ -113,15 +113,17 @@ module SQA
       # @return [Hash] Seasonal context
       #
       def context_for_date(date)
+        month   = date.month
+        quarter = ((month - 1) / 3) + 1
         {
-          month: date.month,
-          quarter: ((date.month - 1) / 3) + 1,
-          month_name: Date::MONTHNAMES[date.month],
-          quarter_name: "Q#{((date.month - 1) / 3) + 1}",
-          is_year_end: [11, 12].include?(date.month),
-          is_year_start: [1, 2].include?(date.month),
-          is_holiday_season: [11, 12].include?(date.month),
-          is_earnings_season: [1, 4, 7, 10].include?(date.month)
+          month: month,
+          quarter: quarter,
+          month_name: Date::MONTHNAMES[month],
+          quarter_name: "Q#{quarter}",
+          is_year_end: [11, 12].include?(month),
+          is_year_start: [1, 2].include?(month),
+          is_holiday_season: [11, 12].include?(month),
+          is_earnings_season: [1, 4, 7, 10].include?(month)
         }
       end
 

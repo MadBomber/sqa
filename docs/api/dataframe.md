@@ -472,11 +472,11 @@ All attributes are read/write accessible via `attr_accessor`:
 - `exchange` (String) - Exchange symbol (NASDAQ, NYSE, etc.)
 - `source` (Symbol) - Data source (`:alpha_vantage`, `:yahoo_finance`)
 - `indicators` (Hash) - Technical indicators configuration
-- `overview` (Hash) - Company overview data from Alpha Vantage
+- `overview` (Hash) - Company overview data (from FMP and/or Alpha Vantage)
 
 ### Instance Methods
 
-#### `.new(data_hash = nil, ticker: nil, name: nil, exchange: nil, source: :alpha_vantage, indicators: {}, overview: {})`
+#### `.new(data_hash = nil, ticker: nil, name: nil, exchange: nil, source: :fmp, indicators: {}, overview: {})`
 
 Dual initialization constructor supporting both hash and keyword arguments.
 
@@ -490,7 +490,7 @@ data = SQA::DataFrame::Data.new(json_data)
 ```ruby
 data = SQA::DataFrame::Data.new(
   ticker: 'AAPL',
-  source: :alpha_vantage,
+  source: :fmp,
   indicators: { rsi: 14, sma: [20, 50] }
 )
 ```
@@ -520,7 +520,7 @@ hash = data.to_h
 #   ticker: 'AAPL',
 #   name: 'Apple Inc.',
 #   exchange: 'NASDAQ',
-#   source: :alpha_vantage,
+#   source: :fmp,
 #   indicators: { rsi: 14 },
 #   overview: { ... }
 # }
@@ -589,7 +589,7 @@ TRANSFORMERS = {
 
 #### `.recent(ticker, full: false, from_date: nil)`
 
-Fetches recent price data from Alpha Vantage API.
+Fetches recent price data from the stock's source (FMP by default).
 
 **Parameters:**
 - `ticker` (String) - Stock symbol
@@ -732,7 +732,7 @@ require 'sqa'
 
 SQA.init
 
-# Load stock (fetches from Alpha Vantage by default)
+# Load stock (fetches from FMP by default, falls back to Yahoo Finance)
 stock = SQA::Stock.new(ticker: 'AAPL')
 
 # Access DataFrame
@@ -1050,7 +1050,7 @@ See `DATAFRAME_ARCHITECTURE_REVIEW.md` for detailed analysis.
 - [FPL Analysis](../advanced/fpop.md) - Future Period Loss/Profit utilities
 - [Technical Indicators](../indicators/index.md) - SQAI/TAI integration
 - [Polars Documentation](https://pola-rs.github.io/polars-book/) - Underlying library
-- [Data Sources](../data-sources/index.md) - Alpha Vantage and Yahoo Finance
+- [Data Sources](../data-sources/index.md) - FMP, Yahoo Finance, and Alpha Vantage
 
 ---
 

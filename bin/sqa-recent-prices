@@ -1,0 +1,226 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+# bin/sqa-recent-prices
+#
+# Reports the most recent price rows (default 30) for every stock held in
+# sqa.db, one table per ticker.
+#
+# Read-only by design, matching bin/sqa-summary: SQLite creates a database
+# file the moment it is opened, so the market path is checked for existence
+# before ever touching it.
+#
+# @example
+#   bin/sqa-recent-prices
+#   bin/sqa-recent-prices --limit 10
+#   bin/sqa-recent-prices --ticker aapl
+#   bin/sqa-recent-prices --no-color
+
+# Only set up Bundler when run as a CLI. The test suite `load`s this file
+# inside an already-bundled process, where a second bundler/setup would
+# re-lock against activated gems and raise Gem::LoadError.
+require 'bundler/setup' if $PROGRAM_NAME == __FILE__
+require 'optparse'
+require_relative '../lib/sqa'
+
+module SQA
+  # Collects the most recent N price rows for every stock in sqa.db.
+  #
+  # Collection and rendering are kept apart, matching {SQA::Summary}: this
+  # class returns plain data and touches no output, so it can be tested
+  # against a throwaway database with no terminal in the loop.
+  class RecentPrices
+    DEFAULT_LIMIT = 30
+
+    # @param data_dir [String, Pathname] Directory holding sqa.db
+    # @param limit [Integer] Number of most-recent rows to keep per ticker
+    # @param ticker [String, nil] Restrict the report to a single ticker
+    def initialize(data_dir: SQA.data_dir, limit: DEFAULT_LIMIT, ticker: nil)
+      @data_dir = Pathname.new(data_dir.to_s).expand_path
+      @limit    = limit
+      @ticker   = ticker&.downcase
+    end
+
+    # @return [Pathname]
+    def market_path = @data_dir + SQA.config.database_filename
+
+    # @return [Array<Hash>] One entry per ticker: { ticker:, name:, source:, rows: }
+    def to_a
+      return [] unless market_path.exist?
+
+      store   = Store::Market.new(market_path)
+      tickers = @ticker ? Array(@ticker).select { |t| store.stock?(t) } : store.stock_tickers
+
+      tickers.map { |ticker| ticker_row(store, ticker) }
+    ensure
+      store&.close
+    end
+
+    private
+
+    def ticker_row(store, ticker)
+      stock = store.stock(ticker)
+
+      {
+        ticker:,
+        name:   stock&.fetch('name', nil),
+        source: stock&.fetch('source', nil),
+        rows:   store.prices(ticker).last(@limit)
+      }
+    end
+  end
+
+  # Renders {RecentPrices} as a pretty per-ticker table report.
+  class RecentPricesReport
+    # A fixed-width format, not TTY::Table: TTY::Table transposes a table
+    # into a column of key/value pairs whenever its natural width (here,
+    # ~90 columns) exceeds the detected terminal width, which an 80-column
+    # terminal hits immediately (see bin/sqa-summary for the same tradeoff).
+    PRICE_FORMAT = '%-10s  %9s  %9s  %9s  %9s  %10s  %13s  %8s'
+
+    # @param tickers [Array<Hash>] Output of {RecentPrices#to_a}
+    # @param color [Boolean] Colorize the per-ticker summary line when true
+    def initialize(tickers, color: $stdout.tty?)
+      @tickers = tickers
+      @color   = color
+    end
+
+    # @return [String]
+    def to_s
+      return "No stocks found in sqa.db.\n" if @tickers.empty?
+
+      @tickers.map { |entry| ticker_section(entry) }.join("\n")
+    end
+
+    private
+
+    def ticker_section(entry)
+      <<~SECTION
+        #{banner(entry)}
+        #{price_table(entry[:rows])}
+        #{summary_line(entry[:rows])}
+      SECTION
+    end
+
+    def banner(entry)
+      title = entry[:name] ? "#{entry[:ticker].upcase}  ·  #{entry[:name]}" : entry[:ticker].upcase
+      title = "#{title}  (source: #{entry[:source]})" if entry[:source]
+      rule  = '═' * title.length
+
+      "#{rule}\n#{title}\n#{rule}"
+    end
+
+    def price_table(rows)
+      return "(no price data)\n" if rows.empty?
+
+      header = format(PRICE_FORMAT, 'Date', 'Open', 'High', 'Low', 'Close', 'Adj Close', 'Volume', 'Chg %')
+      body   = rows.each_with_index.map { |row, i| format(PRICE_FORMAT, *row_cells(row, i.zero? ? nil : rows[i - 1])) }
+      rule   = '─' * header.length
+
+      [rule, header, rule, *body, rule].join("\n")
+    end
+
+    def row_cells(row, prev_row)
+      [
+        row['timestamp'],
+        money(row['open_price']),
+        money(row['high_price']),
+        money(row['low_price']),
+        money(row['close_price']),
+        money(row['adj_close_price']),
+        delimit(row['volume']),
+        change_text(row['close_price'], prev_row&.fetch('close_price', nil))
+      ]
+    end
+
+    def summary_line(rows)
+      return '' if rows.empty?
+
+      first = rows.first
+      last = rows.last
+      period_pct  = pct_change(first['close_price'], last['close_price'])
+
+      "Latest close: $#{money(last['adj_close_price'])}  ·  " \
+        "#{rows.size}-row change: #{colorize(format('%+.2f%%', period_pct), period_pct)}  ·  " \
+        "#{first['timestamp']} → #{last['timestamp']}\n"
+    end
+
+    def change_text(close, prev_close)
+      pct = pct_change(prev_close, close)
+      pct ? format('%+.2f%%', pct) : '—'
+    end
+
+    def pct_change(from, to)
+      return nil unless from && to && !from.zero?
+
+      (to - from) / from * 100.0
+    end
+
+    # Only used outside TTY::Table cells -- the renderer measures column
+    # width on the raw string length, so ANSI escapes inside a cell throw
+    # off alignment. Safe here because summary_line is a plain puts line.
+    def colorize(text, pct)
+      return text unless @color && pct
+
+      code = if pct.positive?
+               32
+             else
+               pct.negative? ? 31 : 37
+             end
+      "\e[#{code}m#{text}\e[0m"
+    end
+
+    def money(value) = value ? format('%.2f', value) : '—'
+
+    def delimit(number) = number.nil? ? '—' : number.to_s.reverse.scan(/\d{1,3}/).join(',').reverse
+  end
+end
+
+#############################################
+## CLI
+
+# Parses command-line options.
+#
+# @param argv [Array<String>]
+# @return [Hash]
+def parse_recent_prices_options(argv)
+  options = { limit: SQA::RecentPrices::DEFAULT_LIMIT, ticker: nil, data_dir: nil, color: $stdout.tty? }
+
+  OptionParser.new do |parser|
+    parser.banner = <<~BANNER
+      Usage: sqa-recent-prices [options]
+
+      Reports the most recent price rows for every stock held in sqa.db.
+      Read-only: it will not create a database that does not already exist.
+
+      Options:
+    BANNER
+
+    parser.on('-l', '--limit N', Integer, "Rows per ticker (default #{SQA::RecentPrices::DEFAULT_LIMIT})") do |n|
+      options[:limit] = n
+    end
+    parser.on('-t', '--ticker SYMBOL', 'Restrict the report to a single ticker') { |t| options[:ticker] = t }
+    parser.on('-d', '--data-dir PATH', 'Directory holding sqa.db')              { |p| options[:data_dir] = p }
+    parser.on('--no-color', 'Disable colored summary lines')                    { options[:color] = false }
+    parser.on('-h', '--help', 'Show this message') do
+      puts parser
+      exit 0
+    end
+  end.parse!(argv)
+
+  options
+end
+
+if $PROGRAM_NAME == __FILE__
+  options = parse_recent_prices_options(ARGV)
+  SQA.init([])
+
+  tickers = SQA::RecentPrices.new(
+    data_dir: options[:data_dir] || SQA.data_dir,
+    limit:    options[:limit],
+    ticker:   options[:ticker]
+  ).to_a
+
+  puts
+  puts SQA::RecentPricesReport.new(tickers, color: options[:color])
+end

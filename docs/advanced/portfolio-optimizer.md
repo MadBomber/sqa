@@ -65,15 +65,18 @@ result = SQA::PortfolioOptimizer.multi_objective(
 ## Rebalancing
 
 ```ruby
-current_weights = [0.5, 0.3, 0.2]
-target_weights = [0.4, 0.4, 0.2]
+current_values = { 'AAPL' => 5_000.0, 'MSFT' => 3_000.0, 'GOOGL' => 2_000.0 }
+target_weights = { 'AAPL' => 0.4, 'MSFT' => 0.4, 'GOOGL' => 0.2 }
+prices         = { 'AAPL' => 150.0, 'MSFT' => 300.0, 'GOOGL' => 100.0 }
 
 trades = SQA::PortfolioOptimizer.rebalance(
-  current_weights: current_weights,
+  current_values: current_values,
   target_weights: target_weights,
-  portfolio_value: 10_000
+  total_value: 10_000.0,
+  prices: prices
 )
 
-# trades => [{ ticker: 'AAPL', shares: -5, value: -750 }, ...]
+# trades => { 'AAPL' => { action: :sell, shares: 7, value: -1050.0, current_weight: 0.5, target_weight: 0.4 },
+#             'MSFT' => { action: :buy, shares: 3, value: 900.0, current_weight: 0.3, target_weight: 0.4 } }
 ```
 

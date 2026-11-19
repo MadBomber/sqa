@@ -1,5 +1,110 @@
 ## [Unreleased]
 
+### Added
+- **FMP (Financial Modeling Prep) price adapter** (`SQA::DataFrame::Fmp`):
+  daily OHLCV history via FMP's `/stable/historical-price-eod/full` endpoint.
+  Free tier allows ~250 requests/day and ~5 years of history (vs Alpha
+  Vantage's 25/day). Reads `FMP_API_KEY` from the environment.
+- **`SQA::DataFrame::DailyPriceSource`** mixin: shared
+  `recent(ticker, full:, from_date:)` template for plain daily-OHLCV sources
+  (extended by both the FMP and Stooq adapters).
+- Automatic **Yahoo Finance fallback** in `SQA::Stock`: if the requested
+  source's fresh fetch fails (rate limit, missing key, network), the stock
+  retries against `SQA::Stock::FALLBACK_SOURCE` (`:yahoo_finance`).
+- Config file loading tests (YAML/JSON/TOML + `~` expansion) are now active
+  — they were previously skipped with an inaccurate "requires write access"
+  reason.
+- **SQLite-backed stores** (`SQA::Store`, `::Store::Market`,
+  `::Store::Portfolio`, `::Store::Importer`): market data and portfolios now
+  persist in `sqa.db` / `portfolio.db` instead of per-ticker CSV/JSON files,
+  with legacy-file adoption on first access, real/simulated/watchlist
+  portfolio kinds, and an indexed `SQA::Ticker` table (b185b83).
+- Price-fetch command-line utilities `bin/sqa-recent-prices`,
+  `bin/sqa-summary`, and `bin/sqa-yf-fetch` (7411d07).
+
+### Changed
+- Alpha Vantage and STOOQ requests now build their query strings from a Faraday params hash, matching the FMP adapter.
+- **`SQA::Stock` default source is now `:fmp`** (was `:alpha_vantage`).
+- **`SQA::DataFrame::YahooFinance` rewritten** to call Yahoo's undocumented
+  `chart` JSON API (cookie/crumb handshake, honoring `YF_COOKIE`/`YF_CRUMB`)
+  instead of scraping the long-removed HTML history table.
+- **Configuration rebuilt on `myway_config`**: `SQA::Config` now subclasses
+  `MywayConfig::Base`, sourcing values (lowest→highest precedence) from
+  bundled defaults (`lib/sqa/config/defaults.yml`) → XDG user config →
+  project config → `SQA_*` env vars → programmatic overrides, while keeping
+  the historical public API (legacy key translation, boolean coercion,
+  `from_file`/`dump_file`).
+- Alpha Vantage adapter now detects free-tier `outputsize=full` premium
+  errors and transparently falls back to compact (~100 trading days).
+- Project renamed from "Simple Qualitative Analysis" to **"Stock Qualitative
+  Analysis"** across the README, docs, examples, and gemspec (7411d07).
+- Dependencies: dropped `alphavantage` and `ruby_llm-mcp`; pinned
+  `sqa-tai ~> 0.4` and `ruby_llm >= 2.0` (7411d07); added `sqlite3 ~> 2.0`
+  to back the new stores (b185b83).
+
+### Fixed
+- `SQA::Stock.new` raises `SQA::BadParameterError` listing `SOURCES` for an unknown `source:` instead of a `NameError`.
+- `SQA::RiskManager.sortino_ratio` now averages squared downside returns over
+  all periods (the standard downside deviation) instead of only the losing
+  periods. Reported Sortino ratios are higher than before (#67).
+- README examples now match the API: `SQA.config.data_dir =` for a custom
+  data directory, `Portfolio#summary` key names, `save_trades_to_csv` and the
+  class method `SQA::Portfolio.load_from_csv`, backtest fractions shown as
+  percentages, and real strategy classes in the market-regime example.
+- `SQA::Backtest` profit factor returned `0.0` (the worst possible value)
+  for a flawless zero-loss backtest; it now returns `Float::INFINITY`
+  (rendered as `∞`).
+- `SQA::GeneticProgram#run_generation` hardcoded a `%` suffix on generic,
+  caller-defined fitness values; removed.
+- `SQA::StrategyGenerator#walk_forward_validate` crashed on every iteration
+  (`NoMethodError` on `#ticker`) because `create_stock_subset` set a dead
+  `@ticker` ivar instead of `@data`; validation now works.
+- `SQA::SectorAnalyzer#discover_sector_patterns` used the block form of
+  `debug_me` with an interpolated string, which raises a `SyntaxError` in
+  the current `debug_me`; switched to the string-argument form.
+- Example scripts: corrected percentage scaling (values stored as 0–1
+  fractions were shown 100× too small), made `06_fpop_analysis.rb`
+  executable, and hardened `07_pattern_context.rb`'s sector step against a
+  failed ticker fetch.
+- `SQA::DataFrame::YahooFinance` now bounds chart requests with an explicit
+  `period1`/`period2` window instead of `range=max`, and `ensure_daily!`
+  rejects Yahoo's silently downsampled weekly/quarterly bars (7838c44).
+- Guarded nil indicator values (TA-Lib warmup padding) across the strategies,
+  `SQA::StrategyGenerator`, `SQA::Ensemble`, and `SQA::PatternMatcher`
+  (89e02af).
+- `sqa-console` crashed on Ruby 4.0+ with `cannot load such file -- irb`,
+  because irb is no longer a default gem; `irb` is now a runtime dependency.
+- `SQA::PatternMatcher#cluster_patterns` moved every empty cluster onto
+  cluster 0's previous centroid, so k-means could lose clusters; each empty
+  cluster now keeps its own previous centroid.
+- `SQA::FPOP.determine_direction` returned `:FLAT` when one delta was
+  exactly zero (e.g. `(0.0, 5.0)`); a window that only rises is now `:UP` and
+  one that only falls is `:DOWN`, so `fpl_analysis` directions change for
+  those bars (#81).
+- `bin/sqa-summary --help` and its header comments now use the script's
+  current name instead of the old `sqa-summary.rb` (#82).
+- `SQA::Portfolio#total_return`, `#profit_loss_percent` and `SQA::PortfolioOptimizer.rebalance`'s `current_weight` returned truncated values when every input was an Integer; they now use float division (#89).
+- `SQA::DataFrame#apply_transformers!` passes an inferred `return_dtype:` to Polars `map_elements`, so loading prices no longer prints a `return_dtype` warning per transformed column (#91).
+- `SQA::Config` now coerces `lazy_update` to a Boolean like the other flags (#69).
+- `SQA::Stock.new(source: :yahoo_finance)` works again; `SQA::DataFrame::YahooFinance::TRANSFORMERS` is defined (#70).
+- `SQA::Stream.new` raises `ArgumentError` when `window_size` is below `SQA::Stream::MIN_DATA_POINTS` (30), the minimum strategies need. Callers that passed a smaller window now get an error (#73).
+- `SQA::Strategy::KBS` volume facts and stochastic indicators now work with `SQA::Stream` vectors (`volumes`, and the correct `stoch` argument order) (#74).
+- `SQA::RiskManager.max_drawdown` and `.kelly_criterion` use float division, so Integer inputs no longer truncate. Reported values change for Integer inputs (#75).
+- `SQA::Portfolio` average cost, cost basis on sell, and `Position#profit_loss_percent` use float division. Reported values change for Integer prices (#76).
+- `SQA::MultiTimeframe` handles timeframes with fewer bars than the indicator periods instead of raising (#77).
+
+### Removed
+- Unreferenced `examples/F.csv` sample data file (#71).
+
+### CI
+- GitHub Actions runs `bundle exec rake test` on Ruby 3.4 and 4.0 for pushes and pull requests to `develop` and `main`.
+
+## [0.1.0] - 2026-09-18
+- Coordinated version bump to v0.1.0 across the SQA workspace.
+
+## [0.3.0] - 2026-07-02
+- Coordinated version bump to v0.3.0 across the SQA workspace.
+
 ## [0.0.39] - 2025-11-24
 
 ### Added

@@ -183,4 +183,21 @@ class PatternMatcherUnitTest < Minitest::Test
 
     assert quality[:trend].negative?, "Downtrend should have negative trend"
   end
+
+  def test_update_cluster_centroids_keeps_each_empty_clusters_own_centroid
+    clusters = [[{ pattern: [1, 1] }], [], []]
+    previous = [[1, 1], [5, 5], [9, 9]]
+
+    centroids = @matcher.send(:update_cluster_centroids, clusters, previous, 2)
+
+    assert_equal [[1.0, 1.0], [5, 5], [9, 9]], centroids
+  end
+
+  def test_cluster_patterns_with_fewer_patterns_than_clusters
+    @matcher.instance_variable_set(:@prices, [1.0, 2.0, 3.0, 4.0, 5.0])
+
+    clusters = @matcher.cluster_patterns(pattern_length: 1, num_clusters: 5)
+
+    assert_equal 4, clusters.sum(&:size)
+  end
 end

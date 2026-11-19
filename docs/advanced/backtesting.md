@@ -16,7 +16,7 @@ stock = SQA::Stock.new(ticker: 'AAPL')
 backtest = SQA::Backtest.new(
   stock: stock,
   strategy: SQA::Strategy::RSI,
-  initial_cash: 10_000,
+  initial_capital: 10_000,
   commission: 1.0
 )
 
@@ -24,10 +24,10 @@ backtest = SQA::Backtest.new(
 results = backtest.run
 
 # View results
-puts "Total Return: #{results.total_return}%"
+puts "Total Return: #{(results.total_return * 100).round(2)}%"
 puts "Sharpe Ratio: #{results.sharpe_ratio}"
-puts "Max Drawdown: #{results.max_drawdown}%"
-puts "Win Rate: #{results.win_rate}%"
+puts "Max Drawdown: #{(results.max_drawdown * 100).round(2)}%"
+puts "Win Rate: #{(results.win_rate * 100).round(2)}%"
 ```
 
 ## Configuration
@@ -38,38 +38,41 @@ puts "Win Rate: #{results.win_rate}%"
 backtest = SQA::Backtest.new(
   stock: stock,                    # SQA::Stock object
   strategy: SQA::Strategy::MACD,   # Strategy class
-  initial_cash: 10_000,            # Starting capital
+  initial_capital: 10_000,         # Starting capital
   commission: 1.0,                 # Per-trade commission
-  position_size: 100               # Shares per trade
+  position_size: :all_cash,        # :all_cash, or a fraction of cash per trade (e.g. 0.5)
+  start_date: '2020-01-01',        # Optional; defaults to the first row
+  end_date: '2023-12-31'           # Optional; defaults to the last row
 )
 ```
 
 ## Results Object
 
-The `backtest.run` method returns a results object with:
+The `backtest.run` method returns a `SQA::Backtest::Results` object with:
 
 ### Return Metrics
-- `total_return` - Total percentage return
+- `total_return` - Total return as a fraction (0.155 = 15.5%)
 - `annualized_return` - Return per year
-- `benchmark_return` - Buy-and-hold comparison
 
 ### Risk Metrics
 - `sharpe_ratio` - Risk-adjusted return
-- `sortino_ratio` - Downside risk-adjusted return
 - `max_drawdown` - Largest peak-to-trough decline
-- `volatility` - Standard deviation of returns
 
 ### Trading Metrics
-- `num_trades` - Total number of trades
-- `win_rate` - Percentage of profitable trades
-- `avg_win` - Average winning trade
-- `avg_loss` - Average losing trade
+- `total_trades` - Total number of trades
+- `winning_trades` / `losing_trades` - Counts of profitable and unprofitable trades
+- `win_rate` - Fraction of profitable trades (0.6 = 60%)
+- `average_win` - Average winning trade
+- `average_loss` - Average losing trade
 - `profit_factor` - Gross profit / gross loss
 
 ### Portfolio Metrics
-- `final_value` - Ending portfolio value
-- `portfolio_value` - Value over time (array)
-- `trades` - Full trade history
+- `initial_capital` / `final_value` - Starting and ending portfolio value
+- `start_date` / `end_date` - Backtest period
+
+The value over time and the trade history live on the backtest itself:
+`backtest.equity_curve` (an array of `{ date:, value:, price: }` hashes) and
+`backtest.portfolio.trades`.
 
 ## Complete Example
 
@@ -88,18 +91,18 @@ strategies.each do |strategy|
   backtest = SQA::Backtest.new(
     stock: stock,
     strategy: strategy,
-    initial_cash: 10_000
+    initial_capital: 10_000
   )
   
   results = backtest.run
   
   puts "\n#{strategy.name} Results:"
   puts "-" * 40
-  puts "Return: #{results.total_return.round(2)}%"
+  puts "Return: #{(results.total_return * 100).round(2)}%"
   puts "Sharpe: #{results.sharpe_ratio.round(2)}"
-  puts "Max DD: #{results.max_drawdown.round(2)}%"
-  puts "Trades: #{results.num_trades}"
-  puts "Win Rate: #{results.win_rate.round(2)}%"
+  puts "Max DD: #{(results.max_drawdown * 100).round(2)}%"
+  puts "Trades: #{results.total_trades}"
+  puts "Win Rate: #{(results.win_rate * 100).round(2)}%"
 end
 ```
 
@@ -109,13 +112,14 @@ end
 
 ```ruby
 # Backtest specific period
-stock = SQA::Stock.new(
-  ticker: 'AAPL',
+stock = SQA::Stock.new(ticker: 'AAPL')
+
+backtest = SQA::Backtest.new(
+  stock: stock,
+  strategy: strategy,
   start_date: '2020-01-01',
   end_date: '2023-12-31'
 )
-
-backtest = SQA::Backtest.new(stock: stock, strategy: strategy)
 results = backtest.run
 ```
 
@@ -125,7 +129,7 @@ results = backtest.run
 # Test different RSI thresholds
 (20..40).step(5).each do |oversold|
   results = test_strategy_with_params(oversold)
-  puts "RSI #{oversold}: Return = #{results.total_return}%"
+  puts "RSI #{oversold}: Return = #{(results.total_return * 100).round(2)}%"
 end
 ```
 
@@ -152,7 +156,7 @@ require 'gruff'
 
 g = Gruff::Line.new
 g.title = "Portfolio Value Over Time"
-g.data("Portfolio", results.portfolio_value)
+g.data("Portfolio", backtest.equity_curve.map { |point| point[:value] })
 g.write('equity_curve.png')
 ```
 
@@ -166,10 +170,13 @@ g.write('equity_curve.png')
 ### 2. Account for Costs
 ```ruby
 backtest = SQA::Backtest.new(
-  commission: 1.0,        # Per trade
-  slippage: 0.001         # 0.1% slippage
+  stock: stock,
+  strategy: strategy,
+  commission: 1.0         # Per trade
 )
 ```
+
+Slippage is not modeled; fold an estimate into `commission` if needed.
 
 ### 3. Avoid Overfitting
 - Use walk-forward analysis
@@ -178,7 +185,10 @@ backtest = SQA::Backtest.new(
 
 ### 4. Compare to Benchmark
 ```ruby
-if results.total_return < results.benchmark_return
+prices = stock.df["adj_close_price"].to_a
+buy_and_hold_return = (prices.last - prices.first) / prices.first
+
+if results.total_return < buy_and_hold_return
   puts "⚠️  Strategy underperforms buy-and-hold"
 end
 ```

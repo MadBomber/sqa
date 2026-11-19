@@ -3,6 +3,11 @@
 require_relative 'test_helper'
 
 class StockTest < Minitest::Test
+  # Don't let a stubbed .top response stay memoized for later tests.
+  def teardown
+    SQA::Stock.reset_top!
+  end
+
   def test_invalid_ticker_raises_error
     assert_raises SQA::DataFetchError do
       SQA::Stock.new(ticker: 'INVALID_TICKER_9999')
@@ -143,11 +148,27 @@ class StockTest < Minitest::Test
     assert_respond_to result, :most_actively_traded
   end
 
-  def test_default_source_is_alpha_vantage
+  def test_unknown_source_raises_bad_parameter_error
+    error = assert_raises(SQA::BadParameterError) do
+      SQA::Stock.new(ticker: 'AAPL', source: :typo)
+    end
+    assert_includes error.message, ':typo'
+    SQA::Stock::SOURCES.each { |source| assert_includes error.message, source.to_s }
+  end
+
+  def test_validate_source_accepts_every_known_source
+    SQA::Stock::SOURCES.each do |source|
+      assert_equal source, SQA::Stock.validate_source!(source)
+      assert_equal source, SQA::Stock.validate_source!(source.to_s)
+      assert SQA::DataFrame.const_get(source.to_s.camelize, false).const_defined?(:TRANSFORMERS, false)
+    end
+  end
+
+  def test_default_source_is_fmp
     skip "Requires API key and network access" unless ENV['RUN_INTEGRATION_TESTS']
 
     stock = SQA::Stock.new(ticker: 'AAPL')
-    assert_equal :alpha_vantage, stock.source
+    assert_equal :fmp, stock.source
   end
 
   def test_connection_constant_exists
@@ -163,7 +184,7 @@ class StockTest < Minitest::Test
 
     # Mock the DataFrame to have yesterday's data
     yesterday = (Date.today - 1).to_s
-    stock.df.data = stock.df.data.with_column(
+    stock.df.data = stock.df.data.with_columns(
       Polars::Series.new("timestamp", [yesterday] * stock.df.size)
     )
 
@@ -178,7 +199,7 @@ class StockTest < Minitest::Test
 
     # Mock the DataFrame to have today's data
     today = Date.today.to_s
-    stock.df.data = stock.df.data.with_column(
+    stock.df.data = stock.df.data.with_columns(
       Polars::Series.new("timestamp", [today] * stock.df.size)
     )
 
@@ -193,7 +214,7 @@ class StockTest < Minitest::Test
 
     # Mock the DataFrame to have tomorrow's data (edge case)
     tomorrow = (Date.today + 1).to_s
-    stock.df.data = stock.df.data.with_column(
+    stock.df.data = stock.df.data.with_columns(
       Polars::Series.new("timestamp", [tomorrow] * stock.df.size)
     )
 
@@ -281,5 +302,33 @@ class StockTest < Minitest::Test
 
   def test_alpha_vantage_url_constant_exists
     assert_equal "https://www.alphavantage.co", SQA::Stock::ALPHA_VANTAGE_URL
+  end
+
+  def test_merge_overview_encodes_symbol_as_a_single_param
+    stock = SQA::Stock.allocate # skip the constructor's store and price fetch
+    stock.data = SQA::DataFrame::Data.new(ticker: 'brk&b#x', source: :alpha_vantage, indicators: {})
+
+    params = with_recorded_av_request('{"Symbol":"BRK&B#X"}') { stock.merge_overview }
+
+    assert_equal({ 'function' => 'OVERVIEW', 'symbol' => 'BRK&B#X', 'apikey' => 'test-key' }, params)
+  end
+
+  def test_top_sends_query_as_separate_params
+    body = '{"top_gainers":[{"ticker":"A","price":"1.0","volume":"10"}],"top_losers":[],"most_actively_traded":[]}'
+
+    SQA::Stock.reset_top! # .top is memoized; make sure this call reaches the connection
+    params = with_recorded_av_request(body) { SQA::Stock.top }
+
+    assert_equal({ 'function' => 'TOP_GAINERS_LOSERS', 'apikey' => 'test-key' }, params)
+  end
+
+  private
+
+  # Runs the block with SQA::Stock talking to a recording connection;
+  # returns the params the first request sent.
+  def with_recorded_av_request(body, &)
+    conn, sent = TestHTTP.recording_connection(SQA::Stock::ALPHA_VANTAGE_URL, body)
+    SQA.stub(:av_api_key, 'test-key') { SQA::Stock.stub(:connection, conn, &) }
+    sent.first
   end
 end

@@ -1,14 +1,15 @@
 #!/usr/bin/env ruby
-# examples/advanced_features_example.rb
+# examples/08_advanced_features.rb
 # frozen_string_literal: true
 
 #####################################################################
 ###
-##  File: advanced_features_example.rb
+##  File: 08_advanced_features.rb
 ##  Desc: Comprehensive examples of advanced SQA features
 ##  By:   Dewayne VanHoozer (dvanhoozer@gmail.com)
 #
 
+require_relative 'local_libs'
 require 'sqa'
 require 'ostruct'
 
@@ -100,7 +101,7 @@ puts "Example 2: Portfolio Optimization"
 puts "-" * 70
 
 # Load multiple stocks
-tickers = ['AAPL', 'MSFT', 'GOOGL']
+tickers = ['AAPL', 'AMZN', 'F']
 stocks = tickers.map { |t| SQA::Stock.new(ticker: t) }
 
 # Get returns for each stock (last 100 days)

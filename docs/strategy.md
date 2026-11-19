@@ -266,11 +266,11 @@ end
 backtest = SQA::Backtest.new(
   stock: stock,
   strategy: SQA::Strategy::AwesomeStrategy,
-  initial_cash: 10_000
+  initial_capital: 10_000
 )
 
 results = backtest.run
-puts "Return: #{results.total_return}%"
+puts "Return: #{(results.total_return * 100).round(2)}%"
 puts "Sharpe: #{results.sharpe_ratio}"
 ```
 

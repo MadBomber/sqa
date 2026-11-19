@@ -94,3 +94,41 @@ class MultiTimeframeTest < Minitest::Test
     assert %i[buy sell hold].include?(confirmation[:consensus])
   end
 end
+
+# Runs without network: a synthetic daily series too short for 14-period
+# indicators on the monthly timeframe.
+class MultiTimeframeShortDataTest < Minitest::Test
+  def setup
+    n = 100
+    prices = Array.new(n) { |i| 100 + (Math.sin(i / 7.0) * 8) + (i * 0.05) }
+    df = SQA::DataFrame.new({ "adj_close_price" => prices, "volume" => Array.new(n, 1_000.0) })
+    @mta = SQA::MultiTimeframe.new(stock: Struct.new(:df).new(df))
+  end
+
+  def test_detect_divergence_skips_short_timeframes
+    divergences = @mta.detect_divergence
+
+    assert divergences.key?(:daily)
+    refute divergences.key?(:monthly)
+  end
+
+  def test_confirmation_with_short_timeframes
+    result = @mta.confirmation(strategy_class: SQA::Strategy::RSI)
+
+    assert_includes %i[buy sell hold], result[:consensus]
+    assert_equal %i[daily weekly monthly], result[:signals].keys
+  end
+
+  def test_indicators_skip_short_timeframes
+    results = @mta.indicators(indicator: :rsi, period: 14)
+
+    assert results.key?(:daily)
+    refute results.key?(:monthly)
+  end
+
+  def test_signal_with_fewer_than_ten_higher_bars
+    signal = @mta.signal(strategy_class: SQA::Strategy::RSI, higher_timeframe: :monthly)
+
+    assert_includes %i[buy sell hold], signal
+  end
+end

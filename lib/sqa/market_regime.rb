@@ -60,11 +60,12 @@ module SQA
       #
       def detect_history(stock, window: 60)
         prices = stock.df["adj_close_price"].to_a
+        size = prices.size
         regimes = []
         current_regime = nil
         regime_start = 0
 
-        (window...prices.size).each do |i|
+        (window...size).each do |i|
           window_prices = prices[(i - window)..i]
           regime_type = detect_trend(window_prices)
           volatility = detect_volatility(window_prices)
@@ -91,8 +92,8 @@ module SQA
           regimes << {
             type: current_regime,
             start_index: regime_start,
-            end_index: prices.size - 1,
-            duration: prices.size - regime_start,
+            end_index: size - 1,
+            duration: size - regime_start,
             volatility: detect_volatility(prices[regime_start..])
           }
         end
@@ -108,9 +109,14 @@ module SQA
       def detect_trend_with_score(prices)
         return { type: :unknown, score: 0.0 } if prices.size < 20
 
-        # Simple moving averages
+        # Simple moving averages. `prices` may be shorter than the nominal
+        # 60-day long window (e.g. detect_history's rolling window), so
+        # divide by the slice actually taken rather than a fixed 60 --
+        # otherwise a short window silently deflates sma_long, biasing
+        # every trend toward :bull.
         sma_short = prices.last(20).sum / 20.0
-        sma_long = prices.last(60).sum / 60.0 rescue sma_short
+        long_window = prices.last(60)
+        sma_long = long_window.sum / long_window.size.to_f
 
         # Price vs moving averages
         current_price = prices.last

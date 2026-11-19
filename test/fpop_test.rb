@@ -68,6 +68,19 @@ class FPOPTest < Minitest::Test
     assert_equal :FLAT, direction
   end
 
+  def test_determine_direction_up_when_price_never_falls
+    assert_equal :UP, SQA::FPOP.determine_direction(0.0, 5.0)
+  end
+
+  def test_determine_direction_down_when_price_never_rises
+    assert_equal :DOWN, SQA::FPOP.determine_direction(-3.0, 0.0)
+  end
+
+  def test_fpl_analysis_direction_up_when_window_starts_flat
+    analysis = SQA::FPOP.fpl_analysis([100, 100, 105], fpop: 2)
+    assert_equal :UP, analysis.first[:direction]
+  end
+
   def test_calculate_magnitude
     magnitude = SQA::FPOP.calculate_magnitude(-5.0, 15.0)
     assert_in_delta 5.0, magnitude, 0.01

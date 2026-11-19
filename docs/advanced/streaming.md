@@ -34,7 +34,9 @@ stream.update(price: 150.50, volume: 1_200_000)
 ## Features
 
 ### Rolling Window
-Maintains recent price/volume history:
+Maintains recent price/volume history. Strategies run only once the window
+holds `SQA::Stream::MIN_DATA_POINTS` (30) prices, so a smaller `window_size`
+raises `ArgumentError`:
 
 ```ruby
 stream = SQA::Stream.new(

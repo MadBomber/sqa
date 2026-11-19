@@ -4,8 +4,39 @@ SQA supports multiple data sources for historical stock price data.
 
 ## Available Data Sources
 
-### Alpha Vantage (Primary)
-Free API with generous limits for historical and real-time data.
+`SQA::Stock` defaults to **FMP** and automatically falls back to **Yahoo
+Finance** if the FMP fetch fails (rate limit, missing key, network). Every
+adapter exposes the same `self.recent(ticker, full:, from_date:)` interface
+and returns data sorted oldest-first for TA-Lib.
+
+### FMP — Financial Modeling Prep (Primary)
+Free API key, ~250 requests/day, up to ~5 years of daily history.
+
+**Setup:**
+```bash
+export FMP_API_KEY="your_key_here"
+```
+
+**Features:**
+- Daily historical OHLCV
+- Much higher free-tier quota than Alpha Vantage (~250/day vs 25/day)
+- No split/dividend-adjusted close — `adj_close_price` mirrors `close_price`
+- API key required (free)
+
+[Get API Key →](https://site.financialmodelingprep.com/)
+
+### Yahoo Finance (Fallback)
+Used automatically when the primary source fails. Calls Yahoo's undocumented
+`chart` JSON API (the same endpoints finance.yahoo.com uses).
+
+**Features:**
+- No API key required
+- Unofficial API — can break if Yahoo changes their site
+- If Yahoo IP-rate-limits the crumb endpoint, set `YF_COOKIE` / `YF_CRUMB`
+  (from a browser session) to bypass the handshake
+
+### Alpha Vantage
+Still supported via `source: :alpha_vantage`, but no longer the default.
 
 **Setup:**
 ```bash
@@ -13,20 +44,16 @@ export AV_API_KEY="your_key_here"
 ```
 
 **Features:**
-- Daily historical data
-- Adjusted closing prices
-- Up to 20 years of history
-- API key required (free)
+- Only 25 requests/day on the free tier
+- Full history (`full: true`) is now premium-only; free keys fall back to
+  ~100 trading days
 
 [Get API Key →](https://www.alphavantage.co/support/#api-key)
 
-### Yahoo Finance (Fallback)
-Web scraping fallback for when Alpha Vantage is unavailable.
-
-**Features:**
-- No API key required
-- Less reliable (web scraping)
-- Good for testing
+### Stooq (not currently usable)
+stooq.com now serves a JavaScript proof-of-work bot challenge on its CSV
+endpoint, so `source: :stooq` cannot be reached by a plain HTTP client. The
+adapter remains in the codebase in case that challenge is lifted.
 
 ### CSV Files (Custom)
 Import your own data from CSV files.

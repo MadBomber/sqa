@@ -217,21 +217,14 @@ end
 
 class StrategyGeneratorContextMethodsTest < Minitest::Test
   def test_discover_context_aware_patterns_exists
-    skip "Requires stock object" unless ENV['RUN_INTEGRATION_TESTS']
-
-    # Just verify method exists
-    generator = Object.new
-    generator.extend(SQA::StrategyGenerator)
-
-    assert_respond_to generator, :discover_context_aware_patterns
+    # SQA::StrategyGenerator is a class (not a module), so it can't be used
+    # with Object#extend to build a stub instance -- check the instance
+    # method directly instead, which needs neither a stock object nor
+    # network access.
+    assert SQA::StrategyGenerator.method_defined?(:discover_context_aware_patterns)
   end
 
   def test_walk_forward_validate_exists
-    skip "Requires stock object" unless ENV['RUN_INTEGRATION_TESTS']
-
-    generator = Object.new
-    generator.extend(SQA::StrategyGenerator)
-
-    assert_respond_to generator, :walk_forward_validate
+    assert SQA::StrategyGenerator.method_defined?(:walk_forward_validate)
   end
 end

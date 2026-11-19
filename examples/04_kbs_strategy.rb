@@ -6,6 +6,7 @@
 # This example shows how to use SQA::Strategy::KBS to create
 # sophisticated rule-based trading systems.
 
+require_relative 'local_libs'
 require 'sqa'
 
 SQA.init
@@ -136,13 +137,13 @@ results = backtest.run
 
 puts "Backtest Results:"
 puts "-" * 60
-puts "Total Return: #{results.total_return.round(2)}%"
-puts "Annualized Return: #{results.annualized_return.round(2)}%"
+puts "Total Return: #{(results.total_return * 100).round(2)}%"
+puts "Annualized Return: #{(results.annualized_return * 100).round(2)}%"
 puts "Sharpe Ratio: #{results.sharpe_ratio.round(2)}"
-puts "Max Drawdown: #{results.max_drawdown.round(2)}%"
+puts "Max Drawdown: #{(results.max_drawdown * 100).round(2)}%"
 puts "Total Trades: #{results.total_trades}"
-puts "Win Rate: #{results.win_rate.round(2)}%"
-puts "Profit Factor: #{results.profit_factor.round(2)}"
+puts "Win Rate: #{(results.win_rate * 100).round(2)}%"
+puts "Profit Factor: #{results.profit_factor.infinite? ? '∞' : results.profit_factor.round(2)}"
 puts
 
 # Example 4: Interactive Rule Building

@@ -216,7 +216,7 @@ end
 backtest = SQA::Backtest.new(
   stock: stock,
   strategy: SQA::Strategy::MyStrategy,
-  initial_cash: 10_000
+  initial_capital: 10_000
 )
 
 results = backtest.run

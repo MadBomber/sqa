@@ -29,7 +29,7 @@ The follow examples are provided:
 
 ## Usage
 
-Tge SQA::Strategy class manages an Array of trading strategies.  You can add to the Array multiple strategies like this:
+The SQA::Strategy class manages an Array of trading strategies.  You can add to the Array multiple strategies like this:
 
 ```ruby
 require 'sqa'

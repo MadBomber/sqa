@@ -1,8 +1,8 @@
-# SQA - Simple Qualitative Analysis
+# SQA - Stock Qualitative Analysis
 
 <div style="display: flex; align-items: flex-start; gap: 2rem; margin-bottom: 2rem;">
   <div style="flex: 0 0 400px;">
-    <img src="assets/images/sqa.jpg" alt="SQA - Simple Qualitative Analysis" style="width: 100%; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+    <img src="assets/images/sqa.jpg" alt="SQA - Stock Qualitative Analysis" style="width: 100%; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
   </div>
   <div style="flex: 1;">
     <h2 style="margin-top: 0;">Key Features</h2>
@@ -25,7 +25,7 @@
 
 ## Welcome to SQA
 
-**SQA (Simple Qualitative Analysis)** is an educational Ruby library designed for stock market technical analysis and trading strategy development. Built with high-performance data structures and seamlessly integrated with TA-Lib, SQA provides a comprehensive toolkit for analyzing historical stock data, implementing trading strategies, and backtesting your ideas.
+**SQA (Stock Qualitative Analysis)** is an educational Ruby library designed for stock market technical analysis and trading strategy development. Built with high-performance data structures and seamlessly integrated with TA-Lib, SQA provides a comprehensive toolkit for analyzing historical stock data, implementing trading strategies, and backtesting your ideas.
 
 !!! warning "Educational Purpose Only"
     SQA is designed for **educational purposes** only. It should not be used for actual trading without extensive testing and professional financial advice. Trading stocks involves substantial risk of loss.
@@ -77,19 +77,19 @@ signal = SQA::Strategy::RSI.trade(vector)  # => :buy, :sell, or :hold
 backtest = SQA::Backtest.new(
   stock: stock,
   strategy: SQA::Strategy::RSI,
-  initial_cash: 10_000
+  initial_capital: 10_000
 )
 results = backtest.run
 
-puts "Total Return: #{results.total_return}%"
+puts "Total Return: #{(results.total_return * 100).round(2)}%"
 puts "Sharpe Ratio: #{results.sharpe_ratio}"
-puts "Max Drawdown: #{results.max_drawdown}%"
+puts "Max Drawdown: #{(results.max_drawdown * 100).round(2)}%"
 ```
 
 ## Core Features
 
 ### Data Management
-- **Multiple Data Sources**: Alpha Vantage, Yahoo Finance, CSV imports
+- **Multiple Data Sources**: FMP (default), Yahoo Finance (fallback), Alpha Vantage, CSV imports
 - **Polars DataFrames**: High-performance time series data manipulation
 - **Automatic Updates**: Keep historical data current
 

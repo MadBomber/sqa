@@ -4,11 +4,11 @@ This file format is used by rumale.
 
 We're choosing the "Adj Close" column as the one that we want to predict.
 
-The libsvm file format is simple.  All values are numberic.
+The libsvm file format is simple.  All values are numeric.
 
 The first entry on a line is the thing that we want to predict.  In this case it is the adjusted closing price.  This is followed by a space.
 
-What follows is a series of data pairs seperated by spaces in the form:
+What follows is a series of data pairs separated by spaces in the form:
 
 * index:value
 

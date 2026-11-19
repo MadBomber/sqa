@@ -7,6 +7,7 @@
 # potential future price movements and filter trading opportunities by
 # risk and directional bias.
 
+require_relative 'local_libs'
 require 'sqa'
 
 SQA.init

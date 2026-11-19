@@ -37,15 +37,7 @@ class String
     names = split('::')
     names.shift if names.empty? || names.first.empty?
 
-    constant = Object
-    names.each do |name|
-      constant = if RUBY_VERSION[0, 3] == '1.9'
-                   constant.const_defined?(name) ? constant.const_get(name) : constant.const_missing(name)
-                 else
-                   constant.const_get(name) || constant.const_missing(name)
-                 end
-    end
-    constant
+    names.reduce(Object, :const_get)
   end
 
   alias constantize to_constant

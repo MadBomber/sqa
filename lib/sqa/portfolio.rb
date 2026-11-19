@@ -19,7 +19,7 @@ class SQA::Portfolio
 
     def profit_loss_percent(current_price)
       return 0.0 if avg_cost.zero?
-      ((current_price - avg_cost) / avg_cost) * 100.0
+      (current_price - avg_cost).fdiv(avg_cost) * 100.0
     end
   end
 
@@ -81,7 +81,7 @@ class SQA::Portfolio
       total_shares = pos.shares + shares
       total_cost_basis = pos.total_cost + total_cost
       pos.shares = total_shares
-      pos.avg_cost = total_cost_basis / total_shares
+      pos.avg_cost = total_cost_basis.fdiv(total_shares)
       pos.total_cost = total_cost_basis
     else
       @positions[ticker] = Position.new(
@@ -127,19 +127,20 @@ class SQA::Portfolio
     raise "No position in #{ticker}" unless @positions[ticker]
 
     pos = @positions[ticker]
-    raise "Insufficient shares: trying to sell #{shares}, have #{pos.shares}" if shares > pos.shares
+    held = pos.shares
+    raise "Insufficient shares: trying to sell #{shares}, have #{held}" if shares > held
 
     total_sale = shares * price
     commission = calculate_commission(total_sale)
     net_proceeds = total_sale - commission
 
     # Update position
-    if shares == pos.shares
+    if shares == held
       # Selling entire position
       @positions.delete(ticker)
     else
       # Partial sale - reduce shares and total cost proportionally
-      cost_per_share = pos.total_cost / pos.shares
+      cost_per_share = pos.total_cost.fdiv(held)
       pos.shares -= shares
       pos.total_cost -= (cost_per_share * shares)
       # avg_cost stays the same
@@ -204,7 +205,7 @@ class SQA::Portfolio
   # @return [Float] P&L percentage
   def profit_loss_percent(current_prices = {})
     return 0.0 if @initial_cash.zero?
-    (profit_loss(current_prices) / @initial_cash) * 100.0
+    profit_loss(current_prices).fdiv(@initial_cash) * 100.0
   end
 
   # Calculate total return (including dividends if tracked)
@@ -212,7 +213,7 @@ class SQA::Portfolio
   # @return [Float] Total return as decimal (e.g., 0.15 for 15%)
   def total_return(current_prices = {})
     return 0.0 if @initial_cash.zero?
-    profit_loss(current_prices) / @initial_cash
+    profit_loss(current_prices).fdiv(@initial_cash)
   end
 
   # Get trade history
@@ -310,9 +311,10 @@ class SQA::Portfolio
   private
 
   # Calculate commission for a trade
-  # @param total [Float] Total trade value
+  # @param _total [Float] Total trade value (unused by the flat model, kept so
+  #   value-based commission models can share the signature)
   # @return [Float] Commission amount
-  def calculate_commission(total)
+  def calculate_commission(_total)
     # Simple flat commission model
     @commission
   end

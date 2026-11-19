@@ -82,7 +82,7 @@ stock = SQA::Stock.new(ticker: 'AAPL')
 backtest = SQA::Backtest.new(
   stock: stock,
   strategy: SQA::Strategy::RSI,
-  initial_cash: 10_000.0,
+  initial_capital: 10_000.0,
   commission: 1.0  # $1 per trade
 )
 
@@ -91,10 +91,10 @@ results = backtest.run
 
 # Display results
 puts "\n=== Backtest Results ==="
-puts "Total Return: #{results.total_return.round(2)}%"
+puts "Total Return: #{(results.total_return * 100).round(2)}%"
 puts "Sharpe Ratio: #{results.sharpe_ratio.round(2)}"
-puts "Max Drawdown: #{results.max_drawdown.round(2)}%"
-puts "Win Rate: #{results.win_rate.round(2)}%"
+puts "Max Drawdown: #{(results.max_drawdown * 100).round(2)}%"
+puts "Win Rate: #{(results.win_rate * 100).round(2)}%"
 puts "\nTotal Trades: #{results.total_trades}"
 puts "Winning Trades: #{results.winning_trades}"
 puts "Losing Trades: #{results.losing_trades}"
@@ -197,7 +197,7 @@ SQAI.sma(prices, period: 50)
 SQAI.methods.grep(/^[a-z]/).sort
 
 # Try different strategies
-SQA::Strategy.descendants  # List all strategy classes
+SQA::Strategy.new.available  # List all strategy classes
 ```
 
 ## Next Steps

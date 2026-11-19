@@ -1,5 +1,5 @@
 # MkDocs Configuration for SQA Documentation
-site_name: SQA - Simple Qualitative Analysis
+site_name: SQA - Stock Qualitative Analysis
 site_description: A powerful Ruby library for stock market technical analysis and trading strategy development
 site_author: Dewayne VanHoozer
 site_url: https://madbomber.github.io/sqa

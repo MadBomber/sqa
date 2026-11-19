@@ -6,8 +6,11 @@ require 'csv'
 require 'polars'
 
 require_relative 'data_frame/data'
+require_relative 'data_frame/daily_price_source'
 require_relative 'data_frame/yahoo_finance'
 require_relative 'data_frame/alpha_vantage'
+require_relative 'data_frame/stooq'
+require_relative 'data_frame/fmp'
 
 # High-performance DataFrame wrapper around Polars for time series data manipulation.
 # Provides convenience methods for stock market data while leveraging Polars' Rust-backed
@@ -63,8 +66,10 @@ class SQA::DataFrame
   def apply_transformers!(transformers)
     transformers.each do |col, transformer|
       col_name = col.to_s
+      series = @data[col_name]
+      return_dtype = self.class.infer_return_dtype(series, transformer)
       @data = @data.with_columns(
-        @data[col_name].map_elements(&transformer).alias(col_name)
+        series.map_elements(return_dtype: return_dtype, &transformer).alias(col_name)
       )
     end
   end
@@ -102,13 +107,14 @@ class SQA::DataFrame
   #   df1.append!(df2)
   #
   def append!(other_df)
+    other_data = other_df.data
     self_row_count = @data.shape[0]
-    other_row_count = other_df.data.shape[0]
+    other_row_count = other_data.shape[0]
 
     @data = if self_row_count.zero?
-              other_df.data
+              other_data
             else
-              @data.vstack(other_df.data)
+              @data.vstack(other_data)
             end
 
     post_append_row_count = @data.shape[0]
@@ -193,6 +199,16 @@ class SQA::DataFrame
     @data.columns.to_h { |col| [col.to_sym, @data[col].to_a] }
   end
 
+  # Returns the rows as an array of hashes with String keys — the inverse of
+  # {.from_aofh}, and the shape {SQA::Store::Market#save_prices} expects.
+  #
+  # @return [Array<Hash{String => Object}>]
+  #
+  # @example
+  #   df.to_aofh.first  # => { "timestamp" => "1999-11-01", "close_price" => 77.62, ... }
+  #
+  def to_aofh = @data.rows(named: true)
+
   # Writes the DataFrame to a CSV file.
   #
   # @param path_to_file [String, Pathname] Path to output CSV file
@@ -263,6 +279,25 @@ class SQA::DataFrame
   # @return [Boolean] true if value matches YYYY-MM-DD format
   def self.is_date?(value)
     value.is_a?(String) && !/\d{4}-\d{2}-\d{2}/.match(value).nil?
+  end
+
+  # Infers the Polars dtype a transformer produces by applying it to the
+  # series' first non-null value. Passing this as +return_dtype:+ silences
+  # Polars' map_elements warning without changing the resulting dtype.
+  # Strings are left to Polars to infer because non-UTF-8 strings (e.g. the
+  # US-ASCII result of Integer#to_s) fail under an explicit String dtype.
+  #
+  # @param series [Polars::Series] Column the transformer will be applied to
+  # @param transformer [Proc] Transformer function
+  # @return [Class, nil] Polars::Float64, Polars::Int64, or nil to let Polars infer
+  def self.infer_return_dtype(series, transformer)
+    sample = series.drop_nulls.to_a.first
+    return nil if sample.nil?
+
+    case transformer.call(sample)
+    when Float   then Polars::Float64
+    when Integer then Polars::Int64
+    end
   end
 
   # Delegates unknown methods to the underlying Polars DataFrame.
@@ -412,10 +447,9 @@ class SQA::DataFrame
     # Converts array of hashes to hash of arrays format.
     #
     # @param aofh [Array<Hash>] Array of hash records
-    # @param mapping [Hash] Column name mappings (unused, for API compatibility)
-    # @param transformers [Hash] Column transformers (unused, for API compatibility)
+    # @param _options [Hash] Ignored (accepts mapping:/transformers: for API compatibility)
     # @return [Hash{String => Array}] Hash with column names as keys and arrays as values
-    def aofh_to_hofa(aofh, mapping: {}, transformers: {})
+    def aofh_to_hofa(aofh, **_options)
       hofa = Hash.new { |h, k| h[k.downcase] = [] }
       aofh.each { |entry| entry.each { |key, value| hofa[key.to_s.downcase] << value } }
       hofa

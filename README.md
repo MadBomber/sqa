@@ -1,8 +1,8 @@
 <div align="center">
-  <h1>SQA - Simple Qualitative Analysis</h1>
+  <h1>SQA - Stock Qualitative Analysis</h1>
 
   <p>A Ruby library for technical analysis of stock market data, trading strategies, and portfolio optimization.<br/>
-      Core library of the <a href="https://github.com/MadBomber/sqa">SQA</a> (Simple Qualitative Analysis) ecosystem.</p>
+      Core library of the <a href="https://github.com/MadBomber/sqa">SQA</a> (Stock Qualitative Analysis) ecosystem.</p>
 </div>
 
 <table>
@@ -24,7 +24,7 @@
 - **High-Performance DataFrames** - Polars-based data structures for time series financial data
 - **150+ Technical Indicators** - Via the separate [`sqa-tai`](https://github.com/MadBomber/sqa-tai) gem (TA-Lib wrapper)
 - **Trading Strategies** - Framework for building and testing trading strategies
-- **Multiple Data Sources** - Alpha Vantage and Yahoo Finance adapters
+- **Multiple Data Sources** - FMP (default), Yahoo Finance (fallback), and Alpha Vantage adapters
 - **Stock Management** - Track stocks with historical prices and company metadata
 - **Statistical Analysis** - Comprehensive statistics on price data
 - **Ticker Validation** - Validate stock symbols against market exchanges
@@ -57,7 +57,7 @@
   - [Installation](#installation)
   - [Configuration](#configuration)
     - [Data Directory](#data-directory)
-    - [Alpha Vantage API Key](#alpha-vantage-api-key)
+    - [API Keys](#api-keys)
   - [Usage](#usage)
     - [Working with Stocks](#working-with-stocks)
     - [DataFrame Operations](#dataframe-operations)
@@ -67,8 +67,9 @@
   - [Interactive Console](#interactive-console)
   - [Architecture](#architecture)
   - [Data Sources](#data-sources)
+    - [FMP (Financial Modeling Prep)](#fmp-financial-modeling-prep--default)
+    - [Yahoo Finance](#yahoo-finance--fallback)
     - [Alpha Vantage](#alpha-vantage)
-    - [Yahoo Finance](#yahoo-finance)
   - [Contributing](#contributing)
   - [License](#license)
 
@@ -114,7 +115,7 @@ require 'sqa'
 SQA.init
 
 # Or specify a custom data directory
-SQA::Config.new(data_dir: '~/Documents/my_stock_data')
+SQA.config.data_dir = File.expand_path('~/Documents/my_stock_data')
 ```
 
 Create your data directory:
@@ -123,11 +124,24 @@ Create your data directory:
 mkdir ~/sqa_data
 ```
 
-### Alpha Vantage API Key
+### API Keys
 
-SQA uses Alpha Vantage for stock data. You'll need a free API key from [https://www.alphavantage.co/](https://www.alphavantage.co/)
+By default SQA fetches price data from **FMP (Financial Modeling Prep)** and
+automatically falls back to **Yahoo Finance** (no key required) if FMP fails.
+Alpha Vantage is still supported but is no longer the default because of its
+restrictive free-tier quota.
 
-Set the environment variable:
+Get a free FMP key from [https://site.financialmodelingprep.com/](https://site.financialmodelingprep.com/)
+and set the environment variable:
+
+```bash
+export FMP_API_KEY="your_api_key_here"
+```
+
+FMP's free tier allows ~250 requests/day and up to ~5 years of daily history.
+
+**Alpha Vantage (optional).** To use `source: :alpha_vantage`, get a free key
+from [https://www.alphavantage.co/](https://www.alphavantage.co/):
 
 ```bash
 export AV_API_KEY="your_api_key_here"
@@ -135,9 +149,11 @@ export AV_API_KEY="your_api_key_here"
 export ALPHAVANTAGE_API_KEY="your_api_key_here"
 ```
 
-The free tier allows:
-- 5 API calls per minute
-- 100 API calls per day
+Alpha Vantage's free tier allows only 25 requests/day, and full history is now
+a premium-only feature (free keys fall back to ~100 trading days).
+
+**Yahoo Finance** needs no key. If Yahoo IP-rate-limits the crumb endpoint,
+set `YF_COOKIE` / `YF_CRUMB` (from a browser session) to bypass the handshake.
 
 ## Usage
 
@@ -149,8 +165,8 @@ require 'sqa'
 # Initialize SQA
 SQA.init
 
-# Create or load a stock (automatically fetches/updates data from Alpha Vantage)
-aapl = SQA::Stock.new(ticker: 'AAPL', source: :alpha_vantage)
+# Create or load a stock (default source is FMP, with Yahoo Finance fallback)
+aapl = SQA::Stock.new(ticker: 'AAPL')
 #=> aapl with 1207 data points from 2019-01-02 to 2023-10-17
 
 # Access the DataFrame
@@ -219,15 +235,15 @@ prices = [100, 102, 105, 103, 107, 110, 108, 112, 115, 113]
 
 # Simple Moving Average
 sma = SQAI.sma(prices, period: 5)
-#=> [104.0, 105.4, 106.6, 108.0, 110.4, 111.6]
+#=> [103.4, 105.4, 106.6, 108.0, 110.4, 111.6]
 
-# Relative Strength Index
-rsi = SQAI.rsi(prices, period: 14)
-#=> [70.5, 68.2, ...]
+# Relative Strength Index (needs more than `period` prices)
+rsi = SQAI.rsi(prices, period: 5)
+#=> [85.7, 72.7, 80.2, 84.3, 72.0] (rounded)
 
 # Exponential Moving Average
 ema = SQAI.ema(prices, period: 5)
-#=> [...]
+#=> [103.4, 105.6, 106.4, 108.3, 110.5, 111.3] (rounded)
 
 # Bollinger Bands (returns upper, middle, lower)
 upper, middle, lower = SQAI.bbands(prices, period: 5)
@@ -335,13 +351,17 @@ portfolio.profit_loss(current_prices)
 
 # View summary
 portfolio.summary
-#=> { initial_cash: 10000.0, cash: 8248.0, positions: 1, trades: 2, ... }
+#=> { initial_cash: 10000.0, current_cash: 9298.0, positions_count: 1, total_trades: 2, ... }
 
-# Save trades to CSV
-portfolio.save_to_csv('my_trades.csv')
+# Save positions to CSV
+portfolio.save_to_csv('my_portfolio.csv')
 
-# Load from CSV
-portfolio.load_from_csv('my_trades.csv')
+# Save trade history to CSV
+portfolio.save_trades_to_csv('my_trades.csv')
+
+# Load positions from CSV into a new portfolio
+# (positions only: cash starts at 0 and trade history is not restored)
+portfolio = SQA::Portfolio.load_from_csv('my_portfolio.csv')
 ```
 
 ### Backtesting
@@ -365,17 +385,17 @@ backtest = SQA::Backtest.new(
 # Run backtest
 results = backtest.run
 
-# View comprehensive metrics
-puts "Total Return: #{results.total_return.round(2)}%"
-puts "Annualized Return: #{results.annualized_return.round(2)}%"
+# View comprehensive metrics (returns, drawdown, and win rate are fractions)
+puts "Total Return: #{(results.total_return * 100).round(2)}%"
+puts "Annualized Return: #{(results.annualized_return * 100).round(2)}%"
 puts "Sharpe Ratio: #{results.sharpe_ratio.round(2)}"
-puts "Max Drawdown: #{results.max_drawdown.round(2)}%"
+puts "Max Drawdown: #{(results.max_drawdown * 100).round(2)}%"
 puts "Total Trades: #{results.total_trades}"
-puts "Win Rate: #{results.win_rate.round(2)}%"
+puts "Win Rate: #{(results.win_rate * 100).round(2)}%"
 puts "Profit Factor: #{results.profit_factor.round(2)}"
 
-# Access equity curve for charting
-results.equity_curve  #=> Array of portfolio values over time
+# Access equity curve for charting (on the backtest, not the results)
+backtest.equity_curve  #=> Array of { date:, value:, price: } hashes over time
 ```
 
 ### Strategy Generator
@@ -392,7 +412,7 @@ stock = SQA::Stock.new(ticker: 'AAPL')
 generator = SQA::StrategyGenerator.new(
   stock: stock,
   min_gain_percent: 10.0,    # Find trades with ≥10% gain
-  holding_period: (5..20)    # Within 5-20 days
+  fpop: 10                   # Within the next 10 periods
 )
 
 # Discover patterns
@@ -462,11 +482,11 @@ puts "Best Parameters:"
 puts "  RSI Period: #{best.genes[:rsi_period]}"
 puts "  Buy Threshold: #{best.genes[:buy_threshold]}"
 puts "  Sell Threshold: #{best.genes[:sell_threshold]}"
-puts "  Fitness: #{best.fitness.round(2)}%"
+puts "  Fitness: #{(best.fitness * 100).round(2)}%"
 
 # View evolution history
 gp.history.each do |gen|
-  puts "Gen #{gen[:generation]}: Best=#{gen[:best_fitness].round(2)}%"
+  puts "Gen #{gen[:generation]}: Best=#{(gen[:best_fitness] * 100).round(2)}%"
 end
 ```
 
@@ -479,6 +499,9 @@ require 'sqa'
 
 # Create KBS strategy
 strategy = SQA::Strategy::KBS.new(load_defaults: false)
+
+# Capture the knowledge base for use inside perform blocks
+kb = strategy.kb
 
 # Define custom trading rules
 strategy.add_rule :golden_opportunity do
@@ -494,9 +517,9 @@ strategy.add_rule :golden_opportunity do
   # Negation: Don't buy if overbought elsewhere
   without :rsi, { level: :overbought }
 
-  # Action
-  then do
-    assert(:signal, { action: :buy, confidence: :high })
+  # Action (use kb.assert; a bare assert is not available here)
+  perform do
+    kb.assert(:signal, { action: :buy, confidence: :high })
   end
 end
 
@@ -647,9 +670,9 @@ regime_data = SQA::MarketRegime.split_by_regime(stock)
 current_regime = SQA::MarketRegime.detect(stock)
 strategy = case current_regime[:type]
 when :bull
-  SQA::Strategy::MomentumBreakout
+  SQA::Strategy::VolumeBreakout
 when :bear
-  SQA::Strategy::MeanReversion
+  SQA::Strategy::MR
 when :sideways
   SQA::Strategy::BollingerBands
 end
@@ -797,14 +820,14 @@ validated_patterns = results[:validated_patterns]
 results[:validation_results].each do |r|
   puts "Train: #{r[:train_period]}"
   puts "Test:  #{r[:test_period]}"
-  puts "Return: #{r[:test_return]}%"
+  puts "Return: #{(r[:test_return] * 100).round(2)}%"
   puts "Sharpe: #{r[:test_sharpe]}"
 end
 
 # Statistics
 all_returns = results[:validation_results].map { |r| r[:test_return] }
 avg_return = all_returns.sum / all_returns.size
-puts "Average out-of-sample return: #{avg_return.round(2)}%"
+puts "Average out-of-sample return: #{(avg_return * 100).round(2)}%"
 ```
 
 **How It Works:**
@@ -900,15 +923,15 @@ sma = SQAI.sma(prices, period: 20)
 
 The `examples/` directory contains comprehensive demonstrations of advanced features:
 
-- **`genetic_programming_example.rb`** - Evolve RSI parameters through natural selection
-- **`kbs_strategy_example.rb`** - Build rule-based trading systems with RETE
-- **`realtime_stream_example.rb`** - Process live price streams with callbacks
-- **`strategy_generator_example.rb`** - Mine profitable patterns from history
+- **`03_genetic_programming.rb`** - Evolve RSI parameters through natural selection
+- **`04_kbs_strategy.rb`** - Build rule-based trading systems with RETE
+- **`05_realtime_stream.rb`** - Process live price streams with callbacks
+- **`02_strategy_generator.rb`** - Mine profitable patterns from history
 
 Run examples:
 ```bash
-ruby examples/genetic_programming_example.rb
-ruby examples/strategy_generator_example.rb
+ruby examples/03_genetic_programming.rb
+ruby examples/02_strategy_generator.rb
 ```
 
 See `examples/README.md` for detailed documentation and integration patterns.
@@ -940,7 +963,7 @@ For a complete web-based demonstration of SQA's capabilities, see the **[sqa_dem
 **Data Flow:**
 
 1. Create `SQA::Stock` with ticker symbol
-2. Stock fetches data from Alpha Vantage or Yahoo Finance
+2. Stock fetches data from FMP (default), Yahoo Finance (fallback), or Alpha Vantage
 3. Data stored in Polars-based `SQA::DataFrame`
 4. Apply technical indicators via `SQAI` / `SQA::TAI`
 5. Execute trading strategies to generate signals
@@ -949,41 +972,62 @@ For a complete web-based demonstration of SQA's capabilities, see the **[sqa_dem
 **Design Patterns:**
 
 - Plugin architecture for indicators and strategies
-- Data source abstraction (Alpha Vantage, Yahoo Finance)
+- Data source abstraction (FMP, Yahoo Finance, Alpha Vantage)
 - Delegation to Polars for DataFrame operations
 - Configuration hierarchy: defaults < environment variables < config file
 
 ## Data Sources
 
+`SQA::Stock` defaults to **FMP** and automatically falls back to **Yahoo
+Finance** if the FMP fetch fails. All adapters share the same
+`self.recent(ticker, full:, from_date:)` interface.
+
+### FMP (Financial Modeling Prep) — default
+
+- **URL:** [https://site.financialmodelingprep.com/](https://site.financialmodelingprep.com/)
+- **API Key:** Required (free tier available)
+- **Environment Variable:** `FMP_API_KEY`
+- **Free tier:** ~250 requests/day, up to ~5 years of daily history
+
+```ruby
+stock = SQA::Stock.new(ticker: 'GOOGL')          # source: :fmp is the default
+```
+
+### Yahoo Finance — fallback
+
+**No API key required** — calls Yahoo's undocumented `chart` JSON API.
+
+- **URL:** [https://finance.yahoo.com/](https://finance.yahoo.com/)
+- **Rate limiting:** Yahoo may IP-rate-limit the crumb endpoint; set
+  `YF_COOKIE` / `YF_CRUMB` from a browser session to bypass the handshake
+- Unofficial API, so it can break if Yahoo changes their site
+
+```ruby
+stock = SQA::Stock.new(ticker: 'AAPL', source: :yahoo_finance)
+```
+
 ### Alpha Vantage
 
-**Recommended data source** with a well-documented API.
-
 - **URL:** [https://www.alphavantage.co/](https://www.alphavantage.co/)
-- **API Key:** Required (free tier available)
-- **Environment Variable:** `AV_API_KEY` or `ALPHAVANTAGE_API_KEY`
-- **Rate Limits:** 5 calls/minute, 100 calls/day (free tier)
+- **API Key:** Required — `AV_API_KEY` or `ALPHAVANTAGE_API_KEY`
+- **Free tier:** 25 calls/day; full history is now premium-only (free keys
+  fall back to ~100 trading days)
 
 ```ruby
 stock = SQA::Stock.new(ticker: 'GOOGL', source: :alpha_vantage)
 ```
 
-### Yahoo Finance
+### Stooq (not currently usable)
 
-**No API available** - uses web scraping for historical data.
+stooq.com now serves a JavaScript proof-of-work bot challenge on its CSV
+endpoint, so `source: :stooq` cannot be reached by a plain HTTP client. The
+adapter remains in the codebase in case that challenge is lifted.
 
-- **URL:** [https://finance.yahoo.com/](https://finance.yahoo.com/)
-- **Manual Download:** Download CSV files and place in `SQA.data_dir`
-- **Filename Format:** `ticker.csv` (lowercase), e.g., `aapl.csv`
+### CSV files
 
-To manually download:
-1. Visit [https://finance.yahoo.com/quote/AAPL/history?p=AAPL](https://finance.yahoo.com/quote/AAPL/history?p=AAPL)
-2. Download historical data as CSV
-3. Move to your data directory as `aapl.csv`
-
-```ruby
-stock = SQA::Stock.new(ticker: 'AAPL', source: :yahoo_finance)
-```
+Any source can be short-circuited by placing a cached `ticker.csv` (lowercase)
+in `SQA.data_dir` — SQA loads it directly and only hits the network to append
+newer rows.
 
 ## Contributing
 

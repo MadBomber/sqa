@@ -88,7 +88,7 @@ Represents a stock with historical data and metadata.
 
 ### Constructor
 
-#### `SQA::Stock.new(ticker:, source: :alpha_vantage)`
+#### `SQA::Stock.new(ticker:, source: :fmp)`
 
 Creates a new Stock instance and loads/fetches its data.
 
@@ -431,13 +431,13 @@ Simulate strategies on historical data.
 
 ### Constructor
 
-#### `SQA::Backtest.new(stock:, strategy:, initial_cash: 10_000, commission: 0.0)`
+#### `SQA::Backtest.new(stock:, strategy:, initial_capital: 10_000, commission: 0.0)`
 
 ```ruby
 backtest = SQA::Backtest.new(
   stock: stock,
   strategy: SQA::Strategy::RSI,
-  initial_cash: 10_000,
+  initial_capital: 10_000,
   commission: 1.0
 )
 ```
@@ -456,11 +456,11 @@ results = backtest.run
 
 | Metric | Description |
 |--------|-------------|
-| `total_return` | Total percentage return |
+| `total_return` | Total return as a fraction (0.155 = 15.5%) |
 | `sharpe_ratio` | Risk-adjusted return |
 | `sortino_ratio` | Downside risk-adjusted return |
 | `max_drawdown` | Largest peak-to-trough decline |
-| `win_rate` | Percentage of profitable trades |
+| `win_rate` | Fraction of profitable trades (0.6 = 60%) |
 | `num_trades` | Total number of trades |
 | `final_value` | Ending portfolio value |
 

@@ -150,7 +150,7 @@ df = SQA::DataFrame.load(source: 'path/to/custom.csv')
 ```
 
 **Notes:**
-- Data is automatically fetched from Alpha Vantage or Yahoo Finance on first load
+- Data is automatically fetched from FMP (default), with Yahoo Finance fallback, on first load
 - Updates are appended and deduplicated using `concat_and_deduplicate!`
 - Use `adj_close_price` for calculations that need to account for corporate actions
 
@@ -201,11 +201,11 @@ stock.data.overview['pe_ratio']  # => 28.5
 
 ## Configuration File Format
 
-SQA supports YAML and TOML configuration files.
+Configuration is managed by `myway_config`. The auto-discovered user config
+is **`~/.config/sqa/sqa.yml`** (XDG); a project config at `./config/sqa.yml`
+overrides it. Bundled defaults live in `lib/sqa/config/defaults.yml`.
 
-**Location:** `~/.sqa.yml` or `~/.sqa.toml`
-
-**Example YAML (`~/.sqa.yml`):**
+**Example YAML (`~/.config/sqa/sqa.yml`):**
 
 ```yaml
 data_dir: ~/sqa_data
@@ -214,7 +214,12 @@ log_level: info
 plotting_library: gnuplot
 ```
 
-**Example TOML (`~/.sqa.toml`):**
+You can also load an **explicit** config file of any supported type
+(YAML/TOML/JSON) at an arbitrary path via `config.config_file = "..."`
+followed by `config.from_file`, and write the current config back out with
+`config.dump_file`.
+
+**Example TOML:**
 
 ```toml
 data_dir = "~/sqa_data"

@@ -28,7 +28,7 @@ else
     $DEBUG_ME = true
   rescue LoadError
     # debug_me is optional - define a no-op if not available
-    def debug_me(tag = nil, &)
+    def debug_me(_tag = nil, &)
       # No-op when debug_me gem is not available
     end
     $DEBUG_ME = false
@@ -71,6 +71,7 @@ require_relative "sqa/errors"
 require_relative 'sqa/init'
 
 require_relative "sqa/config"
+require_relative "sqa/store"
 require_relative "sqa/data_frame"
 require_relative "sqa/indicator"
 require_relative "sqa/fpop"
@@ -90,3 +91,4 @@ require_relative "sqa/portfolio_optimizer"
 require_relative "sqa/ensemble"
 require_relative "sqa/multi_timeframe"
 require_relative "sqa/pattern_matcher"
+require_relative "sqa/fmp"
